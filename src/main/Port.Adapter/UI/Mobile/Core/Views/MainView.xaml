@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Views.MainView"
+             xmlns:controls="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Controls;assembly=works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core"
+             xmlns:pages="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Views"
+             xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Views"
+             xmlns:viewModelBase="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base;assembly=works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core"
+             xmlns:behaviors="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Behaviors;assembly=works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             viewModelBase:ViewModelLocator.AutoWireViewModel="true"
+             IsPresented="{Binding IsAxonVisible}">
+    <MasterDetailPage.Master Title="Master Page">
+        <ContentPage Title="Not Displayed">
+            <ContentPage.Padding>
+                <OnPlatform x:TypeArguments="Thickness">
+                    <On Platform="iOS" Value="20, 40, 20, 20" />
+                    <On Platform="Android, WinPhone, Windows" Value="15" />
+                </OnPlatform>
+            </ContentPage.Padding>
+            <StackLayout VerticalOptions="FillAndExpand"
+             HorizontalOptions="FillAndExpand"
+             Orientation="Vertical">
+                <Label VerticalOptions="Start" HorizontalOptions="Start" Text="{Binding Data}" FontSize="Medium" />
+                <StackLayout VerticalOptions="FillAndExpand" 
+                     HorizontalOptions="FillAndExpand"
+                     Orientation="Horizontal">
+                    <Label VerticalOptions="Center" HorizontalOptions="FillAndExpand" Text="Axon" FontSize="Medium" />
+                    <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="addTerminalButton" FontSize="Small" Text="Link" HeightRequest="40" WidthRequest="60" Command="{Binding AddTerminalCommand}"/>
+                </StackLayout>
+                <ListView x:Name="axonView" ItemsSource="{Binding Axon}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.ContextActions>
+                                    <MenuItem Text="Unlink" Command="{Binding BindingContext.RemoveTerminalCommand, Source={x:Reference axonView}}" CommandParameter="{Binding .}" IsDestructive="True" />
+                                </ViewCell.ContextActions>
+                                <StackLayout VerticalOptions="Center" Padding="15,0">
+                                    <Label Text="{Binding TargetData}" FontSize="Small" TextColor="{ StaticResource AccentColor }" />
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.Behaviors>
+                        <behaviors:EventToCommandBehavior                    
+                        EventName="ItemTapped"
+                        Command="{Binding NavigateAxonTerminalCommand}"
+                        EventArgsConverter="{StaticResource ItemTappedEventArgsConverter}" />
+                    </ListView.Behaviors>
+                </ListView>
+            </StackLayout>
+        </ContentPage>
+    </MasterDetailPage.Master>
+    <MasterDetailPage.Detail>
+        <ContentPage>
+            <ContentPage.Padding>
+                <OnPlatform x:TypeArguments="Thickness">
+                    <On Platform="iOS" Value="20, 40, 20, 20" />
+                    <On Platform="Android, WinPhone, Windows" Value="15" />
+                </OnPlatform>
+            </ContentPage.Padding>
+            <ContentPage.Title>
+                <OnPlatform x:TypeArguments="x:String">
+                    <On Platform="Android, iOS, UWP, WinRT, WinPhone" Value="d#" />
+                </OnPlatform>
+            </ContentPage.Title>
+            <ContentPage.ToolbarItems>
+                <ToolbarItem Command="{Binding NewCommand}" Text="New" />
+                <ToolbarItem Command="{Binding SearchCommand}" Text="Search" />
+                <ToolbarItem Order="Secondary" Command="{Binding LoadCommand}" Text="Reload" />
+                <ToolbarItem Order="Secondary" Command="{Binding DetailsCommand}" Text="Details" />
+                <ToolbarItem Order="Secondary" Command="{Binding DeleteCommand}" Text="Delete" />
+                <ToolbarItem Order="Secondary" Command="{Binding SettingsCommand}" Text="Settings">
+                    <ToolbarItem.Icon>
+                        <OnPlatform x:TypeArguments="FileImageSource">
+                            <On Platform="iOS, Android" Value="app_settings" />
+                            <On Platform="UWP, WinRT, WinPhone" Value="Assets/app_settings.png" />
+                        </OnPlatform>
+                    </ToolbarItem.Icon>
+                </ToolbarItem>
+                <ToolbarItem Order="Secondary" Command="{Binding LogoutCommand}" Text="Logout">
+                </ToolbarItem>
+            </ContentPage.ToolbarItems>
+            <StackLayout VerticalOptions="FillAndExpand"
+             HorizontalOptions="FillAndExpand"
+             Orientation="Vertical">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="70" />
+                    </Grid.ColumnDefinitions>
+                    <controls:DynamicEditor x:Name="dataText" Grid.Column="0" Grid.Row="0" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" FontSize="Medium" Text="{Binding Data, Mode=TwoWay}" />
+                    <Button x:Name="saveButton" Grid.Column="1" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" FontSize="Small" Text="Save" HeightRequest="40" WidthRequest="70" IsEnabled="True" Command="{Binding SaveCommand}"/>
+                </Grid>
+                <StackLayout VerticalOptions="Start" 
+                     HorizontalOptions="FillAndExpand"
+                     Orientation="Horizontal">
+                    <Label Margin="10, 0" HorizontalOptions="FillAndExpand" FontSize="Small" Text="{Binding AxonPreview}" />
+                    <Button x:Name="showAxonButton" VerticalOptions="Start" HorizontalOptions="End" FontSize="Small" Text="Axon" HeightRequest="40" WidthRequest="70" IsEnabled="True" Command="{Binding ShowAxonCommand}"/>
+                </StackLayout>
+                <StackLayout VerticalOptions="FillAndExpand" 
+                     HorizontalOptions="FillAndExpand"
+                     Orientation="Horizontal">
+                    <Label VerticalOptions="Center" HorizontalOptions="FillAndExpand" Text="Dendrites" FontSize="Medium" />
+                    <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="createNewPresynapticButton" FontSize="Small" Text="New" HeightRequest="40" WidthRequest="70" Command="{Binding CreateNewPresynapticCommand}"/>
+                    <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="addExistingPresynapticButton" FontSize="Small" Text="Link" HeightRequest="40" WidthRequest="70" Command="{Binding AddExistingPresynapticCommand}"/>
+                </StackLayout>
+                <ListView x:Name="dendritesView" ItemsSource="{Binding Dendrites}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.ContextActions>
+                                    <MenuItem Text="Unlink" Command="{Binding BindingContext.RemoveDendriteCommand, Source={x:Reference dendritesView}}" CommandParameter="{Binding .}" IsDestructive="True" />
+                                </ViewCell.ContextActions>
+                                <StackLayout VerticalOptions="Center" Padding="15,0">
+                                    <Label Text="{Binding Data}" FontSize="Small" TextColor="{ StaticResource AccentColor }" />
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.Behaviors>
+                        <behaviors:EventToCommandBehavior                    
+                        EventName="ItemTapped"
+                        Command="{Binding NavigateDendriteCommand}"
+                        EventArgsConverter="{StaticResource ItemTappedEventArgsConverter}" />
+                    </ListView.Behaviors>
+                </ListView>
+            </StackLayout>
+        </ContentPage>
+    </MasterDetailPage.Detail>
+</MasterDetailPage>

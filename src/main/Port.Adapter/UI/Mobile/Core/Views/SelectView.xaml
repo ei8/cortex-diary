@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Views.SelectView"
+             xmlns:behaviors="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Behaviors;assembly=works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core"
+             xmlns:viewModelBase="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base;assembly=works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             viewModelBase:ViewModelLocator.AutoWireViewModel="true">
+    <ContentPage.Padding>
+        <OnPlatform x:TypeArguments="Thickness">
+            <On Platform="iOS" Value="20, 40, 20, 20" />
+            <On Platform="Android, WinPhone, Windows" Value="15" />
+        </OnPlatform>
+    </ContentPage.Padding>
+    <ContentPage.Title>
+        <OnPlatform x:TypeArguments="x:String">
+            <On Platform="Android, iOS, UWP, WinRT, WinPhone" Value="Select Neuron" />
+        </OnPlatform>
+    </ContentPage.Title>
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="FillAndExpand"
+             HorizontalOptions="FillAndExpand"
+             Orientation="Vertical">
+            <StackLayout VerticalOptions="Start"
+             HorizontalOptions="FillAndExpand"
+             Orientation="Horizontal">
+                <Entry x:Name="searchValueText" HorizontalOptions="FillAndExpand" FontSize="Small" WidthRequest="200" Text="{Binding SearchValue, Mode=TwoWay}" />
+                <Button x:Name="searchButton" HorizontalOptions="End" FontSize="Small" Text="Search" HeightRequest="40" WidthRequest="80" IsEnabled="True" Command="{Binding SearchCommand}"/>
+            </StackLayout>
+            <ListView x:Name="searchResultsView" ItemsSource="{Binding SearchResults}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding Data}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.Behaviors>
+                    <behaviors:EventToCommandBehavior                    
+                        EventName="ItemTapped"
+                        Command="{Binding SelectNeuronCommand}"
+                        EventArgsConverter="{StaticResource ItemTappedEventArgsConverter}" />
+                </ListView.Behaviors>
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>works.ei8.Cortex.Diary.Domain.Model</AssemblyName>
+    <RootNamespace>works.ei8.Cortex.Diary.Domain.Model</RootNamespace>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core</AssemblyName>
+    <RootNamespace>works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\MainView2.xaml.cs" />
+    <Compile Remove="Views\MainViewDetail.xaml.cs" />
+    <Compile Remove="Views\MainViewMaster.xaml.cs" />
+    <Compile Remove="Views\MainViewMenuItem.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\MainView2.xaml" />
+    <EmbeddedResource Remove="Views\MainViewDetail.xaml" />
+    <EmbeddedResource Remove="Views\MainViewMaster.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Acr.UserDialogs" Version="6.5.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta3" />
+    <PackageReference Include="Xam.Plugin.Geolocator" Version="3.0.4" />
+    <PackageReference Include="Xamarin.Forms" Version="2.5.0.122203" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="App.xaml.cs">
+      <DependentUpon>*.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Application\Application.csproj" />
+    <ProjectReference Include="..\..\..\..\Domain.Model\Domain.Model.csproj" />
+    <ProjectReference Include="..\..\..\IO\Process\Services\Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Views\MainView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\SelectView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
