@@ -46,7 +46,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.CortexGraphOutEndpoint)
+                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
             };
             
             // neuron
@@ -115,7 +115,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.CortexGraphOutEndpoint)
+                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
             };
 
             // neuron

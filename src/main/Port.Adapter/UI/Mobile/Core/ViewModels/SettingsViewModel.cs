@@ -51,8 +51,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private string _descriptionAllowGpsLocation;
         private bool _useFakeLocation;
         private string _endpoint;
-        private string cortexGraphOutEndpoint;
-        private string neurulCortexInEndpoint;
+        private string brainEndpoint;
         private double _latitude;
         private double _longitude;
         private string _gpsWarningMessage;
@@ -69,8 +68,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
             _useAzureServices = !_settingsService.UseMocks;
             _endpoint = settingsService.BaseEndpoint;
-            this.cortexGraphOutEndpoint = settingsService.CortexGraphOutEndpoint;
-            this.neurulCortexInEndpoint = settingsService.NeurulCortexInEndpoint;
+            this.brainEndpoint = settingsService.BrainEndpoint;
             _latitude = double.Parse(_settingsService.Latitude, CultureInfo.CurrentCulture);
             _longitude = double.Parse(_settingsService.Longitude, CultureInfo.CurrentCulture);
             _useFakeLocation = _settingsService.UseFakeLocation;
@@ -190,35 +188,19 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             }
         }
 
-        public string CortexGraphOutEndpoint
+        public string BrainEndpoint
         {
-            get => cortexGraphOutEndpoint;
+            get => brainEndpoint;
             set
             {
-                cortexGraphOutEndpoint = value;
+                brainEndpoint = value;
 
-                if (!string.IsNullOrEmpty(cortexGraphOutEndpoint))
+                if (!string.IsNullOrEmpty(brainEndpoint))
                 {
-                    UpdateCortexGraphOutEndpoint();
+                    UpdateBrainEndpoint();
                 }
 
-                this.OnPropertyChanged(nameof(CortexGraphOutEndpoint));
-            }
-        }
-
-        public string NeurulCortexInEndpoint
-        {
-            get => this.neurulCortexInEndpoint;
-            set
-            {
-                this.neurulCortexInEndpoint = value;
-
-                if (!string.IsNullOrEmpty(this.neurulCortexInEndpoint))
-                {
-                    this.UpdateNeurulCortexInEndpoint();
-                }
-
-                this.OnPropertyChanged(nameof(NeurulCortexInEndpoint));
+                this.OnPropertyChanged(nameof(BrainEndpoint));
             }
         }
 
@@ -390,14 +372,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             this.settingsService.BaseEndpoint = _endpoint;
         }
 
-        private void UpdateCortexGraphOutEndpoint()
+        private void UpdateBrainEndpoint()
         {
-            this.settingsService.CortexGraphOutEndpoint = this.cortexGraphOutEndpoint;
-        }
-
-        private void UpdateNeurulCortexInEndpoint()
-        {
-            this.settingsService.NeurulCortexInEndpoint = this.neurulCortexInEndpoint;
+            this.settingsService.BrainEndpoint = this.brainEndpoint;
         }
 
         private void UpdateFakeLocation()

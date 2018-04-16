@@ -42,7 +42,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.NeurulCortexInEndpoint)
+                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
             };
 
             StringBuilder sb = new StringBuilder();
@@ -82,7 +82,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.NeurulCortexInEndpoint)
+                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
             };
 
             StringBuilder sb = new StringBuilder();
@@ -121,7 +121,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.NeurulCortexInEndpoint)
+                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
             };
 
             StringBuilder sb = new StringBuilder();
@@ -149,7 +149,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.NeurulCortexInEndpoint)
+                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
             };
 
             HttpRequestMessage msg = new HttpRequestMessage
@@ -167,7 +167,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.NeurulCortexInEndpoint)
+                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
             };
 
             HttpRequestMessage msg = new HttpRequestMessage

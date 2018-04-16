@@ -206,7 +206,7 @@
                         </Entry>
                     </StackLayout>
 
-                    <!-- CORTEX GRAPH OUT ENDPOINT -->
+                    <!-- BRAIN ENDPOINT -->
                     <StackLayout
                         Grid.Row="3"
                         Grid.Column="0"
@@ -214,31 +214,10 @@
                         Style="{StaticResource SettingsStackLayoutStyle}"
                         IsVisible="{Binding UseAzureServices}">
                         <Label
-                            Text="Cortex Graph Out Endpoint"
+                            Text="Brain Address"
                             Style="{StaticResource HeaderLabelStyle}"/>
                         <Entry
-                            Text="{Binding CortexGraphOutEndpoint, Mode=TwoWay}">
-                            <Entry.Style>
-                                <OnPlatform x:TypeArguments="Style">
-                                    <On Platform="iOS, Android" Value="{StaticResource SettingsEntryStyle}" />
-                                    <On Platform="UWP, WinRT, WinPhone" Value="{StaticResource SettingsUwpEntryStyle}" />
-                                </OnPlatform>
-                            </Entry.Style>
-                        </Entry>
-                    </StackLayout>
-
-                    <!-- NEURUL CORTEX IN ENDPOINT -->
-                    <StackLayout
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2"
-                        Style="{StaticResource SettingsStackLayoutStyle}"
-                        IsVisible="{Binding UseAzureServices}">
-                        <Label
-                            Text="Neurul Cortex In Endpoint"
-                            Style="{StaticResource HeaderLabelStyle}"/>
-                        <Entry
-                            Text="{Binding NeurulCortexInEndpoint, Mode=TwoWay}">
+                            Text="{Binding BrainEndpoint, Mode=TwoWay}">
                             <Entry.Style>
                                 <OnPlatform x:TypeArguments="Style">
                                     <On Platform="iOS, Android" Value="{StaticResource SettingsEntryStyle}" />

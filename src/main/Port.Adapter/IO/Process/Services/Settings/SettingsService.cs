@@ -63,9 +63,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdLogoutEndpoint = "logout_endpoint";
         private const string IdIdentityCallback = "identity_callback";
         private const string IdLogoutCallback = "logout_callback";
-        private const string IdCortexGraphOutEndpoint = "cortex_graph_out_endpoint";
-        private const string IdNeurulCortexInEndpoint = "neurul_cortex_in_endpoint";
-
+        private const string IdBrainEndpoint = "brain_endpoint";
+        
         private readonly string AccessTokenDefault = string.Empty;
         private readonly string IdTokenDefault = string.Empty;
         private readonly bool UseMocksDefault = true;
@@ -84,9 +83,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string LogoutEndpointDefault = string.Empty;
         private readonly string IdentityCallbackDefault = string.Empty;
         private readonly string LogoutCallbackDefault = string.Empty;
-        private readonly string CortexGraphOutEndpointDefault = string.Empty;
-        private readonly string NeurulCortexInEndpointDefault = string.Empty;
-
+        private readonly string BrainEndpointDefault = string.Empty;
+        
         #endregion
 
         public string AuthAccessToken
@@ -201,16 +199,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             set => AppSettings.AddOrUpdateValue(IdLogoutCallback, value);
         }
 
-        public string CortexGraphOutEndpoint
+        public string BrainEndpoint
         {
-            get => AppSettings.GetValueOrDefault(IdCortexGraphOutEndpoint, CortexGraphOutEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdCortexGraphOutEndpoint, value);
-        }
-
-        public string NeurulCortexInEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdNeurulCortexInEndpoint, NeurulCortexInEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdNeurulCortexInEndpoint, value);
+            get => AppSettings.GetValueOrDefault(IdBrainEndpoint, BrainEndpointDefault);
+            set => AppSettings.AddOrUpdateValue(IdBrainEndpoint, value);
         }
 
         private void UpdateEndpoint(string baseEndpoint)
@@ -244,8 +236,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             this.AppSettings.Remove(IdLogoutEndpoint);
             this.AppSettings.Remove(IdentityCallback);
             this.AppSettings.Remove(IdLogoutCallback);
-            this.AppSettings.Remove(IdCortexGraphOutEndpoint);
-            this.AppSettings.Remove(IdNeurulCortexInEndpoint);
+            this.AppSettings.Remove(IdBrainEndpoint);
         }
     }
 }
