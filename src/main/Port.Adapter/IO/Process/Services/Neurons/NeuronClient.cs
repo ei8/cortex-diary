@@ -65,7 +65,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             HttpRequestMessage msg = new HttpRequestMessage
             {
                 Method = new HttpMethod("POST"),
-                RequestUri = new Uri(string.Format(NeuronClient.neuronsTerminalsPathTemplate, id))
+                RequestUri = new Uri(string.Format(NeuronClient.neuronsTerminalsPathTemplate, id), UriKind.Relative)
             };
             msg.Headers.Add("ETag", expectedVersion.ToString());
             msg.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
