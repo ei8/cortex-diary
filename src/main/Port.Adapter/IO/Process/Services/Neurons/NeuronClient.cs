@@ -25,7 +25,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 (ex, _) => NeuronClient.logger.Error(ex, "Error occured while communicating with Neurul Cortex. " + ex.InnerException?.Message)
             );
 
-        private static string neuronsPathTemplate = "/cortex/neurons/{0}";
+        private static string neuronsPathTemplate = "cortex/neurons/{0}";
         private static string neuronsTerminalsPathTemplate = NeuronClient.neuronsPathTemplate + "/terminals";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -42,7 +42,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
+                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
             };
 
             StringBuilder sb = new StringBuilder();
@@ -82,7 +82,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
+                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
             };
 
             StringBuilder sb = new StringBuilder();
@@ -121,7 +121,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
+                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
             };
 
             StringBuilder sb = new StringBuilder();
@@ -149,7 +149,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
+                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
             };
 
             HttpRequestMessage msg = new HttpRequestMessage
@@ -167,7 +167,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
+                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
             };
 
             HttpRequestMessage msg = new HttpRequestMessage

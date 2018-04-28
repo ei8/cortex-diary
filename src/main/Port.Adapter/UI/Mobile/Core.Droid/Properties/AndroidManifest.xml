@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.1" package="works.ei8.Dasz" android:installLocation="internalOnly">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="2" android:versionName="0.2" package="works.ei8.Dasz" android:installLocation="internalOnly">
 	<uses-sdk android:minSdkVersion="15" />
 	<application android:label="works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Droid"></application>
 </manifest>

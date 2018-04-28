@@ -51,7 +51,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private string _descriptionAllowGpsLocation;
         private bool _useFakeLocation;
         private string _endpoint;
-        private string brainEndpoint;
+        private string avatarEndpoint;
         private double _latitude;
         private double _longitude;
         private string _gpsWarningMessage;
@@ -68,7 +68,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
             _useAzureServices = !_settingsService.UseMocks;
             _endpoint = settingsService.BaseEndpoint;
-            this.brainEndpoint = settingsService.BrainEndpoint;
+            this.avatarEndpoint = settingsService.AvatarEndpoint;
             _latitude = double.Parse(_settingsService.Latitude, CultureInfo.CurrentCulture);
             _longitude = double.Parse(_settingsService.Longitude, CultureInfo.CurrentCulture);
             _useFakeLocation = _settingsService.UseFakeLocation;
@@ -190,12 +190,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
         public string BrainEndpoint
         {
-            get => brainEndpoint;
+            get => avatarEndpoint;
             set
             {
-                brainEndpoint = value;
+                avatarEndpoint = value;
 
-                if (!string.IsNullOrEmpty(brainEndpoint))
+                if (!string.IsNullOrEmpty(avatarEndpoint))
                 {
                     UpdateBrainEndpoint();
                 }
@@ -374,7 +374,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
         private void UpdateBrainEndpoint()
         {
-            this.settingsService.BrainEndpoint = this.brainEndpoint;
+            this.settingsService.AvatarEndpoint = this.avatarEndpoint;
         }
 
         private void UpdateFakeLocation()

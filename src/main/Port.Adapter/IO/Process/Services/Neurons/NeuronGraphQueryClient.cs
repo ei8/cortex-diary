@@ -28,8 +28,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 (ex, _) => NeuronGraphQueryClient.logger.Error(ex, "Error occured while querying Neurul Cortex. " + ex.InnerException?.Message)
             );
 
-        private static readonly string neuronsQueryPathTemplate = "/cortex/graph/neurons/{0}";
-        private static readonly string neuronsQuerySearchPathTemplate = "/cortex/graph/neurons/search?data={0}";
+        private static readonly string neuronsQueryPathTemplate = "cortex/graph/neurons/{0}";
+        private static readonly string neuronsQuerySearchPathTemplate = "cortex/graph/neurons/search?data={0}";
         private static readonly string dendritesQueryPathTemplate = NeuronGraphQueryClient.neuronsQueryPathTemplate + "/dendrites";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -46,7 +46,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
+                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
             };
             
             // neuron
@@ -115,7 +115,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.BrainEndpoint)
+                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
             };
 
             // neuron

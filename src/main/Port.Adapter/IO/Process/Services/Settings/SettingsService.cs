@@ -63,7 +63,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdLogoutEndpoint = "logout_endpoint";
         private const string IdIdentityCallback = "identity_callback";
         private const string IdLogoutCallback = "logout_callback";
-        private const string IdBrainEndpoint = "brain_endpoint";
+        private const string IdAvatarEndpoint = "avatar_endpoint";
         
         private readonly string AccessTokenDefault = string.Empty;
         private readonly string IdTokenDefault = string.Empty;
@@ -199,10 +199,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             set => AppSettings.AddOrUpdateValue(IdLogoutCallback, value);
         }
 
-        public string BrainEndpoint
+        public string AvatarEndpoint
         {
-            get => AppSettings.GetValueOrDefault(IdBrainEndpoint, BrainEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdBrainEndpoint, value);
+            get => AppSettings.GetValueOrDefault(IdAvatarEndpoint, BrainEndpointDefault);
+            set => AppSettings.AddOrUpdateValue(IdAvatarEndpoint, value);
         }
 
         private void UpdateEndpoint(string baseEndpoint)
@@ -236,7 +236,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             this.AppSettings.Remove(IdLogoutEndpoint);
             this.AppSettings.Remove(IdentityCallback);
             this.AppSettings.Remove(IdLogoutCallback);
-            this.AppSettings.Remove(IdBrainEndpoint);
+            this.AppSettings.Remove(IdAvatarEndpoint);
         }
     }
 }

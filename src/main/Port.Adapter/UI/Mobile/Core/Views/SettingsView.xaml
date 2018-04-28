@@ -206,7 +206,7 @@
                         </Entry>
                     </StackLayout>
 
-                    <!-- BRAIN ENDPOINT -->
+                    <!-- AVATAR ENDPOINT -->
                     <StackLayout
                         Grid.Row="3"
                         Grid.Column="0"
@@ -214,7 +214,7 @@
                         Style="{StaticResource SettingsStackLayoutStyle}"
                         IsVisible="{Binding UseAzureServices}">
                         <Label
-                            Text="Brain Address"
+                            Text="Avatar Address"
                             Style="{StaticResource HeaderLabelStyle}"/>
                         <Entry
                             Text="{Binding BrainEndpoint, Mode=TwoWay}">

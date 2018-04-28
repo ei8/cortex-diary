@@ -47,7 +47,7 @@ namespace works.ei8.Cortex.Diary.Application.Settings
         string LogoutEndpoint { get; set; }
         string IdentityCallback { get; set; }
         string LogoutCallback { get; set; }
-        string BrainEndpoint { get; set; }
+        string AvatarEndpoint { get; set; }
         
         void Clear();
     }
