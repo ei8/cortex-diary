@@ -132,7 +132,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
             HttpRequestMessage msg = new HttpRequestMessage {
                 Method = new HttpMethod("PATCH"),
-                RequestUri = new Uri(string.Format(NeuronClient.neuronsPathTemplate, id))
+                RequestUri = new Uri(string.Format(NeuronClient.neuronsPathTemplate, id), UriKind.Relative)
             };
             msg.Headers.Add("ETag", expectedVersion.ToString());
             msg.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
@@ -155,7 +155,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             HttpRequestMessage msg = new HttpRequestMessage
             {
                 Method = new HttpMethod("DELETE"),
-                RequestUri = new Uri(string.Format(NeuronClient.neuronsTerminalsPathTemplate + "/{1}", id, terminals.First().TargetId))
+                RequestUri = new Uri(string.Format(NeuronClient.neuronsTerminalsPathTemplate + "/{1}", id, terminals.First().TargetId), UriKind.Relative)
             };
             msg.Headers.Add("ETag", expectedVersion.ToString());
 
@@ -173,7 +173,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             HttpRequestMessage msg = new HttpRequestMessage
             {
                 Method = new HttpMethod("DELETE"),
-                RequestUri = new Uri(string.Format(NeuronClient.neuronsPathTemplate, id))
+                RequestUri = new Uri(string.Format(NeuronClient.neuronsPathTemplate, id), UriKind.Relative)
             };
             msg.Headers.Add("ETag", expectedVersion.ToString());
 
