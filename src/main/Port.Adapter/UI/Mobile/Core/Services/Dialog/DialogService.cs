@@ -26,6 +26,7 @@
 
 using Acr.UserDialogs;
 using System.Threading.Tasks;
+using works.ei8.Cortex.Diary.Application.Dialog;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Dialog
 {

@@ -25,21 +25,21 @@
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using works.ei8.Cortex.Diary.Application.Dialog;
+using works.ei8.Cortex.Diary.Application.Message;
+using works.ei8.Cortex.Diary.Application.Navigation;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Models.Edit;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Models.Navigation;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Models.User;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Dialog;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Navigation;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Validations;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base;
 using Xamarin.Forms;
 
@@ -51,6 +51,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private const int GraphWaitInterval = 3000;
         private const string DialogTitle = "d#";
 
+        private IMessageService messageService;
         private INeuronApplicationService neuronApplicationService;
         private INeuronQueryService neuronQueryService;
         private string neuronId;
@@ -67,21 +68,26 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private ICommand deleteCommand;
         private ICommand newCommand;
         private ICommand loadCommand;
+        private ICommand saveCommand;
 
         public MainViewModel(
             ISettingsService settingsService, 
             IDialogService dialogService, 
-            INavigationService navigationService,
+            INavigationService<ViewModelBase> navigationService,
+            IMessageService messageService,
             INeuronApplicationService neuronApplicationService,
             INeuronQueryService neuronQueryService
             )
             : base(settingsService, dialogService, navigationService)
         {
+            this.messageService = messageService;
             this.neuronApplicationService = neuronApplicationService;
             this.neuronQueryService = neuronQueryService;
 
             this.Loaded = false;
             this.IsAxonVisible = false;
+
+            this.PropertyChanged += this.MainViewModel_PropertyChanged;
 
             MessagingCenter.Subscribe<MainViewModel>(this, MessageKeys.NeuronSaved, async sender => {
                 // if this is a target of the saved neuron
@@ -92,6 +98,24 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
                     await this.LoadAsync();
                 }
             });
+        }
+
+        private void MainViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IsBusy):
+                    ((Command)this.saveCommand).ChangeCanExecute();
+                    break;
+                case nameof(Loaded):
+                    ((Command)this.addExistingPresynapticCommand).ChangeCanExecute();
+                    ((Command)this.addTerminalCommand).ChangeCanExecute();
+                    ((Command)this.createNewPresynapticCommand).ChangeCanExecute();
+                    ((Command)this.deleteCommand).ChangeCanExecute();
+                    ((Command)this.newCommand).ChangeCanExecute();
+                    ((Command)this.loadCommand).ChangeCanExecute();
+                    break;
+            }
         }
 
         public async override Task InitializeAsync(object navigationData)
@@ -172,7 +196,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
         public ICommand RemoveTerminalCommand => new Command<Terminal>(async (terminal) => await this.RemoveTerminalAsync(terminal));
 
-        public ICommand SaveCommand => new Command(async () => await SaveAsync());
+        public ICommand SaveCommand => 
+            this.saveCommand ??
+            (this.saveCommand = new Command(async () => await SaveAsync(), () => !this.IsBusy));
 
         public ICommand SearchCommand => new Command(async () => await this.SearchAsync());
 
@@ -348,8 +374,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
         private async Task SaveAsync()
         {
+            bool completed = false;
             try
             {
+                this.IsBusy = true;
                 if (this.Loaded)
                     await this.neuronApplicationService.ChangeNeuronData(
                         this.neuronId,
@@ -362,15 +390,31 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
                         this.data,
                         this.Axon
                         );
+                this.messageService.ShortAlert("Neuron Saved.");
                 MessagingCenter.Send(this, MessageKeys.NeuronSaved);
-                await Task.Delay(MainViewModel.GraphWaitInterval);
-                await this.LoadAsync();
+                completed = true;                
             }
             catch (Exception ex)
             {
                 string errorBasic = "An error occured while saving NeuronId: " + this.neuronId;
                 await this.DialogService.ShowAlertAsync(errorBasic + " - " + ex.Message, "Error", "OK");
                 System.Diagnostics.Trace.WriteLine(errorBasic + Environment.NewLine + ex.ToString());
+            }
+            finally
+            {
+                await Task.Run(async () =>
+                {
+                    if (completed)
+                        await Task.Delay(MainViewModel.GraphWaitInterval);
+
+                    Device.BeginInvokeOnMainThread(async () =>
+                    {
+                        if (completed)
+                            await this.LoadAsync();
+
+                        this.IsBusy = false;
+                    });                    
+                });                
             }
         }
 
@@ -448,13 +492,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             {
                 if (this.loaded != value)
                 {
-                    loaded = value;
-                    ((Command)this.addExistingPresynapticCommand).ChangeCanExecute();
-                    ((Command)this.addTerminalCommand).ChangeCanExecute();
-                    ((Command)this.createNewPresynapticCommand).ChangeCanExecute();
-                    ((Command)this.deleteCommand).ChangeCanExecute();
-                    ((Command)this.newCommand).ChangeCanExecute();
-                    ((Command)this.loadCommand).ChangeCanExecute();
+                    this.loaded = value;
                     this.OnPropertyChanged(nameof(Loaded));
                 }
             }

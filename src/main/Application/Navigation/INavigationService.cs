@@ -26,12 +26,28 @@
 
 using System.Threading.Tasks;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Dialog
+namespace works.ei8.Cortex.Diary.Application.Navigation
 {
-    public interface IDialogService
+    public interface INavigationService<TViewModelBase>
     {
-        Task ShowAlertAsync(string message, string title, string buttonLabel);
+		TViewModelBase PreviousPageViewModel { get; }
 
-        Task<bool> ShowConfirmAsync(string message, string title);
+        bool CanNavigateBack { get; }
+
+        Task InitializeAsync();
+
+        Task ModalNavigateToAsync<TViewModel>(object parameter) where TViewModel : TViewModelBase;
+
+        Task ModalNavigateFrom();
+
+        Task NavigateToAsync<TViewModel>() where TViewModel : TViewModelBase;
+
+        Task NavigateToAsync<TViewModel>(object parameter) where TViewModel : TViewModelBase;
+
+        Task RemoveLastFromBackStackAsync();
+
+        Task RemoveBackStackAsync();
+
+        Task NavigateBack();
     }
 }

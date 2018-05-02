@@ -25,6 +25,8 @@
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
 using System.Threading.Tasks;
+using works.ei8.Cortex.Diary.Application.Dialog;
+using works.ei8.Cortex.Diary.Application.Navigation;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Dialog;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Navigation;
@@ -35,7 +37,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base
     public abstract class ViewModelBase : BindableObject
     {
         protected readonly IDialogService DialogService;
-        protected readonly INavigationService NavigationService;
+        protected readonly INavigationService<ViewModelBase> NavigationService;
         protected readonly ISettingsService settingsService;
 
         private bool _isBusy;
@@ -54,7 +56,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base
             }
         }
 
-        public ViewModelBase(ISettingsService settingsService, IDialogService dialogService, INavigationService navigationService)
+        public ViewModelBase(ISettingsService settingsService, IDialogService dialogService, INavigationService<ViewModelBase> navigationService)
         {
             this.DialogService = dialogService;
             this.NavigationService = navigationService;

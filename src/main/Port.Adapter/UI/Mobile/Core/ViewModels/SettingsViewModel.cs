@@ -29,7 +29,9 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using works.ei8.Cortex.Diary.Application.Dialog;
 using works.ei8.Cortex.Diary.Application.Locations;
+using works.ei8.Cortex.Diary.Application.Navigation;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Models.User;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Dialog;
@@ -60,7 +62,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private readonly ILocationService _locationService;
 
         public SettingsViewModel(ISettingsService settingsService, IDialogService dialogService, 
-            INavigationService navigationService, ILocationService locationService)
+            INavigationService<ViewModelBase> navigationService, ILocationService locationService)
             : base(settingsService, dialogService, navigationService) 
         {
             _settingsService = settingsService;

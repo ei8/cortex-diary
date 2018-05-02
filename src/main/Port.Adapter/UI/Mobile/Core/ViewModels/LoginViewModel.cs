@@ -39,6 +39,8 @@ using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Dialog;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Navigation;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Models.Navigation;
+using works.ei8.Cortex.Diary.Application.Dialog;
+using works.ei8.Cortex.Diary.Application.Navigation;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 {
@@ -58,7 +60,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         public LoginViewModel(
             ISettingsService settingsService, 
             IDialogService dialogService, 
-            INavigationService navigationService,
+            INavigationService<ViewModelBase> navigationService,
             IOpenUrlService openUrlService,
             IIdentityService identityService
             )

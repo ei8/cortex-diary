@@ -31,8 +31,11 @@ using System.Reflection;
 using System.Threading.Tasks;
 using TinyIoC;
 using works.ei8.Cortex.Diary.Application.Dependency;
+using works.ei8.Cortex.Diary.Application.Dialog;
 using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.Locations;
+using works.ei8.Cortex.Diary.Application.Message;
+using works.ei8.Cortex.Diary.Application.Navigation;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
@@ -40,6 +43,7 @@ using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Locations;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Message;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.OpenUrl;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvider;
@@ -71,7 +75,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base
         {
             if (initNavigation)
             {
-                var navigationService = ViewModelLocator._container.Resolve<INavigationService>();
+                var navigationService = ViewModelLocator._container.Resolve<INavigationService<ViewModelBase>>();
                 await navigationService.InitializeAsync();
             }
 
@@ -132,24 +136,23 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base
 
             _container.Register<IDependencyService, Services.Dependency.DependencyService>();
             _container.Register<ISettingsService, SettingsService>().AsSingleton();
-
-            // View models
-            _container.Register<LoginViewModel>();
-            _container.Register<MainViewModel>();
-            _container.Register<SettingsViewModel>();
-
-            // Services
-            _container.Register<INavigationService, NavigationService>().AsSingleton();
+            _container.Register<INavigationService<ViewModelBase>, NavigationService>().AsSingleton();
             _container.Register<IDialogService, DialogService>();
             _container.Register<IOpenUrlService, OpenUrlService>();
             _container.Register<IIdentityService, IdentityService>();
             _container.Register<IRequestProvider, RequestProvider>();
             _container.Register<ILocationService, LocationService>().AsSingleton();
+            _container.Register<IMessageService, MessageService>().AsSingleton();
 
             _container.Register<INeuronClient, NeuronClient>().AsSingleton();
             _container.Register<INeuronApplicationService, NeuronApplicationService>().AsSingleton();
             _container.Register<INeuronGraphQueryClient, NeuronGraphQueryClient>().AsSingleton();
             _container.Register<INeuronQueryService, NeuronQueryService>().AsSingleton();
+
+            // View models
+            _container.Register<LoginViewModel>();
+            _container.Register<MainViewModel>();
+            _container.Register<SettingsViewModel>();
         }
 
         private static void OnAutoWireViewModelChanged(BindableObject bindable, object oldValue, object newValue)

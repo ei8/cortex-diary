@@ -25,7 +25,7 @@
                 <StackLayout VerticalOptions="FillAndExpand" 
                      HorizontalOptions="FillAndExpand"
                      Orientation="Horizontal">
-                    <Label VerticalOptions="Center" HorizontalOptions="FillAndExpand" Text="Axon" FontSize="Medium" />
+                    <Label VerticalOptions="Center" HorizontalOptions="FillAndExpand" Text="Definitions" FontSize="Medium" />
                     <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="addTerminalButton" FontSize="Small" Text="Link" HeightRequest="40" WidthRequest="60" Command="{Binding AddTerminalCommand}"/>
                 </StackLayout>
                 <ListView x:Name="axonView" ItemsSource="{Binding Axon}">
@@ -99,12 +99,12 @@
                      HorizontalOptions="FillAndExpand"
                      Orientation="Horizontal">
                     <Label Margin="10, 0" HorizontalOptions="FillAndExpand" FontSize="Small" Text="{Binding AxonPreview}" />
-                    <Button x:Name="showAxonButton" VerticalOptions="Start" HorizontalOptions="End" FontSize="Small" Text="Axon" HeightRequest="40" WidthRequest="70" IsEnabled="True" Command="{Binding ShowAxonCommand}"/>
+                    <Button x:Name="showAxonButton" VerticalOptions="Start" HorizontalOptions="End" FontSize="Small" Text="Defs" HeightRequest="40" WidthRequest="70" IsEnabled="True" Command="{Binding ShowAxonCommand}"/>
                 </StackLayout>
                 <StackLayout VerticalOptions="FillAndExpand" 
                      HorizontalOptions="FillAndExpand"
                      Orientation="Horizontal">
-                    <Label VerticalOptions="Center" HorizontalOptions="FillAndExpand" Text="Dendrites" FontSize="Medium" />
+                    <Label VerticalOptions="Center" HorizontalOptions="FillAndExpand" Text="Extensions" FontSize="Medium" />
                     <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="createNewPresynapticButton" FontSize="Small" Text="New" HeightRequest="40" WidthRequest="70" Command="{Binding CreateNewPresynapticCommand}"/>
                     <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="addExistingPresynapticButton" FontSize="Small" Text="Link" HeightRequest="40" WidthRequest="70" Command="{Binding AddExistingPresynapticCommand}"/>
                 </StackLayout>

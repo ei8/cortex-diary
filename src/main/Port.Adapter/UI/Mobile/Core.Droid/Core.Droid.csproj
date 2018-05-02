@@ -80,6 +80,7 @@
     <Compile Include="Activities\SplashActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\MessageServiceImplementation.cs" />
     <Compile Include="Services\SettingsServiceImplementation.cs" />
   </ItemGroup>
   <ItemGroup>

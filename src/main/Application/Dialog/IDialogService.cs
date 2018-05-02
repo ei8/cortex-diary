@@ -25,30 +25,13 @@
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Navigation
+namespace works.ei8.Cortex.Diary.Application.Dialog
 {
-    public interface INavigationService
+    public interface IDialogService
     {
-		ViewModelBase PreviousPageViewModel { get; }
+        Task ShowAlertAsync(string message, string title, string buttonLabel);
 
-        bool CanNavigateBack { get; }
-
-        Task InitializeAsync();
-
-        Task ModalNavigateToAsync<TViewModel>(object parameter) where TViewModel : ViewModelBase;
-
-        Task ModalNavigateFrom();
-
-        Task NavigateToAsync<TViewModel>() where TViewModel : ViewModelBase;
-
-        Task NavigateToAsync<TViewModel>(object parameter) where TViewModel : ViewModelBase;
-
-        Task RemoveLastFromBackStackAsync();
-
-        Task RemoveBackStackAsync();
-
-        Task NavigateBack();
+        Task<bool> ShowConfirmAsync(string message, string title);
     }
 }

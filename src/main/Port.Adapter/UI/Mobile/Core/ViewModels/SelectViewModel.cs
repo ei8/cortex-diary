@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using works.ei8.Cortex.Diary.Application.Dialog;
+using works.ei8.Cortex.Diary.Application.Navigation;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
@@ -25,7 +27,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         public SelectViewModel(
             ISettingsService settingsService, 
             IDialogService dialogService, 
-            INavigationService navigationService, 
+            INavigationService<ViewModelBase> navigationService, 
             INeuronQueryService neuronQueryService
             ) : base(settingsService, dialogService, navigationService)
         {

@@ -28,6 +28,7 @@ using System;
 using System.Globalization;
 using System.Reflection;
 using System.Threading.Tasks;
+using works.ei8.Cortex.Diary.Application.Navigation;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base;
@@ -36,7 +37,7 @@ using Xamarin.Forms;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Navigation
 {
-    public class NavigationService : INavigationService
+    public class NavigationService : INavigationService<ViewModelBase>
     {
         private readonly ISettingsService _settingsService;
 
