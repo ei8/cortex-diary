@@ -47,7 +47,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        // TODO: This should be configurable and should be more than the cortex graph update interval
+        // TODO: This should be configurable and should be more than the cortex graph update interval, transfer to settings
         private const int GraphWaitInterval = 3000;
         private const string DialogTitle = "d#";
 
@@ -62,13 +62,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private ObservableCollection<Dendrite> dendrites;
         private bool loaded;
         private bool isAxonVisible;
-        private ICommand addExistingPresynapticCommand;
+        private ICommand addExistingDendriteCommand;
         private ICommand addTerminalCommand;
-        private ICommand createNewPresynapticCommand;
+        private ICommand createNewDendriteCommand;
         private ICommand deleteCommand;
         private ICommand newCommand;
         private ICommand loadCommand;
         private ICommand saveCommand;
+        private ICommand removeDendriteCommand;
+        private ICommand removeTerminalCommand;
 
         public MainViewModel(
             ISettingsService settingsService, 
@@ -105,12 +107,18 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             switch (e.PropertyName)
             {
                 case nameof(IsBusy):
+                    ((Command)this.addExistingDendriteCommand).ChangeCanExecute();
+                    ((Command)this.addTerminalCommand).ChangeCanExecute();
+                    ((Command)this.createNewDendriteCommand).ChangeCanExecute();
+                    ((Command)this.deleteCommand).ChangeCanExecute();
                     ((Command)this.saveCommand).ChangeCanExecute();
+                    (this.removeDendriteCommand as Command)?.ChangeCanExecute();
+                    (this.removeTerminalCommand as Command)?.ChangeCanExecute();
                     break;
                 case nameof(Loaded):
-                    ((Command)this.addExistingPresynapticCommand).ChangeCanExecute();
+                    ((Command)this.addExistingDendriteCommand).ChangeCanExecute();
                     ((Command)this.addTerminalCommand).ChangeCanExecute();
-                    ((Command)this.createNewPresynapticCommand).ChangeCanExecute();
+                    ((Command)this.createNewDendriteCommand).ChangeCanExecute();
                     ((Command)this.deleteCommand).ChangeCanExecute();
                     ((Command)this.newCommand).ChangeCanExecute();
                     ((Command)this.loadCommand).ChangeCanExecute();
@@ -120,7 +128,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
         public async override Task InitializeAsync(object navigationData)
         {
-            IsBusy = true;
+            this.IsBusy = true;
 
             if (navigationData is TabParameter)
             {
@@ -133,13 +141,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
                 this.NeuronId = ((NeuronParameter)navigationData).NeuronId;
                 await this.LoadAsync();
             }
-            else if (navigationData is CreateNewPresynapticParameter)
+            else if (navigationData is CreateNewDendriteParameter)
             {
                 this.Initialize();
                 this.Axon.Add(new Terminal {
                     Id = Guid.NewGuid().ToString(),
-                    TargetId = ((CreateNewPresynapticParameter)navigationData).PostsynapticId, 
-                    TargetData = ((CreateNewPresynapticParameter)navigationData).PostsynapticData
+                    TargetId = ((CreateNewDendriteParameter)navigationData).TargetId, 
+                    TargetData = ((CreateNewDendriteParameter)navigationData).TargetData
                 }
                 );
             }
@@ -170,41 +178,45 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             await NavigationService.NavigateToAsync<SettingsViewModel>();
         }
 
-        public ICommand AddExistingPresynapticCommand => 
-            this.addExistingPresynapticCommand ??
-            (this.addExistingPresynapticCommand = new Command(async () => await this.AddExistingPresynapticAsync(), () => this.Loaded));
+        public ICommand AddExistingDendriteCommand => 
+            this.addExistingDendriteCommand ??
+            (this.addExistingDendriteCommand = new Command(async () => await this.AddExistingDendriteAsync(), () => this.Loaded && !this.IsBusy));
 
         public ICommand AddTerminalCommand =>
             this.addTerminalCommand ??
-            (this.addTerminalCommand = new Command(async () => await this.AddTerminalAsync(), () => this.Loaded));
+            (this.addTerminalCommand = new Command(async () => await this.AddTerminalAsync(), () => this.Loaded && !this.IsBusy));
 
-        public ICommand CreateNewPresynapticCommand =>
-            this.createNewPresynapticCommand ??
-            (this.createNewPresynapticCommand = new Command(async () => await CreateNewPresynapticAsync(), () => this.Loaded));
+        public ICommand CreateNewDendriteCommand =>
+            this.createNewDendriteCommand ??
+            (this.createNewDendriteCommand = new Command(async () => await CreateNewDendriteAsync(), () => this.Loaded && !this.IsBusy));
 
         public ICommand DeleteCommand =>
             this.deleteCommand ??
-            (this.deleteCommand = new Command(async () => await DeleteAsync(), () => this.Loaded));
+            (this.deleteCommand = new Command(Delete, () => this.Loaded && !this.IsBusy));
 
         public ICommand DetailsCommand => new Command(async () => await DetailsAsync());
 
         public ICommand LoadCommand => 
             this.loadCommand ??
             (this.loadCommand = new Command(async () => await LoadAsync(), () => this.Loaded));
-            
-        public ICommand RemoveDendriteCommand => new Command<Dendrite>(async (dendrite) => await this.RemoveDendriteAsync(dendrite));
+        
+        public ICommand RemoveDendriteCommand => 
+            this.removeDendriteCommand ??
+            (this.removeDendriteCommand = new Command<Dendrite>(d => this.RemoveDendriteAsync(d), d => !this.IsBusy));
 
-        public ICommand RemoveTerminalCommand => new Command<Terminal>(async (terminal) => await this.RemoveTerminalAsync(terminal));
+        public ICommand RemoveTerminalCommand => 
+            this.removeTerminalCommand ??
+            (this.removeTerminalCommand = new Command<Terminal>(t => this.RemoveTerminalAsync(t), t => !this.IsBusy));
 
         public ICommand SaveCommand => 
             this.saveCommand ??
-            (this.saveCommand = new Command(async () => await SaveAsync(), () => !this.IsBusy));
+            (this.saveCommand = new Command(Save, () => !this.IsBusy));
 
         public ICommand SearchCommand => new Command(async () => await this.SearchAsync());
 
         public ICommand SettingsCommand => new Command(async () => await SettingsAsync());
 
-        public ICommand ShowAxonCommand => new Command(async () => await this.ShowAxonAsync());
+        public ICommand ShowAxonCommand => new Command(this.ShowAxon);
 
         public ICommand NewCommand => 
             this.newCommand ?? 
@@ -216,14 +228,30 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
         public ICommand LogoutCommand => new Command(async () => await LogoutAsync());
 
-        private async Task AddExistingPresynapticAsync()
+        private async Task AddExistingDendriteAsync()
         {
-            await this.NavigationService.NavigateToAsync<SelectViewModel>(new SelectionParameter { CompletionProcessor = this.AddExistingPresynapticCallback });
+            await this.NavigationService.NavigateToAsync<SelectViewModel>(new SelectionParameter { CompletionProcessor = this.AddExistingDendriteCallback });
         }
 
-        private async Task AddExistingPresynapticCallback(Neuron selectedNeuron)
+        private void AddExistingDendriteCallback(Neuron selectedNeuron)
         {
-            await MainViewModel.AddTerminalToNeuron(this.neuronId, selectedNeuron.Id, this.neuronApplicationService, selectedNeuron.Version, this.LoadAsync, this.DialogService);
+            MainViewModel.ExecuteCommand(
+                this,
+                async () =>
+                {
+                    await neuronApplicationService.AddTerminalsToNeuron(
+                        selectedNeuron.Id,
+                        new Terminal[] { new Terminal { TargetId = this.neuronId } },
+                        selectedNeuron.Version
+                    );
+                    return true;
+                },
+                async () => await this.LoadAsync(),
+                this.messageService,
+                this.DialogService,
+                "Extension added.",
+                $"An error occurred while adding an Extension to Neuron '{this.Data}'"
+                );
         }
 
         private async Task AddTerminalAsync()
@@ -231,54 +259,60 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             await this.NavigationService.NavigateToAsync<SelectViewModel>(new SelectionParameter { CompletionProcessor = this.AddTerminalCallback});
         }
 
-        private async Task AddTerminalCallback(Neuron selectedNeuron)
+        private void AddTerminalCallback(Neuron selectedNeuron)
         {
-            await MainViewModel.AddTerminalToNeuron(selectedNeuron.Id, this.neuronId, this.neuronApplicationService, this.version, this.LoadAsync, this.DialogService);
-        }
-
-        private async static Task AddTerminalToNeuron(string targetId, string neuronId, INeuronApplicationService neuronApplicationService, int version, Func<Task> reload, IDialogService dialogService)
-        {
-            try
-            {
-                await neuronApplicationService.AddTerminalsToNeuron(
-                    neuronId,
-                    new Terminal[] { new Terminal { TargetId = targetId } },
-                    version
+            MainViewModel.ExecuteCommand(
+                this,
+                async () =>
+                {
+                    await this.neuronApplicationService.AddTerminalsToNeuron(
+                        this.neuronId,
+                        new Terminal[] { new Terminal { TargetId = selectedNeuron.Id } },
+                        this.version
                     );
-                await Task.Delay(MainViewModel.GraphWaitInterval);
-                await reload();
-            }
-            catch (Exception ex)
-            {
-                string errorBasic = "An error occured while adding Terminal: " + targetId;
-                await dialogService.ShowAlertAsync(errorBasic + " - " + ex.Message, "Error", "OK");
-                System.Diagnostics.Trace.WriteLine(errorBasic + Environment.NewLine + ex.ToString());
-            }
+                    return true;
+                },
+                async () => await this.LoadAsync(),
+                this.messageService,
+                this.DialogService,
+                "Definition added.",
+                $"An error occurred while adding a Definition to Neuron '{this.Data}'"
+                );
         }
 
-        private async Task CreateNewPresynapticAsync()
+        private async Task CreateNewDendriteAsync()
         {
             await NavigationService.NavigateToAsync<MainViewModel>(
-                new CreateNewPresynapticParameter {
-                    PostsynapticId = this.neuronId, PostsynapticData = this.data
+                new CreateNewDendriteParameter {
+                    TargetId = this.neuronId,
+                    TargetData = this.data
                 }
                 );
         }
 
-        private async Task DeleteAsync()
+        private void Delete()
         {
-            try
-            {
-                if (
-                    await this.DialogService.ShowConfirmAsync(
-                    "Are you sure you wish to delete this Neuron?",
-                    MainViewModel.DialogTitle)
-                    )
+            MainViewModel.ExecuteCommand(
+                this,
+                async () =>
                 {
-                    await this.neuronApplicationService.DeactivateNeuron(
-                        this.neuronId,
-                        this.version
-                        );
+                    var result = false;
+                    if (
+                        await this.DialogService.ShowConfirmAsync(
+                        "Are you sure you wish to delete this Neuron?",
+                        MainViewModel.DialogTitle)
+                    )
+                    {
+                        await this.neuronApplicationService.DeactivateNeuron(
+                            this.neuronId,
+                            this.version
+                            );
+                        result = true;
+                    }
+                    return result;
+                },
+                async () =>
+                {
                     if (this.NavigationService.CanNavigateBack)
                         await this.NavigationService.NavigateBack();
                     else
@@ -286,14 +320,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
                         await this.NewAsync();
                         await this.NavigationService.RemoveLastFromBackStackAsync();
                     }
-                }
-            }
-            catch (Exception ex)
-            {
-                string errorBasic = "An error occured while deleting NeuronId: " + this.neuronId;
-                await this.DialogService.ShowAlertAsync(errorBasic + " - " + ex.Message, "Error", "OK");
-                System.Diagnostics.Trace.WriteLine(errorBasic + Environment.NewLine + ex.ToString());
-            }
+                },
+                this.messageService,
+                this.DialogService,
+                "Neuron deleted.",
+                $"An error occurred while deleting Neuron '{this.Data}'"
+                );
         }
 
         private async Task DetailsAsync()
@@ -321,7 +353,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             }
             catch (Exception ex)
             {
-                string errorBasic = "An error occured while loading NeuronId: " + this.neuronId;
+                string errorBasic = $"An error occurred while loading Neuron '{this.Data}'";
                 await this.DialogService.ShowAlertAsync(errorBasic + " - " + ex.Message, "Error", "OK");
                 System.Diagnostics.Trace.WriteLine(errorBasic + Environment.NewLine + ex.ToString());
             }
@@ -342,85 +374,111 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             await NavigationService.NavigateToAsync<MainViewModel>();            
         }
 
-        private async Task RemoveDendriteAsync(Dendrite dendrite)
+        private void RemoveDendriteAsync(Dendrite dendrite)
         {
-            await MainViewModel.RemoveTerminalFromNeuron(this.neuronId, this.data, dendrite.Id, this.neuronApplicationService, dendrite.Version, this.LoadAsync, this.DialogService);
+            MainViewModel.ExecuteCommand(
+                this,
+                async () =>
+                {
+                    await neuronApplicationService.RemoveTerminalsFromNeuron(
+                        dendrite.Id,
+                        new Terminal[] { new Terminal { TargetId = this.neuronId } },
+                        dendrite.Version
+                        );
+                    return true;
+                },
+                async () => await this.LoadAsync(),
+                this.messageService,
+                this.DialogService,
+                "Extension removed.",
+                $"An error occurred while removing Extension '{dendrite.Data}'"
+            );
         }
 
-        private async Task RemoveTerminalAsync(Terminal terminal)
+        private void RemoveTerminalAsync(Terminal terminal)
         {
-            await MainViewModel.RemoveTerminalFromNeuron(terminal.TargetId, terminal.TargetData, this.neuronId, this.neuronApplicationService, this.version, this.LoadAsync, this.DialogService);
-        }
-
-        private async static Task RemoveTerminalFromNeuron(string targetId, string targetData, string neuronId, INeuronApplicationService neuronApplicationService, int version, Func<Task> reload, IDialogService dialogService)
-        {
-            try
-            {
-                await neuronApplicationService.RemoveTerminalsFromNeuron(
-                        neuronId,
-                        new Terminal[] { new Terminal { TargetId = targetId } },
+            MainViewModel.ExecuteCommand(
+                this,
+                async () =>
+                {
+                    await neuronApplicationService.RemoveTerminalsFromNeuron(
+                        this.neuronId,
+                        new Terminal[] { new Terminal { TargetId = terminal.TargetId } },
                         version
                         );
-                await Task.Delay(MainViewModel.GraphWaitInterval);
-                await reload();
-            }
-            catch (Exception ex)
-            {
-                string errorBasic = "An error occured while removing terminal: " + targetData;
-                await dialogService.ShowAlertAsync(errorBasic + " - " + ex.Message, "Error", "OK");
-                System.Diagnostics.Trace.WriteLine(errorBasic + Environment.NewLine + ex.ToString());
-            }
+                    return true;
+                },
+                async () => await this.LoadAsync(),
+                this.messageService,
+                this.DialogService,
+                "Definition removed.",
+                $"An error occurred while removing Definition '{terminal.TargetData}'"
+            );
         }
 
-        private async Task SaveAsync()
+        private void Save()
         {
-            bool completed = false;
-            try
-            {
-                this.IsBusy = true;
-                if (this.Loaded)
-                    await this.neuronApplicationService.ChangeNeuronData(
-                        this.neuronId,
-                        this.data,
-                        this.version
-                        );
-                else
-                    await this.neuronApplicationService.CreateNeuron(
-                        this.neuronId,
-                        this.data,
-                        this.Axon
-                        );
-                this.messageService.ShortAlert("Neuron Saved.");
-                MessagingCenter.Send(this, MessageKeys.NeuronSaved);
-                completed = true;                
-            }
-            catch (Exception ex)
-            {
-                string errorBasic = "An error occured while saving NeuronId: " + this.neuronId;
-                await this.DialogService.ShowAlertAsync(errorBasic + " - " + ex.Message, "Error", "OK");
-                System.Diagnostics.Trace.WriteLine(errorBasic + Environment.NewLine + ex.ToString());
-            }
-            finally
-            {
-                await Task.Run(async () =>
+            MainViewModel.ExecuteCommand(
+                this,
+                async () =>
                 {
+                    if (this.Loaded)
+                        await this.neuronApplicationService.ChangeNeuronData(
+                            this.neuronId,
+                            this.data,
+                            this.version
+                            );
+                    else
+                        await this.neuronApplicationService.CreateNeuron(
+                            this.neuronId,
+                            this.data,
+                            this.Axon
+                            );
+                    MessagingCenter.Send(this, MessageKeys.NeuronSaved);
+                    return true;
+                },
+                async () => await this.LoadAsync(),
+                this.messageService,
+                this.DialogService,
+                "Neuron saved.",
+                $"An error occurred while saving Neuron '{this.Data}'"
+                );
+        }
+
+        private static void ExecuteCommand(ViewModelBase viewModel, Func<Task<bool>> execute, Func<Task> onCompletionAfterWait, 
+            IMessageService messageService, IDialogService dialogService, string successMessage, string errorMessage)
+        {
+            Task.Run(async () =>
+            {
+                bool completed = false;
+                try
+                {
+                    Device.BeginInvokeOnMainThread(() => viewModel.IsBusy = true);
+                    completed = await execute();
                     if (completed)
-                        await Task.Delay(MainViewModel.GraphWaitInterval);
+                        Device.BeginInvokeOnMainThread(() => messageService.ShortAlert(successMessage));
+                }
+                catch (Exception ex)
+                {
+                    await dialogService.ShowAlertAsync($"{errorMessage} - {ex.Message}", "Error", "OK");
+                    System.Diagnostics.Trace.WriteLine(errorMessage + Environment.NewLine + ex.ToString());
+                }
+                finally
+                {
+                    if (completed) await Task.Delay(MainViewModel.GraphWaitInterval);
 
                     Device.BeginInvokeOnMainThread(async () =>
                     {
-                        if (completed)
-                            await this.LoadAsync();
-
-                        this.IsBusy = false;
-                    });                    
-                });                
-            }
+                        if (completed) await onCompletionAfterWait();
+                        viewModel.IsBusy = false;
+                    });
+                }
+            });
         }
 
         private async Task SearchAsync()
         {
-            await this.NavigationService.NavigateToAsync<SelectViewModel>(new SelectionParameter { CompletionProcessor = this.SearchCallback });
+            await this.NavigationService.NavigateToAsync<SelectViewModel>(new SelectionParameter { CompletionProcessorAsync = this.SearchCallback });
         }
 
         private async Task SearchCallback(Neuron selectedNeuron)
@@ -430,7 +488,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
                 await this.NavigationService.RemoveLastFromBackStackAsync();            
         }
 
-        private async Task ShowAxonAsync()
+        private void ShowAxon()
         {
             this.IsAxonVisible = !this.IsAxonVisible;
         }

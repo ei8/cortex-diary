@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using works.ei8.Cortex.Diary.Application.Dialog;
@@ -10,8 +8,6 @@ using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Models.Navigation;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Dialog;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Navigation;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base;
 using Xamarin.Forms;
 
@@ -22,7 +18,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private INeuronQueryService neuronQueryService;
         private string searchValue;
         private ObservableCollection<Neuron> searchResults;
-        private Func<Neuron, Task> completionProcessor;
+        private SelectionParameter selectionParameter;
 
         public SelectViewModel(
             ISettingsService settingsService, 
@@ -39,10 +35,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         {
             this.IsBusy = true;
 
-            if (navigationData is SelectionParameter)
-            {
-                this.completionProcessor = ((SelectionParameter)navigationData).CompletionProcessor;
-            }
+            this.selectionParameter = navigationData as SelectionParameter;
 
             await base.InitializeAsync(navigationData);
 
@@ -76,7 +69,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private async Task SelectNeuronAsync(Neuron neuron)
         {
             await this.NavigationService.NavigateBack();
-            await this.completionProcessor(neuron);
+            if (this.selectionParameter != null)
+            {
+                if (this.selectionParameter.CompletionProcessor != null)
+                    this.selectionParameter.CompletionProcessor(neuron);
+                else if (this.selectionParameter.CompletionProcessorAsync != null)
+                    await this.selectionParameter.CompletionProcessorAsync(neuron);
+            }
         }
 
         private async Task SearchAsync()
@@ -87,7 +86,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             }
             catch (Exception ex)
             {
-                string errorBasic = "An error occured while searching: " + this.searchValue;
+                string errorBasic = "An error occurred while searching: " + this.searchValue;
                 await this.DialogService.ShowAlertAsync(errorBasic + " - " + ex.Message, "Error", "OK");
                 System.Diagnostics.Trace.WriteLine(errorBasic + Environment.NewLine + ex.ToString());
             }

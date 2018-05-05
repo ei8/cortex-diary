@@ -22,7 +22,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             .WaitAndRetryAsync(
                 3,
                 attempt => TimeSpan.FromMilliseconds(100 * Math.Pow(2, attempt)),
-                (ex, _) => NeuronClient.logger.Error(ex, "Error occured while communicating with Neurul Cortex. " + ex.InnerException?.Message)
+                (ex, _) => NeuronClient.logger.Error(ex, "Error occurred while communicating with Neurul Cortex. " + ex.InnerException?.Message)
             );
 
         private static string neuronsPathTemplate = "cortex/neurons/{0}";
@@ -106,11 +106,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             
             StringContent content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
 
-            await httpClient.PutAsync(
+            var response = await httpClient.PutAsync(
                 string.Format(NeuronClient.neuronsPathTemplate, id),
                 content,
                 token
                 );
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task ChangeNeuronData(string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken)) =>

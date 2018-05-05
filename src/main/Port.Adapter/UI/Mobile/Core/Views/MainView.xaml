@@ -105,8 +105,8 @@
                      HorizontalOptions="FillAndExpand"
                      Orientation="Horizontal">
                     <Label VerticalOptions="Center" HorizontalOptions="FillAndExpand" Text="Extensions" FontSize="Medium" />
-                    <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="createNewPresynapticButton" FontSize="Small" Text="New" HeightRequest="40" WidthRequest="70" Command="{Binding CreateNewPresynapticCommand}"/>
-                    <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="addExistingPresynapticButton" FontSize="Small" Text="Link" HeightRequest="40" WidthRequest="70" Command="{Binding AddExistingPresynapticCommand}"/>
+                    <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="createNewDendriteButton" FontSize="Small" Text="New" HeightRequest="40" WidthRequest="70" Command="{Binding CreateNewDendriteCommand}"/>
+                    <Button VerticalOptions="Center" HorizontalOptions="End" x:Name="addExistingDendriteButton" FontSize="Small" Text="Link" HeightRequest="40" WidthRequest="70" Command="{Binding AddExistingDendriteCommand}"/>
                 </StackLayout>
                 <ListView x:Name="dendritesView" ItemsSource="{Binding Dendrites}">
                     <ListView.ItemTemplate>

@@ -25,7 +25,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             .WaitAndRetryAsync(
                 3,
                 attempt => TimeSpan.FromMilliseconds(100 * Math.Pow(2, attempt)),
-                (ex, _) => NeuronGraphQueryClient.logger.Error(ex, "Error occured while querying Neurul Cortex. " + ex.InnerException?.Message)
+                (ex, _) => NeuronGraphQueryClient.logger.Error(ex, "Error occurred while querying Neurul Cortex. " + ex.InnerException?.Message)
             );
 
         private static readonly string neuronsQueryPathTemplate = "cortex/graph/neurons/{0}";
