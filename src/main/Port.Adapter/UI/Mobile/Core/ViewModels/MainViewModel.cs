@@ -60,6 +60,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private string timestamp;
         private ObservableCollection<Terminal> axon;
         private ObservableCollection<Dendrite> dendrites;
+        private string errors;
         private bool loaded;
         private bool isAxonVisible;
         private ICommand addExistingDendriteCommand;
@@ -88,6 +89,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
             this.Loaded = false;
             this.IsAxonVisible = false;
+            this.errors = string.Empty;
 
             this.PropertyChanged += this.MainViewModel_PropertyChanged;
 
@@ -169,6 +171,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             this.Timestamp = string.Empty;
             this.Axon = new ObservableCollection<Terminal>();
             this.Dendrites = new ObservableCollection<Dendrite>();
+            this.Errors = string.Empty;
 
             this.Loaded = false;
         }
@@ -348,6 +351,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
                 this.Version = neuron.Version;
                 this.Axon = new ObservableCollection<Terminal>(neuron.Axon);
                 this.Dendrites = new ObservableCollection<Dendrite>(neuron.Dendrites);
+                this.Errors = string.Join(Environment.NewLine, neuron.Errors);
 
                 this.Loaded = true;
             }
@@ -543,6 +547,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             }
         }
 
+        public bool HasErrors => this.errors.Length > 0;
+
         public bool Loaded
         {
             get => this.loaded;
@@ -604,6 +610,17 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             {
                 dendrites = value;
                 this.OnPropertyChanged(nameof(Dendrites));
+            }
+        }
+
+        public string Errors
+        {
+            get => this.errors;
+            set
+            {
+                this.errors = value;
+                this.OnPropertyChanged(nameof(Errors));
+                this.OnPropertyChanged(nameof(HasErrors));
             }
         }
     }

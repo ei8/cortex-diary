@@ -19,5 +19,7 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
 
         // Parents (to inner/lower cortex layers)
         public IList<Terminal> Axon { get; set; }
+
+        public IList<string> Errors { get; set; }
     }
 }

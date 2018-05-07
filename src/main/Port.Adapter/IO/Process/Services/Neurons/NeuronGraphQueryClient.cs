@@ -75,7 +75,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                     }
                     );
             result.Axon = tlist.ToArray();
-
+            var elist = new List<string>();
+            foreach (JToken to in JsonHelper.GetRequiredChildren(jd, "Errors"))
+                elist.Add(to.Value<string>());
+            result.Errors = elist.ToArray();
+            
             // dendrites
             response = await httpClient.GetAsync(
                 string.Format(NeuronGraphQueryClient.dendritesQueryPathTemplate, id)

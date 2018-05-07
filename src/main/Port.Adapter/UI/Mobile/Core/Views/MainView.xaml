@@ -128,6 +128,14 @@
                         EventArgsConverter="{StaticResource ItemTappedEventArgsConverter}" />
                     </ListView.Behaviors>
                 </ListView>
+                <StackLayout
+                     HorizontalOptions="FillAndExpand"
+                     Orientation="Vertical"
+                     IsVisible="{Binding HasErrors}" 
+                     BackgroundColor="LightPink">
+                    <Label Margin="10, 3" VerticalOptions="Center" HorizontalOptions="FillAndExpand" Text="Errors" FontSize="Medium" TextColor="Red" />
+                    <Label Margin="20, 1" HorizontalOptions="FillAndExpand" FontSize="Small" Text="{Binding Errors}" />
+                </StackLayout>
             </StackLayout>
         </ContentPage>
     </MasterDetailPage.Detail>
