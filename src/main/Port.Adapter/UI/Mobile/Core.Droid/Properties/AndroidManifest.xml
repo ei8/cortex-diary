@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="0.2.4" package="works.ei8.Dasz" android:installLocation="internalOnly" android:versionCode="6">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="0.2.5" package="works.ei8.Dasz" android:installLocation="internalOnly" android:versionCode="7">
 	<uses-sdk android:minSdkVersion="15" />
 	<application android:label="d#"></application>
 </manifest>

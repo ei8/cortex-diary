@@ -65,6 +65,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 Timestamp = JsonHelper.GetRequiredValue<string>(jd, "Timestamp"),
             };
 
+            // axon
             var tlist = new List<Terminal>();
             foreach (JToken to in JsonHelper.GetRequiredChildren(jd, "Terminals"))
                 tlist.Add(
@@ -75,31 +76,25 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                     }
                     );
             result.Axon = tlist.ToArray();
+
+            // dendrites
+            var dlist = new List<Dendrite>();
+            foreach (JToken to in JsonHelper.GetRequiredChildren(jd, "Dendrites"))
+                dlist.Add(
+                        new Dendrite(
+                            JsonHelper.GetRequiredValue<string>(to, "Id"),
+                            JsonHelper.GetRequiredValue<string>(to, "Data"),
+                            JsonHelper.GetRequiredValue<int>(to, "Version")
+                        )
+            );
+            result.Dendrites = dlist.ToArray();
+
+            // errors
             var elist = new List<string>();
             foreach (JToken to in JsonHelper.GetRequiredChildren(jd, "Errors"))
                 elist.Add(to.Value<string>());
             result.Errors = elist.ToArray();
             
-            // dendrites
-            response = await httpClient.GetAsync(
-                string.Format(NeuronGraphQueryClient.dendritesQueryPathTemplate, id)
-                ).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-            content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var jds = NeuronGraphQueryClient.ParseArray(content);
-            var plist = new List<Dendrite>();
-            foreach(JObject jo in jds)
-            {
-                plist.Add(
-                        new Dendrite(
-                            JsonHelper.GetRequiredValue<string>(jo, "Id"),
-                            JsonHelper.GetRequiredValue<string>(jo, "Data"),
-                            JsonHelper.GetRequiredValue<int>(jo, "Version")
-                        )
-                    );
-            }
-            result.Dendrites = plist;
-
             return result;
         }
 
