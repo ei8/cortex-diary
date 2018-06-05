@@ -53,7 +53,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         private bool _isLogin;
         private string _authUrl;
 
-        private ISettingsService _settingsService;
         private IOpenUrlService _openUrlService;
         private IIdentityService _identityService;
 
@@ -66,7 +65,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             )
             : base(settingsService, dialogService, navigationService)
         {
-            _settingsService = settingsService;
             _openUrlService = openUrlService;
             _identityService = identityService;
 
@@ -222,33 +220,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
         {
             IsBusy = true;
 
+            // TODO: necessary?
+            await Task.Delay(500);
+
+            LoginUrl = _identityService.CreateAuthorizationRequest();
+
             IsValid = true;
-            bool isValid = true; // TODO: Validate();
-            bool isAuthenticated = false;
-
-            if (isValid)
-            {
-                try
-                {
-                    LoginUrl = _identityService.CreateAuthorizationRequest();
-                    isAuthenticated = true;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"[SignIn] Error signing in: {ex}");
-                }
-            }
-            else
-            {
-                IsValid = false;
-            }
-
-            if (isAuthenticated)
-            {
-                await NavigationService.NavigateToAsync<MainViewModel>();
-                await NavigationService.RemoveLastFromBackStackAsync();
-            }
-            
             IsLogin = true;
             IsBusy = false;
         }
@@ -260,7 +237,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
         private void Logout()
         {
-            var authIdToken = _settingsService.AuthIdToken;
+            var authIdToken = settingsService.AuthIdToken;
             var logoutRequest = _identityService.CreateLogoutRequest(authIdToken);
 
             if (!string.IsNullOrEmpty(logoutRequest))
@@ -269,24 +246,26 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
                 LoginUrl = logoutRequest;
             }
 
-            if (_settingsService.UseMocks)
+            if (this.settingsService.UseMocks)
             {
-                _settingsService.AuthAccessToken = string.Empty;
-                _settingsService.AuthIdToken = string.Empty;
+                this.settingsService.AuthAccessToken = string.Empty;
+                this.settingsService.AuthIdToken = string.Empty;
             }
 
-            _settingsService.UseFakeLocation = false;
+            this.settingsService.UseFakeLocation = false;
         }
 
         private async Task NavigateAsync(string url)
         {
             var unescapedUrl = System.Net.WebUtility.UrlDecode(url);
 
-            if (unescapedUrl.Equals(this.settingsService.LogoutCallback))
+            if (unescapedUrl.StartsWith(this.settingsService.LogoutCallback))
             {
-                _settingsService.AuthAccessToken = string.Empty;
-                _settingsService.AuthIdToken = string.Empty;
-                IsLogin = false;
+                await this._identityService.RevokeAccessTokenAsync(this.settingsService.AuthAccessToken);
+                this.settingsService.AuthAccessToken = string.Empty;
+                this.settingsService.AuthIdToken = string.Empty;
+                IsLogin = false;                
+
                 LoginUrl = _identityService.CreateAuthorizationRequest();
             }
             else if (unescapedUrl.Contains(this.settingsService.IdentityCallback))
@@ -299,8 +278,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
                     if (!string.IsNullOrWhiteSpace(accessToken))
                     {
-                        _settingsService.AuthAccessToken = accessToken;
-                        _settingsService.AuthIdToken = authResponse.IdentityToken;
+                        this.settingsService.AuthAccessToken = accessToken;
+                        this.settingsService.AuthIdToken = authResponse.IdentityToken;
                         await NavigationService.NavigateToAsync<MainViewModel>();
                         await NavigationService.RemoveLastFromBackStackAsync();
                     }
@@ -313,6 +292,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             await NavigationService.NavigateToAsync<SettingsViewModel>();
         }
 
+        // TODO: Necessary?
         private bool Validate()
         {
             bool isValidUser = ValidateUserName();
@@ -339,7 +319,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
         public void InvalidateMock()
         {
-            IsMock = _settingsService.UseMocks;
+            IsMock = this.settingsService.UseMocks;
         }
     }
 }

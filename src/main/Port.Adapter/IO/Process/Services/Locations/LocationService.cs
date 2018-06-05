@@ -43,15 +43,17 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Locations
             _requestProvider = requestProvider;
         }
 
-        public async Task UpdateUserLocation(Location newLocReq, string token)
+        public /* async */ Task UpdateUserLocation(Location newLocReq, string token)
         {
-            UriBuilder builder = new UriBuilder(this.settingsService.LocationEndpoint);
+            //UriBuilder builder = new UriBuilder(this.settingsService.LocationEndpoint);
 
-            builder.Path = "api/v1/locations";
+            //builder.Path = "api/v1/locations";
 
-            string uri = builder.ToString();
+            //string uri = builder.ToString();
 
-            await _requestProvider.PostAsync(uri, newLocReq, token);
+            //await _requestProvider.PostAsync(uri, newLocReq, token);
+
+            return Task.CompletedTask;
         }
     }
 }

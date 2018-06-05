@@ -140,7 +140,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels.Base
             _container.Register<IDialogService, DialogService>();
             _container.Register<IOpenUrlService, OpenUrlService>();
             _container.Register<IIdentityService, IdentityService>();
-            _container.Register<IRequestProvider, RequestProvider>();
+            _container.Register<IRequestProvider, RequestProvider>().AsSingleton();
             _container.Register<ILocationService, LocationService>().AsSingleton();
             _container.Register<IMessageService, MessageService>().AsSingleton();
 

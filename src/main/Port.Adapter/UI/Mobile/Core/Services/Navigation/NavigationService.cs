@@ -56,12 +56,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Navigation
             _settingsService = settingsService;
         }
 
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             if (string.IsNullOrEmpty(_settingsService.AuthAccessToken))
-                return NavigateToAsync<LoginViewModel>();
+                await NavigateToAsync<LoginViewModel>();
             else
-                return NavigateToAsync<MainViewModel>();
+                await NavigateToAsync<MainViewModel>();
         }
 
         public Task NavigateToAsync<TViewModel>() where TViewModel : ViewModelBase
@@ -107,21 +107,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Services.Navigation
         {
             Page page = CreatePage(viewModelType, parameter);
 
-            if (page is LoginView)
+            var navigationPage = Xamarin.Forms.Application.Current.MainPage as CustomNavigationView;
+            if (navigationPage != null)
             {
-                Xamarin.Forms.Application.Current.MainPage = new CustomNavigationView(page);
+                await navigationPage.PushAsync(page);
             }
             else
             {
-                var navigationPage = Xamarin.Forms.Application.Current.MainPage as CustomNavigationView;
-                if (navigationPage != null)
-                {
-                    await navigationPage.PushAsync(page);
-                }
-                else
-                {
-                    Xamarin.Forms.Application.Current.MainPage = new CustomNavigationView(page);
-                }
+                Xamarin.Forms.Application.Current.MainPage = new CustomNavigationView(page);
             }
 
             await (page.BindingContext as ViewModelBase).InitializeAsync(parameter);

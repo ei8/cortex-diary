@@ -47,6 +47,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.Views
             this.Content = null;
             this.Content = content;
 
+            // TODO: requires try catch?
 			var vm = BindingContext as LoginViewModel;
             if (vm != null)
             {

@@ -1,13 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NLog;
-using org.neurul.Common;
+﻿using NLog;
 using Polly;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
@@ -18,6 +12,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 {
     public class NeuronGraphQueryClient : INeuronGraphQueryClient
     {
+        private readonly IRequestProvider requestProvider;
         private readonly ISettingsService settingsService;
 
         private static Policy exponentialRetryPolicy = Policy
@@ -33,8 +28,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         private static readonly string dendritesQueryPathTemplate = NeuronGraphQueryClient.neuronsQueryPathTemplate + "/dendrites";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public NeuronGraphQueryClient(ISettingsService settingsService)
+        public NeuronGraphQueryClient(IRequestProvider requestProvider, ISettingsService settingsService)
         {
+            this.requestProvider = requestProvider;
             this.settingsService = settingsService;
         }
 
@@ -44,66 +40,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
         private async Task<Neuron> GetNeuronInternal(string id, CancellationToken token = default(CancellationToken))
         {
-            var httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
-            };
-            
-            // neuron
-            var response = await httpClient.GetAsync(
-                string.Format(NeuronGraphQueryClient.neuronsQueryPathTemplate, id)
-                ).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            JObject jd = JsonHelper.JObjectParse(content);
-            Neuron result = new Neuron()
-            {
-                Id = JsonHelper.GetRequiredValue<string>(jd, "Id"),
-                Data = JsonHelper.GetRequiredValue<string>(jd, "Data"),
-                Version = JsonHelper.GetRequiredValue<int>(jd, "Version"),
-                Timestamp = JsonHelper.GetRequiredValue<string>(jd, "Timestamp"),
-            };
-
-            // axon
-            var tlist = new List<Terminal>();
-            foreach (JToken to in JsonHelper.GetRequiredChildren(jd, "Terminals"))
-                tlist.Add(
-                    new Terminal()
-                    {
-                        TargetId = JsonHelper.GetRequiredValue<string>(to, "TargetId"),
-                        TargetData = JsonHelper.GetRequiredValue<string>(to, "TargetData")
-                    }
-                    );
-            result.Axon = tlist.ToArray();
-
-            // dendrites
-            var dlist = new List<Dendrite>();
-            foreach (JToken to in JsonHelper.GetRequiredChildren(jd, "Dendrites"))
-                dlist.Add(
-                        new Dendrite(
-                            JsonHelper.GetRequiredValue<string>(to, "Id"),
-                            JsonHelper.GetRequiredValue<string>(to, "Data"),
-                            JsonHelper.GetRequiredValue<int>(to, "Version")
-                        )
-            );
-            result.Dendrites = dlist.ToArray();
-
-            // errors
-            var elist = new List<string>();
-            foreach (JToken to in JsonHelper.GetRequiredChildren(jd, "Errors"))
-                elist.Add(to.Value<string>());
-            result.Errors = elist.ToArray();
-            
-            return result;
-        }
-
-        // TODO: transfer to common
-        private static JObject[] ParseArray(string value)
-        {
-            JArray a = JArray.Parse(value);
-
-            return a.Children<JObject>().ToArray();
+            return await this.requestProvider.GetAsync<Neuron>(
+                this.settingsService.AvatarEndpoint + string.Format(NeuronGraphQueryClient.neuronsQueryPathTemplate, id),
+                this.settingsService.AuthAccessToken
+                );
         }
 
         public async Task<IEnumerable<Neuron>> GetAllNeuronsByDataSubstring(string dataSubstring, CancellationToken token = default(CancellationToken)) =>
@@ -112,45 +52,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
         private async Task<IEnumerable<Neuron>> GetAllNeuronsByDataSubstringInternal(string dataSubstring, CancellationToken token = default(CancellationToken))
         {
-            var httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
-            };
-
-            // neuron
-            var response = await httpClient.GetAsync(
-                string.Format(NeuronGraphQueryClient.neuronsQuerySearchPathTemplate, dataSubstring)
-                ).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            var jds = NeuronGraphQueryClient.ParseArray(content);
-            var nlist = new List<Neuron>();
-            foreach (JObject jo in jds)
-            {
-                var n = new Neuron()
-                {
-                    Id = JsonHelper.GetRequiredValue<string>(jo, "Id"),
-                    Data = JsonHelper.GetRequiredValue<string>(jo, "Data"),
-                    Version = JsonHelper.GetRequiredValue<int>(jo, "Version"),
-                    Timestamp = JsonHelper.GetRequiredValue<string>(jo, "Timestamp"),
-                };
-
-                var tlist = new List<Terminal>();
-                foreach (JToken to in JsonHelper.GetRequiredChildren(jo, "Terminals"))
-                    tlist.Add(
-                        new Terminal()
-                        {
-                            TargetId = JsonHelper.GetRequiredValue<string>(to, "TargetId"),
-                            TargetData = JsonHelper.GetRequiredValue<string>(to, "TargetData")
-                        }
-                        );
-                n.Axon = tlist.ToArray();
-
-                nlist.Add(n);
-            }
-
-            return nlist;
+            return await this.requestProvider.GetAsync<Neuron[]>(
+                this.settingsService.AvatarEndpoint + string.Format(NeuronGraphQueryClient.neuronsQuerySearchPathTemplate, dataSubstring),
+                this.settingsService.AuthAccessToken
+                );
         }
     }
 }

@@ -138,15 +138,22 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
             await httpClient.DeleteAsync(uri);
         }
 
+        private HttpClient httpClient;
+
         private HttpClient CreateHttpClient(string token = "")
         {
-            var httpClient = new HttpClient();
+            if (this.httpClient == null)
+                this.httpClient = new HttpClient();
+            else
+                this.httpClient.DefaultRequestHeaders.Clear();
+
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             if (!string.IsNullOrEmpty(token))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
+
             return httpClient;
         }
 

@@ -24,6 +24,7 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
+using System;
 using works.ei8.Cortex.Diary.Application.Dependency;
 using works.ei8.Cortex.Diary.Application.Settings;
 
@@ -64,7 +65,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdIdentityCallback = "identity_callback";
         private const string IdLogoutCallback = "logout_callback";
         private const string IdAvatarEndpoint = "avatar_endpoint";
-        
+        private const string IdRevocationEndpoint = "revocation_endpoint";
+
         private readonly string AccessTokenDefault = string.Empty;
         private readonly string IdTokenDefault = string.Empty;
         private readonly bool UseMocksDefault = true;
@@ -72,7 +74,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly double FakeLatitudeDefault = 47.604610d;
         private readonly double FakeLongitudeDefault = -122.315752d;
         private readonly bool AllowGpsLocationDefault = false;
-        private readonly string BaseEndpointDefault = "http://localhost";
         private readonly string ClientIdDefault = "xamarin";
         private readonly string ClientSecretDefault = "secret";
         private readonly string AuthTokenDefault = "INSERT AUTHENTICATION TOKEN";
@@ -83,7 +84,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string LogoutEndpointDefault = string.Empty;
         private readonly string IdentityCallbackDefault = string.Empty;
         private readonly string LogoutCallbackDefault = string.Empty;
-        private readonly string BrainEndpointDefault = string.Empty;
+        private readonly string AvatarEndpointDefault = string.Empty;
+        private readonly string RevocationEndpointDefault = string.Empty;
         
         #endregion
 
@@ -127,16 +129,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         {
             get => AppSettings.GetValueOrDefault(IdAllowGpsLocation, AllowGpsLocationDefault);
             set => AppSettings.AddOrUpdateValue(IdAllowGpsLocation, value);
-        }
-
-        public string BaseEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdBaseEndpoint, BaseEndpointDefault);
-            set
-            {
-                AppSettings.AddOrUpdateValue(IdBaseEndpoint, value);
-                this.UpdateEndpoint(value);
-            }
         }
 
         public string ClientId
@@ -201,19 +193,35 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
 
         public string AvatarEndpoint
         {
-            get => AppSettings.GetValueOrDefault(IdAvatarEndpoint, BrainEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdAvatarEndpoint, value);
+            get => AppSettings.GetValueOrDefault(IdAvatarEndpoint, AvatarEndpointDefault);
+            set
+            {
+                AppSettings.AddOrUpdateValue(IdAvatarEndpoint, value);
+                this.UpdateEndpoint(value);
+            }
         }
 
-        private void UpdateEndpoint(string baseEndpoint)
+        public string RevocationEndpoint
         {
-            RegisterWebsite = $"{baseEndpoint}:5105/Account/Register";
-            IdentityEndpoint = $"{baseEndpoint}:5105/connect/authorize";
-            TokenEndpoint = $"{baseEndpoint}:5105/connect/token";
-            LogoutEndpoint = $"{baseEndpoint}:5105/connect/endsession";
-            IdentityCallback = $"{baseEndpoint}:5105/xamarincallback";
-            LogoutCallback = $"{baseEndpoint}:5105/Account/Redirecting";
-            LocationEndpoint = $"{baseEndpoint}:5109";
+            get => AppSettings.GetValueOrDefault(IdRevocationEndpoint, RevocationEndpointDefault);
+            set => AppSettings.AddOrUpdateValue(IdRevocationEndpoint, value);
+        }
+
+        private void UpdateEndpoint(string avatarEndpoint)
+        {
+            // http://0.0.0.0/example/
+            if (Uri.TryCreate(avatarEndpoint, UriKind.Absolute, out Uri avatarUri))
+            {
+                var authority = avatarUri.GetLeftPart(UriPartial.Authority);
+                RegisterWebsite = $"{authority}/Account/Register";
+                IdentityEndpoint = $"{authority}/connect/authorize";
+                TokenEndpoint = $"{authority}/connect/token";
+                LogoutEndpoint = $"{authority}/connect/endsession";
+                IdentityCallback = $"{authority}/cortex/diary/callback";
+                LogoutCallback = $"{authority}/Account/Redirecting";
+                RevocationEndpoint = $"{authority}/connect/revocation";
+                // DEL: LocationEndpoint = $"{authority}:5109";
+            }
         }
 
         public void Clear()

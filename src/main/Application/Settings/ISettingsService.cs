@@ -36,7 +36,6 @@ namespace works.ei8.Cortex.Diary.Application.Settings
         string Longitude { get; set; }
         bool AllowGpsLocation { get; set; }
 
-        string BaseEndpoint { get; set; }
         string ClientId { get; }
         string ClientSecret { get; }
         string AuthToken { get; set; }
@@ -48,6 +47,7 @@ namespace works.ei8.Cortex.Diary.Application.Settings
         string IdentityCallback { get; set; }
         string LogoutCallback { get; set; }
         string AvatarEndpoint { get; set; }
+        string RevocationEndpoint { get; set; }
         
         void Clear();
     }

@@ -36,6 +36,7 @@ using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Helpers;
+using IdentityModel.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {
@@ -61,15 +62,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             dic.Add("client_id", this.settingsService.ClientId);
             dic.Add("client_secret", this.settingsService.ClientSecret);
             dic.Add("response_type", "code id_token");
-            dic.Add("scope", "openid profile basket orders locations marketing offline_access");
+            dic.Add("scope", "openid profile offline_access api1"); 
             dic.Add("redirect_uri", this.settingsService.IdentityCallback);
             dic.Add("nonce", Guid.NewGuid().ToString("N"));
             dic.Add("code_challenge", CreateCodeChallenge());
             dic.Add("code_challenge_method", "S256");
 
-            // Add CSRF token to protect against cross-site request forgery attacks.
-            var currentCSRFToken = Guid.NewGuid().ToString("N");
-            dic.Add("state", currentCSRFToken);
+            // TODO: Add CSRF token to protect against cross-site request forgery attacks.
+            //var currentCSRFToken = Guid.NewGuid().ToString("N");
+            //dic.Add("state", currentCSRFToken);
 
             var authorizeUri = authorizeRequest.Create(dic);
             return authorizeUri;
@@ -82,17 +83,26 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
                 return string.Empty;
             }
 
-            return string.Format("{0}?id_token_hint={1}&post_logout_redirect_uri={2}",
-                this.settingsService.LogoutEndpoint,
-                token,
-                this.settingsService.LogoutCallback);
+            return $"{this.settingsService.LogoutEndpoint}?id_token_hint={token}&post_logout_redirect_uri={WebUtility.UrlEncode(this.settingsService.LogoutCallback)}";
         }
 
         public async Task<UserToken> GetTokenAsync(string code)
         {
             string data = string.Format("grant_type=authorization_code&code={0}&redirect_uri={1}&code_verifier={2}", code, WebUtility.UrlEncode(this.settingsService.IdentityCallback), _codeVerifier);
             var token = await _requestProvider.PostAsync<UserToken>(this.settingsService.TokenEndpoint, data, this.settingsService.ClientId, this.settingsService.ClientSecret);
+
             return token;
+        }
+
+        public async Task RevokeAccessTokenAsync(string token)
+        {
+            var revocationClient = new TokenRevocationClient(
+                    this.settingsService.RevocationEndpoint,
+                    this.settingsService.ClientId,
+                    this.settingsService.ClientSecret);
+
+            // TODO: report revocation result
+            await revocationClient.RevokeAccessTokenAsync(this.settingsService.AuthAccessToken);
         }
 
         private string CreateCodeChallenge()

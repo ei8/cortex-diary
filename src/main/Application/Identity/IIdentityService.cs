@@ -33,5 +33,6 @@ namespace works.ei8.Cortex.Diary.Application.Identity
         string CreateAuthorizationRequest();
         string CreateLogoutRequest(string token);
         Task<UserToken> GetTokenAsync(string code);
+        Task RevokeAccessTokenAsync(string token);
     }
 }

@@ -69,7 +69,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             _locationService = locationService;
 
             _useAzureServices = !_settingsService.UseMocks;
-            _endpoint = settingsService.BaseEndpoint;
             this.avatarEndpoint = settingsService.AvatarEndpoint;
             _latitude = double.Parse(_settingsService.Latitude, CultureInfo.CurrentCulture);
             _longitude = double.Parse(_settingsService.Longitude, CultureInfo.CurrentCulture);
@@ -180,12 +179,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             set
             {
                 _endpoint = value;
-
-                if (!string.IsNullOrEmpty(_endpoint))
-                {
-                    UpdateEndpoint();
-                }
-
                 this.OnPropertyChanged(nameof(Endpoint));
             }
         }
@@ -199,7 +192,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
 
                 if (!string.IsNullOrEmpty(avatarEndpoint))
                 {
-                    UpdateBrainEndpoint();
+                    UpdateAvatarEndpoint();
                 }
 
                 this.OnPropertyChanged(nameof(BrainEndpoint));
@@ -368,13 +361,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
             _settingsService.UseMocks = !_useAzureServices;
         }
 
-        private void UpdateEndpoint()
-        {
-            // Update remote endpoint (save to local storage)
-            this.settingsService.BaseEndpoint = _endpoint;
-        }
-
-        private void UpdateBrainEndpoint()
+        private void UpdateAvatarEndpoint()
         {
             this.settingsService.AvatarEndpoint = this.avatarEndpoint;
         }

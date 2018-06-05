@@ -349,7 +349,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Mobile.Core.ViewModels
                 this.Data = neuron.Data;
                 this.Timestamp = neuron.Timestamp;
                 this.Version = neuron.Version;
-                this.Axon = new ObservableCollection<Terminal>(neuron.Axon);
+                this.Axon = new ObservableCollection<Terminal>(neuron.Terminals);
                 this.Dendrites = new ObservableCollection<Dendrite>(neuron.Dendrites);
                 this.Errors = string.Join(Environment.NewLine, neuron.Errors);
 
