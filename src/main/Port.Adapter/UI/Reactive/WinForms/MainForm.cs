@@ -1,9 +1,9 @@
 ﻿using NLog;
-using Spiker.Neurons;
-using Spiker.ResultMarkers;
-using Spiker.SpikeResults;
-using Spiker.Spikes;
-using Spiker.Views;
+// DEL: using Spiker.Neurons;
+//using Spiker.ResultMarkers;
+//using Spiker.SpikeResults;
+//using Spiker.Spikes;
+//using Spiker.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;

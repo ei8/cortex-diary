@@ -1,4 +1,4 @@
-﻿using Spiker.Neurons;
+﻿// DEL: using Spiker.Neurons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +15,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.WinForms
             return Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[/+=]", "").Substring(0, 5);
         }
 
-        public static Neuron GetNeuronByData(string value, NeuronCollection neurons)
-        {
-            return neurons.First(n => n.Data == value);
-        }
+        // TODO: public static Neuron GetNeuronByData(string value, NeuronCollection neurons)
+        //{
+        //    return neurons.First(n => n.Data == value);
+        //}
 
-        internal static bool IsSelectionNeuron(ISelectionService selectionService)
-        {
-            return (selectionService.SelectedObjects.FirstOrDefault() as Neuron) != null;
-        }
+        //internal static bool IsSelectionNeuron(ISelectionService selectionService)
+        //{
+        //    return (selectionService.SelectedObjects.FirstOrDefault() as Neuron) != null;
+        //}
     }
 }

@@ -1,4 +1,4 @@
-﻿using Spiker.SpikeResults;
+﻿// TODO: using Spiker.SpikeResults;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,12 +15,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.WinForms
     public partial class LogsForm : DockContent
     {
         private TextChangedTimer textChangedTimer;
-        public LogsForm(ISpikeResultsService resultsService)
+        public LogsForm(/* ISpikeResultsService resultsService */)
         {
             InitializeComponent();
             this.textChangedTimer = new TextChangedTimer();
             this.textChangedTimer.Idled += this.TextChangedTimer_Idled;
-            resultsService.Cleared += this.ResultsService_Cleared;
+            // DEL: resultsService.Cleared += this.ResultsService_Cleared;
         }
 
         private void ResultsService_Cleared(object sender, EventArgs e)

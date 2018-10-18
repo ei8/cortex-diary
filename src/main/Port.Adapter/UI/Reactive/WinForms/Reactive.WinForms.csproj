@@ -107,6 +107,12 @@
     <Compile Include="ICortexGraphClient.cs" />
     <Compile Include="ISettingsService.cs" />
     <Compile Include="JsonHelper.cs" />
+    <Compile Include="Neurons\FiredEventArgs.cs" />
+    <Compile Include="Neurons\FireInfo.cs" />
+    <Compile Include="Neurons\NeuronWinForms.cs" />
+    <Compile Include="Neurons\Terminal.cs" />
+    <Compile Include="Neurons\TriggeredEventArgs.cs" />
+    <Compile Include="Neurons\TriggerInfo.cs" />
     <Compile Include="PropertyGridForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -246,6 +252,11 @@
   <ItemGroup>
     <None Include="Assets\positive.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\ViewModels\Reactive.ViewModels.csproj">
+      <Project>{8b187cd8-457c-4792-a211-81561a083743}</Project>
+      <Name>Reactive.ViewModels</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
