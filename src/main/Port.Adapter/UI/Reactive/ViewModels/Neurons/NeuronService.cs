@@ -8,10 +8,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.ViewModels.Neurons
 {
     public class NeuronService : INeuronService
     {
-        public void Reload(SourceCache<NeuronDto, int> cache, NeuronDto neuronDto)
+        public void Add(SourceCache<NeuronDto, int> cache, NeuronDto neuronDto)
+        {
+            // TODO: Update data source
+            cache.AddOrUpdate(neuronDto);
+        }
+
+        public void Reload(SourceCache<NeuronDto, int> cache, NeuronDto neuronDto = null)
         {
             IEnumerable<NeuronDto> children = null;
-            if (!cache.Items.Any(i => i.ParentId == neuronDto.Id))
+            if (neuronDto == null || !cache.Items.Any(i => i.ParentId == neuronDto.Id))
             {
                 children = NeuronService.CreateChildren(neuronDto);
             }
@@ -54,22 +60,27 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.ViewModels.Neurons
         }
 
         // DEL: create dummy data
-        internal static IEnumerable<NeuronDto> CreateChildren(NeuronDto parentDto = null)
+        private static IEnumerable<NeuronDto> CreateChildren(NeuronDto parentDto = null)
         {
             var random = new Random();
 
             return Enumerable.Range(1, random.Next(1, 10))
                 .Select(i =>
                 {
-                return new NeuronDto(
-                    Guid.NewGuid().GetHashCode(),
-                    parentDto == null ? 0 : parentDto.Id,
-                    Guid.NewGuid().ToString(),
-                    parentDto == null ? string.Empty : parentDto.ParentNeuronId,
-                    $"Neuron {i}",
-                    i % 2 == 0 ? ChildType.Postsynaptic : ChildType.Presynaptic
-                    );
+                    return NeuronService.CreateNeuron($"Neuron {i}", i % 2 == 0 ? ChildType.Postsynaptic : ChildType.Presynaptic, parentDto);
                 });
+        }
+
+        internal static NeuronDto CreateNeuron(string name, ChildType type, NeuronDto parentDto = null)
+        {
+            return new NeuronDto(
+                                Guid.NewGuid().GetHashCode(),
+                                parentDto == null ? 0 : parentDto.Id,
+                                Guid.NewGuid().ToString(),
+                                parentDto == null ? string.Empty : parentDto.NeuronId,
+                                name,
+                                type
+                                );
         }
 
         public void ChangeData(SourceCache<NeuronDto, int> cache, NeuronDto dto, string value)
@@ -86,6 +97,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.ViewModels.Neurons
                 );
 
             cache.AddOrUpdate(newValue);
+        }
+
+        public void Delete(SourceCache<NeuronDto, int> cache, NeuronDto dto)
+        {
+            // TODO: update data source
+            // TODO: warn user
+            // TODO: if dto has a parent then user is deleting a relationship only, otherwise a neuron is being deleted
+            cache.Remove(dto);
         }
     }
 }

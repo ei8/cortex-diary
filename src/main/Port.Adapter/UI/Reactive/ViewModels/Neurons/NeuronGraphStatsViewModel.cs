@@ -34,7 +34,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.ViewModels.Neurons
               {
                   var y = x as NeuronGraphPaneViewModel;
                   if (y != null)
-                      this.FileSize = y.NeuronViewModels.Count;
+                      // TODO: get count of all sub-children
+                      this.FileSize = y.Children.Count;
                   else
                       this.FileSize = 0;
               });

@@ -15,6 +15,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.ViewModels.Neurons
 
     public enum ChildType
     {
+        NotSet,
         Postsynaptic,
         Presynaptic
     }

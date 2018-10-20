@@ -28,11 +28,8 @@ using DynamicData.Kernel;
 using ReactiveUI;
 using Splat;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -62,6 +59,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.ViewModels.Neurons
             this.ReloadCommand = ReactiveCommand.Create(() => this.neuronService.Reload(cache, this.Dto));
             this.AddPostsynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPostsynaptic(cache, this.Dto));
             this.AddPresynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPresynaptic(cache, this.Dto));
+            this.DeleteCommand = ReactiveCommand.Create(() => this.neuronService.Delete(cache, this.Dto));
 
             this.neuronService = neuronService ?? Locator.Current.GetService<INeuronService>();
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>();
@@ -162,6 +160,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.ViewModels.Neurons
         public ReactiveCommand AddPostsynapticCommand { get; }
 
         public ReactiveCommand AddPresynapticCommand { get; }
+
+        public ReactiveCommand DeleteCommand { get; }
 
         public abstract object ViewModel { get; }
 

@@ -30,14 +30,16 @@
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <Button Name="Load" Width="80">Load</Button>
-            <TextBox Grid.Column="1" Name="Avatar" HorizontalAlignment="Stretch" MinWidth="200"></TextBox>
+            <Button Name="Reload" Width="80">Reload</Button>
+            <TextBox Name="Avatar" Grid.Column="1" HorizontalAlignment="Stretch" MinWidth="200"></TextBox>
+            <Button Name="Add" Grid.Column="2" Width="65">Add</Button>
         </Grid>
         <TreeView Name="FamilyTree" 
-                  ItemsSource="{Binding NeuronViewModels}"
+                  ItemsSource="{Binding Children}"
                   Grid.Row="1">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
@@ -117,9 +119,9 @@
                                 </Canvas>
                             </Button>
 
-                            <!--TODO:<Button Visibility="{Binding  IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            <Button Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     ToolTip="Sack"
-                                    Command="{Binding SackCommand}">
+                                    Command="{Binding DeleteCommand}">
 
                                 <Viewbox Width="24" Height="24" Margin="2 0 0 0">
                                     <Canvas Width="24" Height="24">
@@ -127,7 +129,7 @@
                 				        Fill="{StaticResource AccentSelectedColorBrush}"/>
                                     </Canvas>
                                 </Viewbox>
-                            </Button>-->
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </HierarchicalDataTemplate>
@@ -197,6 +199,18 @@
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{DynamicResource AccentSelectedColorBrush}" />
                                 </Canvas>
+                            </Button>
+
+                            <Button Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    ToolTip="Sack"
+                                    Command="{Binding DeleteCommand}">
+
+                                <Viewbox Width="24" Height="24" Margin="2 0 0 0">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+                				        Fill="{StaticResource AccentSelectedColorBrush}"/>
+                                    </Canvas>
+                                </Viewbox>
                             </Button>
                         </StackPanel>
                     </Grid>

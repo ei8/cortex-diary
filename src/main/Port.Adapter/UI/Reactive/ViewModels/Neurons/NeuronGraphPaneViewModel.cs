@@ -12,7 +12,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.ViewModels.Neurons
     public class NeuronGraphPaneViewModel : PaneViewModel, IDisposable
     {
         private readonly INeuronService neuronService;
-        private readonly ReadOnlyObservableCollection<NeuronViewModelBase> neuronViewModels;
+        private readonly ReadOnlyObservableCollection<NeuronViewModelBase> children;
         private readonly IDisposable cleanUp;
 
         public NeuronGraphPaneViewModel(INeuronService neuronService = null)
@@ -21,19 +21,29 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Reactive.ViewModels.Neurons
 
             bool DefaultPredicate(Node<NeuronDto, int> node) => node.IsRoot;
             var cache = new SourceCache<NeuronDto, int>(x => x.Id);
-            cache.AddOrUpdate(NeuronService.CreateChildren());
+
+            this.AddCommand = ReactiveCommand.Create(() =>
+                this.neuronService.Add(cache, NeuronService.CreateNeuron("Root Neuron", ChildType.NotSet)));
+            this.ReloadCommand = ReactiveCommand.Create(() => {
+                cache.Clear();
+                this.neuronService.Reload(cache);
+                });
             this.cleanUp = cache.AsObservableCache().Connect()
                 .TransformToTree(child => child.ParentId, Observable.Return((Func<Node<NeuronDto, int>, bool>)DefaultPredicate))
                 .Transform(e =>
                     e.Item.Type == ChildType.Postsynaptic ?
                     (NeuronViewModelBase)(new PostsynapticViewModel(e.Item.Data, e, cache)) :
                     (NeuronViewModelBase)(new PresynapticViewModel(e.Item.Data, e, cache)))
-                .Bind(out this.neuronViewModels)
+                .Bind(out this.children)
                 .DisposeMany()
-                .Subscribe();            
+                .Subscribe();
         }
 
-        public ReadOnlyObservableCollection<NeuronViewModelBase> NeuronViewModels => this.neuronViewModels;
+        public ReactiveCommand AddCommand { get; } 
+
+        public ReadOnlyObservableCollection<NeuronViewModelBase> Children => this.children;
+
+        public ReactiveCommand ReloadCommand { get; }
 
         public void Dispose()
         {
