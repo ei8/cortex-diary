@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="WinForms1\**" />
+    <Compile Remove="WinForms\**" />
+    <EmbeddedResource Remove="WinForms1\**" />
+    <EmbeddedResource Remove="WinForms\**" />
+    <None Remove="WinForms1\**" />
+    <None Remove="WinForms\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicData" Version="6.5.1.2479" />
+    <PackageReference Include="ReactiveUI" Version="8.7.2" />
+  </ItemGroup>
+
+</Project>
