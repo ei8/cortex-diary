@@ -33,6 +33,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
+using works.ei8.Cortex.Diary.Application.Neurons;
+using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -46,27 +49,29 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private bool isSelected;
         private ReadOnlyObservableCollection<NeuronViewModelBase> children;
         private IExtendedSelectionService selectionService;
-        private INeuronService neuronService;
+        private readonly INeuronService neuronService;
+        private readonly INeuronQueryService neuronQueryService;
 
-        protected NeuronViewModelBase(Node<NeuronDto, int> node, SourceCache<NeuronDto, int> cache, NeuronViewModelBase parent = null, IExtendedSelectionService selectionService = null)
+        protected NeuronViewModelBase(Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronQueryService neuronQueryService = null, IExtendedSelectionService selectionService = null)
         {
             this.Id = node.Key;
             this.NeuronId = node.Item.NeuronId;
             this.Data = node.Item.Data;
             this.Parent = parent;
-            this.Dto = node.Item;
+            this.Neuron = node.Item;
 
-            this.ReloadCommand = ReactiveCommand.Create(() => this.neuronService.Reload(cache, this.Dto));
-            this.AddPostsynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPostsynaptic(cache, this.Dto));
-            this.AddPresynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPresynaptic(cache, this.Dto));
-            this.DeleteCommand = ReactiveCommand.Create(() => this.neuronService.Delete(cache, this.Dto));
+            this.ReloadCommand = ReactiveCommand.Create(async () => await this.Reload(cache));
+            this.AddPostsynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPostsynaptic(cache, this.Neuron));
+            this.AddPresynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPresynaptic(cache, this.Neuron));
+            this.DeleteCommand = ReactiveCommand.Create(() => this.neuronService.Delete(cache, this.Neuron));
 
             this.neuronService = neuronService ?? Locator.Current.GetService<INeuronService>();
+            this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>();
 
             var childrenLoader = new Lazy<IDisposable>(() => node.Children.Connect()
                 .Transform(e => 
-                    e.Item.Type == ChildType.Postsynaptic ? 
+                    e.Item.Type == RelativeType.Postsynaptic ? 
                     (NeuronViewModelBase)(new PostsynapticViewModel(e.Item.Data, e, cache, this)) : 
                     (NeuronViewModelBase)(new PresynapticViewModel(e.Item.Data, e, cache, this)))
                 .Bind(out this.children)
@@ -92,13 +97,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     if (count == 0)
                         return "0 Synapses";
                     else
-                        return $"{node.Children.Items.Count(n => n.Item.Type == ChildType.Postsynaptic)} Postsynaptic; " +
-                            $"{node.Children.Items.Count(n => n.Item.Type == ChildType.Presynaptic)} Presynaptic";
+                        return $"{node.Children.Items.Count(n => n.Item.Type == RelativeType.Postsynaptic)} Postsynaptic; " +
+                            $"{node.Children.Items.Count(n => n.Item.Type == RelativeType.Presynaptic)} Presynaptic";
                 })
                 .Subscribe(text => this.ChildrenCountText = text);
 
             var changeData = this.WhenPropertyChanged(p => p.Data, false)
-                .Subscribe(x => this.neuronService.ChangeData(cache, this.Dto, x.Value));
+                .Subscribe(x => this.neuronService.ChangeData(cache, this.Neuron, x.Value));
 
             var selector = this.WhenPropertyChanged(p => p.IsSelected)
                 .Where(p => p.Value)
@@ -114,7 +119,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             });
         }
 
-        public NeuronDto Dto { get; }
+        private async Task Reload(SourceCache<Neuron, int> cache)
+        {
+            cache.Remove(cache.Items.Where(i => i.CentralId == this.Neuron.Id));
+            var relatives = await this.neuronQueryService.GetAll(this.Neuron);
+            cache.AddOrUpdate(relatives);
+        }
+
+        public Neuron Neuron { get; }
 
         private string childrenCountText;
 

@@ -24,6 +24,8 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
+using System.Collections.Generic;
+
 namespace works.ei8.Cortex.Diary.Application.Settings
 {
     public interface ISettingsService
@@ -48,7 +50,7 @@ namespace works.ei8.Cortex.Diary.Application.Settings
         string LogoutCallback { get; set; }
         string AvatarEndpoint { get; set; }
         string RevocationEndpoint { get; set; }
-        
+
         void Clear();
     }
 }

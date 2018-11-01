@@ -8,7 +8,7 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
-    public partial class NeuronGraphView : UserControl, IViewFor<NeuronGraphPaneViewModel> // TODO: Is IViewFor unnecessary?
+    public partial class NeuronGraphView : UserControl, IViewFor<NeuronGraphPaneViewModel>
     {
         public NeuronGraphView()
         {

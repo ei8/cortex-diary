@@ -19,4 +19,9 @@
     <PackageReference Include="ReactiveUI" Version="8.7.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Application\Application.csproj" />
+    <ProjectReference Include="..\..\..\Domain.Model\Domain.Model.csproj" />
+  </ItemGroup>
+
 </Project>

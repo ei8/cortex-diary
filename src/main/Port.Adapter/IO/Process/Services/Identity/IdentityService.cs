@@ -24,19 +24,19 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
+using IdentityModel;
+using IdentityModel.Client;
+using PCLCrypto;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using IdentityModel;
-using PCLCrypto;
-using static PCLCrypto.WinRTCrypto;
-using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Identity;
+using works.ei8.Cortex.Diary.Application.RequestProvider;
+using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Helpers;
-using IdentityModel.Client;
+using static PCLCrypto.WinRTCrypto;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {

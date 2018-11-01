@@ -149,7 +149,7 @@
                             Grid.Row="0" 
                             FontSize="14"
                             Text="{Binding Data}" 
-                            FontStyle="Italic"/>
+                            TextDecorations="Underline"/>
 
                         <TextBlock
                             Grid.Row="1" Grid.Column="0"

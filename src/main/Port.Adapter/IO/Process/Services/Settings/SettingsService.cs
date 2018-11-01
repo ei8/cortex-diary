@@ -24,7 +24,9 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
+using Splat;
 using System;
+using System.Collections.Generic;
 using works.ei8.Cortex.Diary.Application.Dependency;
 using works.ei8.Cortex.Diary.Application.Settings;
 
@@ -39,9 +41,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             get { return _settingsServiceImpl; }
         }
 
-        public SettingsService(IDependencyService dependencyService)
+        public SettingsService(IDependencyService dependencyService = null)
         {
-            _settingsServiceImpl = dependencyService.Get<ISettingsServiceImplementation>();
+            _settingsServiceImpl = (dependencyService ?? Locator.Current.GetService<IDependencyService>()).Get<ISettingsServiceImplementation>();
         }
 
         #region Setting Constants
@@ -245,6 +247,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             this.AppSettings.Remove(IdentityCallback);
             this.AppSettings.Remove(IdLogoutCallback);
             this.AppSettings.Remove(IdAvatarEndpoint);
+        }
+
+        public void Update(string avatarUrl)
+        {
+            // split avatarUrl between server and avatar
+            var uri = new Uri(avatarUrl);
+            var server = uri.GetLeftPart(System.UriPartial.Authority);
         }
     }
 }

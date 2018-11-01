@@ -24,7 +24,6 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
-using System;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Locations;
 using works.ei8.Cortex.Diary.Application.RequestProvider;

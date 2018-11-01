@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
+namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
 {
     public enum NeurotransmitterEffect
     {
@@ -13,7 +13,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         Excite = 1
     }
 
-    public enum ChildType
+    public enum RelativeType
     {
         NotSet,
         Postsynaptic,

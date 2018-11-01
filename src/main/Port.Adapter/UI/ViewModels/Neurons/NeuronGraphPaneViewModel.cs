@@ -5,6 +5,8 @@ using System.Reactive.Linq;
 using DynamicData;
 using ReactiveUI;
 using Splat;
+using works.ei8.Cortex.Diary.Application.Neurons;
+using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
@@ -12,26 +14,29 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
     public class NeuronGraphPaneViewModel : PaneViewModel, IDisposable
     {
         private readonly INeuronService neuronService;
+        private readonly INeuronQueryService neuronQueryService;
         private readonly ReadOnlyObservableCollection<NeuronViewModelBase> children;
         private readonly IDisposable cleanUp;
 
-        public NeuronGraphPaneViewModel(INeuronService neuronService = null)
+        public NeuronGraphPaneViewModel(INeuronService neuronService = null, INeuronQueryService neuronQueryService = null)
         {
             this.neuronService = neuronService ?? Locator.Current.GetService<INeuronService>();
+            this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
 
-            bool DefaultPredicate(Node<NeuronDto, int> node) => node.IsRoot;
-            var cache = new SourceCache<NeuronDto, int>(x => x.Id);
+            bool DefaultPredicate(Node<Neuron, int> node) => node.IsRoot;
+            var cache = new SourceCache<Neuron, int>(x => x.Id);
 
-            this.AddCommand = ReactiveCommand.Create(() =>
-                this.neuronService.Add(cache, NeuronService.CreateNeuron("Root Neuron", ChildType.NotSet)));
-            this.ReloadCommand = ReactiveCommand.Create(() => {
+            // TODO: this.AddCommand = ReactiveCommand.Create(() =>
+            //    this.neuronService.Add(cache, NeuronService.CreateNeuron("Root Neuron", RelativeType.NotSet)));
+            this.ReloadCommand = ReactiveCommand.Create(async () => {
                 cache.Clear();
-                this.neuronService.Reload(cache);
-                });
+                var relatives = await this.neuronQueryService.GetAll();
+                cache.AddOrUpdate(relatives);
+            });
             this.cleanUp = cache.AsObservableCache().Connect()
-                .TransformToTree(child => child.ParentId, Observable.Return((Func<Node<NeuronDto, int>, bool>)DefaultPredicate))
+                .TransformToTree(child => child.CentralId, Observable.Return((Func<Node<Neuron, int>, bool>)DefaultPredicate))
                 .Transform(e =>
-                    e.Item.Type == ChildType.Postsynaptic ?
+                    e.Item.Type == RelativeType.Postsynaptic ?
                     (NeuronViewModelBase)(new PostsynapticViewModel(e.Item.Data, e, cache)) :
                     (NeuronViewModelBase)(new PresynapticViewModel(e.Item.Data, e, cache)))
                 .Bind(out this.children)

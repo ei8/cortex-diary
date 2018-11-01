@@ -1,11 +1,13 @@
 ﻿using ReactiveUI;
 using Splat;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using works.ei8.Cortex.Diary.Application.Dependency;
+using works.ei8.Cortex.Diary.Application.Neurons;
+using works.ei8.Cortex.Diary.Application.RequestProvider;
+using works.ei8.Cortex.Diary.Application.Settings;
+using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvider;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
@@ -22,7 +24,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
         private void ConfigureServices()
         {
             Locator.CurrentMutable.Register(() => new MainWindow(), typeof(IViewFor<Workspace>));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new SettingsServiceImplementation(), typeof(ISettingsServiceImplementation));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new DependencyService(), typeof(IDependencyService));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new SettingsService(), typeof(ISettingsService));            
+            Locator.CurrentMutable.RegisterLazySingleton(() => new RequestProvider(), typeof(IRequestProvider));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronGraphQueryClient(), typeof(INeuronGraphQueryClient));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronQueryService(), typeof(INeuronQueryService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronService(), typeof(INeuronService));
+            
+
             // TODO: Locator.CurrentMutable.Register(() => new NeuronGraphView(), typeof(IViewFor<NeuronGraphPaneViewModel>));
             //Locator.CurrentMutable.Register(() => new PresynapticView(), typeof(IViewFor<PresynapticViewModel>));
             //Locator.CurrentMutable.Register(() => new PostsynapticView(), typeof(IViewFor<PostsynapticViewModel>));

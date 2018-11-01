@@ -3,103 +3,65 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     public class NeuronService : INeuronService
     {
-        public void Add(SourceCache<NeuronDto, int> cache, NeuronDto neuronDto)
+        public void Add(SourceCache<Neuron, int> cache, Neuron neuron)
         {
             // TODO: Update data source
-            cache.AddOrUpdate(neuronDto);
+            cache.AddOrUpdate(neuron);
         }
 
-        public void Reload(SourceCache<NeuronDto, int> cache, NeuronDto neuronDto = null)
+        public void AddPostsynaptic(SourceCache<Neuron, int> cache, Neuron neuron)
         {
-            IEnumerable<NeuronDto> children = null;
-            if (neuronDto == null || !cache.Items.Any(i => i.ParentId == neuronDto.Id))
-            {
-                children = NeuronService.CreateChildren(neuronDto);
-            }
-            else
-            {
-                children = cache.Items.Where(i => i.ParentId == neuronDto.Id);
-                cache.Remove(children);
-                // TODO: set children to data from cortex graph
-            }
-
-            cache.AddOrUpdate(children);
-        }
-
-        public void AddPostsynaptic(SourceCache<NeuronDto, int> cache, NeuronDto neuronDto)
-        {
-            var postsyn = new NeuronDto(
-                Guid.NewGuid().GetHashCode(),
-                neuronDto.Id,
-                Guid.NewGuid().ToString(),
-                neuronDto.ParentNeuronId,
-                "New Postsynaptic",
-                ChildType.Postsynaptic
-                );
+            var postsyn = new Neuron {
+                Id = Guid.NewGuid().GetHashCode(),
+                CentralId = neuron.Id,
+                NeuronId = Guid.NewGuid().ToString(),
+                CentralNeuronId = neuron.CentralNeuronId,
+                Data = "New Postsynaptic",
+                Type = RelativeType.Postsynaptic
+                };
 
             cache.AddOrUpdate(postsyn);
         }
 
-        public void AddPresynaptic(SourceCache<NeuronDto, int> cache, NeuronDto neuronDto)
+        public void AddPresynaptic(SourceCache<Neuron, int> cache, Neuron neuron)
         {
-            var presyn = new NeuronDto(
-                Guid.NewGuid().GetHashCode(),
-                neuronDto.Id,
-                Guid.NewGuid().ToString(),
-                neuronDto.ParentNeuronId,
-                "New Presynaptic",
-                ChildType.Presynaptic
-                );
+            var presyn = new Neuron
+            {
+                Id = Guid.NewGuid().GetHashCode(),
+                CentralId = neuron.Id,
+                NeuronId = Guid.NewGuid().ToString(),
+                CentralNeuronId = neuron.CentralNeuronId,
+                Data = "New Presynaptic",
+                Type = RelativeType.Presynaptic
+            };
 
             cache.AddOrUpdate(presyn);
         }
 
-        // DEL: create dummy data
-        private static IEnumerable<NeuronDto> CreateChildren(NeuronDto parentDto = null)
-        {
-            var random = new Random();
-
-            return Enumerable.Range(1, random.Next(1, 10))
-                .Select(i =>
-                {
-                    return NeuronService.CreateNeuron($"Neuron {i}", i % 2 == 0 ? ChildType.Postsynaptic : ChildType.Presynaptic, parentDto);
-                });
-        }
-
-        internal static NeuronDto CreateNeuron(string name, ChildType type, NeuronDto parentDto = null)
-        {
-            return new NeuronDto(
-                                Guid.NewGuid().GetHashCode(),
-                                parentDto == null ? 0 : parentDto.Id,
-                                Guid.NewGuid().ToString(),
-                                parentDto == null ? string.Empty : parentDto.NeuronId,
-                                name,
-                                type
-                                );
-        }
-
-        public void ChangeData(SourceCache<NeuronDto, int> cache, NeuronDto dto, string value)
+        public void ChangeData(SourceCache<Neuron, int> cache, Neuron dto, string value)
         {
             // TODO: update data source
             // TODO: retrieve updated value and replace value in children
-            var newValue = new NeuronDto(
-                dto.Id,
-                dto.ParentId,
-                dto.NeuronId,
-                dto.ParentNeuronId,
-                value,
-                dto.Type
-                );
+            var newValue = new Neuron
+            {
+                Id = dto.Id,
+                CentralId = dto.CentralId,
+                NeuronId = dto.NeuronId,
+                CentralNeuronId = dto.CentralNeuronId,
+                Data = value,
+                Type = dto.Type
+            };
 
             cache.AddOrUpdate(newValue);
         }
 
-        public void Delete(SourceCache<NeuronDto, int> cache, NeuronDto dto)
+        public void Delete(SourceCache<Neuron, int> cache, Neuron dto)
         {
             // TODO: update data source
             // TODO: warn user
