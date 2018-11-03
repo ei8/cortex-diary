@@ -26,15 +26,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 
            this.WhenActivated(d =>
            {
-               //DEL: d(this.Bind(ViewModel, vm => vm.PresynapticName, v => v.PresynapticName.Text));
-               //d(this.BindCommand(ViewModel, vm => vm.AddPresynaptic, v => v.AddPresynaptic));
-               //d(this.Bind(ViewModel, vm => vm.PostsynapticName, v => v.PostsynapticName.Text));
-               //d(this.BindCommand(ViewModel, vm => vm.AddPostsynaptic, v => v.AddPostsynaptic));
-               //d(this.WhenAnyValue(x => x.FamilyTree.SelectedItem).BindTo(this, x => x.ViewModel.SelectedItem));
-               //d(this.BindCommand(ViewModel, vm => vm.Collapse, v => v.Collapse));
-
-               //d(this.Bind(this.ViewModel, vm => vm.ModName, v => v.ModName.Text));
-               //d(this.BindCommand(ViewModel, vm => vm.ChangeName, v => v.ChangeName));
+               d(this.Bind(this.ViewModel, vm => vm.AvatarUrl, v => v.AvatarUrl.Text));
 
                d(this.BindCommand(this.ViewModel, vm => vm.ReloadCommand, v => v.Reload));
                d(this.BindCommand(this.ViewModel, vm => vm.AddCommand, v => v.Add));

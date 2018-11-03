@@ -33,15 +33,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             this.settingsService = settingsService;
         }
 
-        public async Task AddTerminalsToNeuron(string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task AddTerminalsToNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.AddTerminalsToNeuronInternal(id, terminals, expectedVersion, token).ConfigureAwait(false));
+                async () => await this.AddTerminalsToNeuronInternal(avatarUrl, id, terminals, expectedVersion, token).ConfigureAwait(false));
 
-        public async Task AddTerminalsToNeuronInternal(string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task AddTerminalsToNeuronInternal(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
+                BaseAddress = new Uri(avatarUrl)
             };
 
             StringBuilder sb = new StringBuilder();
@@ -73,15 +73,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task CreateNeuron(string id, string data, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateNeuron(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateNeuronInternal(id, data, terminals, token).ConfigureAwait(false));
+                async () => await this.CreateNeuronInternal(avatarUrl, id, data, terminals, token).ConfigureAwait(false));
 
-        private async Task CreateNeuronInternal(string id, string data, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken))
+        private async Task CreateNeuronInternal(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
+                BaseAddress = new Uri(avatarUrl)
             };
 
             StringBuilder sb = new StringBuilder();
@@ -113,15 +113,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task ChangeNeuronData(string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task ChangeNeuronData(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                    async () => await this.ChangeNeuronDataInternal(id, data, expectedVersion, token).ConfigureAwait(false));
+                    async () => await this.ChangeNeuronDataInternal(avatarUrl, id, data, expectedVersion, token).ConfigureAwait(false));
 
-        private async Task ChangeNeuronDataInternal(string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken))
+        private async Task ChangeNeuronDataInternal(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
+                BaseAddress = new Uri(avatarUrl)
             };
 
             StringBuilder sb = new StringBuilder();
@@ -141,15 +141,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task RemoveTerminalsFromNeuron(string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task RemoveTerminalsFromNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.RemoveTerminalsFromNeuronInternal(id, terminals, expectedVersion, token));
+                async () => await this.RemoveTerminalsFromNeuronInternal(avatarUrl, id, terminals, expectedVersion, token));
 
-        public async Task RemoveTerminalsFromNeuronInternal(string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task RemoveTerminalsFromNeuronInternal(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
+                BaseAddress = new Uri(avatarUrl)
             };
 
             HttpRequestMessage msg = new HttpRequestMessage
@@ -163,11 +163,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task DeactivateNeuron(string id, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(this.settingsService.AvatarEndpoint)
+                BaseAddress = new Uri(avatarUrl)
             };
 
             HttpRequestMessage msg = new HttpRequestMessage

@@ -35,7 +35,7 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <Button Name="Reload" Width="80">Reload</Button>
-            <TextBox Name="Avatar" Grid.Column="1" HorizontalAlignment="Stretch" MinWidth="200"></TextBox>
+            <TextBox Name="AvatarUrl" Grid.Column="1" HorizontalAlignment="Stretch" MinWidth="200"></TextBox>
             <Button Name="Add" Grid.Column="2" Width="65">Add</Button>
         </Grid>
         <TreeView Name="FamilyTree" 

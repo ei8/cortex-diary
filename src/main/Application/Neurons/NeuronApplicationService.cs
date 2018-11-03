@@ -16,29 +16,29 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
             this.neuronClient = neuronClient;
         }
 
-        public async Task AddTerminalsToNeuron(string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task AddTerminalsToNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.AddTerminalsToNeuron(id, terminals, expectedVersion, token);
+            await this.neuronClient.AddTerminalsToNeuron(avatarUrl, id, terminals, expectedVersion, token);
         }
 
-        public async Task ChangeNeuronData(string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task ChangeNeuronData(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.ChangeNeuronData(id, data, expectedVersion, token);
+            await this.neuronClient.ChangeNeuronData(avatarUrl, id, data, expectedVersion, token);
         }
 
-        public async Task CreateNeuron(string id, string data, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken))
+        public async Task CreateNeuron(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.CreateNeuron(id, data, terminals, token);
+            await this.neuronClient.CreateNeuron(avatarUrl, id, data, terminals, token);
         }
 
-        public async Task RemoveTerminalsFromNeuron(string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task RemoveTerminalsFromNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.RemoveTerminalsFromNeuron(id, terminals, expectedVersion, token);
+            await this.neuronClient.RemoveTerminalsFromNeuron(avatarUrl, id, terminals, expectedVersion, token);
         }
 
-        public async Task DeactivateNeuron(string id, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.DeactivateNeuron(id, expectedVersion, token);
+            await this.neuronClient.DeactivateNeuron(avatarUrl, id, expectedVersion, token);
         }
     }
 }

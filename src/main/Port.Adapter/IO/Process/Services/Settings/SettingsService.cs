@@ -66,7 +66,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdLogoutEndpoint = "logout_endpoint";
         private const string IdIdentityCallback = "identity_callback";
         private const string IdLogoutCallback = "logout_callback";
-        private const string IdAvatarEndpoint = "avatar_endpoint";
         private const string IdRevocationEndpoint = "revocation_endpoint";
 
         private readonly string AccessTokenDefault = string.Empty;
@@ -86,7 +85,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string LogoutEndpointDefault = string.Empty;
         private readonly string IdentityCallbackDefault = string.Empty;
         private readonly string LogoutCallbackDefault = string.Empty;
-        private readonly string AvatarEndpointDefault = string.Empty;
         private readonly string RevocationEndpointDefault = string.Empty;
         
         #endregion
@@ -193,16 +191,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             set => AppSettings.AddOrUpdateValue(IdLogoutCallback, value);
         }
 
-        public string AvatarEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdAvatarEndpoint, AvatarEndpointDefault);
-            set
-            {
-                AppSettings.AddOrUpdateValue(IdAvatarEndpoint, value);
-                this.UpdateEndpoint(value);
-            }
-        }
-
         public string RevocationEndpoint
         {
             get => AppSettings.GetValueOrDefault(IdRevocationEndpoint, RevocationEndpointDefault);
@@ -246,7 +234,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             this.AppSettings.Remove(IdLogoutEndpoint);
             this.AppSettings.Remove(IdentityCallback);
             this.AppSettings.Remove(IdLogoutCallback);
-            this.AppSettings.Remove(IdAvatarEndpoint);
         }
 
         public void Update(string avatarUrl)

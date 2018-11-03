@@ -41,6 +41,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     public abstract class NeuronViewModelBase : ReactiveObject, IDisposable, IEquatable<NeuronViewModelBase>
     {
+        private readonly string avatarUrl;
         private readonly IDisposable cleanUp;
         private int id;
         private string neuronId;
@@ -52,15 +53,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly INeuronService neuronService;
         private readonly INeuronQueryService neuronQueryService;
 
-        protected NeuronViewModelBase(Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronQueryService neuronQueryService = null, IExtendedSelectionService selectionService = null)
+        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronQueryService neuronQueryService = null, IExtendedSelectionService selectionService = null)
         {
+            this.avatarUrl = avatarUrl;
             this.Id = node.Key;
             this.NeuronId = node.Item.NeuronId;
             this.Data = node.Item.Data;
             this.Parent = parent;
             this.Neuron = node.Item;
 
-            this.ReloadCommand = ReactiveCommand.Create(async () => await this.Reload(cache));
+            this.ReloadCommand = ReactiveCommand.Create(async () => {
+                cache.Remove(cache.Items.Where(i => i.CentralId == this.Neuron.Id));
+                var relatives = await this.neuronQueryService.GetAll(this.avatarUrl, this.Neuron);
+                cache.AddOrUpdate(relatives);
+            });
             this.AddPostsynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPostsynaptic(cache, this.Neuron));
             this.AddPresynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPresynaptic(cache, this.Neuron));
             this.DeleteCommand = ReactiveCommand.Create(() => this.neuronService.Delete(cache, this.Neuron));
@@ -72,8 +78,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             var childrenLoader = new Lazy<IDisposable>(() => node.Children.Connect()
                 .Transform(e => 
                     e.Item.Type == RelativeType.Postsynaptic ? 
-                    (NeuronViewModelBase)(new PostsynapticViewModel(e.Item.Data, e, cache, this)) : 
-                    (NeuronViewModelBase)(new PresynapticViewModel(e.Item.Data, e, cache, this)))
+                    (NeuronViewModelBase)(new PostsynapticViewModel(avatarUrl, e.Item.Data, e, cache, this)) : 
+                    (NeuronViewModelBase)(new PresynapticViewModel(avatarUrl, e.Item.Data, e, cache, this)))
                 .Bind(out this.children)
                 .DisposeMany()
                 .Subscribe()
@@ -117,13 +123,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     childrenLoader.Value.Dispose();
                 selector.Dispose();
             });
-        }
-
-        private async Task Reload(SourceCache<Neuron, int> cache)
-        {
-            cache.Remove(cache.Items.Where(i => i.CentralId == this.Neuron.Id));
-            var relatives = await this.neuronQueryService.GetAll(this.Neuron);
-            cache.AddOrUpdate(relatives);
         }
 
         public Neuron Neuron { get; }

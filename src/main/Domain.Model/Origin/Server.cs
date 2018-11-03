@@ -9,5 +9,7 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Origin
         public string Id { get; set; }
 
         public string Url { get; set; }
+
+        public string AuthAccessToken { get; set; }
     }
 }

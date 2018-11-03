@@ -30,21 +30,29 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             //    this.neuronService.Add(cache, NeuronService.CreateNeuron("Root Neuron", RelativeType.NotSet)));
             this.ReloadCommand = ReactiveCommand.Create(async () => {
                 cache.Clear();
-                var relatives = await this.neuronQueryService.GetAll();
+                var relatives = await this.neuronQueryService.GetAll(this.avatarUrl);
                 cache.AddOrUpdate(relatives);
             });
             this.cleanUp = cache.AsObservableCache().Connect()
                 .TransformToTree(child => child.CentralId, Observable.Return((Func<Node<Neuron, int>, bool>)DefaultPredicate))
                 .Transform(e =>
                     e.Item.Type == RelativeType.Postsynaptic ?
-                    (NeuronViewModelBase)(new PostsynapticViewModel(e.Item.Data, e, cache)) :
-                    (NeuronViewModelBase)(new PresynapticViewModel(e.Item.Data, e, cache)))
+                    (NeuronViewModelBase)(new PostsynapticViewModel(avatarUrl, e.Item.Data, e, cache)) :
+                    (NeuronViewModelBase)(new PresynapticViewModel(avatarUrl, e.Item.Data, e, cache)))
                 .Bind(out this.children)
                 .DisposeMany()
                 .Subscribe();
         }
 
-        public ReactiveCommand AddCommand { get; } 
+        public ReactiveCommand AddCommand { get; }
+
+        private string avatarUrl;
+
+        public string AvatarUrl
+        {
+            get => this.avatarUrl;
+            set => this.RaiseAndSetIfChanged(ref this.avatarUrl, value);
+        }
 
         public ReadOnlyObservableCollection<NeuronViewModelBase> Children => this.children;
 

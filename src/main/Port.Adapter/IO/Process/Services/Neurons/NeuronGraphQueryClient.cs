@@ -45,10 +45,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
         private async Task<Neuron> GetNeuronInternal(string id, CancellationToken token = default(CancellationToken))
         {
-            return await this.requestProvider.GetAsync<Neuron>(
-                this.settingsService.AvatarEndpoint + string.Format(NeuronGraphQueryClient.neuronsQueryPathTemplate, id),
-                this.settingsService.AuthAccessToken
-                );
+            return await Task.FromResult(new Neuron());
+
+            // TODO: return await this.requestProvider.GetAsync<Neuron>(
+            //    this.settingsService.AvatarEndpoint + string.Format(NeuronGraphQueryClient.neuronsQueryPathTemplate, id),
+            //    this.settingsService.AuthAccessToken
+            //    );
         }
 
         public async Task<IEnumerable<Neuron>> GetAllNeuronsByDataSubstring(string dataSubstring, CancellationToken token = default(CancellationToken)) =>
@@ -57,17 +59,18 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
         private async Task<IEnumerable<Neuron>> GetAllNeuronsByDataSubstringInternal(string dataSubstring, CancellationToken token = default(CancellationToken))
         {
-            return await this.requestProvider.GetAsync<Neuron[]>(
-                this.settingsService.AvatarEndpoint + string.Format(NeuronGraphQueryClient.neuronsQuerySearchPathTemplate, dataSubstring),
-                this.settingsService.AuthAccessToken
-                );
+            return await Task.FromResult(new Neuron[0]);
+            //return await this.requestProvider.GetAsync<Neuron[]>(
+            //    this.settingsService.AvatarEndpoint + string.Format(NeuronGraphQueryClient.neuronsQuerySearchPathTemplate, dataSubstring),
+            //    this.settingsService.AuthAccessToken
+            //    );
         }
 
-        public async Task<IEnumerable<Neuron>> GetAll(Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken)) =>
+        public async Task<IEnumerable<Neuron>> GetAll(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken)) =>
             await NeuronGraphQueryClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetAllInternal(central, type, filter, limit, token).ConfigureAwait(false));
+                async () => await this.GetAllInternal(avatarUrl, central, type, filter, limit, token).ConfigureAwait(false));
 
-        private async Task<IEnumerable<Neuron>> GetAllInternal(Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
+        private async Task<IEnumerable<Neuron>> GetAllInternal(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
         {
             var queryStringBuilder = new StringBuilder();
 
@@ -86,7 +89,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             var path = central == null ? NeuronGraphQueryClient.GetAllPathTemplate : string.Format(NeuronGraphQueryClient.GetAllRelativesPathTemplate, central.NeuronId);
 
             return await this.requestProvider.GetAsync<IEnumerable<Neuron>>(
-                $"{this.settingsService.AvatarEndpoint}{path}{queryStringBuilder.ToString()}",
+                $"{avatarUrl}{path}{queryStringBuilder.ToString()}",
                 this.settingsService.AuthAccessToken
                 );
         }

@@ -15,13 +15,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             cache.AddOrUpdate(neuron);
         }
 
-        public void AddPostsynaptic(SourceCache<Neuron, int> cache, Neuron neuron)
+        public void AddPostsynaptic(SourceCache<Neuron, int> cache, Neuron central)
         {
             var postsyn = new Neuron {
                 Id = Guid.NewGuid().GetHashCode(),
-                CentralId = neuron.Id,
+                CentralId = central.Id,
                 NeuronId = Guid.NewGuid().ToString(),
-                CentralNeuronId = neuron.CentralNeuronId,
+                CentralNeuronId = central.CentralNeuronId,
                 Data = "New Postsynaptic",
                 Type = RelativeType.Postsynaptic
                 };
@@ -29,14 +29,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             cache.AddOrUpdate(postsyn);
         }
 
-        public void AddPresynaptic(SourceCache<Neuron, int> cache, Neuron neuron)
+        public void AddPresynaptic(SourceCache<Neuron, int> cache, Neuron central)
         {
             var presyn = new Neuron
             {
                 Id = Guid.NewGuid().GetHashCode(),
-                CentralId = neuron.Id,
+                CentralId = central.Id,
                 NeuronId = Guid.NewGuid().ToString(),
-                CentralNeuronId = neuron.CentralNeuronId,
+                CentralNeuronId = central.CentralNeuronId,
                 Data = "New Presynaptic",
                 Type = RelativeType.Presynaptic
             };
