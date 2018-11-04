@@ -10,7 +10,7 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
     {
         Task AddTerminalsToNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken));
 
-        Task CreateNeuron(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken));
+        Task CreateNeuron(string avatarUrl, string id, string data, string authorId, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken));
 
         Task ChangeNeuronData(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken));
 

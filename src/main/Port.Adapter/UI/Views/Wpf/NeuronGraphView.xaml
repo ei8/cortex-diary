@@ -21,6 +21,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -217,5 +218,18 @@
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
         </TreeView>
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label>Author Id</Label>
+            <TextBox Name="AuthorId" Width="300" Grid.Column="1" />
+            <Label Name="StatusMessage" Grid.Column="2" />
+        </Grid>        
     </Grid>
 </UserControl>

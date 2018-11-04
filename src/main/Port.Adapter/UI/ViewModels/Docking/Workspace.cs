@@ -36,7 +36,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
         {
             this.newNeuronGraph = ReactiveCommand.Create(() =>
             {
-                this.panes.Add(new NeuronGraphPaneViewModel(Locator.Current.GetService<INeuronService>()));
+                this.panes.Add(new NeuronGraphPaneViewModel());
                 this.ActiveDocument = this.panes.Last();
             });
         }

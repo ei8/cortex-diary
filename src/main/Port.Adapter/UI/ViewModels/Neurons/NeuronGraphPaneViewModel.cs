@@ -7,27 +7,56 @@ using ReactiveUI;
 using Splat;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Domain.Model.Origin;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     public class NeuronGraphPaneViewModel : PaneViewModel, IDisposable
     {
-        private readonly INeuronService neuronService;
+        private readonly INeuronApplicationService neuronApplicationService;
         private readonly INeuronQueryService neuronQueryService;
+        private readonly IOriginService originService;
         private readonly ReadOnlyObservableCollection<NeuronViewModelBase> children;
         private readonly IDisposable cleanUp;
 
-        public NeuronGraphPaneViewModel(INeuronService neuronService = null, INeuronQueryService neuronQueryService = null)
+        public NeuronGraphPaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null)
         {
-            this.neuronService = neuronService ?? Locator.Current.GetService<INeuronService>();
+            this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
+            this.originService = originService ?? Locator.Current.GetService<IOriginService>();
 
             bool DefaultPredicate(Node<Neuron, int> node) => node.IsRoot;
             var cache = new SourceCache<Neuron, int>(x => x.Id);
 
-            // TODO: this.AddCommand = ReactiveCommand.Create(() =>
-            //    this.neuronService.Add(cache, NeuronService.CreateNeuron("Root Neuron", RelativeType.NotSet)));
+            this.AddCommand = ReactiveCommand.Create(async () =>
+                {
+                    try
+                    {
+                        Neuron n = new Neuron
+                        {
+                            Data = "Root Neuron",
+                            Id = Guid.NewGuid().GetHashCode(),
+                            NeuronId = Guid.NewGuid().ToString(),
+                            Type = RelativeType.NotSet
+                        };
+
+                        await this.neuronApplicationService.CreateNeuron(
+                            this.avatarUrl,
+                            n.NeuronId,
+                            n.Data,
+                            this.authorId, // TODO: this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
+                            new Terminal[0]
+                            );
+                        cache.AddOrUpdate(n);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.StatusMessage = ex.Message;
+                    }
+                }
+            );
+
             this.ReloadCommand = ReactiveCommand.Create(async () => {
                 cache.Clear();
                 var relatives = await this.neuronQueryService.GetAll(this.avatarUrl);
@@ -46,6 +75,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         public ReactiveCommand AddCommand { get; }
 
+        private string authorId;
+
+        public string AuthorId
+        {
+            get => this.authorId;
+            set => this.RaiseAndSetIfChanged(ref authorId, value);
+        }
+
         private string avatarUrl;
 
         public string AvatarUrl
@@ -58,6 +95,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         public ReactiveCommand ReloadCommand { get; }
 
+        private string statusMessage;
+
+        public string StatusMessage
+        {
+            get => this.statusMessage;
+            set => this.RaiseAndSetIfChanged(ref this.statusMessage, value);
+        }
+        
         public void Dispose()
         {
             this.cleanUp.Dispose();

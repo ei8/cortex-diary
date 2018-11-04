@@ -33,7 +33,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 
@@ -51,9 +50,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private ReadOnlyObservableCollection<NeuronViewModelBase> children;
         private IExtendedSelectionService selectionService;
         private readonly INeuronService neuronService;
+        private readonly INeuronApplicationService neuronApplicationService;
         private readonly INeuronQueryService neuronQueryService;
 
-        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronQueryService neuronQueryService = null, IExtendedSelectionService selectionService = null)
+        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IExtendedSelectionService selectionService = null)
         {
             this.avatarUrl = avatarUrl;
             this.Id = node.Key;
@@ -68,10 +68,33 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 cache.AddOrUpdate(relatives);
             });
             this.AddPostsynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPostsynaptic(cache, this.Neuron));
-            this.AddPresynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPresynaptic(cache, this.Neuron));
+            this.AddPresynapticCommand = ReactiveCommand.Create(async () =>
+            {
+                // DEL: this.neuronService.AddPresynaptic(cache, this.Neuron)
+
+                // TODO: var n = new Neuron
+                //{
+                //    Id = Guid.NewGuid().GetHashCode(),
+                //    CentralId = this.Neuron.Id,
+                //    NeuronId = Guid.NewGuid().ToString(),
+                //    CentralNeuronId = this.Neuron.NeuronId, // DEL: .CentralNeuronId,
+                //    Data = "New Presynaptic",
+                //    Type = RelativeType.Presynaptic
+                //};
+
+                //await this.neuronApplicationService.CreateNeuron(
+                //                            this.avatarUrl,
+                //                            n.NeuronId,
+                //                            n.Data,
+                //                            this.authorId, // TODO: this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
+                //                            new Terminal[0]
+                //                            );
+                //cache.AddOrUpdate(n);
+            });
             this.DeleteCommand = ReactiveCommand.Create(() => this.neuronService.Delete(cache, this.Neuron));
 
             this.neuronService = neuronService ?? Locator.Current.GetService<INeuronService>();
+            this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<NeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>();
 

@@ -60,7 +60,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         private async Task<IEnumerable<Neuron>> GetAllNeuronsByDataSubstringInternal(string dataSubstring, CancellationToken token = default(CancellationToken))
         {
             return await Task.FromResult(new Neuron[0]);
-            //return await this.requestProvider.GetAsync<Neuron[]>(
+            // TODO: return await this.requestProvider.GetAsync<Neuron[]>(
             //    this.settingsService.AvatarEndpoint + string.Format(NeuronGraphQueryClient.neuronsQuerySearchPathTemplate, dataSubstring),
             //    this.settingsService.AuthAccessToken
             //    );

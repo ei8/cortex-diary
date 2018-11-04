@@ -9,12 +9,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     public class NeuronService : INeuronService
     {
-        public void Add(SourceCache<Neuron, int> cache, Neuron neuron)
-        {
-            // TODO: Update data source
-            cache.AddOrUpdate(neuron);
-        }
-
         public void AddPostsynaptic(SourceCache<Neuron, int> cache, Neuron central)
         {
             var postsyn = new Neuron {
@@ -29,20 +23,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             cache.AddOrUpdate(postsyn);
         }
 
-        public void AddPresynaptic(SourceCache<Neuron, int> cache, Neuron central)
-        {
-            var presyn = new Neuron
-            {
-                Id = Guid.NewGuid().GetHashCode(),
-                CentralId = central.Id,
-                NeuronId = Guid.NewGuid().ToString(),
-                CentralNeuronId = central.CentralNeuronId,
-                Data = "New Presynaptic",
-                Type = RelativeType.Presynaptic
-            };
+        // DEL: public void AddPresynaptic(SourceCache<Neuron, int> cache, Neuron central)
+        //{
+        //    var presyn = new Neuron
+        //    {
+        //        Id = Guid.NewGuid().GetHashCode(),
+        //        CentralId = central.Id,
+        //        NeuronId = Guid.NewGuid().ToString(),
+        //        CentralNeuronId = central.CentralNeuronId,
+        //        Data = "New Presynaptic",
+        //        Type = RelativeType.Presynaptic
+        //    };
 
-            cache.AddOrUpdate(presyn);
-        }
+        //    cache.AddOrUpdate(presyn);
+        //}
 
         public void ChangeData(SourceCache<Neuron, int> cache, Neuron dto, string value)
         {

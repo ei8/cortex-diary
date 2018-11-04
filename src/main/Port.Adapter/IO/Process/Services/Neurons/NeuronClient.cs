@@ -1,5 +1,6 @@
 ﻿using NLog;
 using Polly;
+using Splat;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,9 +29,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         private static string neuronsTerminalsPathTemplate = NeuronClient.neuronsPathTemplate + "/terminals";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public NeuronClient(ISettingsService settingsService)
+        public NeuronClient(ISettingsService settingsService = null)
         {
-            this.settingsService = settingsService;
+            this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
         }
 
         public async Task AddTerminalsToNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
@@ -73,11 +74,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task CreateNeuron(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateNeuron(string avatarUrl, string id, string data, string authorId, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateNeuronInternal(avatarUrl, id, data, terminals, token).ConfigureAwait(false));
+                async () => await this.CreateNeuronInternal(avatarUrl, id, data, authorId, terminals, token).ConfigureAwait(false));
 
-        private async Task CreateNeuronInternal(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken))
+        private async Task CreateNeuronInternal(string avatarUrl, string id, string data, string authorId, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
@@ -85,8 +86,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             };
 
             StringBuilder sb = new StringBuilder();
-            sb.Append("{ \"Data\": \"");
+            sb.Append("{");
+            sb.Append("\"Data\": \"");
             sb.Append(data);
+            sb.Append("\", ");
+            sb.Append("\"AuthorId\": \"");
+            sb.Append(authorId);
             sb.Append("\"");
             if (terminals.Any())
             {
@@ -110,7 +115,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 content,
                 token
                 );
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
 
         public async Task ChangeNeuronData(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
