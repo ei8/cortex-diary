@@ -9,9 +9,17 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Origin
     /// </summary>
     public interface IOriginsCacheService
     {
-        void Add(Avatar value, bool online);
+        void Add(Avatar value);
 
-        void Add(Server value, bool online);
+        void Add(Server value);
+
+        bool ContainsAvatar(string avatarUrl);
+
+        Avatar GetAvatarByUrl(string avatarUrl);
+
+        bool ContainsServer(string serverUrl);
+
+        Server GetServerByUrl(string serverUrl);
 
         // TODO: void ClearOfflineData();
 

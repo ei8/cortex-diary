@@ -32,6 +32,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 
                d(this.BindCommand(this.ViewModel, vm => vm.ReloadCommand, v => v.Reload));
                d(this.BindCommand(this.ViewModel, vm => vm.AddCommand, v => v.Add));
+               d(this.BindCommand(this.ViewModel, vm => vm.SetAuthorIdCommand, v => v.SetAuthorId));
            });
         }
 

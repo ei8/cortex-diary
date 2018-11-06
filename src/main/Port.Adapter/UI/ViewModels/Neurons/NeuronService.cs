@@ -23,21 +23,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             cache.AddOrUpdate(postsyn);
         }
 
-        // DEL: public void AddPresynaptic(SourceCache<Neuron, int> cache, Neuron central)
-        //{
-        //    var presyn = new Neuron
-        //    {
-        //        Id = Guid.NewGuid().GetHashCode(),
-        //        CentralId = central.Id,
-        //        NeuronId = Guid.NewGuid().ToString(),
-        //        CentralNeuronId = central.CentralNeuronId,
-        //        Data = "New Presynaptic",
-        //        Type = RelativeType.Presynaptic
-        //    };
-
-        //    cache.AddOrUpdate(presyn);
-        //}
-
         public void ChangeData(SourceCache<Neuron, int> cache, Neuron dto, string value)
         {
             // TODO: update data source

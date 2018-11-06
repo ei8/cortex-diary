@@ -100,9 +100,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 terminals.ToList().ForEach(t => {
                     if (!isFirst)
                         sb.Append(",");
-                    sb.Append("{ \"Target\": \"");
-                    sb.Append(t.TargetId);
-                    sb.Append("\"}");
+                    sb.Append("{")
+                        .Append($"\"TargetId\": \"{t.TargetId}\",")
+                        .Append($"\"Effect\": \"{t.Effect.ToString()}\",")
+                        .Append($"\"Strength\": \"{t.Strength.ToString()}\"");
+                    sb.Append("}");
+                    isFirst = false;
                     });
                 sb.Append("]");
             }

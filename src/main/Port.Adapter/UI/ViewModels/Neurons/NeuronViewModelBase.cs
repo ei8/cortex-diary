@@ -35,6 +35,8 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Domain.Model.Origin;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -52,8 +54,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly INeuronService neuronService;
         private readonly INeuronApplicationService neuronApplicationService;
         private readonly INeuronQueryService neuronQueryService;
+        private readonly IOriginService originService;
+        private readonly IStatusService statusService;
 
-        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IExtendedSelectionService selectionService = null)
+        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null)
         {
             this.avatarUrl = avatarUrl;
             this.Id = node.Key;
@@ -68,35 +72,42 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 cache.AddOrUpdate(relatives);
             });
             this.AddPostsynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPostsynaptic(cache, this.Neuron));
-            this.AddPresynapticCommand = ReactiveCommand.Create(async () =>
-            {
-                // DEL: this.neuronService.AddPresynaptic(cache, this.Neuron)
+            this.AddPresynapticCommand = ReactiveCommand.Create(() =>
+                    Helper.SetStatusOnComplete(async() =>
+                    { 
+                        var n = new Neuron
+                        {
+                            Id = Guid.NewGuid().GetHashCode(),
+                            CentralId = this.Neuron.Id,
+                            NeuronId = Guid.NewGuid().ToString(),
+                            CentralNeuronId = this.Neuron.NeuronId,
+                            Data = "New Presynaptic",
+                            Type = RelativeType.Presynaptic
+                        };
 
-                // TODO: var n = new Neuron
-                //{
-                //    Id = Guid.NewGuid().GetHashCode(),
-                //    CentralId = this.Neuron.Id,
-                //    NeuronId = Guid.NewGuid().ToString(),
-                //    CentralNeuronId = this.Neuron.NeuronId, // DEL: .CentralNeuronId,
-                //    Data = "New Presynaptic",
-                //    Type = RelativeType.Presynaptic
-                //};
+                        await this.neuronApplicationService.CreateNeuron(
+                                                    this.avatarUrl,
+                                                    n.NeuronId,
+                                                    n.Data,
+                                                    this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
+                                                    // TODO: make Effect and Strength user-specified
+                                                    new Terminal[] { new Terminal { TargetId = n.CentralNeuronId, Effect = NeurotransmitterEffect.Excite, Strength = 1f }}
+                                                    );
+                        cache.AddOrUpdate(n);
+                    },
+                    "Presynaptic added successfully.",
+                    this.statusService
+                )
+            );
 
-                //await this.neuronApplicationService.CreateNeuron(
-                //                            this.avatarUrl,
-                //                            n.NeuronId,
-                //                            n.Data,
-                //                            this.authorId, // TODO: this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
-                //                            new Terminal[0]
-                //                            );
-                //cache.AddOrUpdate(n);
-            });
             this.DeleteCommand = ReactiveCommand.Create(() => this.neuronService.Delete(cache, this.Neuron));
 
             this.neuronService = neuronService ?? Locator.Current.GetService<INeuronService>();
-            this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<NeuronApplicationService>();
+            this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>();
+            this.originService = originService ?? Locator.Current.GetService<IOriginService>();
+            this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
 
             var childrenLoader = new Lazy<IDisposable>(() => node.Children.Connect()
                 .Transform(e => 
@@ -148,6 +159,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             });
         }
 
+        [ExpandableObject]
         public Neuron Neuron { get; }
 
         private string childrenCountText;

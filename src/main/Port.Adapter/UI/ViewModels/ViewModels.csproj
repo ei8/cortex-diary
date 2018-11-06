@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.5.1.2479" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.4.0" />
     <PackageReference Include="ReactiveUI" Version="8.7.2" />
   </ItemGroup>
 

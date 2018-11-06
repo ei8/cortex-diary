@@ -7,8 +7,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
     {
         void AddPostsynaptic(SourceCache<Neuron, int> cache, Neuron neuron);
 
-        // DEL: void AddPresynaptic(SourceCache<Neuron, int> cache, Neuron neuron);
-
         void ChangeData(SourceCache<Neuron, int> cache, Neuron dto, string value);
 
         void Delete(SourceCache<Neuron, int> cache, Neuron dto);        

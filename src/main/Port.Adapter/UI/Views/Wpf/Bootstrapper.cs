@@ -5,7 +5,9 @@ using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Domain.Model.Origin;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Origins;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvider;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
@@ -33,7 +35,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronService(), typeof(INeuronService)); // DEL:
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronClient(), typeof(INeuronClient));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronApplicationService(), typeof(INeuronApplicationService));
-            
+            Locator.CurrentMutable.RegisterLazySingleton(() => new OriginsCacheService(), typeof(IOriginsCacheService));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new OriginService(), typeof(IOriginService));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new StatusService(), typeof(IStatusService));
 
             // TODO: Locator.CurrentMutable.Register(() => new NeuronGraphView(), typeof(IViewFor<NeuronGraphPaneViewModel>));
             //Locator.CurrentMutable.Register(() => new PresynapticView(), typeof(IViewFor<PresynapticViewModel>));

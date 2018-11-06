@@ -225,11 +225,13 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Label>Author Id</Label>
             <TextBox Name="AuthorId" Width="300" Grid.Column="1" />
-            <Label Name="StatusMessage" Grid.Column="2" />
+            <Button Name="SetAuthorId" Grid.Column="2">Set</Button>
+            <Label Name="StatusMessage" Width="auto" Grid.Column="3" />
         </Grid>        
     </Grid>
 </UserControl>
