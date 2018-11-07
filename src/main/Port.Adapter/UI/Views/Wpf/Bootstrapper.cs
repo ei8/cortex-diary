@@ -11,8 +11,10 @@ using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Origins;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvider;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
@@ -26,6 +28,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
         private void ConfigureServices()
         {
             Locator.CurrentMutable.Register(() => new MainWindow(), typeof(IViewFor<Workspace>));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new DialogService(), typeof(IDialogService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new SettingsServiceImplementation(), typeof(ISettingsServiceImplementation));
             Locator.CurrentMutable.RegisterLazySingleton(() => new DependencyService(), typeof(IDependencyService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new SettingsService(), typeof(ISettingsService));            
@@ -41,7 +44,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 
             // TODO: Locator.CurrentMutable.Register(() => new NeuronGraphView(), typeof(IViewFor<NeuronGraphPaneViewModel>));
             //Locator.CurrentMutable.Register(() => new PresynapticView(), typeof(IViewFor<PresynapticViewModel>));
-            //Locator.CurrentMutable.Register(() => new PostsynapticView(), typeof(IViewFor<PostsynapticViewModel>));
+            //Locator.CurrentMutable.Register(() => new PostsynapticView(), typeof(IViewFor<PostsynapticViewModel>));            
             Locator.CurrentMutable.RegisterLazySingleton(() => new SelectionService(), typeof(IExtendedSelectionService));
         }
 

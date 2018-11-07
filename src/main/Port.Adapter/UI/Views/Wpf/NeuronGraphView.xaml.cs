@@ -1,9 +1,8 @@
-﻿using System;
-using System.Diagnostics;
+﻿using ReactiveUI;
+using System;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using ReactiveUI;
-using Splat;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
@@ -15,16 +14,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             InitializeComponent();
 
             this.WhenAnyValue(x => x.DataContext)
-                .Subscribe(x =>
-                {
-                    if (x != null)
-                    {
-                        this.ViewModel = (NeuronGraphPaneViewModel) x;
-                        this.DataContext = this.ViewModel;
-                    }
-                });
+                .Where(x => x != null)
+                .Subscribe(x => this.ViewModel = (NeuronGraphPaneViewModel)x);
 
-           this.WhenActivated(d =>
+            this.WhenActivated(d =>
            {
                d(this.Bind(this.ViewModel, vm => vm.AvatarUrl, v => v.AvatarUrl.Text));
                d(this.Bind(this.ViewModel, vm => vm.AuthorId, v => v.AuthorId.Text));

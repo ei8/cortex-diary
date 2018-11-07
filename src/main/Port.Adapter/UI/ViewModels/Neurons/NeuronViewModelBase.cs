@@ -33,10 +33,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
-using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -56,8 +57,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly INeuronQueryService neuronQueryService;
         private readonly IOriginService originService;
         private readonly IStatusService statusService;
+        private readonly IDialogService dialogService;
 
-        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null)
+        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.avatarUrl = avatarUrl;
             this.Id = node.Key;
@@ -71,7 +73,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 var relatives = await this.neuronQueryService.GetAll(this.avatarUrl, this.Neuron);
                 cache.AddOrUpdate(relatives);
             });
-            this.AddPostsynapticCommand = ReactiveCommand.Create(() => this.neuronService.AddPostsynaptic(cache, this.Neuron));
+            this.AddPostsynapticCommand = ReactiveCommand.Create<object>(async(parameter) =>
+                await Helper.SetStatusOnComplete(() => { 
+                    DialogResult result = this.dialogService.ShowDialogYesNo("Question", parameter);
+                    // TODO: this.neuronService.AddPostsynaptic(cache, this.Neuron);
+                    return Task.CompletedTask;
+                },
+                "Postsynaptic added successfully.",
+                this.statusService
+            )
+            );
             this.AddPresynapticCommand = ReactiveCommand.Create(() =>
                     Helper.SetStatusOnComplete(async() =>
                     { 
@@ -108,6 +119,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>();
             this.originService = originService ?? Locator.Current.GetService<IOriginService>();
             this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
+            this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
 
             var childrenLoader = new Lazy<IDisposable>(() => node.Children.Connect()
                 .Transform(e => 
@@ -159,7 +171,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             });
         }
 
-        [ExpandableObject]
         public Neuron Neuron { get; }
 
         private string childrenCountText;
