@@ -34,11 +34,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
         }
 
-        public async Task AddTerminalsToNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task AddTerminalsToNeuron(string avatarUrl, string id, string authorId, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.AddTerminalsToNeuronInternal(avatarUrl, id, terminals, expectedVersion, token).ConfigureAwait(false));
+                async () => await this.AddTerminalsToNeuronInternal(avatarUrl, id, authorId, terminals, expectedVersion, token).ConfigureAwait(false));
 
-        public async Task AddTerminalsToNeuronInternal(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task AddTerminalsToNeuronInternal(string avatarUrl, string id, string authorId, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
@@ -47,19 +47,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
             StringBuilder sb = new StringBuilder();
             sb.Append("{");
-            if(terminals.Any())
-            {
-                bool isFirst = true;
-                sb.Append(" \"Terminals\": [");
-                terminals.ToList().ForEach(t => {
-                    if (!isFirst)
-                        sb.Append(",");
-                    sb.Append("{ \"Target\": \"");
-                    sb.Append(t.TargetId);
-                    sb.Append("\"}");
-                });
-                sb.Append("]");
-            }
+            NeuronClient.AppendAuthorId(authorId, sb);
+            NeuronClient.AppendTerminals(terminals, sb);
             sb.Append("}");
 
             HttpRequestMessage msg = new HttpRequestMessage
@@ -71,7 +60,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             msg.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await httpClient.SendAsync(msg, token);
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
 
         public async Task CreateNeuron(string avatarUrl, string id, string data, string authorId, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken)) =>
@@ -87,30 +77,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
             StringBuilder sb = new StringBuilder();
             sb.Append("{");
-            sb.Append("\"Data\": \"");
-            sb.Append(data);
-            sb.Append("\", ");
-            sb.Append("\"AuthorId\": \"");
-            sb.Append(authorId);
-            sb.Append("\"");
-            if (terminals.Any())
-            {
-                bool isFirst = true;
-                sb.Append(", \"Terminals\": [");
-                terminals.ToList().ForEach(t => {
-                    if (!isFirst)
-                        sb.Append(",");
-                    sb.Append("{")
-                        .Append($"\"TargetId\": \"{t.TargetId}\",")
-                        .Append($"\"Effect\": \"{t.Effect.ToString()}\",")
-                        .Append($"\"Strength\": \"{t.Strength.ToString()}\"");
-                    sb.Append("}");
-                    isFirst = false;
-                    });
-                sb.Append("]");
-            }
+            sb.Append($"\"Data\": \"{data}\"");
+            NeuronClient.AppendAuthorId(authorId, sb);
+            NeuronClient.AppendTerminals(terminals, sb);
             sb.Append("}");
-            
+
             StringContent content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
 
             var response = await httpClient.PutAsync(
@@ -121,6 +92,40 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+        }
+
+        private static void AppendAuthorId(string authorId, StringBuilder sb)
+        {
+            NeuronClient.AppendCommaIfPrecedingExists(sb);
+            sb.Append($"\"AuthorId\": \"{authorId}\"");
+        }
+
+        private static void AppendTerminals(IEnumerable<Terminal> terminals, StringBuilder sb)
+        {
+            if (terminals.Any())
+            {
+                bool isFirst = true;
+                NeuronClient.AppendCommaIfPrecedingExists(sb);
+                sb.Append("\"Terminals\": [");
+                terminals.ToList().ForEach(t =>
+                {
+                    if (!isFirst)
+                        sb.Append(",");
+                    sb.Append("{")
+                        .Append($"\"TargetId\": \"{t.TargetId}\",")
+                        .Append($"\"Effect\": \"{t.Effect.ToString()}\",")
+                        .Append($"\"Strength\": \"{t.Strength.ToString()}\"");
+                    sb.Append("}");
+                    isFirst = false;
+                });
+                sb.Append("]");
+            }
+        }
+
+        private static void AppendCommaIfPrecedingExists(StringBuilder sb)
+        {
+            if (sb.ToString().EndsWith("\""))
+                sb.Append(", ");
         }
 
         public async Task ChangeNeuronData(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken)) =>

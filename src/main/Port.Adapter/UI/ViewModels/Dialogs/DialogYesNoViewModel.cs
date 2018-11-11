@@ -12,14 +12,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         public ReactiveCommand NoCommand { get; }
 
-        private bool closing;
-
-        public bool Closing
-        {
-            get => this.closing;
-            set => this.RaiseAndSetIfChanged(ref this.closing, value);
-        }
-
         public DialogYesNoViewModel(string message)
             : base(message)
         {
@@ -31,14 +23,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
         {
             this.UserDialogResult = Dialogs.DialogResult.Yes;
             this.DialogResult = true;
-            this.Closing = true;
         }
 
         private void OnNoClicked()
         {
             this.UserDialogResult = Dialogs.DialogResult.No;
-            this.DialogResult = true;
-            this.Closing = true;
+            this.DialogResult = false;
         }
     }
 }

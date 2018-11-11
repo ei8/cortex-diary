@@ -143,6 +143,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Dialogs\DialogSelectNeuronView.xaml.cs">
+      <DependentUpon>DialogSelectNeuronView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\DialogService.cs" />
     <Compile Include="Dialogs\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
@@ -151,6 +154,10 @@
       <DependentUpon>DialogYesNoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="SettingsServiceImplementation.cs" />
+    <Page Include="Dialogs\DialogSelectNeuronView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\DialogWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

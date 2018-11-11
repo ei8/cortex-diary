@@ -17,9 +17,9 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
             this.neuronClient = neuronClient ?? Locator.Current.GetService<INeuronClient>();
         }
 
-        public async Task AddTerminalsToNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task AddTerminalsToNeuron(string avatarUrl, string id, string authorId, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.AddTerminalsToNeuron(avatarUrl, id, terminals, expectedVersion, token);
+            await this.neuronClient.AddTerminalsToNeuron(avatarUrl, id, authorId, terminals, expectedVersion, token);
         }
 
         public async Task ChangeNeuronData(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken))

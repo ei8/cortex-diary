@@ -15,9 +15,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             set => this.RaiseAndSetIfChanged(ref this.userDialogResult, value);
         }
 
-        private bool dialogResult;
+        private bool? dialogResult;
 
-        public bool DialogResult
+        public bool? DialogResult
         {
             get => this.dialogResult;
             set => this.RaiseAndSetIfChanged(ref this.dialogResult, value);

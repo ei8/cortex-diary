@@ -24,8 +24,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
 
             this.WhenActivated(d =>
             {
-                d(this.ViewModel.WhenPropertyChanged(p => p.Closing, notifyOnInitialValue:false).Subscribe(o => Window.GetWindow(this).Close()));
-            });            
+                d(this.BindCommand(this.ViewModel, vm => vm.YesCommand, v => v.YesButton));
+                d(this.BindCommand(this.ViewModel, vm => vm.NoCommand, v => v.NoButton));
+                d(this.Bind(this.ViewModel, vm => vm.Message, v => v.MessageLabel.Content));
+            });
         }
 
         object IViewFor.ViewModel

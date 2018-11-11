@@ -58,59 +58,22 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly IOriginService originService;
         private readonly IStatusService statusService;
         private readonly IDialogService dialogService;
+        private bool settingNeuron;
+        // cortex graph poll interval + 100 millisecond allowance
+        private const int ReloadDelay = 2100; 
 
         protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.avatarUrl = avatarUrl;
             this.Id = node.Key;
-            this.NeuronId = node.Item.NeuronId;
-            this.Data = node.Item.Data;
             this.Parent = parent;
-            this.Neuron = node.Item;
+            this.SetNeuron(node.Item);
 
-            this.ReloadCommand = ReactiveCommand.Create(async () => {
-                cache.Remove(cache.Items.Where(i => i.CentralId == this.Neuron.Id));
-                var relatives = await this.neuronQueryService.GetAll(this.avatarUrl, this.Neuron);
-                cache.AddOrUpdate(relatives);
-            });
-            this.AddPostsynapticCommand = ReactiveCommand.Create<object>(async(parameter) =>
-                await Helper.SetStatusOnComplete(() => { 
-                    DialogResult result = this.dialogService.ShowDialogYesNo("Question", parameter);
-                    // TODO: this.neuronService.AddPostsynaptic(cache, this.Neuron);
-                    return Task.CompletedTask;
-                },
-                "Postsynaptic added successfully.",
-                this.statusService
-            )
+            this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReload(cache));
+            this.AddPostsynapticCommand = ReactiveCommand.Create<object>(
+                async (parameter) => await this.OnAddPostsynaptic(cache, parameter)
             );
-            this.AddPresynapticCommand = ReactiveCommand.Create(() =>
-                    Helper.SetStatusOnComplete(async() =>
-                    { 
-                        var n = new Neuron
-                        {
-                            Id = Guid.NewGuid().GetHashCode(),
-                            CentralId = this.Neuron.Id,
-                            NeuronId = Guid.NewGuid().ToString(),
-                            CentralNeuronId = this.Neuron.NeuronId,
-                            Data = "New Presynaptic",
-                            Type = RelativeType.Presynaptic
-                        };
-
-                        await this.neuronApplicationService.CreateNeuron(
-                                                    this.avatarUrl,
-                                                    n.NeuronId,
-                                                    n.Data,
-                                                    this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
-                                                    // TODO: make Effect and Strength user-specified
-                                                    new Terminal[] { new Terminal { TargetId = n.CentralNeuronId, Effect = NeurotransmitterEffect.Excite, Strength = 1f }}
-                                                    );
-                        cache.AddOrUpdate(n);
-                    },
-                    "Presynaptic added successfully.",
-                    this.statusService
-                )
-            );
-
+            this.AddPresynapticCommand = ReactiveCommand.Create(() => this.OnAddPresynaptic(cache));
             this.DeleteCommand = ReactiveCommand.Create(() => this.neuronService.Delete(cache, this.Neuron));
 
             this.neuronService = neuronService ?? Locator.Current.GetService<INeuronService>();
@@ -122,9 +85,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
 
             var childrenLoader = new Lazy<IDisposable>(() => node.Children.Connect()
-                .Transform(e => 
-                    e.Item.Type == RelativeType.Postsynaptic ? 
-                    (NeuronViewModelBase)(new PostsynapticViewModel(avatarUrl, e.Item.Data, e, cache, this)) : 
+                .Transform(e =>
+                    e.Item.Type == RelativeType.Postsynaptic ?
+                    (NeuronViewModelBase)(new PostsynapticViewModel(avatarUrl, e.Item.Data, e, cache, this)) :
                     (NeuronViewModelBase)(new PresynapticViewModel(avatarUrl, e.Item.Data, e, cache, this)))
                 .Bind(out this.children)
                 .DisposeMany()
@@ -155,11 +118,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .Subscribe(text => this.ChildrenCountText = text);
 
             var changeData = this.WhenPropertyChanged(p => p.Data, false)
-                .Subscribe(x => this.neuronService.ChangeData(cache, this.Neuron, x.Value));
+                .Subscribe(x => 
+                {
+                    if (!this.settingNeuron)
+                        this.neuronService.ChangeData(cache, this.Neuron, x.Value);
+                }
+                );
 
             var selector = this.WhenPropertyChanged(p => p.IsSelected)
                 .Where(p => p.Value)
-                .Subscribe(x => this.selectionService.SetSelectedComponents(new object[] { x.Sender })); 
+                .Subscribe(x => this.selectionService.SetSelectedComponents(new object[] { x.Sender }));
 
             this.cleanUp = Disposable.Create(() =>
             {
@@ -171,7 +139,103 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             });
         }
 
-        public Neuron Neuron { get; }
+        private void SetNeuron(Neuron neuron)
+        {
+            this.settingNeuron = true;
+            this.Neuron = neuron;
+            this.NeuronId = neuron.NeuronId;
+            this.Data = neuron.Data;
+            this.settingNeuron = false;
+        }
+
+        private async Task OnReload(SourceCache<Neuron, int> cache, int millisecondsDelay = 0)
+        {
+            if (millisecondsDelay > 0)
+                await Task.Delay(millisecondsDelay);
+
+            await Helper.SetStatusOnComplete(async () =>
+            {
+                // reload self
+                var reloadedNeuron = (await this.neuronQueryService.GetNeuronById(
+                    this.avatarUrl,
+                    this.Neuron.NeuronId,
+                    this.Parent.ConvertOr(n => n.Neuron, () => null),
+                    this.Neuron.Type
+                    )).First();
+                NeuronViewModelBase.CopyNeuronData(this.Neuron, reloadedNeuron);
+                this.SetNeuron(this.Neuron);
+
+                // reload relatives
+                cache.Remove(cache.Items.Where(i => i.CentralId == this.Neuron.Id));
+                var relatives = await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron);
+                cache.AddOrUpdate(relatives);
+                return true;
+            },
+            "Neuron reloaded successfully.",
+            this.statusService
+            );
+        }
+
+        private static void CopyNeuronData(Neuron target, Neuron source)
+        {
+            target.Data = source.Data;
+            target.Type = source.Type;
+            target.Timestamp = source.Timestamp;
+            target.Version = source.Version;
+            target.Errors = source.Errors;
+        }
+
+        private Task OnAddPresynaptic(SourceCache<Neuron, int> cache)
+        {
+            return Helper.SetStatusOnComplete(async () =>
+                {
+                    await this.neuronApplicationService.CreateNeuron(
+                        this.avatarUrl,
+                        Guid.NewGuid().ToString(),
+                        "New Presynaptic",
+                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
+                        new Terminal[] { NeuronViewModelBase.TempCreateTerminal(this.Neuron.NeuronId) }
+                        );
+                    await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
+                    return true;
+                },
+                "Presynaptic added successfully.",
+                this.statusService
+            );
+        }
+
+        private async Task OnAddPostsynaptic(SourceCache<Neuron, int> cache, object parameter)
+        {
+            await Helper.SetStatusOnComplete(async () =>
+                {
+                    bool stat = false;
+                    if (this.dialogService.ShowDialogSelectNeuron("Select Neuron", this.avatarUrl, parameter, out Neuron result).GetValueOrDefault())
+                    {
+                        await this.neuronApplicationService.AddTerminalsToNeuron(
+                            this.avatarUrl,
+                            this.neuronId,
+                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
+                            new Terminal[] { NeuronViewModelBase.TempCreateTerminal(result.NeuronId) },
+                            this.Neuron.Version
+                            );
+                        await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
+                        stat = true;
+                    }
+                    return stat;
+                },
+                "Postsynaptic added successfully.",
+                this.statusService,
+                "Postsynaptic selection cancelled."
+            );
+        }
+
+        // TODO: make Effect and Strength user-specified
+        private static Terminal TempCreateTerminal(string targetId)
+        {
+            return new Terminal { TargetId = targetId, Effect = NeurotransmitterEffect.Excite, Strength = 1f };
+        }
+
+        public Neuron Neuron { get; private set; }
 
         private string childrenCountText;
 

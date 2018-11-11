@@ -9,20 +9,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     public class NeuronService : INeuronService
     {
-        public void AddPostsynaptic(SourceCache<Neuron, int> cache, Neuron central)
-        {
-            var postsyn = new Neuron {
-                Id = Guid.NewGuid().GetHashCode(),
-                CentralId = central.Id,
-                NeuronId = Guid.NewGuid().ToString(),
-                CentralNeuronId = central.CentralNeuronId,
-                Data = "New Postsynaptic",
-                Type = RelativeType.Postsynaptic
-                };
-
-            cache.AddOrUpdate(postsyn);
-        }
-
         public void ChangeData(SourceCache<Neuron, int> cache, Neuron dto, string value)
         {
             // TODO: update data source

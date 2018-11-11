@@ -25,12 +25,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 (ex, _) => NeuronGraphQueryClient.logger.Error(ex, "Error occurred while querying Neurul Cortex. " + ex.InnerException?.Message)
             );
 
-        private static readonly string GetAllPathTemplate = "cortex/graph/neurons";
-        private static readonly string GetAllRelativesPathTemplate = "cortex/graph/neurons/{0}/relatives";
-
-        private static readonly string neuronsQueryPathTemplate = "cortex/graph/neurons/{0}";
-        private static readonly string neuronsQuerySearchPathTemplate = "cortex/graph/neurons/search?data={0}";
-        private static readonly string dendritesQueryPathTemplate = NeuronGraphQueryClient.neuronsQueryPathTemplate + "/dendrites";
+        private static readonly string GetNeuronsPathTemplate = "cortex/graph/neurons";
+        private static readonly string GetRelativesPathTemplate = "cortex/graph/neurons/{0}/relatives";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public NeuronGraphQueryClient(IRequestProvider requestProvider = null, ISettingsService settingsService = null)
@@ -39,54 +35,50 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
         }
 
-        public async Task<Neuron> GetNeuron(string id, CancellationToken token = default(CancellationToken)) =>
+        public async Task<IEnumerable<Neuron>> GetNeuronById(string avatarUrl, string id, Neuron central = null, RelativeType type = RelativeType.NotSet, CancellationToken token = default(CancellationToken)) =>
             await NeuronGraphQueryClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetNeuronInternal(id, token).ConfigureAwait(false));
+                async () => await this.GetNeuronByIdInternal(avatarUrl, id, central, type, token).ConfigureAwait(false));
 
-        private async Task<Neuron> GetNeuronInternal(string id, CancellationToken token = default(CancellationToken))
+        private async Task<IEnumerable<Neuron>> GetNeuronByIdInternal(string avatarUrl, string id, Neuron central = null, RelativeType type = RelativeType.NotSet, CancellationToken token = default(CancellationToken))
         {
-            return await Task.FromResult(new Neuron());
+            string path = string.Empty;
+            var queryStringBuilder = new StringBuilder();
 
-            // TODO: return await this.requestProvider.GetAsync<Neuron>(
-            //    this.settingsService.AvatarEndpoint + string.Format(NeuronGraphQueryClient.neuronsQueryPathTemplate, id),
-            //    this.settingsService.AuthAccessToken
-            //    );
+            if (central != null && type != RelativeType.NotSet)
+            {
+                path = $"{NeuronGraphQueryClient.GetNeuronsPathTemplate}/{central.NeuronId}/relatives/{id}";
+                queryStringBuilder.Append($"?{nameof(type)}={type.ToString()}");
+            }
+            else
+                path = $"{NeuronGraphQueryClient.GetNeuronsPathTemplate}/{id}";
+
+            return await this.requestProvider.GetAsync<IEnumerable<Neuron>>(
+               $"{avatarUrl}{path}{queryStringBuilder.ToString()}",
+               this.settingsService.AuthAccessToken
+               );
         }
 
-        public async Task<IEnumerable<Neuron>> GetAllNeuronsByDataSubstring(string dataSubstring, CancellationToken token = default(CancellationToken)) =>
+        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken)) =>
             await NeuronGraphQueryClient.exponentialRetryPolicy.ExecuteAsync(
-                    async () => await this.GetAllNeuronsByDataSubstringInternal(dataSubstring, token).ConfigureAwait(false));
+                async () => await this.GetNeuronsInternal(avatarUrl, central, type, filter, limit, token).ConfigureAwait(false));
 
-        private async Task<IEnumerable<Neuron>> GetAllNeuronsByDataSubstringInternal(string dataSubstring, CancellationToken token = default(CancellationToken))
-        {
-            return await Task.FromResult(new Neuron[0]);
-            // TODO: return await this.requestProvider.GetAsync<Neuron[]>(
-            //    this.settingsService.AvatarEndpoint + string.Format(NeuronGraphQueryClient.neuronsQuerySearchPathTemplate, dataSubstring),
-            //    this.settingsService.AuthAccessToken
-            //    );
-        }
-
-        public async Task<IEnumerable<Neuron>> GetAll(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken)) =>
-            await NeuronGraphQueryClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetAllInternal(avatarUrl, central, type, filter, limit, token).ConfigureAwait(false));
-
-        private async Task<IEnumerable<Neuron>> GetAllInternal(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
+        private async Task<IEnumerable<Neuron>> GetNeuronsInternal(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
         {
             var queryStringBuilder = new StringBuilder();
 
-            if (type != RelativeType.NotSet)
-                queryStringBuilder.Append("type=")
-                    .Append(type.ToString());
-            if (!string.IsNullOrEmpty(filter))
-                queryStringBuilder.Append("filter=")
-                    .Append(filter);
+            // TODO: if (type != RelativeType.NotSet)
+            //    queryStringBuilder.Append("type=")
+            //        .Append(type.ToString());
+            //if (!string.IsNullOrEmpty(filter))
+            //    queryStringBuilder.Append("filter=")
+            //        .Append(filter);
             if (limit.HasValue)
                 queryStringBuilder.Append("limit=")
                     .Append(limit.Value);
             if (queryStringBuilder.Length > 0)
                 queryStringBuilder.Insert(0, '?');
 
-            var path = central == null ? NeuronGraphQueryClient.GetAllPathTemplate : string.Format(NeuronGraphQueryClient.GetAllRelativesPathTemplate, central.NeuronId);
+            var path = central == null ? NeuronGraphQueryClient.GetNeuronsPathTemplate : string.Format(NeuronGraphQueryClient.GetRelativesPathTemplate, central.NeuronId);
 
             return await this.requestProvider.GetAsync<IEnumerable<Neuron>>(
                 $"{avatarUrl}{path}{queryStringBuilder.ToString()}",

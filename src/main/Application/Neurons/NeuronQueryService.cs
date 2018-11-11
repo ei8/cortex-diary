@@ -18,19 +18,20 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
             this.neuronQueryClient = neuronQueryClient ?? Locator.Current.GetService<INeuronGraphQueryClient>();
         }
 
-        public async Task<IEnumerable<Neuron>> GetAllNeuronsByDataSubstring(string dataSubstring, CancellationToken token = default(CancellationToken))
+        public async Task<IEnumerable<Neuron>> GetNeuronById(string avatarUrl, string id, Neuron central = null, RelativeType type = RelativeType.NotSet, CancellationToken token = default(CancellationToken))
         {
-            return await this.neuronQueryClient.GetAllNeuronsByDataSubstring(dataSubstring, token);
+            var neurons = await this.neuronQueryClient.GetNeuronById(avatarUrl, id, central, type, token);
+            neurons.ToList().ForEach(n => {
+                n.Id = Guid.NewGuid().GetHashCode();
+                n.CentralId = central != null ? central.Id : int.MinValue;
+            });
+
+            return neurons;
         }
 
-        public async Task<Neuron> GetNeuron(string id, CancellationToken token = default(CancellationToken))
+        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
         {
-            return await this.neuronQueryClient.GetNeuron(id);
-        }
-
-        public async Task<IEnumerable<Neuron>> GetAll(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
-        {
-            var relatives = await this.neuronQueryClient.GetAll(avatarUrl, central, type, filter, limit, token);
+            var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, central, type, filter, limit, token);
             relatives.ToList().ForEach(n => {
                 n.Id = Guid.NewGuid().GetHashCode();
                 n.CentralId = central != null ? central.Id : int.MinValue;

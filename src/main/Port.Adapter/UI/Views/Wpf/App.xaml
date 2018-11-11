@@ -14,6 +14,9 @@
             <DataTemplate DataType="{x:Type dialogs:DialogYesNoViewModel}">
                 <wpfdialogs:DialogYesNoView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type dialogs:DialogSelectNeuronViewModel}">
+                <wpfdialogs:DialogSelectNeuronView />
+            </DataTemplate>
         </ResourceDictionary>        
     </Application.Resources>
 </Application>

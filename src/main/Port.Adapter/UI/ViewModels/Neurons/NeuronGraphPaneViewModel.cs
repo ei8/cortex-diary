@@ -36,8 +36,24 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             bool DefaultPredicate(Node<Neuron, int> node) => node.IsRoot;
             var cache = new SourceCache<Neuron, int>(x => x.Id);
 
-            this.AddCommand = ReactiveCommand.Create(() =>
-                Helper.SetStatusOnComplete(async() =>
+            this.AddCommand = ReactiveCommand.Create(() => this.OnAddClicked(cache));
+            this.SetAuthorIdCommand = ReactiveCommand.Create(() => this.OnSetAuthorIdClicked());
+            this.ReloadCommand = ReactiveCommand.Create(() => this.OnReloadClicked(cache));
+
+            this.cleanUp = cache.AsObservableCache().Connect()
+                .TransformToTree(child => child.CentralId, Observable.Return((Func<Node<Neuron, int>, bool>)DefaultPredicate))
+                .Transform(e =>
+                    e.Item.Type == RelativeType.Postsynaptic ?
+                    (NeuronViewModelBase)(new PostsynapticViewModel(this.avatarUrl, e.Item.Data, e, cache)) :
+                    (NeuronViewModelBase)(new PresynapticViewModel(this.avatarUrl, e.Item.Data, e, cache)))
+                .Bind(out this.children)
+                .DisposeMany()
+                .Subscribe();
+        }
+
+        private Task OnAddClicked(SourceCache<Neuron, int> cache)
+        {
+            return Helper.SetStatusOnComplete(async () =>
                 {
                     Neuron n = new Neuron
                     {
@@ -55,44 +71,38 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         new Terminal[0]
                         );
                     cache.AddOrUpdate(n);
+                    return true;
                 },
                 "Neuron added successfully.",
                 this.statusService
-                )
-            );
+                );
+        }
 
-            this.SetAuthorIdCommand = ReactiveCommand.Create(() =>
-                Helper.SetStatusOnComplete(async() =>
+        private Task OnSetAuthorIdClicked()
+        {
+            return Helper.SetStatusOnComplete(() =>
                 {
                     this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId = this.authorId;
-                    await Task.CompletedTask;
+                    return Task.FromResult(true);
                 },
                 "Author set successfully.",
                 this.statusService
-                )
-            );
+                );
+        }
 
-            this.ReloadCommand = ReactiveCommand.Create(() => 
-                Helper.SetStatusOnComplete(async() =>
+        private Task OnReloadClicked(SourceCache<Neuron, int> cache)
+        {
+            return Helper.SetStatusOnComplete(async () =>
                 {
                     cache.Clear();
-                    var relatives = await this.neuronQueryService.GetAll(this.avatarUrl);
+                    var relatives = await this.neuronQueryService.GetNeurons(this.avatarUrl);
                     this.originService.Save(this.avatarUrl);
                     cache.AddOrUpdate(relatives);
+                    return true;
                 },
                 "Reload successful.",
                 this.statusService
-                )
             );
-            this.cleanUp = cache.AsObservableCache().Connect()
-                .TransformToTree(child => child.CentralId, Observable.Return((Func<Node<Neuron, int>, bool>)DefaultPredicate))
-                .Transform(e =>
-                    e.Item.Type == RelativeType.Postsynaptic ?
-                    (NeuronViewModelBase)(new PostsynapticViewModel(avatarUrl, e.Item.Data, e, cache)) :
-                    (NeuronViewModelBase)(new PresynapticViewModel(avatarUrl, e.Item.Data, e, cache)))
-                .Bind(out this.children)
-                .DisposeMany()
-                .Subscribe();
         }
 
         public ReactiveCommand AddCommand { get; }
