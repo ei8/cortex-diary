@@ -73,7 +73,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.AddPostsynapticCommand = ReactiveCommand.Create<object>(
                 async (parameter) => await this.OnAddPostsynaptic(cache, parameter)
             );
-            this.AddPresynapticCommand = ReactiveCommand.Create(() => this.OnAddPresynaptic(cache));
+            this.AddPresynapticCommand = ReactiveCommand.Create(async() => await this.OnAddPresynaptic(cache));
             this.DeleteCommand = ReactiveCommand.Create(() => this.neuronService.Delete(cache, this.Neuron));
 
             this.neuronService = neuronService ?? Locator.Current.GetService<INeuronService>();
@@ -118,12 +118,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .Subscribe(text => this.ChildrenCountText = text);
 
             var changeData = this.WhenPropertyChanged(p => p.Data, false)
-                .Subscribe(x => 
-                {
-                    if (!this.settingNeuron)
-                        this.neuronService.ChangeData(cache, this.Neuron, x.Value);
-                }
-                );
+                .Subscribe(async(x) => await this.OnNeuronDataChanged(cache, x));
 
             var selector = this.WhenPropertyChanged(p => p.IsSelected)
                 .Where(p => p.Value)
@@ -135,8 +130,31 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 childrenCount.Dispose();
                 if (childrenLoader.IsValueCreated)
                     childrenLoader.Value.Dispose();
+                changeData.Dispose();
                 selector.Dispose();
             });
+        }
+
+        private async Task OnNeuronDataChanged(SourceCache<Neuron, int> cache, PropertyValue<NeuronViewModelBase, string> x)
+        {
+            if (!this.settingNeuron)
+            {
+                await Helper.SetStatusOnComplete(async () =>
+                {
+                    await this.neuronApplicationService.ChangeNeuronData(
+                        this.avatarUrl,
+                        this.neuronId,
+                        x.Value,
+                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
+                        this.Neuron.Version
+                    );
+                    await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
+                    return true;
+                },
+                "Neuron changed successfully.",
+                this.statusService
+            );
+            }
         }
 
         private void SetNeuron(Neuron neuron)
@@ -185,17 +203,17 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             target.Errors = source.Errors;
         }
 
-        private Task OnAddPresynaptic(SourceCache<Neuron, int> cache)
+        private async Task OnAddPresynaptic(SourceCache<Neuron, int> cache)
         {
-            return Helper.SetStatusOnComplete(async () =>
+            await Helper.SetStatusOnComplete(async () =>
                 {
                     await this.neuronApplicationService.CreateNeuron(
                         this.avatarUrl,
                         Guid.NewGuid().ToString(),
                         "New Presynaptic",
-                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
-                        new Terminal[] { NeuronViewModelBase.TempCreateTerminal(this.Neuron.NeuronId) }
-                        );
+                        new Terminal[] { NeuronViewModelBase.TempCreateTerminal(this.Neuron.NeuronId) },
+                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                    );
                     await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
                     return true;
                 },
@@ -214,8 +232,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         await this.neuronApplicationService.AddTerminalsToNeuron(
                             this.avatarUrl,
                             this.neuronId,
-                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
                             new Terminal[] { NeuronViewModelBase.TempCreateTerminal(result.NeuronId) },
+                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
                             this.Neuron.Version
                             );
                         await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);

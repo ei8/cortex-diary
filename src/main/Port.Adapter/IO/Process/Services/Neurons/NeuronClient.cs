@@ -34,11 +34,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
         }
 
-        public async Task AddTerminalsToNeuron(string avatarUrl, string id, string authorId, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task AddTerminalsToNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.AddTerminalsToNeuronInternal(avatarUrl, id, authorId, terminals, expectedVersion, token).ConfigureAwait(false));
+                async () => await this.AddTerminalsToNeuronInternal(avatarUrl, id, terminals, authorId, expectedVersion, token).ConfigureAwait(false));
 
-        public async Task AddTerminalsToNeuronInternal(string avatarUrl, string id, string authorId, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task AddTerminalsToNeuronInternal(string avatarUrl, string id, IEnumerable<Terminal> terminals, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
@@ -64,11 +64,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task CreateNeuron(string avatarUrl, string id, string data, string authorId, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateNeuron(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, string authorId, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateNeuronInternal(avatarUrl, id, data, authorId, terminals, token).ConfigureAwait(false));
+                async () => await this.CreateNeuronInternal(avatarUrl, id, data, terminals, authorId, token).ConfigureAwait(false));
 
-        private async Task CreateNeuronInternal(string avatarUrl, string id, string data, string authorId, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken))
+        private async Task CreateNeuronInternal(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, string authorId, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
@@ -128,11 +128,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 sb.Append(", ");
         }
 
-        public async Task ChangeNeuronData(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task ChangeNeuronData(string avatarUrl, string id, string data, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                    async () => await this.ChangeNeuronDataInternal(avatarUrl, id, data, expectedVersion, token).ConfigureAwait(false));
+                    async () => await this.ChangeNeuronDataInternal(avatarUrl, id, data, authorId, expectedVersion, token).ConfigureAwait(false));
 
-        private async Task ChangeNeuronDataInternal(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken))
+        private async Task ChangeNeuronDataInternal(string avatarUrl, string id, string data, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
@@ -140,9 +140,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             };
 
             StringBuilder sb = new StringBuilder();
-            sb.Append("{ \"Data\": \"");
-            sb.Append(data);
-            sb.Append("\"");            
+            sb.Append("{");
+            sb.Append($"\"Data\": \"{data}\"");
+            NeuronClient.AppendAuthorId(authorId, sb);
             sb.Append("}");
 
             HttpRequestMessage msg = new HttpRequestMessage {
@@ -153,7 +153,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             msg.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await httpClient.SendAsync(msg, token);
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
 
         public async Task RemoveTerminalsFromNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
@@ -175,7 +176,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             msg.Headers.Add("ETag", expectedVersion.ToString());
 
             HttpResponseMessage response = await httpClient.SendAsync(msg, token);
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
 
         public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
@@ -193,7 +195,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             msg.Headers.Add("ETag", expectedVersion.ToString());
 
             HttpResponseMessage response = await httpClient.SendAsync(msg, token);
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
     }
 }

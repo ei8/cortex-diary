@@ -36,9 +36,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             bool DefaultPredicate(Node<Neuron, int> node) => node.IsRoot;
             var cache = new SourceCache<Neuron, int>(x => x.Id);
 
-            this.AddCommand = ReactiveCommand.Create(() => this.OnAddClicked(cache));
-            this.SetAuthorIdCommand = ReactiveCommand.Create(() => this.OnSetAuthorIdClicked());
-            this.ReloadCommand = ReactiveCommand.Create(() => this.OnReloadClicked(cache));
+            this.AddCommand = ReactiveCommand.Create(async() => await this.OnAddClicked(cache));
+            this.SetAuthorIdCommand = ReactiveCommand.Create(async() => await this.OnSetAuthorIdClicked());
+            this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(cache));
 
             this.cleanUp = cache.AsObservableCache().Connect()
                 .TransformToTree(child => child.CentralId, Observable.Return((Func<Node<Neuron, int>, bool>)DefaultPredicate))
@@ -51,9 +51,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .Subscribe();
         }
 
-        private Task OnAddClicked(SourceCache<Neuron, int> cache)
+        private async Task OnAddClicked(SourceCache<Neuron, int> cache)
         {
-            return Helper.SetStatusOnComplete(async () =>
+            await Helper.SetStatusOnComplete(async () =>
                 {
                     Neuron n = new Neuron
                     {
@@ -67,8 +67,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         this.avatarUrl,
                         n.NeuronId,
                         n.Data,
-                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
-                        new Terminal[0]
+                        new Terminal[0],
+                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
                         );
                     cache.AddOrUpdate(n);
                     return true;
@@ -78,9 +78,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 );
         }
 
-        private Task OnSetAuthorIdClicked()
+        private async Task OnSetAuthorIdClicked()
         {
-            return Helper.SetStatusOnComplete(() =>
+            await Helper.SetStatusOnComplete(() =>
                 {
                     this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId = this.authorId;
                     return Task.FromResult(true);
@@ -90,9 +90,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 );
         }
 
-        private Task OnReloadClicked(SourceCache<Neuron, int> cache)
+        private async Task OnReloadClicked(SourceCache<Neuron, int> cache)
         {
-            return Helper.SetStatusOnComplete(async () =>
+            await Helper.SetStatusOnComplete(async () =>
                 {
                     cache.Clear();
                     var relatives = await this.neuronQueryService.GetNeurons(this.avatarUrl);

@@ -17,19 +17,19 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
             this.neuronClient = neuronClient ?? Locator.Current.GetService<INeuronClient>();
         }
 
-        public async Task AddTerminalsToNeuron(string avatarUrl, string id, string authorId, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task AddTerminalsToNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.AddTerminalsToNeuron(avatarUrl, id, authorId, terminals, expectedVersion, token);
+            await this.neuronClient.AddTerminalsToNeuron(avatarUrl, id, terminals, authorId, expectedVersion, token);
         }
 
-        public async Task ChangeNeuronData(string avatarUrl, string id, string data, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task ChangeNeuronData(string avatarUrl, string id, string data, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.ChangeNeuronData(avatarUrl, id, data, expectedVersion, token);
+            await this.neuronClient.ChangeNeuronData(avatarUrl, id, data, authorId, expectedVersion, token);
         }
 
-        public async Task CreateNeuron(string avatarUrl, string id, string data, string authorId, IEnumerable<Terminal> terminals, CancellationToken token = default(CancellationToken))
+        public async Task CreateNeuron(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, string authorId, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.CreateNeuron(avatarUrl, id, data, authorId, terminals, token);
+            await this.neuronClient.CreateNeuron(avatarUrl, id, data, terminals, authorId, token);
         }
 
         public async Task RemoveTerminalsFromNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
