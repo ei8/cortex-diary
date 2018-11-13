@@ -8,6 +8,6 @@
     <Grid Margin="4">
         <Button Name="YesButton" Content="Yes" HorizontalAlignment="Left" Margin="135,70,0,0" VerticalAlignment="Top" Width="75"/>
         <Button Name="NoButton" Content="No" HorizontalAlignment="Left" Margin="215,70,0,0" VerticalAlignment="Top" Width="75"/>
-        <Label Name="MessageLabel" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="272" Height="55"/>
+        <TextBlock Name="MessageLabel" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="272" Height="55" TextWrapping="Wrap"/>
     </Grid>
 </UserControl>

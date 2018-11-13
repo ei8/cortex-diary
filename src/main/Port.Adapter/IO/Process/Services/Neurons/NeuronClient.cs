@@ -157,16 +157,21 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task RemoveTerminalsFromNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task RemoveTerminalsFromNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.RemoveTerminalsFromNeuronInternal(avatarUrl, id, terminals, expectedVersion, token));
+                async () => await this.RemoveTerminalsFromNeuronInternal(avatarUrl, id, terminals, authorId, expectedVersion, token));
 
-        public async Task RemoveTerminalsFromNeuronInternal(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken))
+        private async Task RemoveTerminalsFromNeuronInternal(string avatarUrl, string id, IEnumerable<Terminal> terminals, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(avatarUrl)
             };
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("{");
+            NeuronClient.AppendAuthorId(authorId, sb);
+            sb.Append("}");
 
             HttpRequestMessage msg = new HttpRequestMessage
             {
@@ -174,18 +179,28 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 RequestUri = new Uri(string.Format(NeuronClient.neuronsTerminalsPathTemplate + "/{1}", id, terminals.First().TargetId), UriKind.Relative)
             };
             msg.Headers.Add("ETag", expectedVersion.ToString());
+            msg.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await httpClient.SendAsync(msg, token);
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task DeactivateNeuron(string avatarUrl, string id, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+            await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
+                async () => await this.DeactivateNeuronInternal(avatarUrl, id, authorId, expectedVersion, token));
+
+        private async Task DeactivateNeuronInternal(string avatarUrl, string id, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(avatarUrl)
             };
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("{");
+            NeuronClient.AppendAuthorId(authorId, sb);
+            sb.Append("}");
 
             HttpRequestMessage msg = new HttpRequestMessage
             {
@@ -193,6 +208,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 RequestUri = new Uri(string.Format(NeuronClient.neuronsPathTemplate, id), UriKind.Relative)
             };
             msg.Headers.Add("ETag", expectedVersion.ToString());
+            msg.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await httpClient.SendAsync(msg, token);
             if (!response.IsSuccessStatusCode)

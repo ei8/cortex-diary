@@ -14,8 +14,8 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
 
         Task ChangeNeuronData(string avatarUrl, string id, string data, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken));
 
-        Task RemoveTerminalsFromNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, int expectedVersion, CancellationToken token = default(CancellationToken));
+        Task RemoveTerminalsFromNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken));
 
-        Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken));
+        Task DeactivateNeuron(string avatarUrl, string id, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken));
     }
 }

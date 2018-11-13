@@ -15,6 +15,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
         public DialogYesNoViewModel(string message)
             : base(message)
         {
+            this.UserDialogResult = Dialogs.DialogResult.Undefined;
             this.YesCommand = ReactiveCommand.Create(OnYesClicked);
             this.NoCommand = ReactiveCommand.Create(OnNoClicked);
         }

@@ -52,7 +52,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private bool isSelected;
         private ReadOnlyObservableCollection<NeuronViewModelBase> children;
         private IExtendedSelectionService selectionService;
-        private readonly INeuronService neuronService;
         private readonly INeuronApplicationService neuronApplicationService;
         private readonly INeuronQueryService neuronQueryService;
         private readonly IOriginService originService;
@@ -60,23 +59,23 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly IDialogService dialogService;
         private bool settingNeuron;
         // cortex graph poll interval + 100 millisecond allowance
-        private const int ReloadDelay = 2100; 
+        private const int ReloadDelay = 2100;
 
-        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronService neuronService = null, INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null, IDialogService dialogService = null)
+        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronApplicationService neuronApplicationService = null,
+            INeuronQueryService neuronQueryService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.avatarUrl = avatarUrl;
             this.Id = node.Key;
             this.Parent = parent;
             this.SetNeuron(node.Item);
 
-            this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReload(cache));
+            this.ReloadCommand = ReactiveCommand.Create(async () => await this.OnReload(cache));
             this.AddPostsynapticCommand = ReactiveCommand.Create<object>(
                 async (parameter) => await this.OnAddPostsynaptic(cache, parameter)
             );
-            this.AddPresynapticCommand = ReactiveCommand.Create(async() => await this.OnAddPresynaptic(cache));
-            this.DeleteCommand = ReactiveCommand.Create(() => this.neuronService.Delete(cache, this.Neuron));
+            this.AddPresynapticCommand = ReactiveCommand.Create(async () => await this.OnAddPresynaptic(cache));
+            this.DeleteCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnDeleteClicked(cache, parameter));
 
-            this.neuronService = neuronService ?? Locator.Current.GetService<INeuronService>();
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>();
@@ -118,7 +117,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .Subscribe(text => this.ChildrenCountText = text);
 
             var changeData = this.WhenPropertyChanged(p => p.Data, false)
-                .Subscribe(async(x) => await this.OnNeuronDataChanged(cache, x));
+                .Subscribe(async (x) => await this.OnNeuronDataChanged(cache, x));
 
             var selector = this.WhenPropertyChanged(p => p.IsSelected)
                 .Where(p => p.Value)
@@ -133,6 +132,62 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 changeData.Dispose();
                 selector.Dispose();
             });
+        }
+
+        private async Task OnDeleteClicked(SourceCache<Neuron, int> cache, object parameter)
+        {
+            await Helper.SetStatusOnComplete(async () =>
+                {
+                    bool stat = false;
+                    string message = string.Empty;
+                    if (this.Neuron.Type == RelativeType.NotSet)
+                        message = $"Are you sure you wish to delete Neuron '{this.Data}'?";
+                    else
+                        message = $"Are you sure you wish to delete relative '{this.Data}' of '{this.Parent.Value.Neuron.Data}'?";
+
+                    if (this.dialogService.ShowDialogYesNo(message, parameter, out DialogResult result).GetValueOrDefault() &&
+                        result == DialogResult.Yes)
+                    {
+                        switch (this.Neuron.Type)
+                        {
+                            case RelativeType.NotSet:
+                                await this.neuronApplicationService.DeactivateNeuron(
+                                    this.avatarUrl,
+                                    this.NeuronId,
+                                    this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
+                                    this.Neuron.Version
+                                );
+                                cache.Remove(this.Neuron);
+                                break;
+                            case RelativeType.Postsynaptic:
+                                await this.neuronApplicationService.RemoveTerminalsFromNeuron(
+                                    this.avatarUrl,
+                                    this.Parent.Value.NeuronId,
+                                    new Terminal[] { new Terminal { TargetId = this.NeuronId } },
+                                    this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
+                                    this.Parent.Value.Neuron.Version
+                                    );
+                                cache.Remove(this.Neuron);
+                                break;
+                            case RelativeType.Presynaptic:
+                                await this.neuronApplicationService.RemoveTerminalsFromNeuron(
+                                    this.avatarUrl,
+                                    this.NeuronId,
+                                    new Terminal[] { new Terminal { TargetId = this.Parent.Value.NeuronId } },
+                                    this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
+                                    this.Neuron.Version
+                                    );
+                                cache.Remove(this.Neuron);
+                                break;
+                        }
+                        stat = true;
+                    }
+                    return stat;
+                },
+                "Deletion successful.",
+                this.statusService,
+                "Deletion cancelled."
+            );
         }
 
         private async Task OnNeuronDataChanged(SourceCache<Neuron, int> cache, PropertyValue<NeuronViewModelBase, string> x)
@@ -151,7 +206,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
                     return true;
                 },
-                "Neuron changed successfully.",
+                "Neuron data changed successfully.",
                 this.statusService
             );
             }
@@ -253,60 +308,80 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             return new Terminal { TargetId = targetId, Effect = NeurotransmitterEffect.Excite, Strength = 1f };
         }
 
+        [Browsable(false)]
         public Neuron Neuron { get; private set; }
 
         private string childrenCountText;
 
+        [Browsable(false)]
         public string ChildrenCountText
         {
             get => this.childrenCountText;
             set => this.RaiseAndSetIfChanged(ref this.childrenCountText, value);
         }
 
+        [ReadOnly(true)]
         public int Id
         {
             get => this.id;
             set => this.RaiseAndSetIfChanged(ref this.id, value);
         }
-                
+
         [ParenthesizePropertyName(true)]
+        [ReadOnly(true)]
         public string NeuronId
         {
             get => this.neuronId;
             set => this.RaiseAndSetIfChanged(ref this.neuronId, value);
         }
-                
+
         public string Data
         {
             get => this.data;
             set => this.RaiseAndSetIfChanged(ref this.data, value);
         }
 
+        [Browsable(false)]
         public bool IsExpanded
         {
             get => this.isExpanded;
             set => this.RaiseAndSetIfChanged(ref isExpanded, value);
         }
 
+        [Browsable(false)]
         public bool IsSelected
         {
             get => this.isSelected;
             set => this.RaiseAndSetIfChanged(ref isSelected, value);
         }
 
+        [Browsable(false)]
         public ReactiveCommand ReloadCommand { get; }
-        
+
+        [Browsable(false)]
         public ReactiveCommand AddPostsynapticCommand { get; }
 
+        [Browsable(false)]
         public ReactiveCommand AddPresynapticCommand { get; }
 
+        [Browsable(false)]
         public ReactiveCommand DeleteCommand { get; }
 
+        [Browsable(false)]
         public abstract object ViewModel { get; }
 
+        [Browsable(false)]
         public ReadOnlyObservableCollection<NeuronViewModelBase> Children => this.children;
 
+        [Browsable(false)]
         public Optional<NeuronViewModelBase> Parent { get; }
+
+        [Browsable(false)]
+        public new IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => base.Changing;
+        [Browsable(false)]
+        public new IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => base.Changed;
+        [Browsable(false)]
+        public new IObservable<Exception> ThrownExceptions => base.ThrownExceptions;
 
         public override string ToString()
         {
