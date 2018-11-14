@@ -150,6 +150,9 @@
     <Compile Include="Dialogs\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\DialogTextInputView.xaml.cs">
+      <DependentUpon>DialogTextInputView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\DialogYesNoView.xaml.cs">
       <DependentUpon>DialogYesNoView.xaml</DependentUpon>
     </Compile>
@@ -159,6 +162,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\DialogWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\DialogTextInputView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

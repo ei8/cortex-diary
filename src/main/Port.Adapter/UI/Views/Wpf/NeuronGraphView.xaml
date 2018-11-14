@@ -37,7 +37,7 @@
             </Grid.ColumnDefinitions>
             <Button Name="Reload" Width="80">Reload</Button>
             <TextBox Name="AvatarUrl" Grid.Column="1" HorizontalAlignment="Stretch" MinWidth="200" VerticalContentAlignment="Center"></TextBox>
-            <Button Name="Add" Grid.Column="2" Width="65">Add</Button>
+            <Button Name="Add" Grid.Column="2" Width="65" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">Add</Button>
         </Grid>
         <TreeView Name="FamilyTree" 
                   ItemsSource="{Binding Children}"
@@ -114,7 +114,8 @@
                             <Button Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     ToolTip="Add Presynaptic"
                                     
-                                    Command="{Binding AddPresynapticCommand}">
+                                    Command="{Binding AddPresynapticCommand}"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
 
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{DynamicResource AccentSelectedColorBrush}" />
@@ -198,7 +199,8 @@
                             <Button Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     ToolTip="Add Presynaptic"
                                     
-                                    Command="{Binding AddPresynapticCommand}">
+                                    Command="{Binding AddPresynapticCommand}"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
 
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{DynamicResource AccentSelectedColorBrush}" />

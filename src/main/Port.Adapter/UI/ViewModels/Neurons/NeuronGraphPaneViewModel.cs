@@ -10,6 +10,7 @@ using Splat;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
@@ -22,13 +23,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly ReadOnlyObservableCollection<NeuronViewModelBase> children;
         private readonly IDisposable cleanUp;
         private readonly IStatusService statusService;
+        private readonly IDialogService dialogService;
 
-        public NeuronGraphPaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, IStatusService statusService = null)
+        public NeuronGraphPaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, 
+            IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
             this.originService = originService ?? Locator.Current.GetService<IOriginService>();
             this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
+            this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
 
             this.statusService.WhenPropertyChanged(s => s.Message)
                 .Subscribe(s => this.StatusMessage = s.Sender.Message);
@@ -36,7 +40,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             bool DefaultPredicate(Node<Neuron, int> node) => node.IsRoot;
             var cache = new SourceCache<Neuron, int>(x => x.Id);
 
-            this.AddCommand = ReactiveCommand.Create(async() => await this.OnAddClicked(cache));
+            this.AddCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnAddClicked(cache, parameter));
             this.SetAuthorIdCommand = ReactiveCommand.Create(async() => await this.OnSetAuthorIdClicked());
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(cache));
 
@@ -51,30 +55,37 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .Subscribe();
         }
 
-        private async Task OnAddClicked(SourceCache<Neuron, int> cache)
+        private async Task OnAddClicked(SourceCache<Neuron, int> cache, object parameter)
         {
             await Helper.SetStatusOnComplete(async () =>
                 {
-                    Neuron n = new Neuron
-                    {
-                        Data = "Root Neuron",
-                        Id = Guid.NewGuid().GetHashCode(),
-                        NeuronId = Guid.NewGuid().ToString(),
-                        Type = RelativeType.NotSet
-                    };
+                    bool stat = false;
 
-                    await this.neuronApplicationService.CreateNeuron(
-                        this.avatarUrl,
-                        n.NeuronId,
-                        n.Data,
-                        new Terminal[0],
-                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
-                        );
-                    cache.AddOrUpdate(n);
-                    return true;
+                    if ((await this.dialogService.ShowDialogTextInput("Enter Neuron data: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault())
+                    {
+                        Neuron n = new Neuron
+                        {
+                            Data = result,
+                            Id = Guid.NewGuid().GetHashCode(),
+                            NeuronId = Guid.NewGuid().ToString(),
+                            Type = RelativeType.NotSet
+                        };
+
+                        await this.neuronApplicationService.CreateNeuron(
+                            this.avatarUrl,
+                            n.NeuronId,
+                            n.Data,
+                            new Terminal[0],
+                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                            );
+                        cache.AddOrUpdate(n);
+                        stat = true;
+                    }
+                    return stat;
                 },
                 "Neuron added successfully.",
-                this.statusService
+                this.statusService,
+                "Neuron addition cancelled."
                 );
         }
 

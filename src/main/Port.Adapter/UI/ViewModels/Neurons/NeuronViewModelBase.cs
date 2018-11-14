@@ -70,10 +70,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.SetNeuron(node.Item);
 
             this.ReloadCommand = ReactiveCommand.Create(async () => await this.OnReload(cache));
-            this.AddPostsynapticCommand = ReactiveCommand.Create<object>(
-                async (parameter) => await this.OnAddPostsynaptic(cache, parameter)
-            );
-            this.AddPresynapticCommand = ReactiveCommand.Create(async () => await this.OnAddPresynaptic(cache));
+            this.AddPostsynapticCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnAddPostsynaptic(cache, parameter));
+            this.AddPresynapticCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnAddPresynaptic(cache, parameter));
             this.DeleteCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnDeleteClicked(cache, parameter));
 
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
@@ -145,7 +143,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     else
                         message = $"Are you sure you wish to delete relative '{this.Data}' of '{this.Parent.Value.Neuron.Data}'?";
 
-                    if (this.dialogService.ShowDialogYesNo(message, parameter, out DialogResult result).GetValueOrDefault() &&
+                    if ((await this.dialogService.ShowDialogYesNo(message, parameter, out DialogResult result)).GetValueOrDefault() &&
                         result == DialogResult.Yes)
                     {
                         switch (this.Neuron.Type)
@@ -258,22 +256,29 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             target.Errors = source.Errors;
         }
 
-        private async Task OnAddPresynaptic(SourceCache<Neuron, int> cache)
+        private async Task OnAddPresynaptic(SourceCache<Neuron, int> cache, object parameter)
         {
             await Helper.SetStatusOnComplete(async () =>
                 {
-                    await this.neuronApplicationService.CreateNeuron(
-                        this.avatarUrl,
-                        Guid.NewGuid().ToString(),
-                        "New Presynaptic",
-                        new Terminal[] { NeuronViewModelBase.TempCreateTerminal(this.Neuron.NeuronId) },
-                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
-                    );
-                    await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
-                    return true;
+                    bool stat = false;
+
+                    if ((await this.dialogService.ShowDialogTextInput("Enter Presynaptic data: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault())
+                    {
+                        await this.neuronApplicationService.CreateNeuron(
+                            this.avatarUrl,
+                            Guid.NewGuid().ToString(),
+                            result,
+                            new Terminal[] { NeuronViewModelBase.TempCreateTerminal(this.Neuron.NeuronId) },
+                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                        );
+                        await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
+                        stat = true;
+                    }
+                    return stat;
                 },
                 "Presynaptic added successfully.",
-                this.statusService
+                this.statusService,
+                "Presynaptic addition cancelled."
             );
         }
 
@@ -282,7 +287,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             await Helper.SetStatusOnComplete(async () =>
                 {
                     bool stat = false;
-                    if (this.dialogService.ShowDialogSelectNeuron("Select Neuron", this.avatarUrl, parameter, out Neuron result).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogSelectNeuron("Select Neuron", this.avatarUrl, parameter, out Neuron result)).GetValueOrDefault())
                     {
                         await this.neuronApplicationService.AddTerminalsToNeuron(
                             this.avatarUrl,

@@ -27,6 +27,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(list));
             this.SelectCommand = ReactiveCommand.Create(this.OnSelectedClicked);
             this.CancelCommand = ReactiveCommand.Create(this.OnCancelledClicked);
+            this.UserDialogResult = null;
 
             this.cleanUp = list.AsObservableList().Connect()
                 .Bind(out this.neurons)
