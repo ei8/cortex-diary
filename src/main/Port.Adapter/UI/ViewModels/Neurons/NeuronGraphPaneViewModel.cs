@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DynamicData;
@@ -41,7 +42,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             var cache = new SourceCache<Neuron, int>(x => x.Id);
 
             this.AddCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnAddClicked(cache, parameter));
-            this.SetAuthorIdCommand = ReactiveCommand.Create(async() => await this.OnSetAuthorIdClicked());
+            this.SetAuthorCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnSetAuthorIdClicked(parameter));
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(cache));
 
             this.cleanUp = cache.AsObservableCache().Connect()
@@ -89,15 +90,23 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 );
         }
 
-        private async Task OnSetAuthorIdClicked()
+        private async Task OnSetAuthorIdClicked(object parameter)
         {
-            await Helper.SetStatusOnComplete(() =>
+            await Helper.SetStatusOnComplete(async() =>
                 {
-                    this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId = this.authorId;
-                    return Task.FromResult(true);
+                    bool stat = false;
+
+                    if ((await this.dialogService.ShowDialogSelectNeuron("Select Author Neuron", this.avatarUrl, parameter, out Neuron result)).GetValueOrDefault())
+                    {
+                        this.AuthorName = result.Data;
+                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId = result.NeuronId;
+                        stat = true;
+                    }
+                    return stat;                    
                 },
                 "Author set successfully.",
-                this.statusService
+                this.statusService,
+                "Author set cancelled."
                 );
         }
 
@@ -118,15 +127,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         public ReactiveCommand AddCommand { get; }
 
-        private string authorId;
+        private string authorName;
 
-        public string AuthorId
+        public string AuthorName
         {
-            get => this.authorId;
-            set => this.RaiseAndSetIfChanged(ref authorId, value);
+            get => this.authorName;
+            set => this.RaiseAndSetIfChanged(ref authorName, value);
         }
 
-        public ReactiveCommand SetAuthorIdCommand { get; }
+        public ReactiveCommand SetAuthorCommand { get; }
 
         private string avatarUrl;
 

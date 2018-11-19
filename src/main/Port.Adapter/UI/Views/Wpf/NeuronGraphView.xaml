@@ -273,13 +273,10 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <Label Name="StatusMessage" Width="auto" VerticalContentAlignment="Center"/>
-            <Label VerticalContentAlignment="Center" Grid.Column="1" >Author Id</Label>
-            <TextBox Name="AuthorId" Width="300" Grid.Column="2" VerticalContentAlignment="Center" />
-            <Button Name="SetAuthorId" Grid.Column="3">Set</Button>
-            
+            <Label Name="AuthorName" Width="auto" Grid.Column="1" VerticalContentAlignment="Center" />
+            <Button Name="SetAuthor" Grid.Column="2" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">Author</Button>
         </Grid>        
     </Grid>
 </UserControl>

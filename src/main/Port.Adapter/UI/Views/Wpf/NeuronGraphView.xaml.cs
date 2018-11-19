@@ -20,12 +20,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             this.WhenActivated(d =>
            {
                d(this.Bind(this.ViewModel, vm => vm.AvatarUrl, v => v.AvatarUrl.Text));
-               d(this.Bind(this.ViewModel, vm => vm.AuthorId, v => v.AuthorId.Text));
+               d(this.Bind(this.ViewModel, vm => vm.AuthorName, v => v.AuthorName.Content));
                d(this.Bind(this.ViewModel, vm => vm.StatusMessage, v => v.StatusMessage.Content));
 
                d(this.BindCommand(this.ViewModel, vm => vm.ReloadCommand, v => v.Reload));
                d(this.BindCommand(this.ViewModel, vm => vm.AddCommand, v => v.Add));
-               d(this.BindCommand(this.ViewModel, vm => vm.SetAuthorIdCommand, v => v.SetAuthorId));
+               d(this.BindCommand(this.ViewModel, vm => vm.SetAuthorCommand, v => v.SetAuthor));
            });
         }
 

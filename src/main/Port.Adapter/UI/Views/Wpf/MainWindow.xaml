@@ -43,14 +43,16 @@
                 <!--<Separator/>
                 <MenuItem Name="ExitApp" Header="Exit"/>-->
             </MenuItem>
-            <MenuItem Header="Tools">
+            <MenuItem Header="Tools" Visibility="Collapsed">
                 <MenuItem Header="Properties" IsChecked="{Binding FileStats.IsVisible, Mode=TwoWay}" IsCheckable="True"/>
             </MenuItem>
-            <MenuItem Header="Layout">
+            <MenuItem Header="Layout" Visibility="Collapsed">
                 <MenuItem Header="Load" Command="{Binding LoadLayoutCommand, ElementName=mainWindow}"/>
                 <MenuItem Header="Save" Command="{Binding SaveLayoutCommand, ElementName=mainWindow}"/>
                 <MenuItem Header="Dump to Console" Click="OnDumpToConsole"/>
-
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About"/>
             </MenuItem>
         </Menu>
         <avalonDock:DockingManager x:Name="dockManager" AllowMixedOrientation="True" Grid.Row="1">
