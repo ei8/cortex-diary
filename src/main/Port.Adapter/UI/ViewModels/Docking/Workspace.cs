@@ -61,7 +61,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
             get
             {
                 if (_tools == null)
-                    _tools = new ToolViewModel[] { this.FileStats, this.PropertyGrid };
+                    _tools = new ToolViewModel[] { this.PropertyGrid, this.FileStats };
                 return _tools;
             }
         }

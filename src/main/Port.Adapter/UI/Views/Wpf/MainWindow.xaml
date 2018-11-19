@@ -24,7 +24,7 @@
         xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowState="Maximized">
+        Title="d# NeurUL Studio 2018" Height="450" Width="800" WindowState="Maximized">
     <Window.Resources>
         <avalonDock:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
@@ -36,12 +36,12 @@
         <Menu>
             <MenuItem Header="File">
                 <MenuItem Name="NewNeuronGraph" Header="New"/>
-                <MenuItem Header="Open" Command="{Binding OpenCommand}"/>
+                <!--TODO: <MenuItem Header="Open" Command="{Binding OpenCommand}"/>
                 <Separator/>
                 <MenuItem Header="Save" Command="{Binding ActiveDocument.SaveCommand}"/>
-                <MenuItem Header="Save As..." Command="{Binding ActiveDocument.SaveAsCommand}"/>
-                <Separator/>
-                <MenuItem Header="Close" Command="{Binding ActiveDocument.CloseCommand}"/>
+                <MenuItem Header="Save As..." Command="{Binding ActiveDocument.SaveAsCommand}"/>-->
+                <!--<Separator/>
+                <MenuItem Name="ExitApp" Header="Exit"/>-->
             </MenuItem>
             <MenuItem Header="Tools">
                 <MenuItem Header="Properties" IsChecked="{Binding FileStats.IsVisible, Mode=TwoWay}" IsCheckable="True"/>
@@ -95,7 +95,7 @@
                     </local:PanesStyleSelector.ToolStyle>
                     <local:PanesStyleSelector.NeuronGraphStyle>
                         <Style TargetType="{x:Type avalonDock:LayoutItem}">
-                            <Setter Property="Title" Value="{Binding Model.Title}"/>
+                            <Setter Property="Title" Value="{Binding Model.AvatarUrl}"/>
                             <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
                             <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"/>
                             <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
@@ -111,7 +111,7 @@
             <avalonDock:LayoutRoot>
                 <avalonDock:LayoutPanel Orientation="Vertical">
                     <avalonDock:LayoutDocumentPane/>
-                    <avalonDock:LayoutAnchorablePane Name="ToolsPane" DockHeight="150">
+                    <avalonDock:LayoutAnchorablePane Name="ToolsPane" DockHeight="300">
                     </avalonDock:LayoutAnchorablePane>
                 </avalonDock:LayoutPanel>
             </avalonDock:LayoutRoot>
