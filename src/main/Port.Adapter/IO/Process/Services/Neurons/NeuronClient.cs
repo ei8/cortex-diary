@@ -64,11 +64,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task CreateNeuron(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, string authorId, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateNeuron(string avatarUrl, string id, string tag, IEnumerable<Terminal> terminals, string authorId, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateNeuronInternal(avatarUrl, id, data, terminals, authorId, token).ConfigureAwait(false));
+                async () => await this.CreateNeuronInternal(avatarUrl, id, tag, terminals, authorId, token).ConfigureAwait(false));
 
-        private async Task CreateNeuronInternal(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, string authorId, CancellationToken token = default(CancellationToken))
+        private async Task CreateNeuronInternal(string avatarUrl, string id, string tag, IEnumerable<Terminal> terminals, string authorId, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
@@ -77,7 +77,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
             StringBuilder sb = new StringBuilder();
             sb.Append("{");
-            sb.Append($"\"Data\": \"{data}\"");
+            sb.Append($"\"Tag\": \"{tag}\"");
             NeuronClient.AppendAuthorId(authorId, sb);
             NeuronClient.AppendTerminals(terminals, sb);
             sb.Append("}");
@@ -128,11 +128,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 sb.Append(", ");
         }
 
-        public async Task ChangeNeuronData(string avatarUrl, string id, string data, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task ChangeNeuronTag(string avatarUrl, string id, string tag, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
             await NeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                    async () => await this.ChangeNeuronDataInternal(avatarUrl, id, data, authorId, expectedVersion, token).ConfigureAwait(false));
+                    async () => await this.ChangeNeuronTagInternal(avatarUrl, id, tag, authorId, expectedVersion, token).ConfigureAwait(false));
 
-        private async Task ChangeNeuronDataInternal(string avatarUrl, string id, string data, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
+        private async Task ChangeNeuronTagInternal(string avatarUrl, string id, string tag, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             var httpClient = new HttpClient()
             {
@@ -141,7 +141,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
             StringBuilder sb = new StringBuilder();
             sb.Append("{");
-            sb.Append($"\"Data\": \"{data}\"");
+            sb.Append($"\"Tag\": \"{tag}\"");
             NeuronClient.AppendAuthorId(authorId, sb);
             sb.Append("}");
 

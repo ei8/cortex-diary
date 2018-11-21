@@ -19,7 +19,7 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
         [JsonProperty("CentralId")]
         public string CentralNeuronId { get; set; }
 
-        public string Data { get; set; }
+        public string Tag { get; set; }
 
         public RelativeType Type { get; set; }
 

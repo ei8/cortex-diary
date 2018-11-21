@@ -10,7 +10,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
         public PostsynapticView()
         {
             InitializeComponent();
-            this.OneWayBind(ViewModel, vm => vm.Data, v => v.PostsynapticName.Text);
+            this.OneWayBind(ViewModel, vm => vm.Tag, v => v.PostsynapticName.Text);
         }
         object IViewFor.ViewModel
         {

@@ -10,7 +10,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
         public PresynapticView()
         {
             InitializeComponent();
-            this.OneWayBind(ViewModel, vm => vm.Data, v => v.PresynapticName.Text);
+            this.OneWayBind(ViewModel, vm => vm.Tag, v => v.PresynapticName.Text);
         }
         object IViewFor.ViewModel
         {

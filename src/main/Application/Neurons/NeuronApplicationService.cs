@@ -22,14 +22,14 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
             await this.neuronClient.AddTerminalsToNeuron(avatarUrl, id, terminals, authorId, expectedVersion, token);
         }
 
-        public async Task ChangeNeuronData(string avatarUrl, string id, string data, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task ChangeNeuronTag(string avatarUrl, string id, string tag, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.ChangeNeuronData(avatarUrl, id, data, authorId, expectedVersion, token);
+            await this.neuronClient.ChangeNeuronTag(avatarUrl, id, tag, authorId, expectedVersion, token);
         }
 
-        public async Task CreateNeuron(string avatarUrl, string id, string data, IEnumerable<Terminal> terminals, string authorId, CancellationToken token = default(CancellationToken))
+        public async Task CreateNeuron(string avatarUrl, string id, string tag, IEnumerable<Terminal> terminals, string authorId, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.CreateNeuron(avatarUrl, id, data, terminals, authorId, token);
+            await this.neuronClient.CreateNeuron(avatarUrl, id, tag, terminals, authorId, token);
         }
 
         public async Task RemoveTerminalsFromNeuron(string avatarUrl, string id, IEnumerable<Terminal> terminals, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))

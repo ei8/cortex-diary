@@ -11,12 +11,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     public class PresynapticViewModel : NeuronViewModelBase
     {
-        public PresynapticViewModel(string avatarUrl, string data, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, 
+        public PresynapticViewModel(string avatarUrl, string tag, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, 
             INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, 
             IExtendedSelectionService selectionService = null) : 
             base(avatarUrl, node, cache, parent, neuronApplicationService, neuronQueryService, originService, selectionService)
         {
-            this.Data = data;
+            this.Tag = tag;
         }
 
         public override object ViewModel => this;

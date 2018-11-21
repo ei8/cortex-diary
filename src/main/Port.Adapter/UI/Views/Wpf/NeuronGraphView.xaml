@@ -68,7 +68,7 @@
                         <TextBlock
                             Grid.Row="0" 
                             FontSize="14"
-                            Text="{Binding Data}" />
+                            Text="{Binding Tag}" />
 
                         <TextBlock
                             Grid.Row="1" Grid.Column="0"
@@ -173,7 +173,7 @@
                         <TextBlock
                             Grid.Row="0" 
                             FontSize="14"
-                            Text="{Binding Data}" 
+                            Text="{Binding Tag}" 
                             TextDecorations="Underline"/>
 
                         <TextBlock

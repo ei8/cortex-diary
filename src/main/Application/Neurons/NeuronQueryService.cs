@@ -38,13 +38,13 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
             });
 
             if (central == null)
-                relatives = relatives.OrderBy(n => n.Data);
+                relatives = relatives.OrderBy(n => n.Tag);
             else
             {
                 var posts = relatives.Where(n => n.Type == RelativeType.Postsynaptic);
                 var pres = relatives.Where(n => n.Type == RelativeType.Presynaptic);
-                posts = posts.ToList().OrderBy(n => n.Data);
-                pres = pres.ToList().OrderBy(n => n.Data);
+                posts = posts.ToList().OrderBy(n => n.Tag);
+                pres = pres.ToList().OrderBy(n => n.Tag);
                 relatives = posts.Concat(pres);
             }
 

@@ -25,6 +25,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly IDisposable cleanUp;
         private readonly IStatusService statusService;
         private readonly IDialogService dialogService;
+        private bool reloaded;
 
         public NeuronGraphPaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, 
             IStatusService statusService = null, IDialogService dialogService = null)
@@ -34,6 +35,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.originService = originService ?? Locator.Current.GetService<IOriginService>();
             this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
             this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
+            this.reloaded = false;
 
             this.statusService.WhenPropertyChanged(s => s.Message)
                 .Subscribe(s => this.StatusMessage = s.Sender.Message);
@@ -49,8 +51,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .TransformToTree(child => child.CentralId, Observable.Return((Func<Node<Neuron, int>, bool>)DefaultPredicate))
                 .Transform(e =>
                     e.Item.Type == RelativeType.Postsynaptic ?
-                    (NeuronViewModelBase)(new PostsynapticViewModel(this.avatarUrl, e.Item.Data, e, cache)) :
-                    (NeuronViewModelBase)(new PresynapticViewModel(this.avatarUrl, e.Item.Data, e, cache)))
+                    (NeuronViewModelBase)(new PostsynapticViewModel(this.avatarUrl, e.Item.Tag, e, cache)) :
+                    (NeuronViewModelBase)(new PresynapticViewModel(this.avatarUrl, e.Item.Tag, e, cache)))
                 .Bind(out this.children)
                 .DisposeMany()
                 .Subscribe();
@@ -61,23 +63,28 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             await Helper.SetStatusOnComplete(async () =>
                 {
                     bool stat = false;
+                    bool shouldAddAuthor = this.reloaded && cache.Count == 0;
+                    bool addingAuthor = false;
+                    if (shouldAddAuthor && (await this.dialogService.ShowDialogYesNo("This Avatar needs to be initialized. Would you like to add its Author?", parameter, out DialogResult yesno)).GetValueOrDefault())
+                        addingAuthor = true;
 
-                    if ((await this.dialogService.ShowDialogTextInput("Enter Neuron data: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogTextInput(addingAuthor ? "Enter Author Name (E-mail optional)" : "Enter Neuron tag: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault())
                     {
                         Neuron n = new Neuron
                         {
-                            Data = result,
+                            Tag = result,
                             Id = Guid.NewGuid().GetHashCode(),
                             NeuronId = Guid.NewGuid().ToString(),
-                            Type = RelativeType.NotSet
+                            Type = RelativeType.NotSet,
+                            Version = 1,
                         };
 
                         await this.neuronApplicationService.CreateNeuron(
                             this.avatarUrl,
                             n.NeuronId,
-                            n.Data,
+                            n.Tag,
                             new Terminal[0],
-                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                            addingAuthor ? n.NeuronId : this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
                             );
                         cache.AddOrUpdate(n);
                         stat = true;
@@ -98,7 +105,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
                     if ((await this.dialogService.ShowDialogSelectNeuron("Select Author Neuron", this.avatarUrl, parameter, out Neuron result)).GetValueOrDefault())
                     {
-                        this.AuthorName = result.Data;
+                        this.AuthorName = result.Tag;
                         this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId = result.NeuronId;
                         stat = true;
                     }
@@ -118,6 +125,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     var relatives = await this.neuronQueryService.GetNeurons(this.avatarUrl);
                     this.originService.Save(this.avatarUrl);
                     cache.AddOrUpdate(relatives);
+                    this.reloaded = true;
                     return true;
                 },
                 "Reload successful.",

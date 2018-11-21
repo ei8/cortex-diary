@@ -47,7 +47,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly IDisposable cleanUp;
         private int id;
         private string neuronId;
-        private string data;
+        private string tag;
         private bool isExpanded;
         private bool isSelected;
         private ReadOnlyObservableCollection<NeuronViewModelBase> children;
@@ -84,8 +84,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             var childrenLoader = new Lazy<IDisposable>(() => node.Children.Connect()
                 .Transform(e =>
                     e.Item.Type == RelativeType.Postsynaptic ?
-                    (NeuronViewModelBase)(new PostsynapticViewModel(avatarUrl, e.Item.Data, e, cache, this)) :
-                    (NeuronViewModelBase)(new PresynapticViewModel(avatarUrl, e.Item.Data, e, cache, this)))
+                    (NeuronViewModelBase)(new PostsynapticViewModel(avatarUrl, e.Item.Tag, e, cache, this)) :
+                    (NeuronViewModelBase)(new PresynapticViewModel(avatarUrl, e.Item.Tag, e, cache, this)))
                 .Bind(out this.children)
                 .DisposeMany()
                 .Subscribe()
@@ -114,8 +114,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 })
                 .Subscribe(text => this.ChildrenCountText = text);
 
-            var changeData = this.WhenPropertyChanged(p => p.Data, false)
-                .Subscribe(async (x) => await this.OnNeuronDataChanged(cache, x));
+            var changeTag = this.WhenPropertyChanged(p => p.Tag, false)
+                .Subscribe(async (x) => await this.OnNeuronTagChanged(cache, x));
 
             var selector = this.WhenPropertyChanged(p => p.IsSelected)
                 .Where(p => p.Value)
@@ -127,7 +127,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 childrenCount.Dispose();
                 if (childrenLoader.IsValueCreated)
                     childrenLoader.Value.Dispose();
-                changeData.Dispose();
+                changeTag.Dispose();
                 selector.Dispose();
             });
         }
@@ -139,9 +139,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     bool stat = false;
                     string message = string.Empty;
                     if (this.Neuron.Type == RelativeType.NotSet)
-                        message = $"Are you sure you wish to delete Neuron '{this.Data}'?";
+                        message = $"Are you sure you wish to delete Neuron '{this.Tag}'?";
                     else
-                        message = $"Are you sure you wish to delete relative '{this.Data}' of '{this.Parent.Value.Neuron.Data}'?";
+                        message = $"Are you sure you wish to delete relative '{this.Tag}' of '{this.Parent.Value.Neuron.Tag}'?";
 
                     if ((await this.dialogService.ShowDialogYesNo(message, parameter, out DialogResult result)).GetValueOrDefault() &&
                         result == DialogResult.Yes)
@@ -188,13 +188,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             );
         }
 
-        private async Task OnNeuronDataChanged(SourceCache<Neuron, int> cache, PropertyValue<NeuronViewModelBase, string> x)
+        private async Task OnNeuronTagChanged(SourceCache<Neuron, int> cache, PropertyValue<NeuronViewModelBase, string> x)
         {
             if (!this.settingNeuron)
             {
                 await Helper.SetStatusOnComplete(async () =>
                 {
-                    await this.neuronApplicationService.ChangeNeuronData(
+                    await this.neuronApplicationService.ChangeNeuronTag(
                         this.avatarUrl,
                         this.neuronId,
                         x.Value,
@@ -204,7 +204,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
                     return true;
                 },
-                "Neuron data changed successfully.",
+                "Neuron tag changed successfully.",
                 this.statusService
             );
             }
@@ -215,7 +215,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.settingNeuron = true;
             this.Neuron = neuron;
             this.NeuronId = neuron.NeuronId;
-            this.Data = neuron.Data;
+            this.Tag = neuron.Tag;
             this.settingNeuron = false;
         }
 
@@ -249,7 +249,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         private static void CopyNeuronData(Neuron target, Neuron source)
         {
-            target.Data = source.Data;
+            target.Tag = source.Tag;
             target.Type = source.Type;
             target.Timestamp = source.Timestamp;
             target.Version = source.Version;
@@ -262,7 +262,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 {
                     bool stat = false;
 
-                    if ((await this.dialogService.ShowDialogTextInput("Enter Presynaptic data: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogTextInput("Enter Presynaptic tag: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault())
                     {
                         await this.neuronApplicationService.CreateNeuron(
                             this.avatarUrl,
@@ -340,10 +340,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             set => this.RaiseAndSetIfChanged(ref this.neuronId, value);
         }
 
-        public string Data
+        public string Tag
         {
-            get => this.data;
-            set => this.RaiseAndSetIfChanged(ref this.data, value);
+            get => this.tag;
+            set => this.RaiseAndSetIfChanged(ref this.tag, value);
         }
 
         [Browsable(false)]
@@ -390,7 +390,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         public override string ToString()
         {
-            return $"{this.NeuronId}:Neuron '{this.Data}'";
+            return $"{this.NeuronId}:Neuron '{this.Tag}'";
         }
 
         public void Dispose()

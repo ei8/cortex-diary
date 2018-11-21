@@ -14,7 +14,7 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="150" Header="Id" DisplayMemberBinding="{Binding NeuronId}"  />
-                    <GridViewColumn Width="322" Header="Data" DisplayMemberBinding="{Binding Data}" />
+                    <GridViewColumn Width="322" Header="Tag" DisplayMemberBinding="{Binding Tag}" />
                 </GridView>
             </ListView.View>
         </ListView>
