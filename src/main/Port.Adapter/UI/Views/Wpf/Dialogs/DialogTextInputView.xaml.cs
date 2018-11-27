@@ -14,12 +14,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
         {
             InitializeComponent();
 
-            this.WhenAnyValue(x => x.DataContext)
-                .Where(x => x != null)
-                .Subscribe(x => this.ViewModel = (DialogTextInputViewModel) x);
-
             this.WhenActivated(d =>
             {
+                this.WhenAnyValue(x => x.DataContext)
+                    .Where(x => x != null)
+                    .Subscribe(x => this.ViewModel = (DialogTextInputViewModel)x);
+
                 d(this.BindCommand(this.ViewModel, vm => vm.OkCommand, v => v.OkButton));
                 d(this.BindCommand(this.ViewModel, vm => vm.CancelCommand, v => v.CancelButton));
                 d(this.Bind(this.ViewModel, vm => vm.TextInput, v => v.InputBox.Text));

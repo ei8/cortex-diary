@@ -16,12 +16,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
         {
             InitializeComponent();
 
-            this.WhenAnyValue(x => x.DataContext)
-                .Where(x => x != null)
-                .Subscribe(x => this.ViewModel = (DialogViewModelBase)x);
-
             this.WhenActivated(d =>
             {
+                this.WhenAnyValue(x => x.DataContext)
+                    .Where(x => x != null)
+                    .Subscribe(x => this.ViewModel = (DialogViewModelBase)x);
+
                 d(this.Bind(this.ViewModel, vm => vm.DialogResult, v => v.DialogResult));
             });
         }

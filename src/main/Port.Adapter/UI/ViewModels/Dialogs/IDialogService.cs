@@ -15,7 +15,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
     {
         Task<bool?> ShowDialogYesNo(string message, object owner, out DialogResult result);
 
-        Task<bool?> ShowDialogSelectNeuron(string message, string avatarUrl, object owner, out Neuron result);
+        Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<Neuron> result);
 
         Task<bool?> ShowDialogTextInput(string message, string avatarUrl, object owner, out string result);
     }

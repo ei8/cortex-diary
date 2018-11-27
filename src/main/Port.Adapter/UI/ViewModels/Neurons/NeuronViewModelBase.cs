@@ -28,6 +28,7 @@ using DynamicData.Kernel;
 using ReactiveUI;
 using Splat;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -287,12 +288,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             await Helper.SetStatusOnComplete(async () =>
                 {
                     bool stat = false;
-                    if ((await this.dialogService.ShowDialogSelectNeuron("Select Neuron", this.avatarUrl, parameter, out Neuron result)).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Neuron", this.avatarUrl, parameter, true, out IEnumerable<Neuron> result)).GetValueOrDefault())
                     {
                         await this.neuronApplicationService.AddTerminalsToNeuron(
                             this.avatarUrl,
                             this.neuronId,
-                            new Terminal[] { NeuronViewModelBase.TempCreateTerminal(result.NeuronId) },
+                            result.Select(n => NeuronViewModelBase.TempCreateTerminal(n.NeuronId)), 
                             this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
                             this.Neuron.Version
                             );

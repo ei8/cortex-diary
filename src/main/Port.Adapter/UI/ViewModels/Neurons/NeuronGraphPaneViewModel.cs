@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -103,10 +104,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 {
                     bool stat = false;
 
-                    if ((await this.dialogService.ShowDialogSelectNeuron("Select Author Neuron", this.avatarUrl, parameter, out Neuron result)).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Author Neuron", this.avatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
                     {
-                        this.AuthorName = result.Tag;
-                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId = result.NeuronId;
+                        this.AuthorName = result.First().Tag;
+                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId = result.First().NeuronId;
                         stat = true;
                     }
                     return stat;                    

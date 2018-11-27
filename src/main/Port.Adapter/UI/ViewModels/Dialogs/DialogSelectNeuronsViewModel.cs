@@ -2,8 +2,10 @@
 using ReactiveUI;
 using Splat;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
@@ -11,17 +13,18 @@ using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {
-    public class DialogSelectNeuronViewModel : DialogViewModelBase, IDisposable
+    public class DialogSelectNeuronsViewModel : DialogViewModelBase, IDisposable
     {
         private readonly string avatarUrl;
         private readonly INeuronQueryService neuronQueryService;
         private readonly ReadOnlyObservableCollection<Neuron> neurons;
         private readonly IDisposable cleanUp;
         
-        public DialogSelectNeuronViewModel(string message, string avatarUrl, INeuronQueryService neuronQueryService = null) : 
+        public DialogSelectNeuronsViewModel(string message, string avatarUrl, bool allowMultiSelect, INeuronQueryService neuronQueryService = null) : 
             base(message)
         {
             this.avatarUrl = avatarUrl;
+            this.AllowMultiSelect = allowMultiSelect;
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
             var list = new SourceList<Neuron>();
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(list));
@@ -52,9 +55,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         private void OnSelectedClicked()
         {
-            if (this.selectedNeuron != null)
+            if (this.selectedNeurons != null)
             {
-                this.UserDialogResult = this.selectedNeuron;
+                this.UserDialogResult = this.selectedNeurons.Cast<Neuron>();
                 this.DialogResult = true;
             }
             else
@@ -75,12 +78,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         public ReactiveCommand CancelCommand { get; }
 
-        private Neuron selectedNeuron;
+        private IList selectedNeurons;
 
-        public Neuron SelectedNeuron
+        public IList SelectedNeurons
         {
-            get => this.selectedNeuron;
-            set => this.RaiseAndSetIfChanged(ref this.selectedNeuron, value);
+            get => this.selectedNeurons;
+            set => this.RaiseAndSetIfChanged(ref this.selectedNeurons, value);
+        }
+
+        private bool allowMultiSelect;
+
+        public bool AllowMultiSelect
+        {
+            get => this.allowMultiSelect;
+            set => this.RaiseAndSetIfChanged(ref this.allowMultiSelect, value);
         }
 
         private string statusMessage;

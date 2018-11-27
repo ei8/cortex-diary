@@ -76,6 +76,7 @@
     <Reference Include="Polly, Version=5.6.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\Polly.5.6.1\lib\net45\Polly.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="ReactiveUI, Version=8.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\ReactiveUI.8.4.4\lib\net461\ReactiveUI.dll</HintPath>
     </Reference>
@@ -145,8 +146,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Dialogs\DialogSelectNeuronView.xaml.cs">
-      <DependentUpon>DialogSelectNeuronView.xaml</DependentUpon>
+    <Compile Include="Dialogs\DialogSelectNeuronsView.xaml.cs">
+      <DependentUpon>DialogSelectNeuronsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\DialogService.cs" />
     <Compile Include="Dialogs\DialogWindow.xaml.cs">
@@ -159,7 +160,7 @@
       <DependentUpon>DialogYesNoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="SettingsServiceImplementation.cs" />
-    <Page Include="Dialogs\DialogSelectNeuronView.xaml">
+    <Page Include="Dialogs\DialogSelectNeuronsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

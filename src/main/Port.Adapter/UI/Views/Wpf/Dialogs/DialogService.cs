@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
@@ -10,9 +11,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
     /// </summary>
     public class DialogService : IDialogService
     {
-        public Task<bool?> ShowDialogSelectNeuron(string message, string avatarUrl, object owner, out Neuron result)
+        public Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<Neuron> result)
         {
-            return this.ShowDialog<Neuron>(new DialogSelectNeuronViewModel(message, avatarUrl), owner, out result);
+            return this.ShowDialog<IEnumerable<Neuron>>(new DialogSelectNeuronsViewModel(message, avatarUrl, allowMultiSelect), owner, out result);
         }
 
         public Task<bool?> ShowDialogYesNo(string message, object owner, out DialogResult result)
