@@ -8,8 +8,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views.Wpf;component/Themes/MaterialDesign.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Views.Wpf;component/Themes/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Dasz;component/Themes/MaterialDesign.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Dasz;component/Themes/Colours.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type dialogs:DialogYesNoViewModel}">
                 <wpfdialogs:DialogYesNoView />

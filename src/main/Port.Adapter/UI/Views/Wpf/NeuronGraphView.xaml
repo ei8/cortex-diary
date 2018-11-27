@@ -13,7 +13,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.TreeView.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/materialdesigntheme.button.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Views.Wpf;component/Themes/TreeView.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Dasz;component/Themes/TreeView.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
