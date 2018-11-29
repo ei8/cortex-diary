@@ -16,6 +16,8 @@
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
 using ReactiveUI;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Windows;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 
@@ -29,7 +31,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 
             this.WhenActivated(d =>
             {
-                d(this.BindCommand(this.ViewModel, vm => vm.NewNeuronGraph, v => v.NewNeuronGraph));
+                this.WhenAnyValue(view => view.ViewModel)
+                    .Select(cmd => Unit.Default)
+                    .InvokeCommand(this.ViewModel.NewNeuronTree);
+
+                d(this.BindCommand(this.ViewModel, vm => vm.NewNeuronTree, v => v.NewNeuronTree));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Tools, v => v.dockManager.AnchorablesSource));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Panes, v => v.dockManager.DocumentsSource));
                 d(this.Bind(this.ViewModel, vm => vm.ActiveDocument, v => v.dockManager.ActiveContent));

@@ -30,7 +30,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 
         }
         
-        public DataTemplate NeuronGraphViewTemplate
+        public DataTemplate NeuronTreeViewTemplate
         {
             get;
             set;
@@ -48,18 +48,27 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             set;
         }
 
+        public DataTemplate NeuronGraphViewTemplate
+        {
+            get;
+            set;
+        }
+
         public override System.Windows.DataTemplate SelectTemplate(object item, System.Windows.DependencyObject container)
         {
             var itemAsLayoutContent = item as LayoutContent;
 
-            if (item is NeuronGraphPaneViewModel)
-                return this.NeuronGraphViewTemplate;
+            if (item is NeuronTreePaneViewModel)
+                return this.NeuronTreeViewTemplate;
 
             if (item is NeuronGraphStatsViewModel)
                 return this.NeuronGraphStatsViewTemplate;
 
             if (item is PropertyGridViewModel)
                 return this.PropertyGridViewTemplate;
+
+            if (item is NeuronGraphViewModel)
+                return this.NeuronGraphViewTemplate;
 
             return base.SelectTemplate(item, container);
         }

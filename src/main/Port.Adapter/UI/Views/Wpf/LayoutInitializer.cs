@@ -16,6 +16,7 @@
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
 using System.Linq;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 using Xceed.Wpf.AvalonDock.Layout;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
@@ -32,17 +33,22 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
                 destinationContainer.FindParent<LayoutFloatingWindow>() != null)
                 return false;
 
-            var toolsPane = layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(d => d.Name == "ToolsPane");
+            return AddAnchorableToPane(
+                anchorableToShow.Content is NeuronGraphViewModel ? "TopToolsPane" : "BottomToolsPane", 
+                layout, 
+                anchorableToShow);
+        }
+
+        private static bool AddAnchorableToPane(string paneName, LayoutRoot layout, LayoutAnchorable anchorableToShow)
+        {
+            var toolsPane = layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(d => d.Name == paneName);
             if (toolsPane != null)
             {
                 toolsPane.Children.Add(anchorableToShow);
                 return true;
             }
-
             return false;
-
         }
-
 
         public void AfterInsertAnchorable(LayoutRoot layout, LayoutAnchorable anchorableShown)
         {

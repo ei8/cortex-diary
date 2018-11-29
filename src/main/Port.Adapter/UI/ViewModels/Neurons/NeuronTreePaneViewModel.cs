@@ -17,7 +17,7 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
-    public class NeuronGraphPaneViewModel : PaneViewModel, IDisposable
+    public class NeuronTreePaneViewModel : PaneViewModel, IDisposable
     {
         private readonly INeuronApplicationService neuronApplicationService;
         private readonly INeuronQueryService neuronQueryService;
@@ -28,7 +28,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly IDialogService dialogService;
         private bool reloaded;
 
-        public NeuronGraphPaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, 
+        public NeuronTreePaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, 
             IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();

@@ -26,7 +26,6 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
-    // TODO: used?
     public class PanesStyleSelector : StyleSelector
     {
         public Style ToolStyle
@@ -35,7 +34,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             set;
         }
 
-        public Style NeuronGraphStyle
+        public Style NeuronTreeStyle
         {
             get;
             set;
@@ -46,8 +45,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             if (item is ToolViewModel)
                 return ToolStyle;
 
-            if (item is NeuronGraphPaneViewModel)
-                return NeuronGraphStyle;
+            if (item is NeuronTreePaneViewModel)
+                return NeuronTreeStyle;
 
             return base.SelectStyle(item, container);
         }

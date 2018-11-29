@@ -30,13 +30,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 {
     public class Workspace : ReactiveObject
     {
-        private readonly ReactiveCommand newNeuronGraph;
+        private readonly ReactiveCommand newNeuronTree;
 
         public Workspace()
         {
-            this.newNeuronGraph = ReactiveCommand.Create(() =>
+            this.newNeuronTree = ReactiveCommand.Create(() =>
             {
-                this.panes.Add(new NeuronGraphPaneViewModel());
+                this.panes.Add(new NeuronTreePaneViewModel());
                 this.ActiveDocument = this.panes.Last();
             });
         }
@@ -61,7 +61,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
             get
             {
                 if (_tools == null)
-                    _tools = new ToolViewModel[] { this.PropertyGrid, this.FileStats };
+                    _tools = new ToolViewModel[] { this.PropertyGrid, this.NeuronGraph, this.FileStats };
                 return _tools;
             }
         }
@@ -87,6 +87,18 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
                     this.propertyGrid = new PropertyGridViewModel();
 
                 return this.propertyGrid;
+            }
+        }
+
+        private NeuronGraphViewModel neuronGraph = null;
+        public NeuronGraphViewModel NeuronGraph
+        {
+            get
+            {
+                if (this.neuronGraph == null)
+                    this.neuronGraph = new NeuronGraphViewModel();
+
+                return this.neuronGraph;
             }
         }
 
@@ -133,7 +145,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 
         //#endregion 
 
-        public ReactiveCommand NewNeuronGraph => this.newNeuronGraph;
+        public ReactiveCommand NewNeuronTree => this.newNeuronTree;
 
         #region ActiveDocument
 

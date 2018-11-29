@@ -7,9 +7,9 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
-    public partial class NeuronGraphView : UserControl, IViewFor<NeuronGraphPaneViewModel>
+    public partial class NeuronTreeView : UserControl, IViewFor<NeuronTreePaneViewModel>
     {
-        public NeuronGraphView()
+        public NeuronTreeView()
         {
             InitializeComponent();
 
@@ -17,7 +17,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             {
                 this.WhenAnyValue(x => x.DataContext)
                     .Where(x => x != null)
-                    .Subscribe(x => this.ViewModel = (NeuronGraphPaneViewModel)x);
+                    .Subscribe(x => this.ViewModel = (NeuronTreePaneViewModel)x);
 
                 d(this.Bind(this.ViewModel, vm => vm.AvatarUrl, v => v.AvatarUrl.Text));
                 d(this.Bind(this.ViewModel, vm => vm.AuthorName, v => v.AuthorName.Content));
@@ -32,15 +32,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
         object IViewFor.ViewModel
         {
             get { return ViewModel; }
-            set { ViewModel = (NeuronGraphPaneViewModel)value; }
+            set { ViewModel = (NeuronTreePaneViewModel)value; }
         }
 
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
-            "ViewModel", typeof(NeuronGraphPaneViewModel), typeof(NeuronGraphView), new PropertyMetadata(default(NeuronGraphPaneViewModel)));
+            "ViewModel", typeof(NeuronTreePaneViewModel), typeof(NeuronTreeView), new PropertyMetadata(default(NeuronTreePaneViewModel)));
 
-        public NeuronGraphPaneViewModel ViewModel
+        public NeuronTreePaneViewModel ViewModel
         {
-            get { return (NeuronGraphPaneViewModel)GetValue(ViewModelProperty); }
+            get { return (NeuronTreePaneViewModel)GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
     }

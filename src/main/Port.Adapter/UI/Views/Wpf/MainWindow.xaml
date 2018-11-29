@@ -22,9 +22,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf"
+        xmlns:peripheral="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="d# NeurUL Studio 2018" Height="450" Width="800" WindowState="Maximized">
+        Title="d# NeurUL Studio [Community Edition]" Height="450" Width="800" WindowState="Maximized">
     <Window.Resources>
         <avalonDock:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
@@ -35,7 +36,7 @@
         </Grid.RowDefinitions>
         <Menu>
             <MenuItem Header="File">
-                <MenuItem Name="NewNeuronGraph" Header="New"/>
+                <MenuItem Name="NewNeuronTree" Header="New"/>
                 <!--TODO: <MenuItem Header="Open" Command="{Binding OpenCommand}"/>
                 <Separator/>
                 <MenuItem Header="Save" Command="{Binding ActiveDocument.SaveCommand}"/>
@@ -46,7 +47,7 @@
             <MenuItem Header="Tools" Visibility="Collapsed">
                 <MenuItem Header="Properties" IsChecked="{Binding FileStats.IsVisible, Mode=TwoWay}" IsCheckable="True"/>
             </MenuItem>
-            <MenuItem Header="Layout" Visibility="Collapsed">
+            <MenuItem Header="Layout">
                 <MenuItem Header="Load" Command="{Binding LoadLayoutCommand, ElementName=mainWindow}"/>
                 <MenuItem Header="Save" Command="{Binding SaveLayoutCommand, ElementName=mainWindow}"/>
                 <MenuItem Header="Dump to Console" Click="OnDumpToConsole"/>
@@ -61,11 +62,11 @@
             </avalonDock:DockingManager.Theme>
             <avalonDock:DockingManager.LayoutItemTemplateSelector>
                 <local:PanesTemplateSelector>
-                    <local:PanesTemplateSelector.NeuronGraphViewTemplate>
+                    <local:PanesTemplateSelector.NeuronTreeViewTemplate>
                         <DataTemplate>
-                            <local:NeuronGraphView/>
+                            <local:NeuronTreeView/>
                         </DataTemplate>
-                    </local:PanesTemplateSelector.NeuronGraphViewTemplate>
+                    </local:PanesTemplateSelector.NeuronTreeViewTemplate>
                     <local:PanesTemplateSelector.NeuronGraphStatsViewTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical">
@@ -80,6 +81,11 @@
                             <xctk:PropertyGrid SelectedObject="{Binding SelectedObject}" />
                         </DataTemplate>
                     </local:PanesTemplateSelector.PropertyGridViewTemplate>
+                    <local:PanesTemplateSelector.NeuronGraphViewTemplate>
+                        <DataTemplate>
+                            <peripheral:NeuronGraphView/>
+                        </DataTemplate>
+                    </local:PanesTemplateSelector.NeuronGraphViewTemplate>
                 </local:PanesTemplateSelector>
             </avalonDock:DockingManager.LayoutItemTemplateSelector>
 
@@ -95,7 +101,7 @@
                             <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
                         </Style>
                     </local:PanesStyleSelector.ToolStyle>
-                    <local:PanesStyleSelector.NeuronGraphStyle>
+                    <local:PanesStyleSelector.NeuronTreeStyle>
                         <Style TargetType="{x:Type avalonDock:LayoutItem}">
                             <Setter Property="Title" Value="{Binding Model.AvatarUrl}"/>
                             <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
@@ -103,7 +109,7 @@
                             <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
                             <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
                         </Style>
-                    </local:PanesStyleSelector.NeuronGraphStyle>
+                    </local:PanesStyleSelector.NeuronTreeStyle>
                 </local:PanesStyleSelector>
             </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
             <avalonDock:DockingManager.LayoutUpdateStrategy>
@@ -111,10 +117,14 @@
             </avalonDock:DockingManager.LayoutUpdateStrategy>
 
             <avalonDock:LayoutRoot>
-                <avalonDock:LayoutPanel Orientation="Vertical">
+                <avalonDock:LayoutPanel Orientation="Horizontal">
                     <avalonDock:LayoutDocumentPane/>
-                    <avalonDock:LayoutAnchorablePane Name="ToolsPane" DockHeight="300">
-                    </avalonDock:LayoutAnchorablePane>
+                    <avalonDock:LayoutAnchorablePaneGroup Orientation="Vertical" DockWidth="450">
+                        <avalonDock:LayoutAnchorablePane Name="TopToolsPane" DockHeight="0.8*" FloatingWidth="360" FloatingHeight="1041" FloatingLeft="1555" FloatingTop="540">
+                        </avalonDock:LayoutAnchorablePane>
+                        <avalonDock:LayoutAnchorablePane Name="BottomToolsPane" DockWidth="350" DockHeight="1.2*">
+                        </avalonDock:LayoutAnchorablePane>
+                    </avalonDock:LayoutAnchorablePaneGroup>
                 </avalonDock:LayoutPanel>
             </avalonDock:LayoutRoot>
         </avalonDock:DockingManager>
