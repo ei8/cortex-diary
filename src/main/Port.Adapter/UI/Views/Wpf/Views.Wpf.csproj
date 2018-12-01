@@ -152,6 +152,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BoolToColorBrushConverter.cs" />
     <Compile Include="Dialogs\DialogSelectNeuronsView.xaml.cs">
       <DependentUpon>DialogSelectNeuronsView.xaml</DependentUpon>
     </Compile>

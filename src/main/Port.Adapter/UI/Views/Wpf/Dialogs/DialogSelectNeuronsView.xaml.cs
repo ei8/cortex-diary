@@ -33,7 +33,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
                 d(this.BindCommand(this.ViewModel, vm => vm.SelectCommand, v => v.SelectButton));
                 d(this.BindCommand(this.ViewModel, vm => vm.CancelCommand, v => v.CancelButton));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Neurons, v => v.NeuronList.ItemsSource));
-                d(this.OneWayBind(this.ViewModel, vm => vm.AllowMultiSelect, v => v.NeuronList.SelectionMode, p => p ? SelectionMode.Multiple : SelectionMode.Single));
+                d(this.OneWayBind(this.ViewModel, vm => vm.AllowMultiSelect, v => v.NeuronList.SelectionMode, p => p ? SelectionMode.Extended : SelectionMode.Single));
 
                 Observable.FromEventPattern<SelectionChangedEventHandler, SelectionChangedEventArgs>(
                     ev => this.NeuronList.SelectionChanged += ev,

@@ -12,7 +12,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 
         public PropertyGridViewModel(IExtendedSelectionService selectionService = null) : base("Properties")
         {
-            this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>();
+            this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Select.ToString());
 
             this.selectionService.WhenPropertyChanged(a => a.SelectedComponents)
                 .Subscribe(p => this.SelectedObject = p.Sender.PrimarySelection);

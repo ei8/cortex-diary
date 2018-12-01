@@ -51,8 +51,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private string tag;
         private bool isExpanded;
         private bool isSelected;
+        private bool isHighlighted;
         private ReadOnlyObservableCollection<NeuronViewModelBase> children;
         private IExtendedSelectionService selectionService;
+        private IExtendedSelectionService highlightService;
         private readonly INeuronApplicationService neuronApplicationService;
         private readonly INeuronQueryService neuronQueryService;
         private readonly IOriginService originService;
@@ -63,7 +65,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private const int ReloadDelay = 2100;
 
         protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronApplicationService neuronApplicationService = null,
-            INeuronQueryService neuronQueryService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null, IDialogService dialogService = null)
+            INeuronQueryService neuronQueryService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IExtendedSelectionService highlightService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.avatarUrl = avatarUrl;
             this.Id = node.Key;
@@ -77,7 +79,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
-            this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>();
+            this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Select.ToString());
+            this.highlightService = highlightService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Highlight.ToString());
             this.originService = originService ?? Locator.Current.GetService<IOriginService>();
             this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
             this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
@@ -121,6 +124,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             var selector = this.WhenPropertyChanged(p => p.IsSelected)
                 .Where(p => p.Value)
                 .Subscribe(x => this.selectionService.SetSelectedComponents(new object[] { x.Sender }));
+
+            this.highlightService.WhenPropertyChanged(a => a.SelectedComponents)
+                .Subscribe(p => this.IsHighlighted = p.Sender.PrimarySelection is string && this.NeuronId == p.Sender.PrimarySelection.ToString());
 
             this.cleanUp = Disposable.Create(() =>
             {
@@ -359,6 +365,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         {
             get => this.isSelected;
             set => this.RaiseAndSetIfChanged(ref isSelected, value);
+        }
+
+        [Browsable(false)]
+        public bool IsHighlighted
+        {
+            get => this.isHighlighted;
+            set => this.RaiseAndSetIfChanged(ref this.isHighlighted, value);
         }
 
         [Browsable(false)]

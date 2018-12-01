@@ -46,6 +46,7 @@
                 <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Setter Property="Background" Value="{Binding IsHighlighted, Converter={StaticResource BoolToColorBrushConverter}, ConverterParameter=Yellow;Transperent;0.4, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </Style>
                 <!--TODO: try to use user controls instead ie. "PostsynapticView.xaml"
                     <HierarchicalDataTemplate DataType="{x:Type vms:NeuronTreeItemBase}" ItemsSource="{Binding Children}">

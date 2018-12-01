@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
@@ -15,6 +16,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
     public partial class NeuronGraphView : UserControl, IViewFor<NeuronGraphViewModel>
     {
         private List<string> edges = new List<string>();
+        private GraphViewer graphViewer;
 
         public NeuronGraphView()
         {
@@ -34,23 +36,40 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(NeuronGraphViewModel.SelectedNeuron))
+            if (e.PropertyName == nameof(NeuronGraphViewModel.ExternallySelectedNeuron))
             {
                 this.ContentPanel.Children.Clear();
                 this.edges.Clear();
 
-                GraphViewer graphViewer = new GraphViewer();
-                graphViewer.BindToPanel(this.ContentPanel);
+                if (this.graphViewer != null)
+                    this.graphViewer.MouseDown -= this.GraphViewer_MouseDown;
+
+                this.graphViewer = new GraphViewer();
+                this.graphViewer.MouseDown += this.GraphViewer_MouseDown;
+                this.graphViewer.BindToPanel(this.ContentPanel);
+
                 Graph graph = new Graph();
 
-                NeuronViewModelBase root = this.ViewModel.SelectedNeuron;
+                NeuronViewModelBase root = this.ViewModel.ExternallySelectedNeuron;
 
                 while (root.Parent.HasValue)
                     root = root.Parent.Value;
 
-                NeuronGraphView.AddNeuronAndChildren(root, this.ViewModel.SelectedNeuron, root, graph, this.edges);
+                NeuronGraphView.AddNeuronAndChildren(root, this.ViewModel.ExternallySelectedNeuron, root, graph, this.edges);
                 graph.Attr.LayerDirection = LayerDirection.TB;
-                graphViewer.Graph = graph;
+                this.graphViewer.Graph = graph;
+            }
+        }
+
+        private void GraphViewer_MouseDown(object sender, MsaglMouseEventArgs e)
+        {
+            if (this.graphViewer != null && this.graphViewer.ObjectUnderMouseCursor != null && this.graphViewer.ObjectUnderMouseCursor.DrawingObject is Node)
+            {
+                var vo = this.graphViewer.ObjectUnderMouseCursor;
+                if (vo != null && vo.DrawingObject != null && vo.DrawingObject is Node)
+                    this.ViewModel.InternallySelectedNeuronId = ((Node)vo.DrawingObject).Id;
+
+                this.ViewModel.SelectCommand.Execute().Subscribe();
             }
         }
 
