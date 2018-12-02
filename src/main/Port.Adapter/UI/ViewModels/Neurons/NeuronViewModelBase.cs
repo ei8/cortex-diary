@@ -125,7 +125,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .Where(p => p.Value)
                 .Subscribe(x => this.selectionService.SetSelectedComponents(new object[] { x.Sender }));
 
-            this.highlightService.WhenPropertyChanged(a => a.SelectedComponents)
+            var highlighter = this.highlightService.WhenPropertyChanged(a => a.SelectedComponents)
                 .Subscribe(p => this.IsHighlighted = p.Sender.PrimarySelection is string && this.NeuronId == p.Sender.PrimarySelection.ToString());
 
             this.cleanUp = Disposable.Create(() =>
@@ -136,6 +136,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     childrenLoader.Value.Dispose();
                 changeTag.Dispose();
                 selector.Dispose();
+                highlighter.Dispose();
             });
         }
 

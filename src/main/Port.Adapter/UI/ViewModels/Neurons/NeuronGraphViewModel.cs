@@ -19,6 +19,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Select.ToString());
             this.highlightService = highlightService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Highlight.ToString());
 
+            this.LayoutOptions = new string[] { "Top to bottom", "Left to right", "Bottom to top", "Right to left" };
+
             this.SelectCommand = ReactiveCommand.Create(() => this.UpdateHighlightService());
 
             this.selectionService.WhenPropertyChanged(a => a.SelectedComponents)
@@ -54,6 +56,22 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         {
             get => this.internallySelectedNeuronId;
             set => this.RaiseAndSetIfChanged(ref this.internallySelectedNeuronId, value);
+        }
+
+        private string[] layoutOptions;
+
+        public string[] LayoutOptions
+        {
+            get => this.layoutOptions;
+            set => this.RaiseAndSetIfChanged(ref this.layoutOptions, value);
+        }
+
+        private int layout;
+
+        public int Layout
+        {
+            get => this.layout;
+            set => this.RaiseAndSetIfChanged(ref this.layout, value);
         }
     }
 }

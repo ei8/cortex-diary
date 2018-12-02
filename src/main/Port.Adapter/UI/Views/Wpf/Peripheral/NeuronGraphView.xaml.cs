@@ -4,6 +4,8 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,14 +28,23 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
             {
                 this.WhenAnyValue(x => x.DataContext)
                     .Where(x => x != null)
-                    .Subscribe(x =>
+                    .Subscribe(x => (this.ViewModel = (NeuronGraphViewModel)x).PropertyChanged += this.ViewModel_PropertyChanged);
+
+                d(this.OneWayBind(this.ViewModel, vm => vm.LayoutOptions, v => v.Layout.ItemsSource, vmp => vmp.Select(s => new MenuItem() { Header = s, IsCheckable = true, Style=Resources["MenuItemStyle1"] as System.Windows.Style })));
+
+                Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+                    ev => this.Layout.Click += ev,
+                    ev => this.Layout.Click -= ev
+                    ).Subscribe(ep =>
                     {
-                        this.ViewModel = (NeuronGraphViewModel)x;
-                        this.ViewModel.PropertyChanged += this.ViewModel_PropertyChanged;
+                        this.ViewModel.Layout = this.Layout.Items.IndexOf(ep.EventArgs.OriginalSource);
+                        this.Layout.Items.Cast<MenuItem>().ToList().ForEach(mi => mi.IsChecked = false);
+                        ((MenuItem)ep.EventArgs.OriginalSource).IsChecked = true;
                     });
             });
         }
 
+        // DEL: Use Observable.FromEventPattern
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(NeuronGraphViewModel.ExternallySelectedNeuron))
@@ -56,11 +67,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                     root = root.Parent.Value;
 
                 NeuronGraphView.AddNeuronAndChildren(root, this.ViewModel.ExternallySelectedNeuron, root, graph, this.edges);
-                graph.Attr.LayerDirection = LayerDirection.TB;
+                graph.Attr.LayerDirection = (LayerDirection) this.ViewModel.Layout;
                 this.graphViewer.Graph = graph;
             }
         }
 
+        // DEL: Use Observable.FromEventPattern
         private void GraphViewer_MouseDown(object sender, MsaglMouseEventArgs e)
         {
             if (this.graphViewer != null && this.graphViewer.ObjectUnderMouseCursor != null && this.graphViewer.ObjectUnderMouseCursor.DrawingObject is Node)
