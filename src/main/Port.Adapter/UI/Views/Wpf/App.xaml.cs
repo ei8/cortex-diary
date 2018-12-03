@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
@@ -17,6 +14,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
         {
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run();
+        }
+
+        private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            // Process unhandled exception do stuff below
+            File.AppendAllText("Exception.log", $"{DateTime.Now.ToString()}: {e.Exception.ToString()}");
+            // Prevent default unhandled exception processing
+            e.Handled = true;
         }
     }
 }

@@ -83,7 +83,6 @@
       <HintPath>..\..\..\..\..\packages\Polly.5.6.1\lib\net45\Polly.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="ReactiveUI, Version=8.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\ReactiveUI.8.4.4\lib\net461\ReactiveUI.dll</HintPath>
     </Reference>

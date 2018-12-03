@@ -4,7 +4,8 @@
              xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf"
              xmlns:dialogs="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;assembly=ViewModels"
              xmlns:wpfdialogs="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs"
-             Startup="Application_Startup">
+             Startup="Application_Startup"
+             DispatcherUnhandledException="App_DispatcherUnhandledException" >
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
