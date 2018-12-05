@@ -18,6 +18,7 @@
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Windows;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 
@@ -29,16 +30,18 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
         {
             InitializeComponent();
 
+            this.OpenAbout.Header = $"About d# NeurUL Studio ({Assembly.GetExecutingAssembly().GetName().Version.ToString()})";
             this.WhenActivated(d =>
             {
                 this.WhenAnyValue(view => view.ViewModel)
                     .Select(cmd => Unit.Default)
-                    .InvokeCommand(this.ViewModel.NewNeuronTree);
+                    .InvokeCommand(this.ViewModel.NewNeuronTreeCommand);
 
-                d(this.BindCommand(this.ViewModel, vm => vm.NewNeuronTree, v => v.NewNeuronTree));
+                d(this.BindCommand(this.ViewModel, vm => vm.NewNeuronTreeCommand, v => v.NewNeuronTree));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Tools, v => v.dockManager.AnchorablesSource));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Panes, v => v.dockManager.DocumentsSource));
                 d(this.Bind(this.ViewModel, vm => vm.ActiveDocument, v => v.dockManager.ActiveContent));
+                d(this.BindCommand(this.ViewModel, vm => vm.OpenAboutCommand, v => v.OpenAbout));
             });
         }
 

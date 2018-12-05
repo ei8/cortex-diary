@@ -15,30 +15,35 @@
   **********************************************************************/
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
+using ReactiveUI;
+using Splat;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
-using System.IO;
-using ReactiveUI;
+using System.Linq;
+using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
-using Splat;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 {
     public class Workspace : ReactiveObject
     {
-        private readonly ReactiveCommand newNeuronTree;
+        private readonly ReactiveCommand newNeuronTreeCommand;
+        private readonly ReactiveCommand openAboutCommand;
+        private readonly IOpenUrlService openUrlService;
 
-        public Workspace()
+        public Workspace(IOpenUrlService openUrlService = null)
         {
-            this.newNeuronTree = ReactiveCommand.Create(() =>
+            this.openUrlService = openUrlService ?? Locator.Current.GetService<IOpenUrlService>();
+
+            this.newNeuronTreeCommand = ReactiveCommand.Create(() =>
             {
                 this.panes.Add(new NeuronTreePaneViewModel());
                 this.ActiveDocument = this.panes.Last();
             });
+
+            this.openAboutCommand = ReactiveCommand.Create(() => this.openUrlService.OpenUrl("https://github.com/ei8/cortex-diary"));
         }
 
         ObservableCollection<PaneViewModel> panes = new ObservableCollection<PaneViewModel>();
@@ -145,7 +150,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 
         //#endregion 
 
-        public ReactiveCommand NewNeuronTree => this.newNeuronTree;
+        public ReactiveCommand NewNeuronTreeCommand => this.newNeuronTreeCommand;
+
+        public ReactiveCommand OpenAboutCommand => this.openAboutCommand;
 
         #region ActiveDocument
 

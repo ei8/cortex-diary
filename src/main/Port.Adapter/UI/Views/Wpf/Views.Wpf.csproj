@@ -169,6 +169,7 @@
     <Compile Include="Dialogs\DialogYesNoView.xaml.cs">
       <DependentUpon>DialogYesNoView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OpenUrlService.cs" />
     <Compile Include="Peripheral\NeuronGraphView.xaml.cs">
       <DependentUpon>NeuronGraphView.xaml</DependentUpon>
     </Compile>

@@ -53,7 +53,7 @@
                 <MenuItem Header="Dump to Console" Click="OnDumpToConsole"/>
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="About"/>
+                <MenuItem Name="OpenAbout" Header="About"/>
             </MenuItem>
         </Menu>
         <avalonDock:DockingManager x:Name="dockManager" AllowMixedOrientation="True" Grid.Row="1">
