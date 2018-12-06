@@ -244,13 +244,17 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <ToolBarTray IsLocked="True" ClipToBounds="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ToolBarTray Grid.Row="0" IsLocked="True" ClipToBounds="True">
             <ToolBar Band="1" BandIndex="1">
                 <Menu ToolBar.OverflowMode="Never">
                     <MenuItem x:Name="Layout" Header="Layout" Style="{DynamicResource MenuItemStyle1}" />
                 </Menu>
             </ToolBar>
         </ToolBarTray>
-        <DockPanel x:Name="ContentPanel"/>
+        <DockPanel x:Name="ContentPanel" ClipToBounds="True" Grid.Row="1"/>
     </Grid>
 </UserControl>

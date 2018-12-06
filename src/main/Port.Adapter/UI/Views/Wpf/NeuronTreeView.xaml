@@ -65,11 +65,14 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        
+                        <Grid.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ReloadExpandCommand}"/>
+                        </Grid.InputBindings>
                         <TextBlock
                             Grid.Row="0" 
                             FontSize="14"
-                            Text="{Binding Tag}" />
+                            Text="{Binding Tag}">
+                        </TextBlock>
 
                         <TextBlock
                             Grid.Row="1" Grid.Column="0"
@@ -169,8 +172,9 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-
-
+                        <Grid.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ReloadExpandCommand}"/>
+                        </Grid.InputBindings>
                         <TextBlock
                             Grid.Row="0" 
                             FontSize="14"

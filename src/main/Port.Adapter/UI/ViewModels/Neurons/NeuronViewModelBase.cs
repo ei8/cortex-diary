@@ -73,6 +73,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.SetNeuron(node.Item);
 
             this.ReloadCommand = ReactiveCommand.Create(async () => await this.OnReload(cache));
+            this.ReloadExpandCommand = ReactiveCommand.Create(async () =>
+            {
+                await this.OnReload(cache);
+                this.IsExpanded = true;
+            });
             this.AddPostsynapticCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnAddPostsynaptic(cache, parameter));
             this.AddPresynapticCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnAddPresynaptic(cache, parameter));
             this.DeleteCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnDeleteClicked(cache, parameter));
@@ -377,6 +382,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         [Browsable(false)]
         public ReactiveCommand ReloadCommand { get; }
+
+        [Browsable(false)]
+        public ReactiveCommand ReloadExpandCommand { get; }
 
         [Browsable(false)]
         public ReactiveCommand AddPostsynapticCommand { get; }
