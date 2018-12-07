@@ -54,13 +54,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
         {
             InitializeComponent();
 
+            this.graphViewer = new GraphViewer();
+            this.graphViewer.BindToPanel(this.ContentPanel);
+
             this.WhenActivated(d =>
             {
                 this.WhenAnyValue(x => x.DataContext)
                     .Where(x => x != null)
-                    .Subscribe(x => (this.ViewModel = (NeuronGraphViewModel)x).PropertyChanged += this.ViewModel_PropertyChanged);
+                    .Subscribe(x => this.ViewModel = (NeuronGraphViewModel)x);
 
-                d(this.OneWayBind(this.ViewModel, vm => vm.LayoutOptions, v => v.Layout.ItemsSource, vmp => vmp.Select(s => new MenuItem() { Header = s, IsCheckable = true, Style=Resources["MenuItemStyle1"] as System.Windows.Style })));
+                d(this.OneWayBind(this.ViewModel, vm => vm.LayoutOptions, v => v.Layout.ItemsSource, vmp => vmp.Select(s => new MenuItem() { Header = s, IsCheckable = true, Style = Resources["MenuItemStyle1"] as System.Windows.Style })));
 
                 Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
                     ev => this.Layout.Click += ev,
@@ -71,48 +74,93 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                         this.Layout.Items.Cast<MenuItem>().ToList().ForEach(mi => mi.IsChecked = false);
                         ((MenuItem)ep.EventArgs.OriginalSource).IsChecked = true;
                     });
+
+                Observable.FromEventPattern<EventHandler<MsaglMouseEventArgs>, MsaglMouseEventArgs>(
+                    ev => this.graphViewer.MouseDown += ev,
+                    ev => this.graphViewer.MouseDown -= ev
+                    ).Subscribe(ep =>
+                    {
+                        var gv = ep.Sender as GraphViewer;
+                        if (gv != null && gv.ObjectUnderMouseCursor != null && gv.ObjectUnderMouseCursor.DrawingObject is Node)
+                        {
+                            var vo = gv.ObjectUnderMouseCursor;
+                            if (vo != null && vo.DrawingObject != null && vo.DrawingObject is Node)
+                            {
+                                var node = (Node)vo.DrawingObject;
+                                this.ViewModel.InternallySelectedNeuronId = node.Id;
+                                gv.Graph.Nodes.ToList().ForEach(n => NeuronGraphView.FillIfNotExternallySelected(
+                                    n, 
+                                    this.ViewModel.ExternallySelectedNeuron.NeuronId, 
+                                    NeuronGraphView.ConvertColorToMsaglColor(SystemColors.WindowColor)
+                                    ));
+
+                                NeuronGraphView.FillIfNotExternallySelected(
+                                    node, 
+                                    this.ViewModel.ExternallySelectedNeuron.NeuronId, 
+                                    NeuronGraphView.ConvertColorToMsaglColor(Color.Yellow, 80)
+                                    );
+
+                                var poc = NeuronGraphView.ConvertColorToMsaglColor(Color.LightGreen, 70);
+                                var prc = NeuronGraphView.ConvertColorToMsaglColor(Color.LightBlue, 90);
+                                node.Edges.ToList().ForEach(e =>
+                                {
+                                    if (e.SourceNode == node)
+                                        NeuronGraphView.FillIfNotExternallySelected(
+                                            e.TargetNode,
+                                            this.ViewModel.ExternallySelectedNeuron.NeuronId,
+                                            poc
+                                            );                                        
+                                    else
+                                        NeuronGraphView.FillIfNotExternallySelected(
+                                            e.SourceNode,
+                                            this.ViewModel.ExternallySelectedNeuron.NeuronId,
+                                            prc
+                                            );
+                                });
+                            }
+
+                            this.ViewModel.SelectCommand.Execute().Subscribe();
+                        }
+                    });
+
+                Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                    ev => this.ViewModel.PropertyChanged += ev,
+                    ev => this.ViewModel.PropertyChanged -= ev
+                    ).Subscribe(ep =>
+                    {
+                        if (ep.EventArgs.PropertyName == nameof(NeuronGraphViewModel.ExternallySelectedNeuron))
+                        {
+                            this.edges.Clear();
+                            this.graphViewer.Graph = null;
+                            Graph graph = new Graph();
+                            graph.Attr.LayerDirection = (LayerDirection)this.ViewModel.Layout;
+
+                            NeuronViewModelBase root = this.ViewModel.ExternallySelectedNeuron;
+
+                            while (root.Parent.HasValue)
+                                root = root.Parent.Value;
+
+                            NeuronGraphView.AddNeuronAndChildren(root, this.ViewModel.ExternallySelectedNeuron, root, graph, this.edges);
+                            this.graphViewer.Graph = graph;
+                        }
+                    });
             });
         }
 
-        // DEL: Use Observable.FromEventPattern
-        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private static void FillIfNotExternallySelected(Node n, string externalId, Color color)
         {
-            if (e.PropertyName == nameof(NeuronGraphViewModel.ExternallySelectedNeuron))
-            {
-                this.ContentPanel.Children.Clear();
-                this.edges.Clear();
-
-                if (this.graphViewer != null)
-                    this.graphViewer.MouseDown -= this.GraphViewer_MouseDown;
-
-                this.graphViewer = new GraphViewer();
-                this.graphViewer.MouseDown += this.GraphViewer_MouseDown;
-                this.graphViewer.BindToPanel(this.ContentPanel);
-
-                Graph graph = new Graph();
-
-                NeuronViewModelBase root = this.ViewModel.ExternallySelectedNeuron;
-
-                while (root.Parent.HasValue)
-                    root = root.Parent.Value;
-
-                NeuronGraphView.AddNeuronAndChildren(root, this.ViewModel.ExternallySelectedNeuron, root, graph, this.edges);
-                graph.Attr.LayerDirection = (LayerDirection) this.ViewModel.Layout;
-                this.graphViewer.Graph = graph;
-            }
+            if (n.Id != externalId)
+                n.Attr.FillColor = color;
         }
 
-        // DEL: Use Observable.FromEventPattern
-        private void GraphViewer_MouseDown(object sender, MsaglMouseEventArgs e)
+        private static Color ConvertColorToMsaglColor(System.Windows.Media.Color value)
         {
-            if (this.graphViewer != null && this.graphViewer.ObjectUnderMouseCursor != null && this.graphViewer.ObjectUnderMouseCursor.DrawingObject is Node)
-            {
-                var vo = this.graphViewer.ObjectUnderMouseCursor;
-                if (vo != null && vo.DrawingObject != null && vo.DrawingObject is Node)
-                    this.ViewModel.InternallySelectedNeuronId = ((Node)vo.DrawingObject).Id;
+            return NeuronGraphView.ConvertColorToMsaglColor(new Color(value.R, value.G, value.B), value.A);
+        }
 
-                this.ViewModel.SelectCommand.Execute().Subscribe();
-            }
+        private static Color ConvertColorToMsaglColor(Color value, int alpha)
+        {
+            return new Color((byte) alpha, value.R, value.G, value.B);
         }
 
         private static void AddNeuronAndChildren(NeuronViewModelBase root, NeuronViewModelBase selectedNeuron, NeuronViewModelBase value, Graph graph, List<string> edges)

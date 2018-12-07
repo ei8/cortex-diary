@@ -251,7 +251,7 @@
         <ToolBarTray Grid.Row="0" IsLocked="True" ClipToBounds="True">
             <ToolBar Band="1" BandIndex="1">
                 <Menu ToolBar.OverflowMode="Never">
-                    <MenuItem x:Name="Layout" Header="Layout" Style="{DynamicResource MenuItemStyle1}" />
+                    <MenuItem x:Name="Layout" Focusable="False" Header="Layout" Style="{DynamicResource MenuItemStyle1}" />
                 </Menu>
             </ToolBar>
         </ToolBarTray>
