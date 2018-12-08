@@ -91,30 +91,34 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                                 gv.Graph.Nodes.ToList().ForEach(n => NeuronGraphView.FillIfNotExternallySelected(
                                     n, 
                                     this.ViewModel.ExternallySelectedNeuron.NeuronId, 
-                                    NeuronGraphView.ConvertColorToMsaglColor(SystemColors.WindowColor)
+                                    NeuronGraphView.ConvertColorToMsaglColor(SystemColors.WindowColor),
+                                    1
                                     ));
 
                                 NeuronGraphView.FillIfNotExternallySelected(
                                     node, 
                                     this.ViewModel.ExternallySelectedNeuron.NeuronId, 
-                                    NeuronGraphView.ConvertColorToMsaglColor(Color.Yellow, 80)
+                                    NeuronGraphView.ConvertColorToMsaglColor(Color.Yellow, 80),
+                                    1
                                     );
 
-                                var poc = NeuronGraphView.ConvertColorToMsaglColor(Color.LightGreen, 70);
-                                var prc = NeuronGraphView.ConvertColorToMsaglColor(Color.LightBlue, 90);
+                                var poc = NeuronGraphView.ConvertColorToMsaglColor(Color.LightGreen, 90);
+                                var prc = NeuronGraphView.ConvertColorToMsaglColor(Color.PowderBlue, 150);
                                 node.Edges.ToList().ForEach(e =>
                                 {
                                     if (e.SourceNode == node)
                                         NeuronGraphView.FillIfNotExternallySelected(
                                             e.TargetNode,
                                             this.ViewModel.ExternallySelectedNeuron.NeuronId,
-                                            poc
+                                            poc,
+                                            2
                                             );                                        
                                     else
                                         NeuronGraphView.FillIfNotExternallySelected(
                                             e.SourceNode,
                                             this.ViewModel.ExternallySelectedNeuron.NeuronId,
-                                            prc
+                                            prc,
+                                            2
                                             );
                                 });
                             }
@@ -147,10 +151,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
             });
         }
 
-        private static void FillIfNotExternallySelected(Node n, string externalId, Color color)
+        private static void FillIfNotExternallySelected(Node n, string externalId, Color color, double lineWidth)
         {
             if (n.Id != externalId)
+            {
                 n.Attr.FillColor = color;
+                n.Attr.LineWidth = lineWidth;
+            }
         }
 
         private static Color ConvertColorToMsaglColor(System.Windows.Media.Color value)

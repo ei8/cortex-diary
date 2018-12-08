@@ -255,6 +255,6 @@
                 </Menu>
             </ToolBar>
         </ToolBarTray>
-        <DockPanel x:Name="ContentPanel" ClipToBounds="True" Grid.Row="1"/>
+        <DockPanel x:Name="ContentPanel" ClipToBounds="True" Grid.Row="1" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
     </Grid>
 </UserControl>
