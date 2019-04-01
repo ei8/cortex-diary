@@ -99,12 +99,23 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             // TODO: if (type != RelativeType.NotSet)
             //    queryStringBuilder.Append("type=")
             //        .Append(type.ToString());
-            //if (!string.IsNullOrEmpty(filter))
-            //    queryStringBuilder.Append("filter=")
-            //        .Append(filter);
+            if (!string.IsNullOrEmpty(filter))
+            {
+                if (queryStringBuilder.Length > 0)
+                    queryStringBuilder.Append('&');
+
+                queryStringBuilder
+                    .Append(filter);
+            }
             if (limit.HasValue)
-                queryStringBuilder.Append("limit=")
+            {
+                if (queryStringBuilder.Length > 0)
+                    queryStringBuilder.Append('&');
+
+                queryStringBuilder
+                    .Append("limit=")
                     .Append(limit.Value);
+            }
             if (queryStringBuilder.Length > 0)
                 queryStringBuilder.Insert(0, '?');
 

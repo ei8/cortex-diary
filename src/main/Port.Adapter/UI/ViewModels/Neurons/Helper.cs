@@ -30,8 +30,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using works.ei8.Cortex.Diary.Application.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -50,6 +53,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             {
                 statusService.Message = ex.Message;
             }
+        }
+
+        internal async static Task<bool> PromptSimilarExists(INeuronQueryService queryService, IDialogService dialogService, string avatarUrl, object parameter, string result)
+        {
+            return !(await queryService.GetNeurons(avatarUrl, filter: $"TagContains={result}")).Any() ||
+                    (await dialogService.ShowDialogYesNo("Other Neuron(s) containing a similar Tag value already exists. Are you sure you wish to continue?", parameter, out DialogResult yesno2)).GetValueOrDefault();
         }
     }
 }

@@ -92,36 +92,39 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private async Task OnAddClicked(SourceCache<Neuron, int> cache, object parameter)
         {
             await Helper.SetStatusOnComplete(async () =>
+            {
+                bool stat = false;
+                bool shouldAddAuthor = this.reloaded && cache.Count == 0;
+                bool addingAuthor = false;
+                if (shouldAddAuthor && (await this.dialogService.ShowDialogYesNo("This Avatar needs to be initialized. Would you like to add its Author?", parameter, out DialogResult yesno)).GetValueOrDefault())
+                    addingAuthor = true;
+
+                if (
+                        (await this.dialogService.ShowDialogTextInput(addingAuthor ? "Enter Author Name (E-mail optional)" : "Enter Neuron tag: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault() &&
+                        await Helper.PromptSimilarExists(this.neuronQueryService, this.dialogService, this.avatarUrl, parameter, result)
+                    )
                 {
-                    bool stat = false;
-                    bool shouldAddAuthor = this.reloaded && cache.Count == 0;
-                    bool addingAuthor = false;
-                    if (shouldAddAuthor && (await this.dialogService.ShowDialogYesNo("This Avatar needs to be initialized. Would you like to add its Author?", parameter, out DialogResult yesno)).GetValueOrDefault())
-                        addingAuthor = true;
-
-                    if ((await this.dialogService.ShowDialogTextInput(addingAuthor ? "Enter Author Name (E-mail optional)" : "Enter Neuron tag: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault())
+                    Neuron n = new Neuron
                     {
-                        Neuron n = new Neuron
-                        {
-                            Tag = result,
-                            Id = Guid.NewGuid().GetHashCode(),
-                            NeuronId = Guid.NewGuid().ToString(),
-                            Type = RelativeType.NotSet,
-                            Version = 1,
-                        };
+                        Tag = result,
+                        Id = Guid.NewGuid().GetHashCode(),
+                        NeuronId = Guid.NewGuid().ToString(),
+                        Type = RelativeType.NotSet,
+                        Version = 1,
+                    };
 
-                        await this.neuronApplicationService.CreateNeuron(
-                            this.avatarUrl,
-                            n.NeuronId,
-                            n.Tag,
-                            new Terminal[0],
-                            addingAuthor ? n.NeuronId : this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
-                            );
-                        cache.AddOrUpdate(n);
-                        stat = true;
-                    }
-                    return stat;
-                },
+                    await this.neuronApplicationService.CreateNeuron(
+                        this.avatarUrl,
+                        n.NeuronId,
+                        n.Tag,
+                        new Terminal[0],
+                        addingAuthor ? n.NeuronId : this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                        );
+                    cache.AddOrUpdate(n);
+                    stat = true;
+                }
+                return stat;
+            },
                 "Neuron added successfully.",
                 this.statusService,
                 "Neuron addition cancelled."

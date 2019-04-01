@@ -275,7 +275,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 {
                     bool stat = false;
 
-                    if ((await this.dialogService.ShowDialogTextInput("Enter Presynaptic tag: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogTextInput("Enter Presynaptic tag: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault() &&
+                        await Helper.PromptSimilarExists(this.neuronQueryService, this.dialogService, this.avatarUrl, parameter, result))
                     {
                         await this.neuronApplicationService.CreateNeuron(
                             this.avatarUrl,
