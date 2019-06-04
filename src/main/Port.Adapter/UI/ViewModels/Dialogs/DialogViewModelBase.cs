@@ -38,6 +38,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
     public abstract class DialogViewModelBase : ReactiveObject
     {
         private object userDialogResult;
+        private string message;
 
         public object UserDialogResult
         {
@@ -55,8 +56,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         public string Message
         {
-            get;
-            private set;
+            get => this.message;
+            set => this.RaiseAndSetIfChanged(ref this.message, value);
         }
 
         public DialogViewModelBase(string message)

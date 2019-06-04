@@ -116,7 +116,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     await this.neuronApplicationService.CreateNeuron(
                         this.avatarUrl,
                         n.NeuronId,
-                        n.Tag,
+                        ViewModels.Helper.CleanForJSON(n.Tag),
                         new Terminal[0],
                         addingAuthor ? n.NeuronId : this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
                         );

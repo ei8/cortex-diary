@@ -52,6 +52,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
 
                 d(this.BindCommand(this.ViewModel, vm => vm.OkCommand, v => v.OkButton));
                 d(this.BindCommand(this.ViewModel, vm => vm.CancelCommand, v => v.CancelButton));
+                d(this.OneWayBind(this.ViewModel, vm => vm.Message, v => v.MessageLabel.Text));
                 d(this.Bind(this.ViewModel, vm => vm.TextInput, v => v.InputBox.Text));
             });
         }

@@ -182,9 +182,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                 switch (value.Neuron.Type)
                 {
                     case Domain.Model.Neurons.RelativeType.Postsynaptic:
-                        NeuronGraphView.AddEdge(value.Parent.Value.NeuronId, value.NeuronId, graph, edges);
+                        NeuronGraphView.AddEdge(value.Parent.Value.NeuronId, value.NeuronId, graph, edges, value.Neuron.Strength, value.Neuron.Effect == "-1");
                         break;
                     case Domain.Model.Neurons.RelativeType.Presynaptic:
+                        NeuronGraphView.AddEdge(value.NeuronId, value.Parent.Value.NeuronId, graph, edges, value.Neuron.Strength, value.Neuron.Effect == "-1");
+                        break;
                     case Domain.Model.Neurons.RelativeType.NotSet:
                         NeuronGraphView.AddEdge(value.NeuronId, value.Parent.Value.NeuronId, graph, edges);
                         break;
@@ -195,12 +197,24 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                 NeuronGraphView.AddNeuronAndChildren(root, selectedNeuron, c, graph, edges);
         }
 
-        private static void AddEdge(string source, string target, Graph graph, List<string> edges)
+        private static void AddEdge(string source, string target, Graph graph, List<string> edges, string strength = "1", bool inhibitoryEndpoint = false)
         {
             string edgeId = $"{source}-{target}";
             if (!edges.Contains(edgeId))
             {
-                var e = graph.AddEdge(source, target);
+                Edge e = null;
+                if (strength != "1")
+                {
+                    e = graph.AddEdge(source, strength, target);
+                    e.Label.FontSize = e.Label.FontSize * 0.8;
+                    e.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Dashed);
+                }
+                else
+                    e = graph.AddEdge(source, target);
+
+                if (inhibitoryEndpoint)
+                    e.Attr.Color = Color.IndianRed;
+
                 edges.Add(edgeId);
             }
         }

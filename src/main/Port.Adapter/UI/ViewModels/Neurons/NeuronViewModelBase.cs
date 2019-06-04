@@ -49,6 +49,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private int id;
         private string neuronId;
         private string tag;
+        private NeurotransmitterEffect effect;
+        private float strength;
         private bool isExpanded;
         private bool isSelected;
         private bool isHighlighted;
@@ -229,6 +231,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.Neuron = neuron;
             this.NeuronId = neuron.NeuronId;
             this.Tag = neuron.Tag;
+            if (int.TryParse(neuron.Effect, out int ie))
+                this.Effect = (NeurotransmitterEffect) ie;
+            if (float.TryParse(neuron.Strength, out float fs))
+                this.Strength = fs;
             this.settingNeuron = false;
         }
 
@@ -278,11 +284,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     if ((await this.dialogService.ShowDialogTextInput("Enter Presynaptic tag: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault() &&
                         await Helper.PromptSimilarExists(this.neuronQueryService, this.dialogService, this.avatarUrl, parameter, result))
                     {
+                        string[] tps = await this.AskUserTerminalParameters(parameter);
                         await this.neuronApplicationService.CreateNeuron(
                             this.avatarUrl,
                             Guid.NewGuid().ToString(),
-                            result,
-                            new Terminal[] { NeuronViewModelBase.TempCreateTerminal(this.Neuron.NeuronId) },
+                            ViewModels.Helper.CleanForJSON(result),
+                            new Terminal[] { new Terminal { TargetId = this.Neuron.NeuronId, Effect = (NeurotransmitterEffect)int.Parse(tps[0]), Strength = float.Parse(tps[1]) } },
                             this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
                         );
                         await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
@@ -296,6 +303,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             );
         }
 
+        private async Task<string[]> AskUserTerminalParameters(object parameter)
+        {
+            (await this.dialogService.ShowDialogTextInput("Enter Terminal Parameters (Format = '[effect],[strength]', 'Cancel' to use default): ", this.avatarUrl, parameter, out string terminalParams)).GetValueOrDefault();
+            string[] tps = terminalParams.Split(',');
+            if (tps.Length == 1)
+                tps = new string[] { "1", "1" };
+            return tps;
+        }
+
         private async Task OnAddPostsynaptic(SourceCache<Neuron, int> cache, object parameter)
         {
             await Helper.SetStatusOnComplete(async () =>
@@ -303,10 +319,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     bool stat = false;
                     if ((await this.dialogService.ShowDialogSelectNeurons("Select Neuron", this.avatarUrl, parameter, true, out IEnumerable<Neuron> result)).GetValueOrDefault())
                     {
+                        string[] tps = await this.AskUserTerminalParameters(parameter);
                         await this.neuronApplicationService.AddTerminalsToNeuron(
                             this.avatarUrl,
                             this.neuronId,
-                            result.Select(n => NeuronViewModelBase.TempCreateTerminal(n.NeuronId)), 
+                            result.Select(n => new Terminal() { TargetId = n.NeuronId, Effect = (NeurotransmitterEffect)int.Parse(tps[0]), Strength = float.Parse(tps[1]) }), 
                             this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
                             this.Neuron.Version
                             );
@@ -319,12 +336,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 this.statusService,
                 "Postsynaptic selection cancelled."
             );
-        }
-
-        // TODO: make Effect and Strength user-specified
-        private static Terminal TempCreateTerminal(string targetId)
-        {
-            return new Terminal { TargetId = targetId, Effect = NeurotransmitterEffect.Excite, Strength = 1f };
         }
 
         [Browsable(false)]
@@ -358,6 +369,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         {
             get => this.tag;
             set => this.RaiseAndSetIfChanged(ref this.tag, value);
+        }
+
+        [ReadOnly(true)]
+        public NeurotransmitterEffect Effect
+        {
+            get => this.effect;
+            set => this.RaiseAndSetIfChanged(ref this.effect, value);
+        }
+
+        [ReadOnly(true)]
+        public float Strength
+        {
+            get => this.strength;
+            set => this.RaiseAndSetIfChanged(ref this.strength, value);
         }
 
         [Browsable(false)]

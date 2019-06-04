@@ -51,6 +51,10 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
 
         public string Tag { get; set; }
 
+        public string Effect { get; set; }
+
+        public string Strength { get; set; }
+
         public RelativeType Type { get; set; }
 
         public int Version { get; set; }
