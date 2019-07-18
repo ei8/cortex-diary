@@ -109,7 +109,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         Tag = result,
                         Id = Guid.NewGuid().GetHashCode(),
                         NeuronId = Guid.NewGuid().ToString(),
-                        Type = RelativeType.NotSet,
                         Version = 1,
                     };
 
@@ -117,7 +116,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         this.avatarUrl,
                         n.NeuronId,
                         ViewModels.Helper.CleanForJSON(n.Tag),
-                        new Terminal[0],
                         addingAuthor ? n.NeuronId : this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
                         );
                     cache.AddOrUpdate(n);

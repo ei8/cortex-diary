@@ -42,9 +42,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
     public class PresynapticViewModel : NeuronViewModelBase
     {
         public PresynapticViewModel(string avatarUrl, string tag, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, 
-            INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, 
+            INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, IOriginService originService = null, 
             IExtendedSelectionService selectionService = null) : 
-            base(avatarUrl, node, cache, parent, neuronApplicationService, neuronQueryService, originService, selectionService)
+            base(avatarUrl, node, cache, parent, neuronApplicationService, neuronQueryService, terminalApplicationService, originService, selectionService)
         {
             this.Tag = tag;
         }

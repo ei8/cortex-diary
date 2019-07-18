@@ -59,6 +59,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private IExtendedSelectionService highlightService;
         private readonly INeuronApplicationService neuronApplicationService;
         private readonly INeuronQueryService neuronQueryService;
+        private readonly ITerminalApplicationService terminalApplicationService;
         private readonly IOriginService originService;
         private readonly IStatusService statusService;
         private readonly IDialogService dialogService;
@@ -67,7 +68,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private const int ReloadDelay = 2100;
 
         protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronApplicationService neuronApplicationService = null,
-            INeuronQueryService neuronQueryService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IExtendedSelectionService highlightService = null, IStatusService statusService = null, IDialogService dialogService = null)
+            INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IExtendedSelectionService highlightService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.avatarUrl = avatarUrl;
             this.Id = node.Key;
@@ -86,6 +87,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
+            this.terminalApplicationService = terminalApplicationService ?? Locator.Current.GetService<ITerminalApplicationService>();
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Select.ToString());
             this.highlightService = highlightService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Highlight.ToString());
             this.originService = originService ?? Locator.Current.GetService<IOriginService>();
@@ -173,22 +175,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                                 cache.Remove(this.Neuron);
                                 break;
                             case RelativeType.Postsynaptic:
-                                await this.neuronApplicationService.RemoveTerminalsFromNeuron(
+                                await this.terminalApplicationService.DeactivateTerminal(
                                     this.avatarUrl,
-                                    this.Parent.Value.NeuronId,
-                                    new Terminal[] { new Terminal { TargetId = this.NeuronId } },
+                                    this.Neuron.Terminal.Id,
                                     this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
-                                    this.Parent.Value.Neuron.Version
+                                    this.Neuron.Terminal.Version
                                     );
                                 cache.Remove(this.Neuron);
                                 break;
                             case RelativeType.Presynaptic:
-                                await this.neuronApplicationService.RemoveTerminalsFromNeuron(
+                                await this.terminalApplicationService.DeactivateTerminal(
                                     this.avatarUrl,
-                                    this.NeuronId,
-                                    new Terminal[] { new Terminal { TargetId = this.Parent.Value.NeuronId } },
+                                    this.Neuron.Terminal.Id,
                                     this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
-                                    this.Neuron.Version
+                                    this.Neuron.Terminal.Version
                                     );
                                 cache.Remove(this.Neuron);
                                 break;
@@ -231,10 +231,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.Neuron = neuron;
             this.NeuronId = neuron.NeuronId;
             this.Tag = neuron.Tag;
-            if (int.TryParse(neuron.Effect, out int ie))
-                this.Effect = (NeurotransmitterEffect) ie;
-            if (float.TryParse(neuron.Strength, out float fs))
-                this.Strength = fs;
+            if (neuron.Terminal != null)
+            {
+                if (int.TryParse(neuron.Terminal.Effect, out int ie))
+                    this.Effect = (NeurotransmitterEffect)ie;
+                if (float.TryParse(neuron.Terminal.Strength, out float fs))
+                    this.Strength = fs;
+            }
             this.settingNeuron = false;
         }
 
@@ -256,7 +259,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 this.SetNeuron(this.Neuron);
 
                 // reload relatives
-                cache.Remove(cache.Items.Where(i => i.CentralId == this.Neuron.Id));
+                cache.Remove(NeuronViewModelBase.GetAllChildren(cache, this.Neuron.Id));
                 var relatives = await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron);
                 cache.AddOrUpdate(relatives);
                 return true;
@@ -266,13 +269,31 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             );
         }
 
+        private static IEnumerable<Neuron> GetAllChildren(SourceCache<Neuron, int> cache, int parentId)
+        {
+            var currList = cache.Items.Where(i => i.CentralId == parentId);
+            currList.ToList().ForEach(n => currList = currList.Concat(NeuronViewModelBase.GetAllChildren(cache, n.Id)));
+            return currList;
+        }
+
         private static void CopyNeuronData(Neuron target, Neuron source)
         {
+            // TODO: Use Copy Constructor instead?
             target.Tag = source.Tag;
-            target.Type = source.Type;
             target.Timestamp = source.Timestamp;
             target.Version = source.Version;
             target.Errors = source.Errors;
+
+            if (source.Terminal != null)
+            {
+                target.Terminal.Id = source.Terminal.Id;
+                target.Terminal.PresynapticNeuronId = source.Terminal.PresynapticNeuronId;
+                target.Terminal.PostsynapticNeuronId = source.Terminal.PostsynapticNeuronId;
+                target.Terminal.Effect = source.Terminal.Effect;
+                target.Terminal.Strength = source.Terminal.Strength;
+                target.Terminal.Version = source.Terminal.Version;
+                target.Terminal.Timestamp = source.Terminal.Timestamp;
+            }
         }
 
         private async Task OnAddPresynaptic(SourceCache<Neuron, int> cache, object parameter)
@@ -285,13 +306,22 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         await Helper.PromptSimilarExists(this.neuronQueryService, this.dialogService, this.avatarUrl, parameter, result))
                     {
                         string[] tps = await this.AskUserTerminalParameters(parameter);
+                        var presynapticNeuronId = Guid.NewGuid().ToString();
                         await this.neuronApplicationService.CreateNeuron(
                             this.avatarUrl,
-                            Guid.NewGuid().ToString(),
-                            ViewModels.Helper.CleanForJSON(result),
-                            new Terminal[] { new Terminal { TargetId = this.Neuron.NeuronId, Effect = (NeurotransmitterEffect)int.Parse(tps[0]), Strength = float.Parse(tps[1]) } },
+                            presynapticNeuronId,
+                            ViewModels.Helper.CleanForJSON(result),                            
                             this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
                         );
+                        await this.terminalApplicationService.CreateTerminal(
+                            this.avatarUrl,
+                            Guid.NewGuid().ToString(),
+                            presynapticNeuronId,
+                            this.Neuron.NeuronId,
+                            (NeurotransmitterEffect)int.Parse(tps[0]),
+                            float.Parse(tps[1]),
+                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                            );
                         await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
                         stat = true;
                     }
@@ -320,13 +350,18 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     if ((await this.dialogService.ShowDialogSelectNeurons("Select Neuron", this.avatarUrl, parameter, true, out IEnumerable<Neuron> result)).GetValueOrDefault())
                     {
                         string[] tps = await this.AskUserTerminalParameters(parameter);
-                        await this.neuronApplicationService.AddTerminalsToNeuron(
-                            this.avatarUrl,
-                            this.neuronId,
-                            result.Select(n => new Terminal() { TargetId = n.NeuronId, Effect = (NeurotransmitterEffect)int.Parse(tps[0]), Strength = float.Parse(tps[1]) }), 
-                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
-                            this.Neuron.Version
-                            );
+                        foreach (var n in result)
+                        {
+                            await this.terminalApplicationService.CreateTerminal(
+                                this.avatarUrl,
+                                Guid.NewGuid().ToString(),
+                                this.neuronId,
+                                n.NeuronId,
+                                (NeurotransmitterEffect)int.Parse(tps[0]),
+                                float.Parse(tps[1]),
+                                this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                                );
+                        }
                         await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
                         stat = true;
                     }

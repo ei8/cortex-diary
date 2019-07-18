@@ -68,6 +68,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronQueryService(), typeof(INeuronQueryService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronClient(), typeof(INeuronClient));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronApplicationService(), typeof(INeuronApplicationService));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new TerminalClient(), typeof(ITerminalClient));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new TerminalApplicationService(), typeof(ITerminalApplicationService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new OriginsCacheService(), typeof(IOriginsCacheService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new OriginService(), typeof(IOriginService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new StatusService(), typeof(IStatusService));

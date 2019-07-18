@@ -182,10 +182,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                 switch (value.Neuron.Type)
                 {
                     case Domain.Model.Neurons.RelativeType.Postsynaptic:
-                        NeuronGraphView.AddEdge(value.Parent.Value.NeuronId, value.NeuronId, graph, edges, value.Neuron.Strength, value.Neuron.Effect == "-1");
+                        NeuronGraphView.AddEdge(value.Parent.Value.NeuronId, value.NeuronId, graph, edges, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
                         break;
                     case Domain.Model.Neurons.RelativeType.Presynaptic:
-                        NeuronGraphView.AddEdge(value.NeuronId, value.Parent.Value.NeuronId, graph, edges, value.Neuron.Strength, value.Neuron.Effect == "-1");
+                        NeuronGraphView.AddEdge(value.NeuronId, value.Parent.Value.NeuronId, graph, edges, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
                         break;
                     case Domain.Model.Neurons.RelativeType.NotSet:
                         NeuronGraphView.AddEdge(value.NeuronId, value.Parent.Value.NeuronId, graph, edges);
@@ -193,8 +193,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                 }
             }
 
-            foreach (var c in value.Children)
-                NeuronGraphView.AddNeuronAndChildren(root, selectedNeuron, c, graph, edges);
+            if (value.Children != null)
+                foreach (var c in value.Children)
+                    NeuronGraphView.AddNeuronAndChildren(root, selectedNeuron, c, graph, edges);
         }
 
         private static void AddEdge(string source, string target, Graph graph, List<string> edges, string strength = "1", bool inhibitoryEndpoint = false)

@@ -46,17 +46,17 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
         [JsonProperty("Id")]
         public string NeuronId { get; set; }
 
-        [JsonProperty("CentralId")]
-        public string CentralNeuronId { get; set; }
-
         public string Tag { get; set; }
 
-        public string Effect { get; set; }
+        public Terminal Terminal { get; set; }
 
-        public string Strength { get; set; }
-
-        public RelativeType Type { get; set; }
-
+        [JsonIgnore]
+        public RelativeType Type => this.Terminal != null && this.Terminal.PresynapticNeuronId != null ?
+            this.Terminal.PresynapticNeuronId.EndsWith(this.NeuronId) ?
+                RelativeType.Presynaptic :
+                RelativeType.Postsynaptic :
+            RelativeType.NotSet;    
+        
         public int Version { get; set; }
 
         public string Timestamp { get; set; }

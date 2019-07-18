@@ -1,0 +1,30 @@
+﻿using Splat;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+
+namespace works.ei8.Cortex.Diary.Application.Neurons
+{
+    public class TerminalApplicationService : ITerminalApplicationService
+    {
+        private ITerminalClient terminalClient;
+
+        public TerminalApplicationService(ITerminalClient terminalClient = null)
+        {
+            this.terminalClient = terminalClient ?? Locator.Current.GetService<ITerminalClient>();
+        }
+
+        public async Task CreateTerminal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string authorId, CancellationToken token = default(CancellationToken))
+        {
+            await this.terminalClient.CreateTerminal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, authorId, token);
+        }
+
+        public async Task DeactivateTerminal(string avatarUrl, string id, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
+        {
+            await this.terminalClient.DeactivateTerminal(avatarUrl, id, authorId, expectedVersion, token);
+        }
+    }
+}

@@ -36,8 +36,12 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
 {
     public class Terminal
     {
-        public string TargetId { get; set; }
-        public NeurotransmitterEffect Effect { get; set; }
-        public float Strength { get; set; }
+        public string Id { get; set; }
+        public string PresynapticNeuronId { get; set; }
+        public string PostsynapticNeuronId { get; set; }
+        public string Effect { get; set; }
+        public string Strength { get; set; }
+        public int Version { get; set; }
+        public string Timestamp { get; set; }
     }
 }
