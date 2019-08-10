@@ -21,6 +21,9 @@
             <DataTemplate DataType="{x:Type dialogs:DialogTextInputViewModel}">
                 <wpfdialogs:DialogTextInputView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type dialogs:LoginViewModel}">
+                <wpfdialogs:LoginView />
+            </DataTemplate>
             <local:BoolToColorBrushConverter x:Key="BoolToColorBrushConverter"/>
         </ResourceDictionary>        
     </Application.Resources>

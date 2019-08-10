@@ -34,6 +34,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using works.ei8.Cortex.Diary.Application.Identity;
+using works.ei8.Cortex.Diary.Application.OpenUrl;
+using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
@@ -48,5 +51,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
         Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<Neuron> result);
 
         Task<bool?> ShowDialogTextInput(string message, string avatarUrl, object owner, out string result);
+
+        Task<bool?> ShowLogin(ISettingsService settingsService, IOpenUrlService openUrlService, IIdentityService identityService, object owner, out bool result);
     }
 }

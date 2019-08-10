@@ -39,4 +39,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         Select,
         Highlight
     }
+
+    internal struct Constants
+    {
+        internal const string ClientId = "xamarin";
+    }
 }

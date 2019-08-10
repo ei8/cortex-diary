@@ -29,46 +29,58 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using works.ei8.Cortex.Diary.Application.Settings;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     public class SettingsServiceImplementation : ISettingsServiceImplementation
     {
+        private Dictionary<string, object> dict = new Dictionary<string, object>();
+
         public bool AddOrUpdateValue(string key, bool value)
         {
-            throw new NotImplementedException();
+            return this.AddOrUpdate(key, value);
         }
 
         public bool AddOrUpdateValue(string key, string value)
         {
-            throw new NotImplementedException();
+            return this.AddOrUpdate(key, value);
+        }
+
+        private bool AddOrUpdate(string key, object value)
+        {
+            bool result = false;
+            try
+            {
+                if (this.dict.ContainsKey(key))
+                    this.dict.Remove(key);
+
+                this.dict.Add(key, value);
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
+            return result;
         }
 
         public bool GetValueOrDefault(string key, bool defaultValue)
         {
-            throw new NotImplementedException();
+            return this.dict.ContainsKey(key) ? (bool)this.dict[key] : defaultValue;
         }
 
         public string GetValueOrDefault(string key, string defaultValue)
         {
-            var result = string.Empty;
-
-            switch (key)
-            {
-                case "avatar_endpoint":
-                    result = "http://192.168.8.102:59826/example/";
-                    break;
-                default:
-                    break;
-            }
-
-            return result;
+            return this.dict.ContainsKey(key) ? (string)this.dict[key] : defaultValue;
         }
 
         public void Remove(string key)
         {
-            throw new NotImplementedException();
+            this.dict.Remove(key);
         }
     }
 }

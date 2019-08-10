@@ -31,12 +31,14 @@
 using ReactiveUI;
 using Splat;
 using works.ei8.Cortex.Diary.Application.Dependency;
+using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Origins;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvider;
@@ -64,6 +66,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             Locator.CurrentMutable.RegisterLazySingleton(() => new DependencyService(), typeof(IDependencyService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new SettingsService(), typeof(ISettingsService));            
             Locator.CurrentMutable.RegisterLazySingleton(() => new RequestProvider(), typeof(IRequestProvider));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new IdentityService(), typeof(IIdentityService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronGraphQueryClient(), typeof(INeuronGraphQueryClient));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronQueryService(), typeof(INeuronQueryService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronClient(), typeof(INeuronClient));

@@ -67,6 +67,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdIdentityCallback = "identity_callback";
         private const string IdLogoutCallback = "logout_callback";
         private const string IdRevocationEndpoint = "revocation_endpoint";
+        private const string IdIdentityServerUrl = "identity_server_url";
 
         private readonly string AccessTokenDefault = string.Empty;
         private readonly string IdTokenDefault = string.Empty;
@@ -86,7 +87,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string IdentityCallbackDefault = string.Empty;
         private readonly string LogoutCallbackDefault = string.Empty;
         private readonly string RevocationEndpointDefault = string.Empty;
-        
+        private readonly string IdentityServerUrlDefault = string.Empty;
+
         #endregion
 
         public string AuthAccessToken
@@ -197,21 +199,25 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             set => AppSettings.AddOrUpdateValue(IdRevocationEndpoint, value);
         }
 
-        private void UpdateEndpoint(string avatarEndpoint)
+        public string IdentityServerUrl
         {
-            // http://0.0.0.0/example/
-            if (Uri.TryCreate(avatarEndpoint, UriKind.Absolute, out Uri avatarUri))
+            get => AppSettings.GetValueOrDefault(IdIdentityServerUrl, IdentityServerUrlDefault);
+            set
             {
-                var authority = avatarUri.GetLeftPart(UriPartial.Authority);
-                RegisterWebsite = $"{authority}/Account/Register";
-                IdentityEndpoint = $"{authority}/connect/authorize";
-                TokenEndpoint = $"{authority}/connect/token";
-                LogoutEndpoint = $"{authority}/connect/endsession";
-                IdentityCallback = $"{authority}/cortex/diary/callback";
-                LogoutCallback = $"{authority}/Account/Redirecting";
-                RevocationEndpoint = $"{authority}/connect/revocation";
-                // DEL: LocationEndpoint = $"{authority}:5109";
+                AppSettings.AddOrUpdateValue(IdIdentityServerUrl, value);
+                this.UpdateEndpoint(this.IdentityServerUrl);
             }
+        }
+
+        private void UpdateEndpoint(string identityServerUrl)
+        {
+            RegisterWebsite = $"{identityServerUrl}/Account/Register";
+            IdentityEndpoint = $"{identityServerUrl}/connect/authorize";
+            TokenEndpoint = $"{identityServerUrl}/connect/token";
+            LogoutEndpoint = $"{identityServerUrl}/connect/endsession";
+            IdentityCallback = $"{identityServerUrl}/cortex/diary/callback";
+            LogoutCallback = $"{identityServerUrl}/Account/Redirecting";
+            RevocationEndpoint = $"{identityServerUrl}/connect/revocation";
         }
 
         public void Clear()
@@ -234,13 +240,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             this.AppSettings.Remove(IdLogoutEndpoint);
             this.AppSettings.Remove(IdentityCallback);
             this.AppSettings.Remove(IdLogoutCallback);
-        }
-
-        public void Update(string avatarUrl)
-        {
-            // split avatarUrl between server and avatar
-            var uri = new Uri(avatarUrl);
-            var server = uri.GetLeftPart(System.UriPartial.Authority);
+            this.AppSettings.Remove(IdIdentityServerUrl);
         }
     }
 }

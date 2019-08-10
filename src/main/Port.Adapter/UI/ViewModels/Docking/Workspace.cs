@@ -21,7 +21,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
+using works.ei8.Cortex.Diary.Application.Settings;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
@@ -30,18 +34,28 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
     public class Workspace : ReactiveObject
     {
         private readonly ReactiveCommand newNeuronTreeCommand;
+        private readonly ReactiveCommand signInCommand;
         private readonly ReactiveCommand openAboutCommand;
         private readonly IOpenUrlService openUrlService;
+        private readonly IDialogService dialogService;
+        private readonly ISettingsService settingsService;
+        private readonly IIdentityService identityService;
 
-        public Workspace(IOpenUrlService openUrlService = null)
+        public Workspace(IOpenUrlService openUrlService = null, IDialogService dialogService = null, ISettingsService settingsService = null, IIdentityService identityService = null)
         {
             this.openUrlService = openUrlService ?? Locator.Current.GetService<IOpenUrlService>();
+            this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
+            this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
+            this.identityService = identityService ?? Locator.Current.GetService<IIdentityService>();
 
             this.newNeuronTreeCommand = ReactiveCommand.Create(() =>
             {
                 this.panes.Add(new NeuronTreePaneViewModel());
                 this.ActiveDocument = this.panes.Last();
             });
+
+            this.signInCommand = ReactiveCommand.Create<object>(async(parameter) =>
+                await this.OnSignInClicked(parameter));
 
             this.openAboutCommand = ReactiveCommand.Create(() => this.openUrlService.OpenUrl("https://github.com/ei8/cortex-diary"));
         }
@@ -152,6 +166,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 
         public ReactiveCommand NewNeuronTreeCommand => this.newNeuronTreeCommand;
 
+        public ReactiveCommand SignInCommand => this.signInCommand;
+
         public ReactiveCommand OpenAboutCommand => this.openAboutCommand;
 
         #region ActiveDocument
@@ -200,5 +216,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
         //    File.WriteAllText(fileToSave.FilePath, fileToSave.TextContent);
         //    ActiveDocument.IsDirty = false;
         //}
+
+        private async Task OnSignInClicked(object parameter)
+        {
+            if ((await this.dialogService.ShowLogin(this.settingsService, this.openUrlService, this.identityService, parameter, out bool result)).GetValueOrDefault())
+            {
+                var r = result;
+            }
+        }
     }
 }

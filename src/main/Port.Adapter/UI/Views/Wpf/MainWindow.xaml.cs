@@ -38,6 +38,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
                     .InvokeCommand(this.ViewModel.NewNeuronTreeCommand);
 
                 d(this.BindCommand(this.ViewModel, vm => vm.NewNeuronTreeCommand, v => v.NewNeuronTree));
+                d(this.BindCommand(this.ViewModel, vm => vm.SignInCommand, v => v.SignIn));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Tools, v => v.dockManager.AnchorablesSource));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Panes, v => v.dockManager.DocumentsSource));
                 d(this.Bind(this.ViewModel, vm => vm.ActiveDocument, v => v.dockManager.ActiveContent));

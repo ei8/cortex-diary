@@ -49,6 +49,7 @@ namespace works.ei8.Cortex.Diary.Application.Settings
         string IdentityCallback { get; set; }
         string LogoutCallback { get; set; }
         string RevocationEndpoint { get; set; }
+        string IdentityServerUrl { get; set; }
 
         void Clear();
     }

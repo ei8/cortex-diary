@@ -27,6 +27,7 @@
 using IdentityModel;
 using IdentityModel.Client;
 using PCLCrypto;
+using Splat;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -46,10 +47,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
         private readonly IRequestProvider _requestProvider;
         private string _codeVerifier;
 
-        public IdentityService(ISettingsService settingsService, IRequestProvider requestProvider)
+        public IdentityService(ISettingsService settingsService = null, IRequestProvider requestProvider = null)
         {
-            _requestProvider = requestProvider;
-            this.settingsService = settingsService;
+            this._requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
+            this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
         }
 
         public string CreateAuthorizationRequest()
@@ -65,8 +66,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             dic.Add("scope", "openid profile offline_access api1"); 
             dic.Add("redirect_uri", this.settingsService.IdentityCallback);
             dic.Add("nonce", Guid.NewGuid().ToString("N"));
-            dic.Add("code_challenge", CreateCodeChallenge());
-            dic.Add("code_challenge_method", "S256");
+            //TODO: required if PKCE in server is true
+            //dic.Add("code_challenge", CreateCodeChallenge());
+            //dic.Add("code_challenge_method", "S256");
 
             // TODO: Add CSRF token to protect against cross-site request forgery attacks.
             //var currentCSRFToken = Guid.NewGuid().ToString("N");

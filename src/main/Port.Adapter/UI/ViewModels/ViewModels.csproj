@@ -16,12 +16,14 @@
 
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.5.1.2479" />
+    <PackageReference Include="IdentityModel" Version="3.10.10" />
     <PackageReference Include="ReactiveUI" Version="8.7.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Application\Application.csproj" />
     <ProjectReference Include="..\..\..\Domain.Model\Domain.Model.csproj" />
+    <ProjectReference Include="..\..\IO\Process\Services\Services.csproj" />
   </ItemGroup>
 
 </Project>

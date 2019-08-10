@@ -37,8 +37,10 @@
         <Menu>
             <MenuItem Header="File">
                 <MenuItem Name="NewNeuronTree" Header="New"/>
-                <!--TODO: <MenuItem Header="Open" Command="{Binding OpenCommand}"/>
                 <Separator/>
+                <MenuItem Name="SignIn" Header="Sign In" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
+                <!--TODO: <MenuItem Header="Open" Command="{Binding OpenCommand}"/>
+                
                 <MenuItem Header="Save" Command="{Binding ActiveDocument.SaveCommand}"/>
                 <MenuItem Header="Save As..." Command="{Binding ActiveDocument.SaveAsCommand}"/>-->
                 <!--<Separator/>

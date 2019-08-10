@@ -28,51 +28,68 @@
      support@ei8.works
  */
 
-using System.Collections.Generic;
+using DynamicData.Binding;
+using ReactiveUI;
+using System;
+using System.Reactive.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using works.ei8.Cortex.Diary.Application.Identity;
-using works.ei8.Cortex.Diary.Application.OpenUrl;
-using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using System.Windows.Controls;
+using System.Windows.Data;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
 {
     /// <summary>
+    /// Interaction logic for DialogYesNoView.xaml
     /// https://www.c-sharpcorner.com/article/dialogs-in-wpf-mvvm/
     /// </summary>
-    public class DialogService : IDialogService
+    public partial class LoginView : UserControl, IViewFor<LoginViewModel>
     {
-        public Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<Neuron> result)
+        public LoginView()
         {
-            return this.ShowDialog<IEnumerable<Neuron>>(new DialogSelectNeuronsViewModel(message, avatarUrl, allowMultiSelect), owner, out result);
+            InitializeComponent();
+            
+            this.WhenActivated(d =>
+            {
+                this.WhenAnyValue(x => x.DataContext)
+                    .Where(x => x != null)
+                    .Subscribe(x => this.ViewModel = (LoginViewModel)x);
+
+                this.ViewModel.WhenPropertyChanged(v => v.LoginUrl)
+                    .Subscribe((v) => {
+                        if (v != null && v.Value != null)
+                            this.Browser.Navigate(v.Value);
+                    });
+
+                this.Browser.Events().Navigated.Select((x) => x.Uri.ToString())
+                    .InvokeCommand(this, v => v.ViewModel.NavigateCommand);
+
+                // suppress javascript errors
+                dynamic activeX = this.Browser.GetType().InvokeMember("ActiveXInstance",
+                    BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, this.Browser, new object[] { });
+                activeX.Silent = true;
+
+                d(this.BindCommand(this.ViewModel, vm => vm.SignInCommand, v => v.LoadButton));
+                d(this.Bind(this.ViewModel, vm => vm.IdentityServerUrl, v => v.IdentityServerUrl.Text));
+            });
         }
 
-        public Task<bool?> ShowDialogYesNo(string message, object owner, out DialogResult result)
+        object IViewFor.ViewModel
         {
-            return this.ShowDialog<DialogResult>(new DialogYesNoViewModel(message), owner, out result);
+            get { return ViewModel; }
+            set { ViewModel = (LoginViewModel)value; }
         }
 
-        public Task<bool?> ShowDialogTextInput(string message, string avatarUrl, object owner, out string result)
-        {
-            return this.ShowDialog<string>(new DialogTextInputViewModel(message), owner, out result);
-        }
-        
-        public Task<bool?> ShowLogin(ISettingsService settingsService, IOpenUrlService openUrlService, IIdentityService identityService, object owner, out bool result)
-        {
-            return this.ShowDialog<bool>(new LoginViewModel(settingsService, openUrlService, identityService), owner, out result);
-        }
+        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
+            "ViewModel", typeof(LoginViewModel), typeof(LoginView), new PropertyMetadata(default(LoginViewModel)));
 
-        private Task<bool?> ShowDialog<T>(DialogViewModelBase vm, object owner, out T result)
+        public LoginViewModel ViewModel
         {
-            DialogWindow win = new DialogWindow();
-            if (owner != null)
-                win.Owner = owner as Window;
-            win.DataContext = vm;
-            win.ShowDialog();
-            result = (T) vm.UserDialogResult;
-            return Task.FromResult(vm.DialogResult);
+            get { return (LoginViewModel)GetValue(ViewModelProperty); }
+            set { SetValue(ViewModelProperty, value); }
         }
     }
 }
