@@ -63,7 +63,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             dic.Add("client_id", this.settingsService.ClientId);
             dic.Add("client_secret", this.settingsService.ClientSecret);
             dic.Add("response_type", "code id_token");
-            dic.Add("scope", "openid profile offline_access api1"); 
+            dic.Add("scope", "openid profile offline_access cortex-in cortex-graph-out"); 
             dic.Add("redirect_uri", this.settingsService.IdentityCallback);
             dic.Add("nonce", Guid.NewGuid().ToString("N"));
             //TODO: required if PKCE in server is true

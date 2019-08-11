@@ -84,7 +84,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
             return await this.requestProvider.GetAsync<IEnumerable<Neuron>>(
                $"{avatarUrl}{path}{queryStringBuilder.ToString()}",
-               this.settingsService.AuthAccessToken
+               this.settingsService.AuthAccessToken,
+               token
                );
         }
 
@@ -123,7 +124,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
             return await this.requestProvider.GetAsync<IEnumerable<Neuron>>(
                 $"{avatarUrl}{path}{queryStringBuilder.ToString()}",
-                this.settingsService.AuthAccessToken
+                this.settingsService.AuthAccessToken,
+                token
                 );
         }
     }

@@ -38,6 +38,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 
@@ -45,6 +46,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 {
     public class NeuronClient : INeuronClient
     {
+        private readonly IRequestProvider requestProvider;
         private readonly ISettingsService settingsService;
 
         private static Policy exponentialRetryPolicy = Policy
@@ -58,8 +60,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         private static string neuronsPathTemplate = "cortex/neurons/{0}";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public NeuronClient(ISettingsService settingsService = null)
+        public NeuronClient(IRequestProvider requestProvider = null, ISettingsService settingsService = null)
         {
+            this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
             this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
         }
         
@@ -69,19 +72,17 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
         private async Task CreateNeuronInternal(string avatarUrl, string id, string tag, string authorId, CancellationToken token = default(CancellationToken))
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{");
-            sb.Append($"\"Tag\": \"{tag}\"");
-            Helper.AppendAuthorId(authorId, sb);
-            sb.Append("}");
+            var data = new
+            {
+                Tag = tag,
+                AuthorId = authorId
+            };
 
-            await Helper.SendRequest(
-                WebRequestMethods.Http.Put,
-                avatarUrl,
-                string.Format(NeuronClient.neuronsPathTemplate, id),
-                sb,
-                token
-                );
+            await this.requestProvider.PutAsync(
+               $"{avatarUrl}{string.Format(NeuronClient.neuronsPathTemplate, id)}",
+               data,
+               this.settingsService.AuthAccessToken
+               );
         }
 
         public async Task ChangeNeuronTag(string avatarUrl, string id, string tag, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
@@ -90,20 +91,19 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
         private async Task ChangeNeuronTagInternal(string avatarUrl, string id, string tag, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{");
-            sb.Append($"\"Tag\": \"{tag}\"");
-            Helper.AppendAuthorId(authorId, sb);
-            sb.Append("}");
+            var data = new
+            {
+                Tag = tag,
+                AuthorId = authorId
+            };
 
-            await Helper.SendRequest(
-                "PATCH",
-                avatarUrl,
-                string.Format(NeuronClient.neuronsPathTemplate, id),
-                sb,
-                token,
-                new KeyValuePair<string, string>("ETag", expectedVersion.ToString())                
-                );
+            await this.requestProvider.PatchAsync(
+               $"{avatarUrl}{string.Format(NeuronClient.neuronsPathTemplate, id)}",
+               data,
+               this.settingsService.AuthAccessToken,
+               token,
+               new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
+               );
         }
 
         public async Task DeactivateNeuron(string avatarUrl, string id, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
@@ -112,19 +112,18 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
         private async Task DeactivateNeuronInternal(string avatarUrl, string id, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{");
-            Helper.AppendAuthorId(authorId, sb);
-            sb.Append("}");
+            var data = new
+            {
+                AuthorId = authorId
+            };
 
-            await Helper.SendRequest(
-                "DELETE",
-                avatarUrl,
-                string.Format(NeuronClient.neuronsPathTemplate, id),
-                sb,
-                token,
-                new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
-                );
+            await this.requestProvider.DeleteAsync(
+               $"{avatarUrl}{string.Format(NeuronClient.neuronsPathTemplate, id)}",
+               data,
+               this.settingsService.AuthAccessToken,
+               token,
+               new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
+               );
         }
     }
 }

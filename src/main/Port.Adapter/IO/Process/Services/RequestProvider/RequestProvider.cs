@@ -28,9 +28,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Exceptions;
@@ -52,10 +56,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
             _serializerSettings.Converters.Add(new StringEnumConverter());
         }
 
-        public async Task<TResult> GetAsync<TResult>(string uri, string token = "")
+        public async Task<TResult> GetAsync<TResult>(string uri, string bearerToken = "", CancellationToken token = default(CancellationToken))
         {
-            HttpClient httpClient = CreateHttpClient(token);
-            HttpResponseMessage response = await httpClient.GetAsync(uri);
+            HttpClient httpClient = CreateHttpClient(bearerToken);
+            HttpResponseMessage response = await RequestProvider.SendRequest(
+                WebRequestMethods.Http.Get,
+                httpClient,
+                uri,
+                null,
+                token
+                );
 
             await HandleResponse(response);
             string serialized = await response.Content.ReadAsStringAsync();
@@ -90,6 +100,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
 
         public async Task<TResult> PostAsync<TResult>(string uri, string data, string clientId, string clientSecret)
         {
+            // TODO: refactor Get, Put, Patch, and Delete as they're all very similar
 			HttpClient httpClient = CreateHttpClient(string.Empty);
 
             if (!string.IsNullOrWhiteSpace(clientId) && !string.IsNullOrWhiteSpace(clientSecret))
@@ -110,18 +121,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
 			return result;
         }
 
-        public async Task<TResult> PutAsync<TResult>(string uri, TResult data, string token = "", string header = "")
+        public async Task<TResult> PutAsync<TResult>(string uri, TResult data, string bearerToken = "", CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers)
         {
-            HttpClient httpClient = CreateHttpClient(token);
+            HttpClient httpClient = CreateHttpClient(bearerToken);
 
-            if (!string.IsNullOrEmpty(header))
-            {
-                AddHeaderParameter(httpClient, header);
-            }
-
-            var content = new StringContent(JsonConvert.SerializeObject(data));
+            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            HttpResponseMessage response = await httpClient.PutAsync(uri, content);
+            HttpResponseMessage response = await RequestProvider.SendRequest(
+                WebRequestMethods.Http.Put,
+                httpClient,
+                uri,
+                content,
+                token,
+                headers
+                );
 
             await HandleResponse(response);
             string serialized = await response.Content.ReadAsStringAsync();
@@ -132,15 +145,70 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
             return result;
         }
 
-        public async Task DeleteAsync(string uri, string token = "")
+        public async Task<TResult> PatchAsync<TResult>(string uri, TResult data, string bearerToken = "", CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers)
         {
-            HttpClient httpClient = CreateHttpClient(token);
-            await httpClient.DeleteAsync(uri);
+            HttpClient httpClient = CreateHttpClient(bearerToken);
+
+            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpResponseMessage response = await RequestProvider.SendRequest(
+                "PATCH",
+                httpClient,
+                uri,
+                content,
+                token,
+                headers
+                );
+
+            await HandleResponse(response);
+            string serialized = await response.Content.ReadAsStringAsync();
+
+            TResult result = await Task.Run(() =>
+                JsonConvert.DeserializeObject<TResult>(serialized, _serializerSettings));
+
+            return result;
+        }
+
+        public async Task<TResult> DeleteAsync<TResult>(string uri, TResult data, string bearerToken = "", CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers)
+        {
+            HttpClient httpClient = CreateHttpClient(bearerToken);
+
+            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpResponseMessage response = await RequestProvider.SendRequest(
+                "DELETE",
+                httpClient,
+                uri,
+                content,
+                token,
+                headers
+                );
+
+            await HandleResponse(response);
+            string serialized = await response.Content.ReadAsStringAsync();
+
+            TResult result = await Task.Run(() =>
+                JsonConvert.DeserializeObject<TResult>(serialized, _serializerSettings));
+
+            return result;
+        }
+
+        private static async Task<HttpResponseMessage> SendRequest(string method, HttpClient httpClient, string uri, StringContent content, CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers)
+        {
+            HttpRequestMessage msg = new HttpRequestMessage
+            {
+                Method = new HttpMethod(method),
+                RequestUri = new Uri(uri, UriKind.Absolute)
+            };
+            headers.ToList().ForEach(h => msg.Headers.Add(h.Key, h.Value));
+            msg.Content = content;
+
+            return await httpClient.SendAsync(msg, token);
         }
 
         private HttpClient httpClient;
 
-        private HttpClient CreateHttpClient(string token = "")
+        private HttpClient CreateHttpClient(string bearerToken = "")
         {
             if (this.httpClient == null)
                 this.httpClient = new HttpClient();
@@ -149,9 +217,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
 
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(bearerToken))
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
             }
 
             return httpClient;

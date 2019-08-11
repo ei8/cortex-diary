@@ -24,20 +24,24 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace works.ei8.Cortex.Diary.Application.RequestProvider
 {
     public interface IRequestProvider
     {
-        Task<TResult> GetAsync<TResult>(string uri, string token = "");
+        Task<TResult> GetAsync<TResult>(string uri, string bearerToken = "", CancellationToken token = default(CancellationToken));
 
         Task<TResult> PostAsync<TResult>(string uri, TResult data, string token = "", string header = "");
 
         Task<TResult> PostAsync<TResult>(string uri, string data, string clientId, string clientSecret);
 
-        Task<TResult> PutAsync<TResult>(string uri, TResult data, string token = "", string header = "");
+        Task<TResult> PutAsync<TResult>(string uri, TResult data, string bearerToken = "", CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers);
 
-        Task DeleteAsync(string uri, string token = "");
+        Task<TResult> PatchAsync<TResult>(string uri, TResult data, string bearerToken = "", CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers);
+
+        Task<TResult> DeleteAsync<TResult>(string uri, TResult data, string bearerToken = "", CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers);
     }
 }
