@@ -43,37 +43,28 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
 {
     public class RequestProvider : IRequestProvider
     {
-        private readonly JsonSerializerSettings _serializerSettings;
+        private readonly JsonSerializerSettings serializerSettings;
 
         public RequestProvider()
         {
-            _serializerSettings = new JsonSerializerSettings
+            this.serializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                 NullValueHandling = NullValueHandling.Ignore
             };
-            _serializerSettings.Converters.Add(new StringEnumConverter());
+            this.serializerSettings.Converters.Add(new StringEnumConverter());
         }
 
         public async Task<TResult> GetAsync<TResult>(string uri, string bearerToken = "", CancellationToken token = default(CancellationToken))
         {
-            HttpClient httpClient = CreateHttpClient(bearerToken);
-            HttpResponseMessage response = await RequestProvider.SendRequest(
+            return await RequestProvider.SendRequest<TResult>(
+                this.CreateHttpClient(bearerToken),
                 WebRequestMethods.Http.Get,
-                httpClient,
                 uri,
-                null,
-                token
+                this.serializerSettings,
+                token: token
                 );
-
-            await HandleResponse(response);
-            string serialized = await response.Content.ReadAsStringAsync();
-
-            TResult result = await Task.Run(() => 
-                JsonConvert.DeserializeObject<TResult>(serialized, _serializerSettings));
-
-            return result;
         }
 
         public async Task<TResult> PostAsync<TResult>(string uri, TResult data, string token = "", string header = "")
@@ -93,14 +84,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
             string serialized = await response.Content.ReadAsStringAsync();
 
             TResult result = await Task.Run(() =>
-                JsonConvert.DeserializeObject<TResult>(serialized, _serializerSettings));
+                JsonConvert.DeserializeObject<TResult>(serialized, serializerSettings));
 
             return result;
         }
 
         public async Task<TResult> PostAsync<TResult>(string uri, string data, string clientId, string clientSecret)
         {
-            // TODO: refactor Get, Put, Patch, and Delete as they're all very similar
 			HttpClient httpClient = CreateHttpClient(string.Empty);
 
             if (!string.IsNullOrWhiteSpace(clientId) && !string.IsNullOrWhiteSpace(clientSecret))
@@ -116,84 +106,51 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
 			string serialized = await response.Content.ReadAsStringAsync();
 
 			TResult result = await Task.Run(() =>
-				JsonConvert.DeserializeObject<TResult>(serialized, _serializerSettings));
+				JsonConvert.DeserializeObject<TResult>(serialized, serializerSettings));
 
 			return result;
         }
 
         public async Task<TResult> PutAsync<TResult>(string uri, TResult data, string bearerToken = "", CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers)
         {
-            HttpClient httpClient = CreateHttpClient(bearerToken);
-
-            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            HttpResponseMessage response = await RequestProvider.SendRequest(
+            return await RequestProvider.SendRequest(
+                this.CreateHttpClient(bearerToken),
                 WebRequestMethods.Http.Put,
-                httpClient,
                 uri,
-                content,
+                this.serializerSettings,
+                data,
                 token,
                 headers
                 );
-
-            await HandleResponse(response);
-            string serialized = await response.Content.ReadAsStringAsync();
-
-            TResult result = await Task.Run(() =>
-                JsonConvert.DeserializeObject<TResult>(serialized, _serializerSettings));
-
-            return result;
         }
 
         public async Task<TResult> PatchAsync<TResult>(string uri, TResult data, string bearerToken = "", CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers)
         {
-            HttpClient httpClient = CreateHttpClient(bearerToken);
-
-            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            HttpResponseMessage response = await RequestProvider.SendRequest(
+            return await RequestProvider.SendRequest(
+                this.CreateHttpClient(bearerToken),
                 "PATCH",
-                httpClient,
                 uri,
-                content,
+                this.serializerSettings,
+                data,
                 token,
                 headers
                 );
-
-            await HandleResponse(response);
-            string serialized = await response.Content.ReadAsStringAsync();
-
-            TResult result = await Task.Run(() =>
-                JsonConvert.DeserializeObject<TResult>(serialized, _serializerSettings));
-
-            return result;
         }
 
         public async Task<TResult> DeleteAsync<TResult>(string uri, TResult data, string bearerToken = "", CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers)
         {
-            HttpClient httpClient = CreateHttpClient(bearerToken);
-
-            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            HttpResponseMessage response = await RequestProvider.SendRequest(
+            return await RequestProvider.SendRequest(
+                this.CreateHttpClient(bearerToken),
                 "DELETE",
-                httpClient,
                 uri,
-                content,
+                this.serializerSettings,
+                data,
                 token,
                 headers
                 );
-
-            await HandleResponse(response);
-            string serialized = await response.Content.ReadAsStringAsync();
-
-            TResult result = await Task.Run(() =>
-                JsonConvert.DeserializeObject<TResult>(serialized, _serializerSettings));
-
-            return result;
         }
 
-        private static async Task<HttpResponseMessage> SendRequest(string method, HttpClient httpClient, string uri, StringContent content, CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers)
+        private static async Task<TResult> SendRequest<TResult>(HttpClient httpClient, string method, string uri, JsonSerializerSettings serializerSettings, TResult data = default(TResult), CancellationToken token = default(CancellationToken), params KeyValuePair<string, string>[] headers)
         {
             HttpRequestMessage msg = new HttpRequestMessage
             {
@@ -201,9 +158,23 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
                 RequestUri = new Uri(uri, UriKind.Absolute)
             };
             headers.ToList().ForEach(h => msg.Headers.Add(h.Key, h.Value));
-            msg.Content = content;
 
-            return await httpClient.SendAsync(msg, token);
+            if (!EqualityComparer<TResult>.Default.Equals(data, default(TResult)))
+            {
+                var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                msg.Content = content;
+            }
+
+            var response = await httpClient.SendAsync(msg, token);
+
+            await RequestProvider.HandleResponse(response);
+            string serialized = await response.Content.ReadAsStringAsync();
+
+            TResult result = await Task.Run(() =>
+                JsonConvert.DeserializeObject<TResult>(serialized, serializerSettings));
+
+            return result;
         }
 
         private HttpClient httpClient;
@@ -247,7 +218,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvide
             httpClient.DefaultRequestHeaders.Authorization = new BasicAuthenticationHeaderValue(clientId, clientSecret);
         }
 
-        private async Task HandleResponse(HttpResponseMessage response)
+        private async static Task HandleResponse(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
             {
