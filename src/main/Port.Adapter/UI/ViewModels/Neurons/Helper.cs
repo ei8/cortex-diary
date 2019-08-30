@@ -51,7 +51,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             }
             catch (Exception ex)
             {
-                statusService.Message = string.IsNullOrEmpty(ex.Message) ? ex.ToString() : ex.Message;
+                statusService.Message = ex.ToDetailedString();
             }
         }
 

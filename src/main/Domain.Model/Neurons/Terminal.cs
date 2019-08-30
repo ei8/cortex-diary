@@ -42,6 +42,8 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
         public string Effect { get; set; }
         public string Strength { get; set; }
         public int Version { get; set; }
+        public string AuthorId { get; set; }
+        public string AuthorTag { get; set; }
         public string Timestamp { get; set; }
     }
 }

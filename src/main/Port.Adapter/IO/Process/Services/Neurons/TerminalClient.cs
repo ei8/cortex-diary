@@ -27,7 +27,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 (ex, _) => TerminalClient.logger.Error(ex, "Error occurred while communicating with Neurul Cortex. " + ex.InnerException?.Message)
             );
 
-        private static string terminalsPathTemplate = "cortex/terminals/{0}";
+        private static readonly string terminalsPath = "cortex/terminals/";
+        private static readonly string terminalsPathTemplate = terminalsPath + "{0}";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public TerminalClient(IRequestProvider requestProvider = null, ISettingsService settingsService = null)
@@ -36,42 +37,37 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
         }
 
-        public async Task CreateTerminal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string authorId, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateTerminal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, CancellationToken token = default(CancellationToken)) =>
             await TerminalClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateTerminalInternal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, authorId, token).ConfigureAwait(false));
+                async () => await this.CreateTerminalInternal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, token).ConfigureAwait(false));
 
-        public async Task CreateTerminalInternal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string authorId, CancellationToken token = default(CancellationToken))
+        public async Task CreateTerminalInternal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, CancellationToken token = default(CancellationToken))
         {
             var data = new
             {
+                Id = id,
                 PresynapticNeuronId = presynapticNeuronId,
                 PostsynapticNeuronId = postsynapticNeuronId,
                 Effect = effect.ToString(),
                 Strength = strength.ToString(),
-                AuthorId = authorId
             };
 
-            await this.requestProvider.PutAsync(
-               $"{avatarUrl}{string.Format(TerminalClient.terminalsPathTemplate, id)}",
+            await this.requestProvider.PostAsync(
+               $"{avatarUrl}{TerminalClient.terminalsPath}",
                data,
                this.settingsService.AuthAccessToken
                );
         }
         
-        public async Task DeactivateTerminal(string avatarUrl, string id, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task DeactivateTerminal(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
             await TerminalClient.exponentialRetryPolicy.ExecuteAsync(
-                    async () => await this.DeactivateTerminalInternal(avatarUrl, id, authorId, expectedVersion, token).ConfigureAwait(false));
+                    async () => await this.DeactivateTerminalInternal(avatarUrl, id, expectedVersion, token).ConfigureAwait(false));
 
-        public async Task DeactivateTerminalInternal(string avatarUrl, string id, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task DeactivateTerminalInternal(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            var data = new
-            {
-                AuthorId = authorId
-            };
-
-            await this.requestProvider.DeleteAsync(
+            await this.requestProvider.DeleteAsync<object>(
                $"{avatarUrl}{string.Format(TerminalClient.terminalsPathTemplate, id)}",
-               data,
+               null,
                this.settingsService.AuthAccessToken,
                token,
                new KeyValuePair<string, string>("ETag", expectedVersion.ToString())

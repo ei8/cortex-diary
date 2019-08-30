@@ -39,8 +39,8 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
 {
     public interface INeuronApplicationService
     {
-        Task CreateNeuron(string avatarUrl, string id, string tag, string authorId, CancellationToken token = default(CancellationToken));
-        Task ChangeNeuronTag(string avatarUrl, string id, string tag, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken));        
-        Task DeactivateNeuron(string avatarUrl, string id, string authorId, int expectedVersion, CancellationToken token = default(CancellationToken));
+        Task CreateNeuron(string avatarUrl, string id, string tag, string layerId, CancellationToken token = default(CancellationToken));
+        Task ChangeNeuronTag(string avatarUrl, string id, string tag, int expectedVersion, CancellationToken token = default(CancellationToken));        
+        Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken));
     }
 }

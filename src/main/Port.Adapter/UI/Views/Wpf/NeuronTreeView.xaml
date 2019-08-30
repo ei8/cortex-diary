@@ -279,9 +279,11 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <Label Name="StatusMessage" Width="auto" VerticalContentAlignment="Center"/>
-            <Label Name="AuthorName" Width="auto" Grid.Column="1" VerticalContentAlignment="Center" />
-            <Button Name="SetAuthor" Grid.Column="2" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">Author</Button>
+            <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
+                <Label Name="StatusMessage" Width="auto" VerticalContentAlignment="Center"/>
+            </ScrollViewer>
+            <Label Name="LayerName" Width="auto" Grid.Column="1" VerticalContentAlignment="Center" />
+            <Button Name="SetLayer" Grid.Column="2" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">Layer</Button>
         </Grid>        
     </Grid>
 </UserControl>

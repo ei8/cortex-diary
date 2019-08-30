@@ -51,6 +51,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private string tag;
         private NeurotransmitterEffect effect;
         private float strength;
+
+        private LastModifiedInfo lastModified;
+        private LayerInfo layerInfo;
+        private string terminalId;
+
         private bool isExpanded;
         private bool isSelected;
         private bool isHighlighted;
@@ -66,7 +71,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private bool settingNeuron;
         // cortex graph poll interval + 100 millisecond allowance
         private const int ReloadDelay = 2100;
-
+        private const string NeuronCategory = "Neuron";
+        private const string TerminalCategory = "Terminal";
+        private const string MiscCategory = "Misc";
+        
         protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronApplicationService neuronApplicationService = null,
             INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IExtendedSelectionService highlightService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
@@ -169,7 +177,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                                 await this.neuronApplicationService.DeactivateNeuron(
                                     this.avatarUrl,
                                     this.NeuronId,
-                                    this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
                                     this.Neuron.Version
                                 );
                                 cache.Remove(this.Neuron);
@@ -178,7 +185,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                                 await this.terminalApplicationService.DeactivateTerminal(
                                     this.avatarUrl,
                                     this.Neuron.Terminal.Id,
-                                    this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
                                     this.Neuron.Terminal.Version
                                     );
                                 cache.Remove(this.Neuron);
@@ -187,7 +193,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                                 await this.terminalApplicationService.DeactivateTerminal(
                                     this.avatarUrl,
                                     this.Neuron.Terminal.Id,
-                                    this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
                                     this.Neuron.Terminal.Version
                                     );
                                 cache.Remove(this.Neuron);
@@ -213,7 +218,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         this.avatarUrl,
                         this.neuronId,
                         x.Value,
-                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId,
                         this.Neuron.Version
                     );
                     await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
@@ -231,12 +235,42 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.Neuron = neuron;
             this.NeuronId = neuron.NeuronId;
             this.Tag = neuron.Tag;
+            this.LastModified = new LastModifiedInfo()
+            {
+                Neuron = new ModificationInfo()
+                {
+                    Author = new AuthorInfo()
+                    {
+                        Id = neuron.AuthorId,
+                        Name = neuron.AuthorTag
+                    },
+                    Timestamp = neuron.Timestamp,
+                    Version = neuron.Version
+                }
+            };
+            this.layerInfo = new LayerInfo()
+            {
+                Id = neuron.LayerId,
+                Name = string.IsNullOrEmpty(neuron.LayerTag) ? "[Root Layer]" : neuron.LayerTag
+            };
+        
             if (neuron.Terminal != null)
             {
+                this.TerminalId = neuron.Terminal.Id;
                 if (int.TryParse(neuron.Terminal.Effect, out int ie))
                     this.Effect = (NeurotransmitterEffect)ie;
                 if (float.TryParse(neuron.Terminal.Strength, out float fs))
                     this.Strength = fs;
+                this.LastModified.Terminal = new ModificationInfo()
+                {
+                    Author = new AuthorInfo()
+                    {
+                        Id = neuron.Terminal.AuthorId,
+                        Name = neuron.Terminal.AuthorTag
+                    },
+                    Timestamp = neuron.Terminal.Timestamp,
+                    Version = neuron.Terminal.Version
+                };
             }
             this.settingNeuron = false;
         }
@@ -280,18 +314,25 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         {
             // TODO: Use Copy Constructor instead?
             target.Tag = source.Tag;
+            target.AuthorId = source.AuthorId;
+            target.AuthorTag = source.AuthorTag;
+            target.LayerId = source.LayerId;
+            target.LayerTag = source.LayerTag;
             target.Timestamp = source.Timestamp;
             target.Version = source.Version;
             target.Errors = source.Errors;
 
             if (source.Terminal != null)
             {
+                target.Terminal = new Terminal();
                 target.Terminal.Id = source.Terminal.Id;
                 target.Terminal.PresynapticNeuronId = source.Terminal.PresynapticNeuronId;
                 target.Terminal.PostsynapticNeuronId = source.Terminal.PostsynapticNeuronId;
                 target.Terminal.Effect = source.Terminal.Effect;
                 target.Terminal.Strength = source.Terminal.Strength;
                 target.Terminal.Version = source.Terminal.Version;
+                target.Terminal.AuthorId = source.Terminal.AuthorId;
+                target.Terminal.AuthorTag = source.Terminal.AuthorTag;
                 target.Terminal.Timestamp = source.Terminal.Timestamp;
             }
         }
@@ -311,7 +352,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                             this.avatarUrl,
                             presynapticNeuronId,
                             ViewModels.Helper.CleanForJSON(result),                            
-                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                            this.originService.GetAvatarByUrl(this.avatarUrl).LayerId
                         );
                         await this.terminalApplicationService.CreateTerminal(
                             this.avatarUrl,
@@ -319,8 +360,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                             presynapticNeuronId,
                             this.Neuron.NeuronId,
                             (NeurotransmitterEffect)int.Parse(tps[0]),
-                            float.Parse(tps[1]),
-                            this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                            float.Parse(tps[1])
                             );
                         await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
                         stat = true;
@@ -358,8 +398,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                                 this.neuronId,
                                 n.NeuronId,
                                 (NeurotransmitterEffect)int.Parse(tps[0]),
-                                float.Parse(tps[1]),
-                                this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                                float.Parse(tps[1])
                                 );
                         }
                         await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
@@ -386,6 +425,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         }
 
         [ReadOnly(true)]
+        [Browsable(false)]
         public int Id
         {
             get => this.id;
@@ -394,12 +434,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         [ParenthesizePropertyName(true)]
         [ReadOnly(true)]
+        [Category(NeuronViewModelBase.NeuronCategory)]
         public string NeuronId
         {
             get => this.neuronId;
             set => this.RaiseAndSetIfChanged(ref this.neuronId, value);
         }
 
+        [Category(NeuronViewModelBase.NeuronCategory)]
         public string Tag
         {
             get => this.tag;
@@ -407,6 +449,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         }
 
         [ReadOnly(true)]
+        [Category(NeuronViewModelBase.TerminalCategory)]
         public NeurotransmitterEffect Effect
         {
             get => this.effect;
@@ -414,10 +457,35 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         }
 
         [ReadOnly(true)]
+        [Category(NeuronViewModelBase.TerminalCategory)]
         public float Strength
         {
             get => this.strength;
             set => this.RaiseAndSetIfChanged(ref this.strength, value);
+        }
+
+        [Category(NeuronViewModelBase.MiscCategory)]
+        [DisplayName("Last Modified")]
+        public LastModifiedInfo LastModified
+        {
+            get => this.lastModified;
+            set => this.RaiseAndSetIfChanged(ref this.lastModified, value);
+        }
+
+        [Category(NeuronViewModelBase.NeuronCategory)]
+        public LayerInfo Layer
+        {
+            get => this.layerInfo;
+            set => this.RaiseAndSetIfChanged(ref this.layerInfo, value);
+        }
+
+        [ParenthesizePropertyName(true)]
+        [ReadOnly(true)]
+        [Category(NeuronViewModelBase.TerminalCategory)]
+        public string TerminalId
+        {
+            get => this.terminalId;
+            set => this.RaiseAndSetIfChanged(ref this.terminalId, value);
         }
 
         [Browsable(false)]

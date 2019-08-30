@@ -75,7 +75,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             var cache = new SourceCache<Neuron, int>(x => x.Id);
 
             this.AddCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnAddClicked(cache, parameter));
-            this.SetAuthorCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnSetAuthorIdClicked(parameter));
+            this.SetLayerCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnSetLayerIdClicked(parameter));
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(cache));
 
             this.cleanUp = cache.AsObservableCache().Connect()
@@ -94,13 +94,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             await Helper.SetStatusOnComplete(async () =>
             {
                 bool stat = false;
-                bool shouldAddAuthor = this.reloaded && cache.Count == 0;
-                bool addingAuthor = false;
-                if (shouldAddAuthor && (await this.dialogService.ShowDialogYesNo("This Avatar needs to be initialized. Would you like to add its Author?", parameter, out DialogResult yesno)).GetValueOrDefault())
-                    addingAuthor = true;
+                bool shouldAddOwner = this.reloaded && cache.Count == 0;
+                bool addingOwner = false;
+                if (shouldAddOwner && (await this.dialogService.ShowDialogYesNo("This Avatar needs to be initialized with an Owner Neuron. Do you wish to continue by creating one?", parameter, out DialogResult yesno)).GetValueOrDefault())
+                    addingOwner = true;
 
                 if (
-                        (await this.dialogService.ShowDialogTextInput(addingAuthor ? "Enter Author Name (E-mail optional)" : "Enter Neuron tag: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault() &&
+                        (!shouldAddOwner || addingOwner) &&
+                        (await this.dialogService.ShowDialogTextInput(
+                            addingOwner ? "Enter Owner Name" : "Enter Neuron Tag: ", 
+                            this.avatarUrl, 
+                            parameter, 
+                            out string result
+                            )
+                        ).GetValueOrDefault() &&
                         await Helper.PromptSimilarExists(this.neuronQueryService, this.dialogService, this.avatarUrl, parameter, result)
                     )
                 {
@@ -116,7 +123,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         this.avatarUrl,
                         n.NeuronId,
                         ViewModels.Helper.CleanForJSON(n.Tag),
-                        addingAuthor ? n.NeuronId : this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId
+                        this.originService.GetAvatarByUrl(this.avatarUrl).LayerId
                         );
                     cache.AddOrUpdate(n);
                     stat = true;
@@ -129,24 +136,33 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 );
         }
 
-        private async Task OnSetAuthorIdClicked(object parameter)
+        private async Task OnSetLayerIdClicked(object parameter)
         {
             await Helper.SetStatusOnComplete(async() =>
                 {
                     bool stat = false;
 
-                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Author Neuron", this.avatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.avatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
                     {
-                        this.AuthorName = result.First().Tag;
-                        this.originService.GetAvatarByUrl(this.avatarUrl).AuthorId = result.First().NeuronId;
+                        this.LayerName = result.First().Tag;
+                        this.originService.GetAvatarByUrl(this.avatarUrl).LayerId = result.First().NeuronId;
                         stat = true;
                     }
+                    else
+                        this.InitLayer();
+
                     return stat;                    
                 },
-                "Author set successfully.",
+                "Layer set successfully.",
                 this.statusService,
-                "Author set cancelled."
+                "Layer set cancelled."
                 );
+        }
+
+        private void InitLayer()
+        {
+            this.LayerName = "[Root]";
+            this.originService.GetAvatarByUrl(this.avatarUrl).LayerId = Guid.Empty.ToString();
         }
 
         private async Task OnReloadClicked(SourceCache<Neuron, int> cache)
@@ -157,6 +173,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     var relatives = await this.neuronQueryService.GetNeurons(this.avatarUrl);
                     this.originService.Save(this.avatarUrl);
                     cache.AddOrUpdate(relatives);
+                    this.InitLayer();
                     this.reloaded = true;
                     return true;
                 },
@@ -167,15 +184,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         public ReactiveCommand AddCommand { get; }
 
-        private string authorName;
+        private string layerName;
 
-        public string AuthorName
+        public string LayerName
         {
-            get => this.authorName;
-            set => this.RaiseAndSetIfChanged(ref authorName, value);
+            get => this.layerName;
+            set => this.RaiseAndSetIfChanged(ref layerName, value);
         }
 
-        public ReactiveCommand SetAuthorCommand { get; }
+        public ReactiveCommand SetLayerCommand { get; }
 
         private string avatarUrl;
 

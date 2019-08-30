@@ -59,6 +59,14 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Neurons
         
         public int Version { get; set; }
 
+        public string AuthorId { get; set; }
+
+        public string AuthorTag { get; set; }
+
+        public string LayerId { get; set; }
+
+        public string LayerTag { get; set; }
+
         public string Timestamp { get; set; }
 
         public IList<string> Errors { get; set; }

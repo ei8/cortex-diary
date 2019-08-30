@@ -47,7 +47,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 {
     public partial class NeuronGraphView : UserControl, IViewFor<NeuronGraphViewModel>
     {
-        private List<string> edges = new List<string>();
         private GraphViewer graphViewer;
 
         public NeuronGraphView()
@@ -134,7 +133,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                     {
                         if (ep.EventArgs.PropertyName == nameof(NeuronGraphViewModel.ExternallySelectedNeuron))
                         {
-                            this.edges.Clear();
                             this.graphViewer.Graph = null;
                             Graph graph = new Graph();
                             graph.Attr.LayerDirection = (LayerDirection)this.ViewModel.Layout;
@@ -144,7 +142,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                             while (root.Parent.HasValue)
                                 root = root.Parent.Value;
 
-                            NeuronGraphView.AddNeuronAndChildren(root, this.ViewModel.ExternallySelectedNeuron, root, graph, this.edges);
+                            NeuronGraphView.AddNeuronAndChildren(root, this.ViewModel.ExternallySelectedNeuron, root, graph);
                             this.graphViewer.Graph = graph;
                         }
                     });
@@ -170,7 +168,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
             return new Color((byte) alpha, value.R, value.G, value.B);
         }
 
-        private static void AddNeuronAndChildren(NeuronViewModelBase root, NeuronViewModelBase selectedNeuron, NeuronViewModelBase value, Graph graph, List<string> edges)
+        private static void AddNeuronAndChildren(NeuronViewModelBase root, NeuronViewModelBase selectedNeuron, NeuronViewModelBase value, Graph graph)
         {
             NeuronGraphView.AddSingleNeuron(root, selectedNeuron, value, graph);
 
@@ -182,26 +180,25 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                 switch (value.Neuron.Type)
                 {
                     case Domain.Model.Neurons.RelativeType.Postsynaptic:
-                        NeuronGraphView.AddEdge(value.Parent.Value.NeuronId, value.NeuronId, graph, edges, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
+                        NeuronGraphView.AddEdge(selectedNeuron, value.TerminalId, value.Parent.Value.NeuronId, value.NeuronId, graph, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
                         break;
                     case Domain.Model.Neurons.RelativeType.Presynaptic:
-                        NeuronGraphView.AddEdge(value.NeuronId, value.Parent.Value.NeuronId, graph, edges, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
+                        NeuronGraphView.AddEdge(selectedNeuron, value.TerminalId, value.NeuronId, value.Parent.Value.NeuronId, graph, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
                         break;
                     case Domain.Model.Neurons.RelativeType.NotSet:
-                        NeuronGraphView.AddEdge(value.NeuronId, value.Parent.Value.NeuronId, graph, edges);
+                        NeuronGraphView.AddEdge(selectedNeuron, value.NeuronId, value.NeuronId, value.Parent.Value.NeuronId, graph);
                         break;
                 }
             }
 
             if (value.Children != null)
                 foreach (var c in value.Children)
-                    NeuronGraphView.AddNeuronAndChildren(root, selectedNeuron, c, graph, edges);
+                    NeuronGraphView.AddNeuronAndChildren(root, selectedNeuron, c, graph);
         }
 
-        private static void AddEdge(string source, string target, Graph graph, List<string> edges, string strength = "1", bool inhibitoryEndpoint = false)
+        private static void AddEdge(NeuronViewModelBase selectedNeuron, string id, string source, string target, Graph graph, string strength = "1", bool inhibitoryEndpoint = false)
         {
-            string edgeId = $"{source}-{target}";
-            if (!edges.Contains(edgeId))
+            if (graph.Edges.SingleOrDefault(e => e.Attr.Id == id) == null)                
             {
                 Edge e = null;
                 if (strength != "1")
@@ -213,10 +210,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                 else
                     e = graph.AddEdge(source, target);
 
-                if (inhibitoryEndpoint)
-                    e.Attr.Color = Color.IndianRed;
-
-                edges.Add(edgeId);
+                e.Attr.Id = id;
+                if (selectedNeuron.TerminalId == id)
+                    e.Attr.Color = NeuronGraphView.GetHighlightColor();
+                else if (inhibitoryEndpoint)
+                    e.Attr.Color = Color.IndianRed;                
             }
         }
 
@@ -226,17 +224,22 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
             n.LabelText = value.Tag;
             if (selectedNeuron == value)
             {
-                var mfc = SystemColors.HighlightColor;
                 var mtc = SystemColors.HighlightTextColor;
-                n.Attr.FillColor = new Color(mfc.A, mfc.R, mfc.G, mfc.B);
+                n.Attr.FillColor = NeuronGraphView.GetHighlightColor();
                 n.Label.FontColor = new Color(mtc.A, mtc.R, mtc.G, mtc.B);
             }
             else if (root == value)
             {
-                var mc = SystemColors.HighlightColor;
-                n.Attr.Color = new Color(mc.A, mc.R, mc.G, mc.B);
+                n.Attr.Color = NeuronGraphView.GetHighlightColor();
                 n.Attr.LineWidth *= 1.5;
             }
+        }
+
+        private static Color GetHighlightColor()
+        {
+            var mfc = SystemColors.HighlightColor;
+            var hc = new Color(mfc.A, mfc.R, mfc.G, mfc.B);
+            return hc;
         }
 
         object IViewFor.ViewModel

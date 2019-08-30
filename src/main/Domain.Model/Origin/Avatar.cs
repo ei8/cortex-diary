@@ -44,6 +44,6 @@ namespace works.ei8.Cortex.Diary.Domain.Model.Origin
 
         public bool IsHome { get; set; }
 
-        public string AuthorId { get; set; }
+        public string LayerId { get; set; }
     }
 }

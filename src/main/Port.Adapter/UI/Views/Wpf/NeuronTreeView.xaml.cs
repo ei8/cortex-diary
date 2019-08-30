@@ -50,12 +50,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
                     .Subscribe(x => this.ViewModel = (NeuronTreePaneViewModel)x);
 
                 d(this.Bind(this.ViewModel, vm => vm.AvatarUrl, v => v.AvatarUrl.Text));
-                d(this.Bind(this.ViewModel, vm => vm.AuthorName, v => v.AuthorName.Content));
+                d(this.Bind(this.ViewModel, vm => vm.LayerName, v => v.LayerName.Content));
                 d(this.Bind(this.ViewModel, vm => vm.StatusMessage, v => v.StatusMessage.Content));
 
                 d(this.BindCommand(this.ViewModel, vm => vm.ReloadCommand, v => v.Reload));
                 d(this.BindCommand(this.ViewModel, vm => vm.AddCommand, v => v.Add));
-                d(this.BindCommand(this.ViewModel, vm => vm.SetAuthorCommand, v => v.SetAuthor));
+                d(this.BindCommand(this.ViewModel, vm => vm.SetLayerCommand, v => v.SetLayer));
            });
         }
 
