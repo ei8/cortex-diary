@@ -80,50 +80,68 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                     ).Subscribe(ep =>
                     {
                         var gv = ep.Sender as GraphViewer;
-                        if (gv != null && gv.ObjectUnderMouseCursor != null && gv.ObjectUnderMouseCursor.DrawingObject is Node)
+                        if (
+                            gv != null && 
+                            gv.ObjectUnderMouseCursor != null && 
+                            (
+                                gv.ObjectUnderMouseCursor.DrawingObject is Node || 
+                                gv.ObjectUnderMouseCursor.DrawingObject is Edge
+                            )
+                        )
                         {
-                            var vo = gv.ObjectUnderMouseCursor;
-                            if (vo != null && vo.DrawingObject != null && vo.DrawingObject is Node)
+                            Node node = null;
+                            if (gv.ObjectUnderMouseCursor.DrawingObject is Node)
                             {
-                                var node = (Node)vo.DrawingObject;
-                                this.ViewModel.InternallySelectedNeuronId = node.Id;
-                                gv.Graph.Nodes.ToList().ForEach(n => NeuronGraphView.FillIfNotExternallySelected(
-                                    n, 
-                                    this.ViewModel.ExternallySelectedNeuron.NeuronId, 
-                                    NeuronGraphView.ConvertColorToMsaglColor(SystemColors.WindowColor),
-                                    1
-                                    ));
-
-                                NeuronGraphView.FillIfNotExternallySelected(
-                                    node, 
-                                    this.ViewModel.ExternallySelectedNeuron.NeuronId, 
-                                    NeuronGraphView.ConvertColorToMsaglColor(Color.Yellow, 80),
-                                    1
-                                    );
-
-                                var poc = NeuronGraphView.ConvertColorToMsaglColor(Color.LightGreen, 90);
-                                var prc = NeuronGraphView.ConvertColorToMsaglColor(Color.PowderBlue, 150);
-                                node.Edges.ToList().ForEach(e =>
-                                {
-                                    if (e.SourceNode == node)
-                                        NeuronGraphView.FillIfNotExternallySelected(
-                                            e.TargetNode,
-                                            this.ViewModel.ExternallySelectedNeuron.NeuronId,
-                                            poc,
-                                            2
-                                            );                                        
-                                    else
-                                        NeuronGraphView.FillIfNotExternallySelected(
-                                            e.SourceNode,
-                                            this.ViewModel.ExternallySelectedNeuron.NeuronId,
-                                            prc,
-                                            2
-                                            );
-                                });
+                                node = (Node)gv.ObjectUnderMouseCursor.DrawingObject;
+                                this.ViewModel.InternallySelectNeuronAndTerminal(node.Id, null);
                             }
+                            else
+                            {
+                                var terminalId = ((Edge)gv.ObjectUnderMouseCursor.DrawingObject).Attr.Id;
+                                var neuronId = this.ViewModel.GetNeuronId(terminalId);                                
+                                this.ViewModel.InternallySelectNeuronAndTerminal(neuronId, terminalId);
+                                node = gv.Graph.FindNode(neuronId);
+                            }                           
 
-                            this.ViewModel.SelectCommand.Execute().Subscribe();
+                            // reset highlight for all unselected neuron(s) in graph
+                            gv.Graph.Nodes.ToList().ForEach(n => NeuronGraphView.FillIfNotExternallySelected(
+                                n,
+                                this.ViewModel.ExternallySelectedNeuron.NeuronId,
+                                NeuronGraphView.ConvertColorToMsaglColor(SystemColors.WindowColor),
+                                1
+                                ));
+
+                            // highlight selected neuron in graph
+                            NeuronGraphView.FillIfNotExternallySelected(
+                                node,
+                                this.ViewModel.ExternallySelectedNeuron.NeuronId,
+                                NeuronGraphView.ConvertColorToMsaglColor(Color.Yellow, 80),
+                                1
+                                );
+
+                            // add/remove highlight for selected/unselected presynaptic/postsynaptic
+                            var postsynaptic = NeuronGraphView.ConvertColorToMsaglColor(Color.LightGreen, 90);
+                            var presynaptic = NeuronGraphView.ConvertColorToMsaglColor(Color.PowderBlue, 150);
+                            node.Edges.ToList().ForEach(e =>
+                            {
+                                if (e.SourceNode == node)
+                                    NeuronGraphView.FillIfNotExternallySelected(
+                                        e.TargetNode,
+                                        this.ViewModel.ExternallySelectedNeuron.NeuronId,
+                                        postsynaptic,
+                                        2
+                                        );
+                                else
+                                    NeuronGraphView.FillIfNotExternallySelected(
+                                        e.SourceNode,
+                                        this.ViewModel.ExternallySelectedNeuron.NeuronId,
+                                        presynaptic,
+                                        2
+                                        );
+                            });
                         }
+
+                        this.ViewModel.SelectCommand.Execute().Subscribe();
                     });
 
                 Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(

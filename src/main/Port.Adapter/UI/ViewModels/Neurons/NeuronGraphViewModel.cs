@@ -32,8 +32,11 @@ using DynamicData.Binding;
 using ReactiveUI;
 using Splat;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 
@@ -59,15 +62,22 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                     if (p.Sender.PrimarySelection is NeuronViewModelBase)
                     {
                         this.ExternallySelectedNeuron = (NeuronViewModelBase)p.Sender.PrimarySelection;
-                        this.InternallySelectedNeuronId = null;
+                        this.InternallySelectNeuronAndTerminal(null, null);
+
                         this.UpdateHighlightService();
                     }
                 });
         }
 
+        public void InternallySelectNeuronAndTerminal(string neuronId, string terminalId)
+        {
+            this.InternallySelectedNeuronId = neuronId;
+            this.internallySelectedTerminalId = terminalId;
+        }
+
         private void UpdateHighlightService()
         {
-            this.highlightService.SetSelectedComponents(new object[] { this.InternallySelectedNeuronId });
+            this.highlightService.SetSelectedComponents(new object[] { this.InternallySelectedNeuronId, this.InternallySelectedTerminalId });
         }
 
         public ReactiveCommand<Unit, Unit> SelectCommand { get; }
@@ -85,7 +95,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         public string InternallySelectedNeuronId
         {
             get => this.internallySelectedNeuronId;
-            set => this.RaiseAndSetIfChanged(ref this.internallySelectedNeuronId, value);
+            private set => this.RaiseAndSetIfChanged(ref this.internallySelectedNeuronId, value);
+        }
+
+        private string internallySelectedTerminalId;
+
+        public string InternallySelectedTerminalId
+        {
+            get => this.internallySelectedTerminalId;
+            private set => this.RaiseAndSetIfChanged(ref this.internallySelectedTerminalId, value);
         }
 
         private string[] layoutOptions;
@@ -102,6 +120,24 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         {
             get => this.layout;
             set => this.RaiseAndSetIfChanged(ref this.layout, value);
+        }
+
+        public string GetNeuronId(string terminalId)
+        {
+            // find root of externally selected neuron
+            var root = this.externallySelectedNeuron;
+            while (root.Parent.HasValue)
+                root = root.Parent.Value;
+
+            return NeuronGraphViewModel.GetAllChildren(root).First(n => n.TerminalId == terminalId).NeuronId;
+        }
+
+        private static IEnumerable<NeuronViewModelBase> GetAllChildren(NeuronViewModelBase parent)
+        {
+            var result = new List<NeuronViewModelBase>();
+            result.AddRange(parent.Children);
+            parent.Children.OfType<NeuronViewModelBase>().ToList().ForEach(n => result.AddRange(NeuronGraphViewModel.GetAllChildren(n)));
+            return result;
         }
     }
 }

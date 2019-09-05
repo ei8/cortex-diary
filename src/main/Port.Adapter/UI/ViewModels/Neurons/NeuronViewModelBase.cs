@@ -143,7 +143,27 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .Subscribe(x => this.selectionService.SetSelectedComponents(new object[] { x.Sender }));
 
             var highlighter = this.highlightService.WhenPropertyChanged(a => a.SelectedComponents)
-                .Subscribe(p => this.IsHighlighted = p.Sender.PrimarySelection is string && this.NeuronId == p.Sender.PrimarySelection.ToString());
+                .Subscribe(p =>
+                {
+                    if (p.Sender.SelectedComponents != null)
+                    {
+                        var selection = p.Sender.SelectedComponents.OfType<object>().ToArray();
+                        if (selection.Count() > 0 && selection[0] is string)
+                        {
+                            if (selection.Count() < 2)
+                            {
+                                this.IsHighlighted = this.NeuronId == p.Sender.PrimarySelection.ToString();
+                            }
+                            else
+                            {
+                                this.IsHighlighted =
+                                    this.NeuronId == p.Sender.PrimarySelection.ToString() &&
+                                    this.TerminalId == selection[1].ToString();
+                            }
+                        }
+                    }
+                }
+                );
 
             this.cleanUp = Disposable.Create(() =>
             {
