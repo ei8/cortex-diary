@@ -23,9 +23,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf"
         xmlns:peripheral="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="d# NeurUL Studio [Community Edition]" Height="450" Width="800" WindowState="Maximized">
+        Title="d# NeurUL Studio [Community Edition]" Height="450" Width="800" WindowState="Maximized" Icon="pack://application:,,,/Dasz;component/images/dasz.ico">
     <Window.Resources>
         <avalonDock:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
@@ -80,7 +79,7 @@
                     </local:PanesTemplateSelector.NeuronGraphStatsViewTemplate>
                     <local:PanesTemplateSelector.PropertyGridViewTemplate>
                         <DataTemplate>
-                            <xctk:PropertyGrid SelectedObject="{Binding SelectedObject}" />
+                            <peripheral:PropertyGridView/>                            
                         </DataTemplate>
                     </local:PanesTemplateSelector.PropertyGridViewTemplate>
                     <local:PanesTemplateSelector.NeuronGraphViewTemplate>
@@ -96,7 +95,7 @@
                     <local:PanesStyleSelector.ToolStyle>
                         <Style TargetType="{x:Type avalonDock:LayoutAnchorableItem}">
                             <Setter Property="Title" Value="{Binding Model.Title}"/>
-                            <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
+                            <Setter Property="IconSource" Value="{Binding Model.IconSourcePath}" />
                             <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"/>
                             <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
                             <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
@@ -108,7 +107,7 @@
                             <Setter Property="Title" Value="{Binding Model.AvatarUrl}"/>
                             <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
                             <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"/>
-                            <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
+                            <Setter Property="IconSource" Value="{Binding Model.IconSourcePath}" />
                             <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
                         </Style>
                     </local:PanesStyleSelector.NeuronTreeStyle>

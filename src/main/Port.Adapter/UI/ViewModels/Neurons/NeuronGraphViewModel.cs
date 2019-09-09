@@ -67,6 +67,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                         this.UpdateHighlightService();
                     }
                 });
+
+            this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/graph.ico";
         }
 
         public void InternallySelectNeuronAndTerminal(string neuronId, string terminalId)

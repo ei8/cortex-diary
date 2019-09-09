@@ -29,12 +29,14 @@
  */
 
 using DynamicData;
+using System.ComponentModel;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
+    [DisplayName("Postsynaptic Neuron")]
     public class PostsynapticViewModel : NeuronViewModelBase
     {
         public PostsynapticViewModel(string avatarUrl, string tag, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, 
@@ -46,5 +48,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         }
 
         public override object ViewModel => this;
+
+        [Browsable(false)]
+        public string Name
+        {
+            get
+            {
+                return this.Tag;
+            }
+        }
     }
 }

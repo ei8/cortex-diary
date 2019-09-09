@@ -87,6 +87,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .Bind(out this.children)
                 .DisposeMany()
                 .Subscribe();
+
+            this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/hierarchy.ico";            
         }
 
         private async Task OnAddClicked(SourceCache<Neuron, int> cache, object parameter)
@@ -161,7 +163,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         private void InitLayer()
         {
-            this.LayerName = "[Root]";
+            this.LayerName = "[Base]";
             this.originService.GetAvatarByUrl(this.avatarUrl).LayerId = Guid.Empty.ToString();
         }
 

@@ -41,11 +41,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 
         #endregion
 
-        // TODO: public ImageSource IconSource
-        //{
-        //    get;
-        //    protected set;
-        //}
+        public string IconSourcePath
+        {
+            get;
+            protected set;
+        }
 
         #region ContentId
 

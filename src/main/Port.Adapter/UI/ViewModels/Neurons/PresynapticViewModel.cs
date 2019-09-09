@@ -29,16 +29,14 @@
  */
 
 using DynamicData;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
+    [DisplayName("Presynaptic Neuron")]
     public class PresynapticViewModel : NeuronViewModelBase
     {
         public PresynapticViewModel(string avatarUrl, string tag, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, 
@@ -50,5 +48,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         }
 
         public override object ViewModel => this;
+
+        [Browsable(false)]
+        public string Name
+        {
+            get
+            {
+                var prefix = this.Parent == null ? "[Root] " : string.Empty;
+                return $"{prefix}{this.Tag}";
+            }
+        }
     }
 }

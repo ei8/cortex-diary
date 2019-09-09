@@ -271,7 +271,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.layerInfo = new LayerInfo()
             {
                 Id = neuron.LayerId,
-                Name = string.IsNullOrEmpty(neuron.LayerTag) ? "[Root Layer]" : neuron.LayerTag
+                Name = string.IsNullOrEmpty(neuron.LayerTag) ? "[Base]" : neuron.LayerTag
             };
         
             if (neuron.Terminal != null)

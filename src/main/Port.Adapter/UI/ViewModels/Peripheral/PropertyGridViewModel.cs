@@ -46,6 +46,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 
             this.selectionService.WhenPropertyChanged(a => a.SelectedComponents)
                 .Subscribe(p => this.SelectedObject = p.Sender.PrimarySelection);
+
+            this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/wrench.ico";
         }
 
         private object selectedObject;

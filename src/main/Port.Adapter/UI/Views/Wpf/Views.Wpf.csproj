@@ -188,6 +188,9 @@
     <Compile Include="Peripheral\NeuronGraphView.xaml.cs">
       <DependentUpon>NeuronGraphView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Peripheral\PropertyGridView.xaml.cs">
+      <DependentUpon>PropertyGridView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SettingsServiceImplementation.cs" />
     <Page Include="Dialogs\DialogSelectNeuronsView.xaml">
       <SubType>Designer</SubType>
@@ -233,6 +236,10 @@
     <Page Include="Peripheral\NeuronGraphView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Peripheral\PropertyGridView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PresynapticView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -323,7 +330,18 @@
       <Name>ViewModels</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="images\graph.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\hierarchy.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\wrench.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\dasz.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
