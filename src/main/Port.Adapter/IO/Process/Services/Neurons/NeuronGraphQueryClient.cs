@@ -33,6 +33,7 @@ using Polly;
 using Splat;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,24 +90,27 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                );
         }
 
-        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken)) =>
+        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken)) =>
             await NeuronGraphQueryClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetNeuronsInternal(avatarUrl, central, type, filter, limit, token).ConfigureAwait(false));
+                async () => await this.GetNeuronsInternal(avatarUrl, central, type, neuronQuery, limit, token).ConfigureAwait(false));
 
-        private async Task<IEnumerable<Neuron>> GetNeuronsInternal(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
+        private async Task<IEnumerable<Neuron>> GetNeuronsInternal(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
         {
             var queryStringBuilder = new StringBuilder();
 
             // TODO: if (type != RelativeType.NotSet)
             //    queryStringBuilder.Append("type=")
             //        .Append(type.ToString());
-            if (!string.IsNullOrEmpty(filter))
+            if (neuronQuery != null)
             {
-                if (queryStringBuilder.Length > 0)
-                    queryStringBuilder.Append('&');
-
-                queryStringBuilder
-                    .Append(filter);
+                NeuronGraphQueryClient.AppendQuery(neuronQuery.Id, nameof(NeuronQuery.Id), queryStringBuilder);
+                NeuronGraphQueryClient.AppendQuery(neuronQuery.IdNot, nameof(NeuronQuery.IdNot), queryStringBuilder);
+                NeuronGraphQueryClient.AppendQuery(neuronQuery.TagContains, nameof(NeuronQuery.TagContains), queryStringBuilder);
+                NeuronGraphQueryClient.AppendQuery(neuronQuery.TagContainsNot, nameof(NeuronQuery.TagContainsNot), queryStringBuilder);
+                NeuronGraphQueryClient.AppendQuery(neuronQuery.Presynaptic, nameof(NeuronQuery.Presynaptic), queryStringBuilder);
+                NeuronGraphQueryClient.AppendQuery(neuronQuery.PresynapticNot, nameof(NeuronQuery.PresynapticNot), queryStringBuilder);
+                NeuronGraphQueryClient.AppendQuery(neuronQuery.Postsynaptic, nameof(NeuronQuery.Postsynaptic), queryStringBuilder);
+                NeuronGraphQueryClient.AppendQuery(neuronQuery.PostsynapticNot, nameof(NeuronQuery.PostsynapticNot), queryStringBuilder);
             }
             if (limit.HasValue)
             {
@@ -127,6 +131,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
                 this.settingsService.AuthAccessToken,
                 token
                 );
+        }
+
+        private static void AppendQuery(IEnumerable<string> field, string fieldName, StringBuilder queryStringBuilder)
+        {
+            if (field != null && field.Any())
+            {
+                if (queryStringBuilder.Length > 0)
+                    queryStringBuilder.Append('&');
+                queryStringBuilder.Append(string.Join("&", field.Select(s => $"{fieldName}={s}")));
+            }
         }
     }
 }

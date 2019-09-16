@@ -35,7 +35,22 @@
         </Grid.RowDefinitions>
         <Menu>
             <MenuItem Header="File">
-                <MenuItem Name="NewNeuronTree" Header="New"/>
+                <MenuItem Header="New" HorizontalAlignment="Left" >
+                    <MenuItem Name="NewNeuronTree" Header="Tree">
+                        <MenuItem.Icon>
+                            <StackPanel>
+                                <Image Source="pack://application:,,,/Dasz;component/images/hierarchy.ico" />
+                            </StackPanel>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Name="NewNotifications" Header="Time">
+                        <MenuItem.Icon>
+                            <StackPanel>
+                                <Image Source="pack://application:,,,/Dasz;component/images/notification.ico" />
+                            </StackPanel>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
                 <Separator/>
                 <MenuItem Name="SignIn" Header="Sign In" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
                 <!--TODO: <MenuItem Header="Open" Command="{Binding OpenCommand}"/>
@@ -87,6 +102,11 @@
                             <peripheral:NeuronGraphView/>
                         </DataTemplate>
                     </local:PanesTemplateSelector.NeuronGraphViewTemplate>
+                    <local:PanesTemplateSelector.NotificationsPaneViewTemplate>
+                        <DataTemplate>
+                            <local:NotificationsPaneView/>
+                        </DataTemplate>
+                    </local:PanesTemplateSelector.NotificationsPaneViewTemplate>
                 </local:PanesTemplateSelector>
             </avalonDock:DockingManager.LayoutItemTemplateSelector>
 
@@ -111,6 +131,15 @@
                             <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
                         </Style>
                     </local:PanesStyleSelector.NeuronTreeStyle>
+                    <local:PanesStyleSelector.NotificationsStyle>
+                        <Style TargetType="{x:Type avalonDock:LayoutItem}">
+                            <Setter Property="Title" Value="{Binding Model.AvatarUrl}"/>
+                            <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
+                            <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"/>
+                            <Setter Property="IconSource" Value="{Binding Model.IconSourcePath}" />
+                            <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
+                        </Style>
+                    </local:PanesStyleSelector.NotificationsStyle>
                 </local:PanesStyleSelector>
             </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
             <avalonDock:DockingManager.LayoutUpdateStrategy>

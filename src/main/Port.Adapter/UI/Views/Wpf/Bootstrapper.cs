@@ -33,19 +33,23 @@ using Splat;
 using works.ei8.Cortex.Diary.Application.Dependency;
 using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.Neurons;
+using works.ei8.Cortex.Diary.Application.Notifications;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Domain.Model.Notifications;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Notifications;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Origins;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvider;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
@@ -67,6 +71,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             Locator.CurrentMutable.RegisterLazySingleton(() => new SettingsService(), typeof(ISettingsService));            
             Locator.CurrentMutable.RegisterLazySingleton(() => new RequestProvider(), typeof(IRequestProvider));
             Locator.CurrentMutable.RegisterLazySingleton(() => new IdentityService(), typeof(IIdentityService));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new NotificationClient(), typeof(INotificationClient));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new NotificationApplicationService(), typeof(INotificationApplicationService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronGraphQueryClient(), typeof(INeuronGraphQueryClient));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronQueryService(), typeof(INeuronQueryService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronClient(), typeof(INeuronClient));
@@ -80,6 +86,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             // TODO: Locator.CurrentMutable.Register(() => new NeuronGraphView(), typeof(IViewFor<NeuronGraphPaneViewModel>));
             //Locator.CurrentMutable.Register(() => new PresynapticView(), typeof(IViewFor<PresynapticViewModel>));
             //Locator.CurrentMutable.Register(() => new PostsynapticView(), typeof(IViewFor<PostsynapticViewModel>));            
+            Locator.CurrentMutable.Register(() => new NotificationView(), typeof(IViewFor<NotificationViewModel>));
             Locator.CurrentMutable.RegisterLazySingleton(() => new SelectionService(), typeof(IExtendedSelectionService), SelectionContract.Select.ToString());
             Locator.CurrentMutable.RegisterLazySingleton(() => new SelectionService(), typeof(IExtendedSelectionService), SelectionContract.Highlight.ToString());
         }

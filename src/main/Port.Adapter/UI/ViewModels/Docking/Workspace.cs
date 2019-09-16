@@ -27,6 +27,7 @@ using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
@@ -34,6 +35,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
     public class Workspace : ReactiveObject
     {
         private readonly ReactiveCommand newNeuronTreeCommand;
+        private readonly ReactiveCommand newNotificationsCommand;
         private readonly ReactiveCommand signInCommand;
         private readonly ReactiveCommand openAboutCommand;
         private readonly IOpenUrlService openUrlService;
@@ -51,6 +53,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
             this.newNeuronTreeCommand = ReactiveCommand.Create(() =>
             {
                 this.panes.Add(new NeuronTreePaneViewModel());
+                this.ActiveDocument = this.panes.Last();
+            });
+
+            this.newNotificationsCommand = ReactiveCommand.Create(() =>
+            {
+                this.panes.Add(new NotificationsPaneViewModel());
                 this.ActiveDocument = this.panes.Last();
             });
 
@@ -165,6 +173,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
         //#endregion 
 
         public ReactiveCommand NewNeuronTreeCommand => this.newNeuronTreeCommand;
+
+        public ReactiveCommand NewNotificationsCommand => this.newNotificationsCommand;
 
         public ReactiveCommand SignInCommand => this.signInCommand;
 

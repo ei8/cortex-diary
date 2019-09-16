@@ -39,11 +39,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                   else
                       this.FileSize = 0;
               });
-            // TODO: BitmapImage bi = new BitmapImage();
-            //bi.BeginInit();
-            //bi.UriSource = new Uri("pack://application:,,/Images/property-blue.png");
-            //bi.EndInit();
-            //IconSource = bi;
         }
 
         public const string ToolContentId = "FileStatsTool";

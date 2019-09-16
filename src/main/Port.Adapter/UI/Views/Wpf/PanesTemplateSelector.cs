@@ -18,6 +18,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 using Xceed.Wpf.AvalonDock.Layout;
 
@@ -54,6 +55,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             set;
         }
 
+        public DataTemplate NotificationsPaneViewTemplate
+        {
+            get;
+            set;
+        }
+
         public override System.Windows.DataTemplate SelectTemplate(object item, System.Windows.DependencyObject container)
         {
             var itemAsLayoutContent = item as LayoutContent;
@@ -69,6 +76,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 
             if (item is NeuronGraphViewModel)
                 return this.NeuronGraphViewTemplate;
+
+            if (item is NotificationsPaneViewModel)
+                return this.NotificationsPaneViewTemplate;
 
             return base.SelectTemplate(item, container);
         }

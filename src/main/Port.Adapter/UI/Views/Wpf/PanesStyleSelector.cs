@@ -23,6 +23,7 @@ using System.Windows.Controls;
 using System.Windows;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
@@ -40,6 +41,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             set;
         }
 
+        public Style NotificationsStyle
+        {
+            get;
+            set;
+        }
+
         public override System.Windows.Style SelectStyle(object item, System.Windows.DependencyObject container)
         {
             if (item is ToolViewModel)
@@ -47,6 +54,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 
             if (item is NeuronTreePaneViewModel)
                 return NeuronTreeStyle;
+
+            if (item is NotificationsPaneViewModel)
+                return NotificationsStyle;
 
             return base.SelectStyle(item, container);
         }

@@ -59,9 +59,9 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
             return neurons;
         }
 
-        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, string filter = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
+        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
         {
-            var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, central, type, filter, limit, token);
+            var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, central, type, neuronQuery, limit, token);
             relatives.ToList().ForEach(n => {
                 n.Id = Guid.NewGuid().GetHashCode();
                 n.CentralId = central != null ? central.Id : int.MinValue;
