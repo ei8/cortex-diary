@@ -50,7 +50,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<Neuron> result);
 
-        Task<bool?> ShowDialogTextInput(string message, string avatarUrl, object owner, out string result);
+        Task<bool?> ShowDialogTextInput(string message, object owner, out string result);
 
         Task<bool?> ShowLogin(ISettingsService settingsService, IOpenUrlService openUrlService, IIdentityService identityService, object owner, out bool result);
     }

@@ -1,0 +1,139 @@
+﻿<UserControl x:Class="works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral.EditorToolView"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             TextElement.FontWeight="Regular"
+             TextElement.FontSize="13"
+             TextOptions.TextFormattingMode="Ideal" 
+             TextOptions.TextRenderingMode="Auto"        
+             Background="{DynamicResource MaterialDesignPaper}"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="1024">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="TextBoxBaseControlTemplate" TargetType="{x:Type TextBoxBase}">
+            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" BorderThickness="1" x:Name="Bd" CornerRadius="5">
+                <ScrollViewer x:Name="PART_ContentHost"/>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" TargetName="Bd"/>
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                </Trigger>
+                <Trigger Property="Width" Value="Auto">
+                    <Setter Property="MinWidth" Value="100"/>
+                </Trigger>
+                <Trigger Property="Height" Value="Auto">
+                    <Setter Property="MinHeight" Value="20"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" BorderThickness="0,0,0,1">
+            <ToolBarTray IsLocked="True" ClipToBounds="True" Orientation="Horizontal">
+                <ToolBar>
+                    <Button Name="Save" Content="Save" />
+                    <Button Name="Cancel" Content="Cancel" />
+                    <Separator />
+                    <ToggleButton Name="New" Content="New" Style="{x:Null}" Padding="15" />
+                    <ComboBox Name="NewMode" Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Margin="5,-12,5,0" materialDesign:HintAssist.FloatingScale="0.70" materialDesign:HintAssist.Hint="Mode" materialDesign:HintAssist.FloatingOffset="0,-12" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Name="Select" Content="Select" />
+                    <Separator/>
+                    <ToggleButton Name="Edit" Content="Edit" Style="{x:Null}" Padding="15" />                    
+                </ToolBar>
+            </ToolBarTray>
+        </Border>
+        <ProgressBar Name="Progress" IsIndeterminate="True" Grid.Row="1" Grid.ZIndex="1" Height="3" VerticalAlignment="Top" />
+        <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
+            <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                <StackPanel Name="DetailsPanel" Height="Auto" Orientation="Vertical" Margin="10,10,0,0" MaxWidth="350">
+                    <TextBox Name="AvatarUrl" Style="{DynamicResource MaterialDesignFilledTextFieldTextBox}" FontWeight="DemiBold" Margin="0,0,0,3" materialDesign:HintAssist.Hint="Avatar URL" IsReadOnly="True" MinWidth="350" />
+                    <TextBox Name="LayerName" Style="{DynamicResource MaterialDesignFilledTextFieldTextBox}" FontWeight="DemiBold" Margin="0,0,0,3" materialDesign:HintAssist.Hint="Layer" IsReadOnly="True" MinWidth="350" />
+                    <TextBox Name="Target" Style="{DynamicResource MaterialDesignFilledTextFieldTextBox}"  FontWeight="DemiBold" TextWrapping="NoWrap" materialDesign:HintAssist.Hint="Target" IsReadOnly="True" MinWidth="350" />
+                </StackPanel>
+            </ScrollViewer>
+            <Grid MinWidth="300">
+                <Grid.Resources>
+                    <sys:Double x:Key="heightOffset">15</sys:Double>
+                    <sys:Double x:Key="widthOffset">10</sys:Double>
+                </Grid.Resources>
+                <Grid.Height>
+                    <MultiBinding Converter="{StaticResource DynamicHeightConverter}" ConverterParameter="660">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=WrapPanel}" Path="ActualWidth" />
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=WrapPanel}" Path="ActualHeight" />
+                        <Binding ElementName="DetailsPanel" Path="ActualHeight"/>
+                        <Binding Source="{StaticResource heightOffset}" />
+                    </MultiBinding>
+                </Grid.Height>
+                <Grid.Width>
+                    <MultiBinding Converter="{StaticResource DynamicWidthConverter}" ConverterParameter="660">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=WrapPanel}" Path="ActualWidth" />
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=WrapPanel}" Path="ActualWidth" />
+                        <Binding ElementName="DetailsPanel" Path="ActualWidth"/>
+                        <Binding Source="{StaticResource widthOffset}" />
+                    </MultiBinding>
+                </Grid.Width>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBox Name="TagText" FontSize="15" Style="{DynamicResource MaterialDesignOutlinedTextFieldTextBox}" materialDesign:HintAssist.Hint="Tag" materialDesign:HintAssist.IsFloating="False" VerticalContentAlignment="Bottom" VerticalAlignment="Stretch" Margin="10,10,10,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,7,0,0">
+                    <ComboBox Name="RelativeType" Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Margin="15,-12,0,0" materialDesign:HintAssist.FloatingScale="0.70" materialDesign:HintAssist.Hint="Relative Type" materialDesign:HintAssist.FloatingOffset="0,-12" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox Name="Effect" Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Margin="10,-12,0,0" materialDesign:HintAssist.FloatingScale="0.70" materialDesign:HintAssist.Hint="Effect" materialDesign:HintAssist.FloatingOffset="0,-12" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBox Name="Strength" Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="10,0,0,10" materialDesign:HintAssist.Hint="Strength (eg. 0.33)" MinWidth="50" />
+                </StackPanel>
+            </Grid>
+        </WrapPanel>
+        <Border Grid.Row="2" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" BorderThickness="0,0.5,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ScrollViewer MaxHeight="80" Height="auto" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Orientation="Vertical" Margin="5,0,0,0" >
+                        <TextBlock Name="ErrorMessage" Width="auto" Foreground="{DynamicResource AccentColorBrush}" TextWrapping="Wrap" Margin="5,5,0,0"/>
+                        <Label Name="StatusMessage" Width="auto" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

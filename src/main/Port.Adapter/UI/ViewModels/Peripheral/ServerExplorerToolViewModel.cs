@@ -19,26 +19,27 @@ using ReactiveUI;
 using Splat;
 using System;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
+namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {
-    public class NeuronGraphStatsViewModel : ToolViewModel
+    public class ServerExplorerToolViewModel : ToolViewModel
     {
-        public NeuronGraphStatsViewModel()
-            : base("Graph Stats")
+        public ServerExplorerToolViewModel()
+            : base("Server Explorer")
         {
             ContentId = ToolContentId;
 
-            Locator.CurrentMutable.GetService<Workspace>().WhenAnyValue(x => x.ActiveDocument)
-              .Subscribe(x =>
-              {
-                  var y = x as NeuronTreePaneViewModel;
-                  if (y != null)
-                      // TODO: get count of all sub-children
-                      this.FileSize = y.Children.Count;
-                  else
-                      this.FileSize = 0;
-              });
+            //Locator.CurrentMutable.GetService<Workspace>().WhenAnyValue(x => x.ActiveDocument)
+            //  .Subscribe(x =>
+            //  {
+            //      var y = x as NeuronTreePaneViewModel;
+            //      if (y != null)
+            //          // TODO: get count of all sub-children
+            //          this.FileSize = y.Children.Count;
+            //      else
+            //          this.FileSize = 0;
+            //  });
         }
 
         public const string ToolContentId = "FileStatsTool";

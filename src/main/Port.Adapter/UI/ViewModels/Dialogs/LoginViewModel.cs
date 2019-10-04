@@ -1,8 +1,10 @@
 ﻿using IdentityModel.Client;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Splat;
 using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Dialog;
@@ -87,6 +89,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             set => this.RaiseAndSetIfChanged(ref this._isLogin, value);
         }
 
+        [Reactive]
+        public bool IsNavigating { get; set; }
+
         public string LoginUrl
         {
             get => this._authUrl;
@@ -101,19 +106,19 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             set => this.RaiseAndSetIfChanged(ref this.identityServerUrl, value);
         }
 
-        public ReactiveCommand MockSignInCommand { get; } 
+        public ReactiveCommand<Unit, Unit> MockSignInCommand { get; } 
 
-        public ReactiveCommand SignInCommand { get; }
+        public ReactiveCommand<Unit, Task> SignInCommand { get; }
 
-        public ReactiveCommand RegisterCommand { get; }
+        public ReactiveCommand<Unit, Unit> RegisterCommand { get; }
 
-        public ReactiveCommand NavigateCommand { get; }
+        public ReactiveCommand<string, Unit> NavigateCommand { get; }
 
-        public ReactiveCommand SettingsCommand { get; }
+        public ReactiveCommand<Unit, Unit> SettingsCommand { get; }
 
-        public ReactiveCommand ValidateUserNameCommand { get; }
+        public ReactiveCommand<Unit, Unit> ValidateUserNameCommand { get; }
 
-        public ReactiveCommand ValidatePasswordCommand { get; }
+        public ReactiveCommand<Unit, Unit> ValidatePasswordCommand { get; }
 
         // TODO: private async Task MockSignInAsync()
         //{
@@ -169,6 +174,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         private async Task NavigateAsync(string url)
         {
+            this.IsNavigating = false;
+
             var unescapedUrl = System.Net.WebUtility.UrlDecode(url);
 
             if (unescapedUrl.StartsWith(this.settingsService.LogoutCallback))

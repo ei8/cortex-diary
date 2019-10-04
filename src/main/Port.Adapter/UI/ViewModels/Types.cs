@@ -52,4 +52,26 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         TerminalCreated,
         TerminalDeactivated
     }
+
+    public enum NewModeValue
+    {
+        NotSet,
+        Neuron,
+        Relative,
+        Link
+    }
+
+    public enum LinkModeValue
+    {
+        NotSet,
+        Postsynaptic,
+        Presynaptic
+    }
+
+    public enum EditorStateValue
+    {
+        Browse,
+        New,
+        Edit
+    }
 }

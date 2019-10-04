@@ -16,6 +16,7 @@
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
 using System.Linq;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 using Xceed.Wpf.AvalonDock.Layout;
 
@@ -33,10 +34,28 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
                 destinationContainer.FindParent<LayoutFloatingWindow>() != null)
                 return false;
 
-            return AddAnchorableToPane(
-                anchorableToShow.Content is NeuronGraphViewModel ? "TopToolsPane" : "BottomToolsPane", 
-                layout, 
-                anchorableToShow);
+            var destinationPane = string.Empty;
+            bool autoHide = false;
+            anchorableToShow.AutoHideWidth = 400;
+            anchorableToShow.AutoHideHeight = 300;
+
+            if (anchorableToShow.Content is NeuronGraphViewModel)
+                destinationPane = "TopToolsPane";
+            else if (anchorableToShow.Content is EditorToolViewModel)
+                destinationPane = "DocumentBottomPane";
+            else if (anchorableToShow.Content is ServerExplorerToolViewModel)
+            {
+                destinationPane = "LeftToolsPane";
+                autoHide = true;
+            }
+            else
+                destinationPane = "BottomToolsPane";
+
+            var success = AddAnchorableToPane(destinationPane, layout, anchorableToShow);
+            if (autoHide)
+                anchorableToShow.ToggleAutoHide();
+
+            return success;
         }
 
         private static bool AddAnchorableToPane(string paneName, LayoutRoot layout, LayoutAnchorable anchorableToShow)

@@ -63,6 +63,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
                             this.Browser.Navigate(v.Value);
                     });
 
+                this.Browser.Events().Navigating
+                    .Select(x => true)
+                    .BindTo(this.ViewModel, x => x.IsNavigating);
+
                 this.Browser.Events().Navigated.Select((x) => x.Uri.ToString())
                     .InvokeCommand(this, v => v.ViewModel.NavigateCommand);
 
@@ -74,6 +78,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
 
                 d(this.BindCommand(this.ViewModel, vm => vm.SignInCommand, v => v.LoadButton));
                 d(this.Bind(this.ViewModel, vm => vm.IdentityServerUrl, v => v.IdentityServerUrl.Text));
+                d(this.OneWayBind(this.ViewModel, x => x.IsNavigating, x => x.Progress.Visibility, x => x ? Visibility.Visible : Visibility.Collapsed));
             });
         }
 

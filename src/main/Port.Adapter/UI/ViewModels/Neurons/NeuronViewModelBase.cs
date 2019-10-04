@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     public abstract class NeuronViewModelBase : ReactiveObject, IDisposable, IEquatable<NeuronViewModelBase>
     {
-        private readonly string avatarUrl;
+        private readonly IAvatarViewer host;
         private readonly IDisposable cleanUp;
         private int id;
         private string neuronId;
@@ -75,10 +76,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private const string TerminalCategory = "Terminal";
         private const string MiscCategory = "Misc";
         
-        protected NeuronViewModelBase(string avatarUrl, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronApplicationService neuronApplicationService = null,
+        protected NeuronViewModelBase(IAvatarViewer host, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronApplicationService neuronApplicationService = null,
             INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IExtendedSelectionService highlightService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
-            this.avatarUrl = avatarUrl;
+            this.host = host;
             this.Id = node.Key;
             this.Parent = parent;
             this.SetNeuron(node.Item);
@@ -105,8 +106,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             var childrenLoader = new Lazy<IDisposable>(() => node.Children.Connect()
                 .Transform(e =>
                     e.Item.Type == RelativeType.Postsynaptic ?
-                    (NeuronViewModelBase)(new PostsynapticViewModel(avatarUrl, e.Item.Tag, e, cache, this)) :
-                    (NeuronViewModelBase)(new PresynapticViewModel(avatarUrl, e.Item.Tag, e, cache, this)))
+                    (NeuronViewModelBase)(new PostsynapticViewModel(this.host, e.Item.Tag, e, cache, this)) :
+                    (NeuronViewModelBase)(new PresynapticViewModel(this.host, e.Item.Tag, e, cache, this)))
                 .Bind(out this.children)
                 .DisposeMany()
                 .Subscribe()
@@ -195,7 +196,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         {
                             case RelativeType.NotSet:
                                 await this.neuronApplicationService.DeactivateNeuron(
-                                    this.avatarUrl,
+                                    this.host.AvatarUrl,
                                     this.NeuronId,
                                     this.Neuron.Version
                                 );
@@ -203,7 +204,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                                 break;
                             case RelativeType.Postsynaptic:
                                 await this.terminalApplicationService.DeactivateTerminal(
-                                    this.avatarUrl,
+                                    this.host.AvatarUrl,
                                     this.Neuron.Terminal.Id,
                                     this.Neuron.Terminal.Version
                                     );
@@ -211,7 +212,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                                 break;
                             case RelativeType.Presynaptic:
                                 await this.terminalApplicationService.DeactivateTerminal(
-                                    this.avatarUrl,
+                                    this.host.AvatarUrl,
                                     this.Neuron.Terminal.Id,
                                     this.Neuron.Terminal.Version
                                     );
@@ -232,20 +233,17 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         {
             if (!this.settingNeuron)
             {
-                await Helper.SetStatusOnComplete(async () =>
-                {
-                    await this.neuronApplicationService.ChangeNeuronTag(
-                        this.avatarUrl,
-                        this.neuronId,
-                        x.Value,
-                        this.Neuron.Version
+                var success = await ViewModels.Helper.ChangeNeuronTag(
+                    x.Value,
+                    this.neuronApplicationService,
+                    this.statusService,
+                    this.host.AvatarUrl,
+                    this.neuronId,
+                    this.Neuron.Version
                     );
+
+                if (success)
                     await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
-                    return true;
-                },
-                "Neuron tag changed successfully.",
-                this.statusService
-            );
             }
         }
 
@@ -297,6 +295,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         private async Task OnReload(SourceCache<Neuron, int> cache, int millisecondsDelay = 0)
         {
+            this.host.Loading = true;
+
             if (millisecondsDelay > 0)
                 await Task.Delay(millisecondsDelay);
 
@@ -304,7 +304,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             {
                 // reload self
                 var reloadedNeuron = (await this.neuronQueryService.GetNeuronById(
-                    this.avatarUrl,
+                    this.host.AvatarUrl,
                     this.Neuron.NeuronId,
                     this.Parent.ConvertOr(n => n.Neuron, () => null),
                     this.Neuron.Type
@@ -314,13 +314,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
                 // reload relatives
                 cache.Remove(NeuronViewModelBase.GetAllChildren(cache, this.Neuron.Id));
-                var relatives = await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron);
+                var relatives = await this.neuronQueryService.GetNeurons(this.host.AvatarUrl, this.Neuron);
                 cache.AddOrUpdate(relatives);
                 return true;
             },
             "Neuron reloaded successfully.",
             this.statusService
             );
+
+            this.host.Loading = false;
         }
 
         private static IEnumerable<Neuron> GetAllChildren(SourceCache<Neuron, int> cache, int parentId)
@@ -357,79 +359,80 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             }
         }
 
-        private async Task OnAddPresynaptic(SourceCache<Neuron, int> cache, object parameter)
+        private async Task OnAddPresynaptic(SourceCache<Neuron, int> cache, object owner)
         {
-            await Helper.SetStatusOnComplete(async () =>
+            var success = await ViewModels.Helper.CreateRelative(
+                async () =>
                 {
-                    bool stat = false;
+                    string result = string.Empty;
 
-                    if ((await this.dialogService.ShowDialogTextInput("Enter Presynaptic tag: ", this.avatarUrl, parameter, out string result)).GetValueOrDefault() &&
-                        await Helper.PromptSimilarExists(this.neuronQueryService, this.dialogService, this.avatarUrl, parameter, result))
-                    {
-                        string[] tps = await this.AskUserTerminalParameters(parameter);
-                        var presynapticNeuronId = Guid.NewGuid().ToString();
-                        await this.neuronApplicationService.CreateNeuron(
-                            this.avatarUrl,
-                            presynapticNeuronId,
-                            ViewModels.Helper.CleanForJSON(result),                            
-                            this.originService.GetAvatarByUrl(this.avatarUrl).LayerId
-                        );
-                        await this.terminalApplicationService.CreateTerminal(
-                            this.avatarUrl,
-                            Guid.NewGuid().ToString(),
-                            presynapticNeuronId,
-                            this.Neuron.NeuronId,
-                            (NeurotransmitterEffect)int.Parse(tps[0]),
-                            float.Parse(tps[1])
-                            );
-                        await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
-                        stat = true;
-                    }
-                    return stat;
+                    if (
+                        (await this.dialogService.ShowDialogTextInput(
+                        "Enter Presynaptic Tag: ",
+                        owner,
+                        out string r
+                        )).GetValueOrDefault()
+                        )
+                        result = r;
+
+                    return result;
                 },
-                "Presynaptic added successfully.",
-                this.statusService,
-                "Presynaptic addition cancelled."
-            );
+                async (o) => await this.AskUserTerminalParameters(o),
+                owner,
+                this.dialogService,
+                this.neuronQueryService,
+                this.neuronApplicationService,
+                this.terminalApplicationService,
+                this.statusService,                
+                this.host.AvatarUrl,
+                this.host.LayerId,
+                this.Neuron.NeuronId,
+                RelativeType.Presynaptic
+                );
+
+            if (success)
+                await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
         }
 
         private async Task<string[]> AskUserTerminalParameters(object parameter)
         {
-            (await this.dialogService.ShowDialogTextInput("Enter Terminal Parameters (Format = '[effect],[strength]', 'Cancel' to use default): ", this.avatarUrl, parameter, out string terminalParams)).GetValueOrDefault();
+            (await this.dialogService.ShowDialogTextInput("Enter Terminal Parameters (Format = '[effect],[strength]', 'Cancel' to use default): ", parameter, out string terminalParams)).GetValueOrDefault();
             string[] tps = terminalParams.Split(',');
             if (tps.Length == 1)
                 tps = new string[] { "1", "1" };
             return tps;
         }
 
-        private async Task OnAddPostsynaptic(SourceCache<Neuron, int> cache, object parameter)
+        private async Task OnAddPostsynaptic(SourceCache<Neuron, int> cache, object owner)
         {
-            await Helper.SetStatusOnComplete(async () =>
+            var success = await ViewModels.Helper.LinkRelative(
+                async () =>
                 {
-                    bool stat = false;
-                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Neuron", this.avatarUrl, parameter, true, out IEnumerable<Neuron> result)).GetValueOrDefault())
-                    {
-                        string[] tps = await this.AskUserTerminalParameters(parameter);
-                        foreach (var n in result)
-                        {
-                            await this.terminalApplicationService.CreateTerminal(
-                                this.avatarUrl,
-                                Guid.NewGuid().ToString(),
-                                this.neuronId,
-                                n.NeuronId,
-                                (NeurotransmitterEffect)int.Parse(tps[0]),
-                                float.Parse(tps[1])
-                                );
-                        }
-                        await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
-                        stat = true;
-                    }
-                    return stat;
+                    IEnumerable<Neuron> result = new Neuron[0];
+
+                    if (
+                        (await this.dialogService.ShowDialogSelectNeurons(
+                            "Select Neuron(s)", 
+                            this.host.AvatarUrl, 
+                            owner, 
+                            true, 
+                            out IEnumerable<Neuron> r)).GetValueOrDefault()
+                        )
+                        result = r;
+
+                    return result;
                 },
-                "Postsynaptic added successfully.",
+                async (o) => await this.AskUserTerminalParameters(o),
+                owner,
+                this.terminalApplicationService,
                 this.statusService,
-                "Postsynaptic selection cancelled."
-            );
+                this.host.AvatarUrl,
+                this.Neuron.NeuronId,
+                RelativeType.Postsynaptic
+                );
+            
+            if (success)
+                await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
         }
 
         [Browsable(false)]
@@ -530,19 +533,19 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         }
 
         [Browsable(false)]
-        public ReactiveCommand ReloadCommand { get; }
+        public ReactiveCommand<Unit, Task> ReloadCommand { get; }
 
         [Browsable(false)]
-        public ReactiveCommand ReloadExpandCommand { get; }
+        public ReactiveCommand<Unit, Task> ReloadExpandCommand { get; }
 
         [Browsable(false)]
-        public ReactiveCommand AddPostsynapticCommand { get; }
+        public ReactiveCommand<object, Unit> AddPostsynapticCommand { get; }
 
         [Browsable(false)]
-        public ReactiveCommand AddPresynapticCommand { get; }
+        public ReactiveCommand<object, Unit> AddPresynapticCommand { get; }
 
         [Browsable(false)]
-        public ReactiveCommand DeleteCommand { get; }
+        public ReactiveCommand<object, Unit> DeleteCommand { get; }
 
         [Browsable(false)]
         public abstract object ViewModel { get; }

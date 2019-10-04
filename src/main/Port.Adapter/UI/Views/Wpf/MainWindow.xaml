@@ -24,7 +24,7 @@
         xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf"
         xmlns:peripheral="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral"
         mc:Ignorable="d"
-        Title="d# NeurUL Studio [Community Edition]" Height="450" Width="800" WindowState="Maximized" Icon="pack://application:,,,/Dasz;component/images/dasz.ico">
+        Title="d# neurUL Studio 2019 [Community Edition]" Height="450" Width="800" WindowState="Maximized" Icon="pack://application:,,,/Dasz;component/images/dasz.ico">
     <Window.Resources>
         <avalonDock:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
@@ -34,16 +34,16 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu>
-            <MenuItem Header="File">
-                <MenuItem Header="New" HorizontalAlignment="Left" >
-                    <MenuItem Name="NewNeuronTree" Header="Tree">
+            <MenuItem Style="{x:Null}" Header="File">
+                <MenuItem Style="{x:Null}" Header="New" HorizontalAlignment="Left" >
+                    <MenuItem Style="{x:Null}" Name="NewNeuronTree" Header="Tree">
                         <MenuItem.Icon>
                             <StackPanel>
                                 <Image Source="pack://application:,,,/Dasz;component/images/hierarchy.ico" />
                             </StackPanel>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Name="NewNotifications" Header="Time">
+                    <MenuItem Style="{x:Null}" Name="NewNotifications" Header="Time">
                         <MenuItem.Icon>
                             <StackPanel>
                                 <Image Source="pack://application:,,,/Dasz;component/images/notification.ico" />
@@ -51,8 +51,8 @@
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <Separator/>
-                <MenuItem Name="SignIn" Header="Sign In" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
+                <Separator Style="{x:Null}" />
+                <MenuItem Style="{x:Null}" Name="SignIn" Header="Sign In" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
                 <!--TODO: <MenuItem Header="Open" Command="{Binding OpenCommand}"/>
                 
                 <MenuItem Header="Save" Command="{Binding ActiveDocument.SaveCommand}"/>
@@ -68,8 +68,8 @@
                 <MenuItem Header="Save" Command="{Binding SaveLayoutCommand, ElementName=mainWindow}"/>
                 <MenuItem Header="Dump to Console" Click="OnDumpToConsole"/>
             </MenuItem>
-            <MenuItem Header="Help">
-                <MenuItem Name="OpenAbout" Header="About"/>
+            <MenuItem Style="{x:Null}" Header="Help">
+                <MenuItem Style="{x:Null}" Name="OpenAbout" Header="About"/>
             </MenuItem>
         </Menu>
         <avalonDock:DockingManager x:Name="dockManager" AllowMixedOrientation="True" Grid.Row="1">
@@ -83,15 +83,15 @@
                             <local:NeuronTreeView/>
                         </DataTemplate>
                     </local:PanesTemplateSelector.NeuronTreeViewTemplate>
-                    <local:PanesTemplateSelector.NeuronGraphStatsViewTemplate>
+                    <local:PanesTemplateSelector.ServerExplorerToolViewTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Vertical">
+                            <StackPanel Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Orientation="Vertical">
                                 <TextBlock Text="{Binding FileSize}"/>
                                 <TextBlock Text="{Binding LastModified}"/>
                                 <TextBox Text="test"/>
                             </StackPanel>
                         </DataTemplate>
-                    </local:PanesTemplateSelector.NeuronGraphStatsViewTemplate>
+                    </local:PanesTemplateSelector.ServerExplorerToolViewTemplate>
                     <local:PanesTemplateSelector.PropertyGridViewTemplate>
                         <DataTemplate>
                             <peripheral:PropertyGridView/>                            
@@ -107,6 +107,11 @@
                             <local:NotificationsPaneView/>
                         </DataTemplate>
                     </local:PanesTemplateSelector.NotificationsPaneViewTemplate>
+                    <local:PanesTemplateSelector.EditorToolViewTemplate>
+                        <DataTemplate>
+                            <peripheral:EditorToolView/>
+                        </DataTemplate>
+                    </local:PanesTemplateSelector.EditorToolViewTemplate>
                 </local:PanesTemplateSelector>
             </avalonDock:DockingManager.LayoutItemTemplateSelector>
 
@@ -148,11 +153,21 @@
 
             <avalonDock:LayoutRoot>
                 <avalonDock:LayoutPanel Orientation="Horizontal">
-                    <avalonDock:LayoutDocumentPane/>
-                    <avalonDock:LayoutAnchorablePaneGroup Orientation="Vertical" DockWidth="450">
-                        <avalonDock:LayoutAnchorablePane Name="TopToolsPane" DockHeight="0.8*" FloatingWidth="360" FloatingHeight="1041" FloatingLeft="1555" FloatingTop="540">
+                    <avalonDock:LayoutAnchorablePaneGroup  Orientation="Vertical" DockWidth="350">
+                        <avalonDock:LayoutAnchorablePane Name="LeftToolsPane" FloatingWidth="360" FloatingHeight="1041" FloatingLeft="1555" FloatingTop="540">
                         </avalonDock:LayoutAnchorablePane>
-                        <avalonDock:LayoutAnchorablePane Name="BottomToolsPane" DockWidth="350" DockHeight="1.2*">
+                    </avalonDock:LayoutAnchorablePaneGroup>
+                    <avalonDock:LayoutPanel Orientation="Vertical">
+                        <avalonDock:LayoutDocumentPane/>
+                        <avalonDock:LayoutAnchorablePaneGroup Orientation="Horizontal" DockHeight="350">
+                            <avalonDock:LayoutAnchorablePane Name="DocumentBottomPane" FloatingWidth="360" FloatingHeight="1041" FloatingLeft="1555" FloatingTop="540">
+                            </avalonDock:LayoutAnchorablePane>
+                        </avalonDock:LayoutAnchorablePaneGroup>
+                    </avalonDock:LayoutPanel>
+                    <avalonDock:LayoutAnchorablePaneGroup Orientation="Vertical" DockWidth="450">
+                        <avalonDock:LayoutAnchorablePane Name="TopToolsPane" DockHeight="1*" FloatingWidth="360" FloatingHeight="1041" FloatingLeft="1555" FloatingTop="540">
+                        </avalonDock:LayoutAnchorablePane>
+                        <avalonDock:LayoutAnchorablePane Name="BottomToolsPane" DockWidth="350" DockHeight="1*">
                         </avalonDock:LayoutAnchorablePane>
                     </avalonDock:LayoutAnchorablePaneGroup>
                 </avalonDock:LayoutPanel>

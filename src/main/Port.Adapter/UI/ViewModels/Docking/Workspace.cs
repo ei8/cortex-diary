@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
@@ -34,10 +35,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 {
     public class Workspace : ReactiveObject
     {
-        private readonly ReactiveCommand newNeuronTreeCommand;
-        private readonly ReactiveCommand newNotificationsCommand;
-        private readonly ReactiveCommand signInCommand;
-        private readonly ReactiveCommand openAboutCommand;
+        private readonly ReactiveCommand<Unit, Unit> newNeuronTreeCommand;
+        private readonly ReactiveCommand<Unit, Unit> newNotificationsCommand;
+        private readonly ReactiveCommand<object, Unit> signInCommand;
+        private readonly ReactiveCommand<Unit, Unit> openAboutCommand;
         private readonly IOpenUrlService openUrlService;
         private readonly IDialogService dialogService;
         private readonly ISettingsService settingsService;
@@ -88,18 +89,23 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
             get
             {
                 if (_tools == null)
-                    _tools = new ToolViewModel[] { this.PropertyGrid, this.NeuronGraph, this.FileStats };
+                    _tools = new ToolViewModel[] {
+                        this.PropertyGrid,
+                        this.NeuronGraph,
+                        this.FileStats,
+                        this.EditorTool
+                    };
                 return _tools;
             }
         }
 
-        private NeuronGraphStatsViewModel _fileStats = null;
-        private NeuronGraphStatsViewModel FileStats
+        private ServerExplorerToolViewModel _fileStats = null;
+        private ServerExplorerToolViewModel FileStats
         {
             get
             {
                 if (_fileStats == null)
-                    _fileStats = new NeuronGraphStatsViewModel();
+                    _fileStats = new ServerExplorerToolViewModel();
 
                 return _fileStats;
             }
@@ -126,6 +132,18 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
                     this.neuronGraph = new NeuronGraphViewModel();
 
                 return this.neuronGraph;
+            }
+        }
+
+        private EditorToolViewModel editorTool = null;
+        public EditorToolViewModel EditorTool
+        {
+            get
+            {
+                if (this.editorTool == null)
+                    this.editorTool = new EditorToolViewModel();
+
+                return this.editorTool;
             }
         }
 
@@ -172,13 +190,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 
         //#endregion 
 
-        public ReactiveCommand NewNeuronTreeCommand => this.newNeuronTreeCommand;
+        public ReactiveCommand<Unit, Unit> NewNeuronTreeCommand => this.newNeuronTreeCommand;
 
-        public ReactiveCommand NewNotificationsCommand => this.newNotificationsCommand;
+        public ReactiveCommand<Unit, Unit> NewNotificationsCommand => this.newNotificationsCommand;
 
-        public ReactiveCommand SignInCommand => this.signInCommand;
+        public ReactiveCommand<object, Unit> SignInCommand => this.signInCommand;
 
-        public ReactiveCommand OpenAboutCommand => this.openAboutCommand;
+        public ReactiveCommand<Unit, Unit> OpenAboutCommand => this.openAboutCommand;
 
         #region ActiveDocument
 

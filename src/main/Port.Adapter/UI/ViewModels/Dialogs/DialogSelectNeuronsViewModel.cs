@@ -36,6 +36,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
@@ -59,7 +60,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             var list = new SourceList<Neuron>();
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(list));
             this.SelectCommand = ReactiveCommand.Create(this.OnSelectedClicked);
-            this.CancelCommand = ReactiveCommand.Create(this.OnCancelledClicked);
             this.UserDialogResult = null;
 
             this.cleanUp = list.AsObservableList().Connect()
@@ -94,19 +94,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
                 this.StatusMessage = "No Neuron selected.";
         }
         
-        private void OnCancelledClicked()
-        {
-            this.UserDialogResult = null;
-            this.DialogResult = false;
-        }
-
         public ReadOnlyObservableCollection<Neuron> Neurons => this.neurons;
 
-        public ReactiveCommand ReloadCommand { get; }
+        public ReactiveCommand<Unit, Task> ReloadCommand { get; }
 
-        public ReactiveCommand SelectCommand { get; }
-
-        public ReactiveCommand CancelCommand { get; }
+        public ReactiveCommand<Unit, Unit> SelectCommand { get; }
 
         private IList selectedNeurons;
 

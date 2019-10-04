@@ -29,6 +29,7 @@
  */
 
 using ReactiveUI;
+using System.Reactive;
 using System.Windows.Input;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
@@ -38,9 +39,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
     /// </summary>
     public class DialogYesNoViewModel : DialogViewModelBase
     {
-        public ReactiveCommand YesCommand { get; }
+        public ReactiveCommand<Unit, Unit> YesCommand { get; }
 
-        public ReactiveCommand NoCommand { get; }
+        public ReactiveCommand<Unit, Unit> NoCommand { get; }
 
         public DialogYesNoViewModel(string message)
             : base(message)

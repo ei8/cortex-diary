@@ -36,9 +36,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
+using works.ei8.Cortex.Diary.Application.Notifications;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
@@ -46,26 +48,26 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
-    public class NeuronTreePaneViewModel : PaneViewModel, IDisposable
+    public class NeuronTreePaneViewModel : PaneViewModel, IAvatarViewer, IDisposable
     {
-        private readonly INeuronApplicationService neuronApplicationService;
-        private readonly INeuronQueryService neuronQueryService;
-        private readonly IOriginService originService;
         private readonly ReadOnlyObservableCollection<NeuronViewModelBase> children;
         private readonly IDisposable cleanUp;
-        private readonly IStatusService statusService;
         private readonly IDialogService dialogService;
-        private bool reloaded;
-
-        public NeuronTreePaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, IOriginService originService = null, 
-            IStatusService statusService = null, IDialogService dialogService = null)
+        private readonly INeuronApplicationService neuronApplicationService;
+        private readonly INeuronQueryService neuronQueryService;
+        private readonly INotificationApplicationService notificationApplicationService;
+        private readonly IOriginService originService;
+        private readonly IStatusService statusService;
+        
+        public NeuronTreePaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, INotificationApplicationService notificationApplicationService = null,  
+            IStatusService statusService = null, IDialogService dialogService = null, IOriginService originService = null)
         {
+            this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
+            this.notificationApplicationService = notificationApplicationService ?? Locator.Current.GetService<INotificationApplicationService>();
+            this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();            
             this.originService = originService ?? Locator.Current.GetService<IOriginService>();
-            this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
-            this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
-            this.reloaded = false;
 
             this.statusService.WhenPropertyChanged(s => s.Message)
                 .Subscribe(s => this.StatusMessage = s.Sender.Message);
@@ -73,7 +75,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             bool DefaultPredicate(Node<Neuron, int> node) => node.IsRoot;
             var cache = new SourceCache<Neuron, int>(x => x.Id);
 
-            this.AddCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnAddClicked(cache, parameter));
+            this.AddCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnAddClicked(cache, parameter));
             this.SetLayerCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnSetLayerIdClicked(parameter));
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(cache));
 
@@ -81,60 +83,46 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .TransformToTree(child => child.CentralId, Observable.Return((Func<Node<Neuron, int>, bool>)DefaultPredicate))
                 .Transform(e =>
                     e.Item.Type == RelativeType.Postsynaptic ?
-                    (NeuronViewModelBase)(new PostsynapticViewModel(this.avatarUrl, e.Item.Tag, e, cache)) :
-                    (NeuronViewModelBase)(new PresynapticViewModel(this.avatarUrl, e.Item.Tag, e, cache)))
+                    (NeuronViewModelBase)(new PostsynapticViewModel(this, e.Item.Tag, e, cache)) :
+                    (NeuronViewModelBase)(new PresynapticViewModel(this, e.Item.Tag, e, cache)))
                 .Bind(out this.children)
                 .DisposeMany()
                 .Subscribe();
 
+            this.Loading = false;
             this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/hierarchy.ico";            
         }
 
-        private async Task OnAddClicked(SourceCache<Neuron, int> cache, object parameter)
+        private async Task OnAddClicked(SourceCache<Neuron, int> cache, object owner)
         {
-            await Helper.SetStatusOnComplete(async () =>
-            {
-                bool stat = false;
-                bool shouldAddOwner = this.reloaded && cache.Count == 0;
-                bool addingOwner = false;
-                if (shouldAddOwner && (await this.dialogService.ShowDialogYesNo("This Avatar needs to be initialized with an Owner Neuron. Do you wish to continue by creating one?", parameter, out DialogResult yesno)).GetValueOrDefault())
-                    addingOwner = true;
-
-                if (
-                        (!shouldAddOwner || addingOwner) &&
-                        (await this.dialogService.ShowDialogTextInput(
-                            addingOwner ? "Enter Owner Name" : "Enter Neuron Tag: ", 
-                            this.avatarUrl, 
-                            parameter, 
-                            out string result
-                            )
-                        ).GetValueOrDefault() &&
-                        await Helper.PromptSimilarExists(this.neuronQueryService, this.dialogService, this.avatarUrl, parameter, result)
-                    )
+            var n = await ViewModels.Helper.CreateNeuron(
+                async () =>
                 {
-                    Neuron n = new Neuron
-                    {
-                        Tag = result,
-                        Id = Guid.NewGuid().GetHashCode(),
-                        NeuronId = Guid.NewGuid().ToString(),
-                        Version = 1,
-                    };
+                    string result = string.Empty;
 
-                    await this.neuronApplicationService.CreateNeuron(
-                        this.avatarUrl,
-                        n.NeuronId,
-                        ViewModels.Helper.CleanForJSON(n.Tag),
-                        this.originService.GetAvatarByUrl(this.avatarUrl).LayerId
-                        );
-                    cache.AddOrUpdate(n);
-                    stat = true;
-                }
-                return stat;
-            },
-                "Neuron added successfully.",
-                this.statusService,
-                "Neuron addition cancelled."
+                    if (
+                        (await this.dialogService.ShowDialogTextInput(
+                        "Enter Neuron Tag: ",
+                        owner,
+                        out string r
+                        )).GetValueOrDefault()
+                        )
+                        result = r;
+
+                    return result;
+                }, 
+                owner,
+                this.dialogService,
+                this.neuronQueryService, 
+                this.neuronApplicationService,
+                this.notificationApplicationService,
+                this.statusService, 
+                this.avatarUrl, 
+                this.layerId
                 );
+
+            if (n != null)
+                cache.AddOrUpdate(n);
         }
 
         private async Task OnSetLayerIdClicked(object parameter)
@@ -146,7 +134,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.avatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
                     {
                         this.LayerName = result.First().Tag;
-                        this.originService.GetAvatarByUrl(this.avatarUrl).LayerId = result.First().NeuronId;
+                        this.LayerId = result.First().NeuronId;
                         stat = true;
                     }
                     else
@@ -163,11 +151,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private void InitLayer()
         {
             this.LayerName = "[Base]";
-            this.originService.GetAvatarByUrl(this.avatarUrl).LayerId = Guid.Empty.ToString();
+            this.LayerId = Guid.Empty.ToString();
         }
 
         private async Task OnReloadClicked(SourceCache<Neuron, int> cache)
         {
+            this.Loading = true;
+
             await Helper.SetStatusOnComplete(async () =>
                 {
                     cache.Clear();
@@ -175,15 +165,24 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     this.originService.Save(this.avatarUrl);
                     cache.AddOrUpdate(relatives);
                     this.InitLayer();
-                    this.reloaded = true;
                     return true;
                 },
                 "Reload successful.",
                 this.statusService
             );
+
+            this.Loading = false;
         }
 
-        public ReactiveCommand AddCommand { get; }
+        public ReactiveCommand<object, Unit> AddCommand { get; }
+
+        private string layerId;
+
+        public string LayerId
+        {
+            get => this.layerId;
+            set => this.RaiseAndSetIfChanged(ref this.layerId, value);
+        }
 
         private string layerName;
 
@@ -193,7 +192,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             set => this.RaiseAndSetIfChanged(ref layerName, value);
         }
 
-        public ReactiveCommand SetLayerCommand { get; }
+        public ReactiveCommand<object, Unit> SetLayerCommand { get; }
 
         private string avatarUrl;
 
@@ -203,9 +202,17 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             set => this.RaiseAndSetIfChanged(ref this.avatarUrl, value);
         }
 
+        private bool loading;
+
+        public bool Loading
+        {
+            get => this.loading;
+            set => this.RaiseAndSetIfChanged(ref this.loading, value);
+        }
+
         public ReadOnlyObservableCollection<NeuronViewModelBase> Children => this.children;
 
-        public ReactiveCommand ReloadCommand { get; }
+        public ReactiveCommand<Unit, Task> ReloadCommand { get; }
 
         private string statusMessage;
 

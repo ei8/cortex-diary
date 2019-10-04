@@ -9,8 +9,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Dasz;component/Themes/MaterialDesign.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Dasz;component/Themes/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Dasz;component/Themes/MenuItem.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Blue.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type dialogs:DialogYesNoViewModel}">
                 <wpfdialogs:DialogYesNoView />
@@ -25,6 +29,9 @@
                 <wpfdialogs:LoginView />
             </DataTemplate>
             <local:BoolToColorBrushConverter x:Key="BoolToColorBrushConverter"/>
+            <local:WidthConverter x:Key="WidthConverter"/>
+            <local:DynamicHeightConverter x:Key="DynamicHeightConverter"/>
+            <local:DynamicWidthConverter x:Key="DynamicWidthConverter"/>
         </ResourceDictionary>        
     </Application.Resources>
 </Application>

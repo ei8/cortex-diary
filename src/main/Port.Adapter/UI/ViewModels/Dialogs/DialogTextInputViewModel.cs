@@ -29,15 +29,16 @@
  */
 
 using ReactiveUI;
+using System.Reactive;
 using System.Windows.Input;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {
     public class DialogTextInputViewModel : DialogViewModelBase
     {
-        public ReactiveCommand OkCommand { get; }
+        public ReactiveCommand<Unit, Unit> OkCommand { get; }
 
-        public ReactiveCommand CancelCommand { get; }
+        public ReactiveCommand<Unit, Unit> CancelCommand { get; }
 
         public DialogTextInputViewModel(string message)
             : base(message)

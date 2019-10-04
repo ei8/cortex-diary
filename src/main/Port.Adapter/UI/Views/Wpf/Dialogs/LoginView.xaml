@@ -1,21 +1,41 @@
 ﻿<UserControl x:Class="works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs.LoginView"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+            TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+            TextElement.FontWeight="Regular"
+            TextElement.FontSize="13"
+            TextOptions.TextFormattingMode="Ideal" 
+            TextOptions.TextRenderingMode="Auto"        
+            Background="{DynamicResource MaterialDesignPaper}"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Height="550" Width="700">
-    <Grid Margin="4">
+             MinHeight="550" MinWidth="700"
+             Height="auto" Width="auto"
+             d:DesignHeight="550" d:DesignWidth="700">
+    <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="75" />
             <ColumnDefinition Width="*" />            
         </Grid.ColumnDefinitions>
-        <Button Grid.Column="0" Name="LoadButton" Content="Load" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75"/>
-        <TextBox Grid.Column="1" Name="IdentityServerUrl" HorizontalAlignment="Stretch" MinWidth="50" VerticalAlignment="Top" />
-        <WebBrowser Grid.Row="1" Grid.ColumnSpan="2" Name="Browser" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />        
+        <ToolBarTray IsLocked="True" ClipToBounds="True">
+            <ToolBar Band="1" BandIndex="1" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolBarTray}}, Path=ActualWidth}">
+                <ToolBar.Resources>
+                    <Style TargetType="{x:Type DockPanel}">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    </Style>
+                </ToolBar.Resources>
+                <Button Name="LoadButton" Content="Load" VerticalAlignment="Top" Width="75"/>
+                <TextBox Name="IdentityServerUrl" materialDesign:HintAssist.Hint="Avatar Server URL" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolBarTray}}, Path=ActualWidth, Converter={StaticResource WidthConverter}, ConverterParameter='108'}" />
+            </ToolBar>
+        </ToolBarTray>
+        <ProgressBar Name="Progress" IsIndeterminate="True" Grid.Row="1" Grid.ZIndex="1" Height="2" VerticalAlignment="Top" />
+        <Separator Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Grid.Row="1"/>
+        <WebBrowser Grid.Row="2" Name="Browser" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
 </UserControl>

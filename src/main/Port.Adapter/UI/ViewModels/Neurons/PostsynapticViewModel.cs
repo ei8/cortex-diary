@@ -39,10 +39,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
     [DisplayName("Postsynaptic Neuron")]
     public class PostsynapticViewModel : NeuronViewModelBase
     {
-        public PostsynapticViewModel(string avatarUrl, string tag, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, 
+        public PostsynapticViewModel(IAvatarViewer host, string tag, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, 
             INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, IOriginService originService = null, 
             IExtendedSelectionService selectionService = null) : 
-            base(avatarUrl, node, cache, parent, neuronApplicationService, neuronQueryService, terminalApplicationService, originService, selectionService)
+            base(host, node, cache, parent, neuronApplicationService, neuronQueryService, terminalApplicationService, originService, selectionService)
         {
             this.Tag = tag;
         }

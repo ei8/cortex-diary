@@ -61,7 +61,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
                 d(this.Bind(this.ViewModel, vm => vm.StatusMessage, v => v.StatusMessageLabel.Content));
                 d(this.BindCommand(this.ViewModel, vm => vm.ReloadCommand, v => v.ReloadButton));
                 d(this.BindCommand(this.ViewModel, vm => vm.SelectCommand, v => v.SelectButton));
-                d(this.BindCommand(this.ViewModel, vm => vm.CancelCommand, v => v.CancelButton));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Neurons, v => v.NeuronList.ItemsSource));
                 d(this.OneWayBind(this.ViewModel, vm => vm.AllowMultiSelect, v => v.NeuronList.SelectionMode, p => p ? SelectionMode.Extended : SelectionMode.Single));
 

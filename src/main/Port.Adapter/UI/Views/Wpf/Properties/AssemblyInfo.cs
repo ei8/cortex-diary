@@ -7,11 +7,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("d# neurUL Studio")]
+[assembly: AssemblyTitle("d# neurUL Studio 2019")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ei8")]
-[assembly: AssemblyProduct("d# neurUL Studio")]
+[assembly: AssemblyProduct("d# neurUL Studio 2019")]
 [assembly: AssemblyCopyright("Copyright © 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

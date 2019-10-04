@@ -5,12 +5,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs"
              mc:Ignorable="d" 
+             Height="auto" Width="auto"
              d:DesignHeight="460" d:DesignWidth="500">
     <Grid>
-        <Button Name="ReloadButton" Content="Reload" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Name="SelectButton" Content="Select" HorizontalAlignment="Left" Margin="335,415,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Name="CancelButton" Content="Cancel" HorizontalAlignment="Left" Margin="415,415,0,0" VerticalAlignment="Top" Width="75"/>
-        <ListView Name="NeuronList" Width="500" Height="375" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,37,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <ToolBarTray IsLocked="True" ClipToBounds="True">
+            <ToolBar Band="1" BandIndex="1">
+                <Button Name="ReloadButton" Content="Reload" />
+            </ToolBar>
+        </ToolBarTray>
+        <ListView Name="NeuronList" Grid.Row="1" Width="auto" Height="400">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="150" Header="Id" DisplayMemberBinding="{Binding NeuronId}"  />
@@ -18,6 +29,16 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Label Name="StatusMessageLabel" HorizontalAlignment="Left" Margin="5,418,0,0" VerticalAlignment="Top" />
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Name="StatusMessageLabel" Margin="10,10,0,0"/>
+            <Button Grid.Row="1" Name="SelectButton" Content="Select" Margin="10" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Grid}}, Path=ActualWidth, Converter={StaticResource WidthConverter}, ConverterParameter='30'}"/>            
+        </Grid>
     </Grid>
 </UserControl>

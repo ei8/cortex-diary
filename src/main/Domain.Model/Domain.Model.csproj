@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DynamicData" Version="6.5.1.2479" />
+    <PackageReference Include="DynamicData" Version="6.13.9" />
     <PackageReference Include="Neurul.Common" Version="0.1.6" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>

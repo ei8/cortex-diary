@@ -34,6 +34,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
                     .Subscribe(x => this.ViewModel = (NotificationsPaneViewModel)x);
 
                 d(this.Bind(this.ViewModel, vm => vm.AvatarUrl, v => v.AvatarUrl.Text));
+                d(this.Bind(this.ViewModel, vm => vm.LayerName, v => v.LayerName.Content));
                 d(this.Bind(this.ViewModel, vm => vm.StatusMessage, v => v.StatusMessage.Content));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Notifications, v => v.NotificationsListBox.ItemsSource));
 
@@ -41,6 +42,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 
                 d(this.BindCommand(this.ViewModel, vm => vm.LoadCommand, v => v.Load));
                 d(this.BindCommand(this.ViewModel, vm => vm.MoreCommand, v => v.More));
+                d(this.BindCommand(this.ViewModel, vm => vm.SetLayerCommand, v => v.SetLayer));
+
+                d(this.OneWayBind(this.ViewModel, vm => vm.Loading, v => v.Progress.Visibility, l => l ? Visibility.Visible : Visibility.Collapsed));
             });
         }
 

@@ -46,7 +46,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
     {
         public Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<Neuron> result)
         {
-            return this.ShowDialog<IEnumerable<Neuron>>(new DialogSelectNeuronsViewModel(message, avatarUrl, allowMultiSelect), owner, out result);
+            return this.ShowDialog<IEnumerable<Neuron>>(new DialogSelectNeuronsViewModel(message, avatarUrl, allowMultiSelect), owner, out result, "Select Neuron(s)", 500, 600);
         }
 
         public Task<bool?> ShowDialogYesNo(string message, object owner, out DialogResult result)
@@ -54,22 +54,28 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
             return this.ShowDialog<DialogResult>(new DialogYesNoViewModel(message), owner, out result);
         }
 
-        public Task<bool?> ShowDialogTextInput(string message, string avatarUrl, object owner, out string result)
+        public Task<bool?> ShowDialogTextInput(string message, object owner, out string result)
         {
             return this.ShowDialog<string>(new DialogTextInputViewModel(message), owner, out result);
         }
         
         public Task<bool?> ShowLogin(ISettingsService settingsService, IOpenUrlService openUrlService, IIdentityService identityService, object owner, out bool result)
         {
-            return this.ShowDialog<bool>(new LoginViewModel(settingsService, openUrlService, identityService), owner, out result);
+            return this.ShowDialog<bool>(new LoginViewModel(settingsService, openUrlService, identityService), owner, out result, "Avatar Server Log In", 800, 630);
         }
 
-        private Task<bool?> ShowDialog<T>(DialogViewModelBase vm, object owner, out T result)
+        private Task<bool?> ShowDialog<T>(DialogViewModelBase vm, object owner, out T result, string title = null, int maxWidth = 0, int maxHeight = 0)
         {
             DialogWindow win = new DialogWindow();
             if (owner != null)
                 win.Owner = owner as Window;
-            win.DataContext = vm;
+            if (maxHeight > 0)
+                win.MaxHeight = maxHeight;
+            if (maxWidth > 0)
+                win.MaxWidth = maxWidth;
+            if (!string.IsNullOrEmpty(title))
+                win.Title = title;
+            win.DataContext = vm;            
             win.ShowDialog();
             result = (T) vm.UserDialogResult;
             return Task.FromResult(vm.DialogResult);
