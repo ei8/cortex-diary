@@ -38,6 +38,19 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 
         public int Version => this.notification.Version;
 
+        public int ExpectedVersion
+        {
+            get
+            {
+                var result = 0;
+
+                if (this.Type.ToUpper().Contains("NEURON") && this.neuronCache.ContainsKey(this.Id))
+                    result = this.neuronCache[this.Id].Version;
+
+                return result;
+            }
+        }
+
         public string Id => this.notification.Id;
 
         public string Tag

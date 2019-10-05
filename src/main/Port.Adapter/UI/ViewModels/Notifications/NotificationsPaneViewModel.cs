@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using org.neurul.Common.Events;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using works.ei8.Cortex.Diary.Application.Notifications;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 {
@@ -35,8 +37,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 
             var selector = this.WhenPropertyChanged(p => p.SelectedNotification)
                 .Where(p => p != null)
-                .Subscribe(x => this.selectionService.SetSelectedComponents(new object[] { x.Value }));
-            
+                .Subscribe(x =>
+                {
+                    this.selectionService.SetSelectedComponents(new object[] { x.Value });
+                    if (x.Value != null && Array.IndexOf(new string[] { EventTypeNames.NeuronCreated.ToString(), EventTypeNames.NeuronTagChanged.ToString() }, x.Value.Type) > -1)
+                        this.Target = NotificationsPaneViewModel.ConvertNotificationViewModelToEditorNeuron(x.Value);
+                });
+
             this.statusService.WhenPropertyChanged(s => s.Message)
                 .Subscribe(s => this.StatusMessage = s.Sender.Message);
 
@@ -49,6 +56,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/notification.ico";            
         }
 
+        private static EditorNeuronData ConvertNotificationViewModelToEditorNeuron(NotificationViewModel n)
+        {
+            return new EditorNeuronData(
+                n.Id,
+                n.Tag,
+                (NeurotransmitterEffect?)null,
+                (float?)null,
+                (Domain.Model.Neurons.RelativeType?)null,
+                string.Empty,
+                string.Empty,
+                n.ExpectedVersion
+            );
+        }
+
         private async Task OnLoadClicked()
         {
             this.Loading = true;
@@ -56,7 +77,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             await ViewModels.Neurons.Helper.SetStatusOnComplete(async () =>
             {
                 this.NotificationLog = await this.notificationApplicationService.GetNotificationLog(this.AvatarUrl, string.Empty);
-                this.Notifications = await NotificationsPaneViewModel.UpdateCacheGetNotifications(this.notificationLog, this.neuronGraphQueryClient, this.avatarUrl);
+                this.Notifications = await NotificationsPaneViewModel.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl);
 
                 this.InitLayer();
                 return true;
@@ -74,7 +95,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             {
                 bool stat = false;
 
-                if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.avatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
+                if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
                 {
                     this.LayerName = result.First().Tag;
                     this.LayerId = result.First().NeuronId;
@@ -138,7 +159,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             await ViewModels.Neurons.Helper.SetStatusOnComplete(async () =>
             {
                 this.NotificationLog = await this.notificationApplicationService.GetNotificationLog(this.AvatarUrl, this.NotificationLog.PreviousNotificationLogId);
-                this.Notifications = (await NotificationsPaneViewModel.UpdateCacheGetNotifications(this.notificationLog, this.neuronGraphQueryClient, this.avatarUrl)).Concat(this.Notifications);
+                this.Notifications = (await NotificationsPaneViewModel.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl)).Concat(this.Notifications);
                 return true;
             },
                 "Load more successful.",
@@ -148,48 +169,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             this.Loading = false;
         }
 
-        private IEnumerable<NotificationViewModel> notifications;
+        [Reactive]
+        public IEnumerable<NotificationViewModel> Notifications { get; set; }
 
-        public IEnumerable<NotificationViewModel> Notifications
-        {
-            get => this.notifications;
-            set => this.RaiseAndSetIfChanged(ref this.notifications, value);
-        }
+        [Reactive]
+        public NotificationLog NotificationLog { get; set; }
 
-        private NotificationLog notificationLog;
-
-        public NotificationLog NotificationLog
-        {
-            get => this.notificationLog;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref this.notificationLog, value);
-            }
-        }
-
-        private string layerId;
-
-        public string LayerId
-        {
-            get => this.layerId;
-            set => this.RaiseAndSetIfChanged(ref this.layerId, value);
-        }
-
-        private string layerName;
-
-        public string LayerName
-        {
-            get => this.layerName;
-            set => this.RaiseAndSetIfChanged(ref layerName, value);
-        }
+        [Reactive]
+        public string LayerId { get; set; }
         
-        private string avatarUrl;
+        [Reactive]
+        public string LayerName { get; set; }
 
-        public string AvatarUrl
-        {
-            get => this.avatarUrl;
-            set => this.RaiseAndSetIfChanged(ref this.avatarUrl, value);
-        }
+        [Reactive]
+        public string AvatarUrl { get; set; }
 
         public ReactiveCommand<Unit, Task> LoadCommand { get; }
 
@@ -197,28 +190,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 
         public ReactiveCommand<object, Unit> SetLayerCommand { get; }
 
-        private string statusMessage;
+        [Reactive]
+        public string StatusMessage { get; set; }
 
-        public string StatusMessage
-        {
-            get => this.statusMessage;
-            set => this.RaiseAndSetIfChanged(ref this.statusMessage, value);
-        }
+        [Reactive]
+        public NotificationViewModel SelectedNotification { get; set; }
 
-        private NotificationViewModel selectedNotification;
+        [Reactive]
+        public bool Loading { get; set; }
 
-        public NotificationViewModel SelectedNotification
-        {
-            get => this.selectedNotification;
-            set => this.RaiseAndSetIfChanged(ref selectedNotification, value);
-        }
-
-        private bool loading;
-
-        public bool Loading
-        {
-            get => this.loading;
-            set => this.RaiseAndSetIfChanged(ref this.loading, value);
-        }
+        [Reactive]
+        public EditorNeuronData Target { get; set; }
     }
 }

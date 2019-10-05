@@ -41,8 +41,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 
                 d(this.Bind(this.ViewModel, vm => vm.AvatarUrl, v => v.AvatarUrl.Text));
                 d(this.Bind(this.ViewModel, vm => vm.LayerName, v => v.LayerName.Text));
-                d(this.OneWayBind(this.ViewModel, vm => vm.Target, v => v.Target.Text, sn => sn == null ? string.Empty : sn.Tag));
-                d(this.Bind(this.ViewModel, vm => vm.Tag, v => v.TagText.Text));
+                d(this.OneWayBind(this.ViewModel, vm => vm.TargetCopy, v => v.Target.Text, sn => sn == null ? string.Empty : sn.Tag));
+                d(this.Bind(this.ViewModel, vm => vm.TargetDraft.Tag, v => v.TagText.Text));
                 d(this.OneWayBind(this.ViewModel, vm => vm.EditorState, v => v.TagText.IsEnabled, es => es != ViewModels.EditorStateValue.Browse));
 
                 d(this.BindCommand(this.ViewModel, vm => vm.SaveCommand, v => v.Save));
@@ -59,17 +59,17 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                 d(this.OneWayBind(this.ViewModel, vm => vm.IsRelativeTypeEditable, v => v.RelativeType.IsEnabled));
 
                 d(this.OneWayBind(this.ViewModel, vm => vm.RelativeTypes, v => v.RelativeType.ItemsSource));                
-                d(this.Bind(this.ViewModel, vm => vm.RelativeType, v => v.RelativeType.SelectedItem));
+                d(this.Bind(this.ViewModel, vm => vm.TargetDraft.RelativeType, v => v.RelativeType.SelectedItem));
 
-                d(this.OneWayBind(this.ViewModel, vm => vm.LinkCandidates, v => v.TagText.Text, lns => lns != null && lns.Count() > 0 ? Environment.NewLine + string.Join(Environment.NewLine, lns.ToArray().Select(n => n.Tag)) : string.Empty));
+                d(this.OneWayBind(this.ViewModel, vm => vm.TargetDraft.LinkCandidates, v => v.TagText.Text, lns => lns != null && lns.Count() > 0 ? Environment.NewLine + string.Join(Environment.NewLine, lns.ToArray().Select(n => n.Tag)) : string.Empty));
                 d(this.OneWayBind(this.ViewModel, vm => vm.NewMode, v => v.TagText.IsReadOnly, nm => nm == ViewModels.NewModeValue.Link));
                 
                 d(this.OneWayBind(this.ViewModel, vm => vm.Effects, v => v.Effect.ItemsSource));
                 d(this.OneWayBind(this.ViewModel, vm => vm.AreTerminalParametersEditable, v => v.Effect.IsEnabled));
-                d(this.Bind(this.ViewModel, vm => vm.Effect, v => v.Effect.SelectedItem));
+                d(this.Bind(this.ViewModel, vm => vm.TargetDraft.Effect, v => v.Effect.SelectedItem));
 
                 d(this.OneWayBind(this.ViewModel, vm => vm.AreTerminalParametersEditable, v => v.Strength.IsEnabled));
-                d(this.Bind(this.ViewModel, vm => vm.Strength, v => v.Strength.Text));
+                d(this.Bind(this.ViewModel, vm => vm.TargetDraft.Strength, v => v.Strength.Text));
 
                 d(this.OneWayBind(this.ViewModel, vm => vm.ProcessState, v => v.Progress.Visibility, ps => ps != EditorToolViewModel.ProcessType.Idle ? Visibility.Visible : Visibility.Collapsed));
                 d(this.OneWayBind(this.ViewModel, vm => vm.ProcessState, v => v.IsEnabled, ps => ps == EditorToolViewModel.ProcessType.Idle));

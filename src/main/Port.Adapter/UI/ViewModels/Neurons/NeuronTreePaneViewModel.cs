@@ -31,6 +31,7 @@
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,7 @@ using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -89,6 +91,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 .DisposeMany()
                 .Subscribe();
 
+            this.Target = null;
             this.Loading = false;
             this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/hierarchy.ico";            
         }
@@ -117,8 +120,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 this.neuronApplicationService,
                 this.notificationApplicationService,
                 this.statusService, 
-                this.avatarUrl, 
-                this.layerId
+                this.AvatarUrl, 
+                this.LayerId
                 );
 
             if (n != null)
@@ -131,7 +134,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 {
                     bool stat = false;
 
-                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.avatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
                     {
                         this.LayerName = result.First().Tag;
                         this.LayerId = result.First().NeuronId;
@@ -161,8 +164,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             await Helper.SetStatusOnComplete(async () =>
                 {
                     cache.Clear();
-                    var relatives = await this.neuronQueryService.GetNeurons(this.avatarUrl);
-                    this.originService.Save(this.avatarUrl);
+                    var relatives = await this.neuronQueryService.GetNeurons(this.AvatarUrl);
+                    this.originService.Save(this.AvatarUrl);
                     cache.AddOrUpdate(relatives);
                     this.InitLayer();
                     return true;
@@ -176,51 +179,29 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         public ReactiveCommand<object, Unit> AddCommand { get; }
 
-        private string layerId;
-
-        public string LayerId
-        {
-            get => this.layerId;
-            set => this.RaiseAndSetIfChanged(ref this.layerId, value);
-        }
-
-        private string layerName;
-
-        public string LayerName
-        {
-            get => this.layerName;
-            set => this.RaiseAndSetIfChanged(ref layerName, value);
-        }
-
+        [Reactive]
+        public string LayerId { get; set; }
+        
+        [Reactive]
+        public string LayerName { get; set; }
+        
         public ReactiveCommand<object, Unit> SetLayerCommand { get; }
 
-        private string avatarUrl;
+        [Reactive]
+        public string AvatarUrl { get; set; }
+        
+        [Reactive]
+        public bool Loading { get; set; }
 
-        public string AvatarUrl
-        {
-            get => this.avatarUrl;
-            set => this.RaiseAndSetIfChanged(ref this.avatarUrl, value);
-        }
-
-        private bool loading;
-
-        public bool Loading
-        {
-            get => this.loading;
-            set => this.RaiseAndSetIfChanged(ref this.loading, value);
-        }
+        [Reactive]
+        public EditorNeuronData Target { get; set; }
 
         public ReadOnlyObservableCollection<NeuronViewModelBase> Children => this.children;
 
         public ReactiveCommand<Unit, Task> ReloadCommand { get; }
 
-        private string statusMessage;
-
-        public string StatusMessage
-        {
-            get => this.statusMessage;
-            set => this.RaiseAndSetIfChanged(ref this.statusMessage, value);
-        }
+        [Reactive]
+        public string StatusMessage { get; set; }
         
         public void Dispose()
         {

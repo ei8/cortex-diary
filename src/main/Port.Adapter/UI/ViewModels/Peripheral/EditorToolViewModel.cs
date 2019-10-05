@@ -35,11 +35,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         private readonly INotificationApplicationService notificationApplicationService;
         private readonly ITerminalApplicationService terminalApplicationService;
         private readonly IStatusService statusService;
-        private readonly IExtendedSelectionService selectionService;
         private readonly Workspace workspace;
         
         public EditorToolViewModel(Workspace workspace = null, INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, INotificationApplicationService notificationApplicationService = null, ITerminalApplicationService terminalApplicationService = null,
-            IStatusService statusService = null, IDialogService dialogService = null, IExtendedSelectionService selectionService = null) : base("Editor")
+            IStatusService statusService = null, IDialogService dialogService = null) : base("Editor")
         {
             this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
@@ -48,10 +47,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
             this.terminalApplicationService = terminalApplicationService ?? Locator.Current.GetService<ITerminalApplicationService>();
 
             this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
-            this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Select.ToString());
             this.workspace = workspace ?? Locator.Current.GetService<Workspace>();
 
             this.EditorState = EditorStateValue.Browse;
+            this.TargetDraft = new EditorNeuronViewModel();
+            this.TargetCopy = null;
             this.InitDetailsSection();
 
             this.NewCommand = ReactiveCommand.Create(
@@ -90,7 +90,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                     vm => vm.EditorState,
                     vm => vm.AvatarUrl,
                     vm => vm.LayerName,
-                    vm => vm.Target,
+                    vm => vm.TargetCopy,
                     (esv, au, ln, t) => 
                         esv == EditorStateValue.Browse && 
                         !string.IsNullOrEmpty(au) && 
@@ -108,16 +108,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                     )
                 );
 
-            this.WhenAnyValue(vm => vm.selectionService.SelectedComponents)
-                .Where(sc => sc != null && sc.Count > 0 && sc.OfType<object>().FirstOrDefault() is NeuronViewModelBase)
-                .Subscribe(sc =>
-                {
-                    if (this.EditorState == EditorStateValue.Browse)
-                    {
-                        this.Target = (NeuronViewModelBase)sc.OfType<object>().FirstOrDefault();
-                    }
-                });
-
             this.WhenAnyValue(vm => vm.statusService.Message)
                 .Subscribe(m => this.StatusMessage = m);
 
@@ -125,67 +115,51 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 .Where(ad => ad is IAvatarViewer)
                 .Subscribe(ad => this.AvatarViewer = (IAvatarViewer)ad);
 
-            this.WhenAnyValue(vm => vm.AvatarViewer)
-                .Subscribe(av =>
-                {
-                    if (this.EditorState == EditorStateValue.Browse)
-                    {
-                        this.AvatarUrl = av.AvatarUrl;
-                        this.LayerId = av.LayerId;
-                        this.LayerName = av.LayerName;
-                        // TODO: make Target property of Avatar Viewer, which will store last selected item in viewer
-                        this.Target = null;
-                    }
-                });
+            (this).WhenAnyValue(vm => vm.AvatarViewer)
+                .Where(av => this.EditorState == EditorStateValue.Browse)
+                .Subscribe(av => this.UpdateFromViewer(av));
 
-            (this).WhenAnyValue(vm => vm.Target)
+            this.WhenAnyValue(vm => vm.AvatarViewer.Target)
+                .Where(lt => this.EditorState == EditorStateValue.Browse)
+                .Subscribe(lt => this.TargetCopy = lt);
+
+            this.WhenAnyValue(vm => vm.TargetCopy)
                 .Subscribe(t =>
                 {
                     if (t == null)
                     {
-                        this.InitTagRelativeType();
+                        this.TargetDraft.Init();
                     }
                     else
                     {
-                        this.Tag = t.Tag;
-                        this.RelativeType = t.Neuron.Type == Domain.Model.Neurons.RelativeType.NotSet ? (Domain.Model.Neurons.RelativeType?)null : t.Neuron.Type;
-                        this.Effect = t.Effect == Domain.Model.Neurons.NeurotransmitterEffect.NotSet ? (NeurotransmitterEffect?)null : t.Effect;
-                        this.Strength = t.Neuron.Type == Domain.Model.Neurons.RelativeType.NotSet ? (float?)null : t.Strength;
+                        this.TargetDraft.Id = t.Id;
+                        this.TargetDraft.Tag = t.Tag;
+                        this.TargetDraft.Effect = t.Effect;
+                        this.TargetDraft.Strength = t.Strength;
+                        this.TargetDraft.RelativeType = t.RelativeType;
+                        this.TargetDraft.LayerId = t.LayerId;
+                        this.TargetDraft.LayerName = t.LayerName;
+                        this.TargetDraft.Version = t.Version;
                     }
                 });
 
-            this.WhenAnyValue(vm => vm.RelativeType)
-                .Subscribe(rt =>
-                {
-                    if (rt == null)
-                    {
-                        this.Effect = null;
-                        this.Strength = null;
-                    }
-                });
+            this.WhenAnyValue(vm => vm.TargetDraft.RelativeType)
+                .Where(rt => rt == null)
+                .Subscribe(rt => this.TargetDraft.Effect = (NeurotransmitterEffect?) (this.TargetDraft.Strength = null));
 
             this.WhenAnyValue(vm => vm.AvatarViewer.AvatarUrl)
-                .Subscribe(au =>
-                {
-                    if (this.EditorState == EditorStateValue.Browse)
-                        this.AvatarUrl = au;
-                });
+                .Where(au => this.EditorState == EditorStateValue.Browse)
+                .Subscribe(au => this.AvatarUrl = au);
 
             this.WhenAnyValue(vm => vm.AvatarViewer.LayerId)
-                .Subscribe(li =>
-                {
-                    if (this.EditorState == EditorStateValue.Browse)
-                        this.LayerId = li;
-                });
+                .Where(li => this.EditorState == EditorStateValue.Browse)
+                .Subscribe(li => this.LayerId = li);
 
             this.WhenAnyValue(vm => vm.AvatarViewer.LayerName)
-                .Subscribe(ln =>
-                {
-                    if (this.EditorState == EditorStateValue.Browse)
-                        this.LayerName = ln;
-                });
+                .Where(ln => this.EditorState == EditorStateValue.Browse)
+                .Subscribe(ln => this.LayerName = ln);
 
-            this.WhenAnyValue(vm => vm.EditorState, vm => vm.RelativeType)
+            this.WhenAnyValue(vm => vm.EditorState, vm => vm.TargetDraft.RelativeType)
                 .Select(x => x.Item1 == EditorStateValue.New && x.Item2 != null)
                 .ToPropertyEx(this, vm => vm.AreTerminalParametersEditable);
 
@@ -194,56 +168,30 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 .ToPropertyEx(this, vm => vm.IsRelativeTypeEditable);
 
             this.WhenAnyValue(vm => vm.EditorState)
+                .Where(es => es == EditorStateValue.Browse)
                 .Subscribe(es =>
-                {
-                    if (es == EditorStateValue.Browse)
-                    {
-                        this.NewModes = new NewModeValue[0];
-                        this.NewMode = NewModeValue.NotSet;
-
-                        switch (this.ProcessState)
-                        {
-                            case ProcessType.Cancelling:
-                                if (this.Target == null)
-                                    this.InitTagRelativeType();
-                                else
-                                {
-                                    var target = this.Target;
-                                    this.Target = null;
-                                    this.Target = target;
-                                }
-                                break;
-                            case ProcessType.Saving:
-                                // TODO: reload Target and try to select created item
-                                switch (this.lastEditorState)
-                                {
-                                    case EditorStateValue.New:
-                                        // TODO: do this, or find newly created Neuron and assign to Target
-                                        this.Target = null;
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-                    this.lastEditorState = es;
+                {                    
+                    this.NewModes = new NewModeValue[0];
+                    this.NewMode = NewModeValue.NotSet;
+                    this.UpdateFromViewer(this.AvatarViewer);
                 });
 
             this.WhenAnyValue(vm => vm.NewMode)
                 .Subscribe(nm =>
                 {
                     if (nm == NewModeValue.Neuron)
-                        this.RelativeType = null;
+                        this.TargetDraft.RelativeType = null;
                     if (nm != NewModeValue.Link)
-                        this.LinkCandidates = null;
+                        this.TargetDraft.LinkCandidates = null;
                     else 
-                        this.Tag = string.Empty;
+                        this.TargetDraft.Tag = string.Empty;
                 });
 
             this.NewEditTagRule = this.ValidationRule(
                 _ => this.WhenAnyValue(
                     vm => vm.EditorState,
                     vm => vm.NewMode,
-                    vm => vm.Tag,
+                    vm => vm.TargetDraft.Tag,
                     (es, nm, t) => es == EditorStateValue.Browse || nm == NewModeValue.Link || !string.IsNullOrWhiteSpace(t)
                     ),
                 (vm, state) => !state ? "Tag must neither be null, empty, nor consist of white-space characters." : string.Empty
@@ -253,7 +201,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 _ => this.WhenAnyValue(
                     vm => vm.EditorState,
                     vm => vm.NewMode,
-                    vm => vm.LinkCandidates,
+                    vm => vm.TargetDraft.LinkCandidates,
                     (es, nm, lcs) => es != EditorStateValue.New || nm != NewModeValue.Link || (lcs != null && lcs.Count() > 0)
                     ),
                 (vm, state) => !state ? "Must select at least one Link Candidate." : string.Empty
@@ -263,7 +211,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 _ => this.WhenAnyValue(
                     vm => vm.EditorState,
                     vm => vm.NewMode,
-                    vm => vm.RelativeType,
+                    vm => vm.TargetDraft.RelativeType,
                     (es, nm, rt) => es != EditorStateValue.New || nm == NewModeValue.Neuron || (rt != null && rt != Domain.Model.Neurons.RelativeType.NotSet)
                     ),
                 (vm, state) => !state ? "Relative Type must be either Postsynaptic or Presynaptic." : string.Empty                    
@@ -273,7 +221,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 _ => this.WhenAnyValue(
                     vm => vm.EditorState,
                     vm => vm.NewMode,
-                    vm => vm.Effect,
+                    vm => vm.TargetDraft.Effect,
                     (es, nm, e) => es != EditorStateValue.New || nm == NewModeValue.Neuron || (e != null && e != Domain.Model.Neurons.NeurotransmitterEffect.NotSet)
                     ),
                 (vm, state) => !state ? "Effect must be either Excite or Inhibit." : string.Empty
@@ -283,7 +231,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 _ => this.WhenAnyValue(
                     vm => vm.EditorState,
                     vm => vm.NewMode,
-                    vm => vm.Strength,
+                    vm => vm.TargetDraft.Strength,
                     (es, nm, s) => es != EditorStateValue.New || nm == NewModeValue.Neuron || (s != null && s > 0)
                     ),
                 (vm, state) => !state ? "Strength must be greater than zero." : string.Empty
@@ -292,25 +240,25 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
             // TODO: this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/wrench.ico";
         }
 
-        private void InitTagRelativeType()
+        private void UpdateFromViewer(IAvatarViewer av)
         {
-            this.Tag = string.Empty;
-            this.RelativeType = null;
+            this.AvatarUrl = av.AvatarUrl;
+            this.LayerId = av.LayerId;
+            this.LayerName = av.LayerName;
+            this.TargetCopy = av.Target;
         }
 
         private void InitDetailsSection()
         {
-            this.Tag = string.Empty;
             this.RelativeTypes = Enum.GetValues(typeof(RelativeType)).OfType<RelativeType>().Where(rt => rt != Domain.Model.Neurons.RelativeType.NotSet);
             this.Effects = Enum.GetValues(typeof(NeurotransmitterEffect)).OfType<NeurotransmitterEffect>().Where(ne => ne != NeurotransmitterEffect.NotSet);
-            this.RelativeType = null;
         }
 
         private void OnCancelClicked()
         {
             this.ProcessState = ProcessType.Cancelling;
 
-            // TODO: repopulate details section with target data
+            this.TargetCopy = null;
             this.EditorState = EditorStateValue.Browse;
 
             this.ProcessState = ProcessType.Idle;
@@ -326,7 +274,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         {
             if ((await this.dialogService.ShowDialogSelectNeurons("Select Neuron(s)", this.AvatarUrl, parameter, true, out IEnumerable<Neuron> result)).GetValueOrDefault())
             {
-                this.LinkCandidates = result;
+                this.TargetDraft.LinkCandidates = result;
             }
         }
 
@@ -337,8 +285,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 
             this.NewMode = NewModeValue.Neuron;
 
-            // Initialize only and don't lose Target (set it to null)
             this.InitDetailsSection();
+            // don't lose Target (set target.Id to string.empty)
+            this.TargetDraft.Init(false);
         }
 
         private void InitModes()
@@ -346,7 +295,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
             this.NewModes = Enum.GetValues(typeof(NewModeValue)).OfType<NewModeValue>().Where(
                 am => am != NewModeValue.NotSet && 
                     (
-                        this.Target != null || 
+                        this.TargetCopy != null || 
                         (am != NewModeValue.Relative && am != NewModeValue.Link)
                     )
                 );
@@ -363,7 +312,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                     {
                         case NewModeValue.Neuron:
                             await ViewModels.Helper.CreateNeuron(
-                                () => Task.FromResult(this.Tag),
+                                () => Task.FromResult(this.TargetDraft.Tag),
                                 owner,
                                 this.dialogService,
                                 this.neuronQueryService,
@@ -376,10 +325,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                             break;
                         case NewModeValue.Relative:
                             await ViewModels.Helper.CreateRelative(
-                                () => Task.FromResult(this.Tag),
+                                () => Task.FromResult(this.TargetDraft.Tag),
                                 (o) => Task.FromResult(new string[] {
-                            ((int)this.Effect).ToString(),
-                            this.Strength.ToString()
+                                    ((int)this.TargetDraft.Effect).ToString(),
+                                    this.TargetDraft.Strength.ToString()
                                 }),
                                 owner,
                                 this.dialogService,
@@ -389,40 +338,48 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                                 this.statusService,
                                 this.AvatarUrl,
                                 this.LayerId,
-                                this.Target.NeuronId,
-                                this.RelativeType.Value
+                                this.TargetDraft.Id,
+                                this.TargetDraft.RelativeType.Value
                                 );
                             break;
                         case NewModeValue.Link:
                             await ViewModels.Helper.LinkRelative(
-                                () => Task.FromResult(this.LinkCandidates),
+                                () => Task.FromResult(this.TargetDraft.LinkCandidates),
                                 (o) => Task.FromResult(new string[] {
-                            ((int)this.Effect).ToString(),
-                            this.Strength.ToString()
+                                    ((int)this.TargetDraft.Effect).ToString(),
+                                    this.TargetDraft.Strength.ToString()
                                 }),
                                 owner,
                                 this.terminalApplicationService,
                                 this.statusService,
                                 this.AvatarUrl,
-                                this.Target.NeuronId,
-                                this.RelativeType.Value
+                                this.TargetDraft.Id,
+                                this.TargetDraft.RelativeType.Value
                                 );
                             break;
                     }
                     break;
                 case EditorStateValue.Edit:
                     await ViewModels.Helper.ChangeNeuronTag(
-                        this.Tag,
+                        this.TargetDraft.Tag,
                         this.neuronApplicationService,
                         this.statusService,
                         this.AvatarUrl,
-                        this.Target.NeuronId,
-                        this.Target.Neuron.Version
+                        this.TargetDraft.Id,
+                        this.TargetDraft.Version
                         );
                     break;
             }
-            
+            // TODO: reload Target and try to select created item
+            switch (this.EditorState)
+            {
+                case EditorStateValue.New:
+                    // TODO: do this, or find newly created Neuron and assign to Target
+                    this.TargetCopy = null;
+                    break;
+            }
             this.EditorState = EditorStateValue.Browse;
+
             this.ProcessState = ProcessType.Idle;
         }
 
@@ -436,20 +393,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         public IAvatarViewer AvatarViewer { get; set; }
 
         [Reactive]
-        public string Tag { get; set; }
-
-        [Reactive]
         public string AvatarUrl { get; set; }
 
+        // TODO: Rename to Default Layer ID - to be used for New Neurons only, not ones that are being edited
         [Reactive]
         public string LayerId { get; set; }
 
         [Reactive]
         public string LayerName { get; set; }
 
-        // TODO: change to an EditableNeuronViewModel
         [Reactive]
-        public NeuronViewModelBase Target { get; set; }
+        public EditorNeuronData TargetCopy { get; set; }
+
+        [Reactive]
+        public EditorNeuronViewModel TargetDraft { get; set; }
 
         public ReactiveCommand<Unit, Unit> NewCommand { get; }
 
@@ -466,32 +423,18 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         [Reactive]
         public string StatusMessage { get; set; }
 
-        private EditorStateValue lastEditorState = EditorStateValue.Browse;
-
         [Reactive]
         public ProcessType ProcessState { get; set; }
 
         [Reactive]
         public EditorStateValue EditorState { get; set; }
-
-        [Reactive]
-        public IEnumerable<Neuron> LinkCandidates { get; set; }
-
-        [Reactive]
-        public RelativeType? RelativeType { get; set; }
-
+               
         [Reactive]
         public IEnumerable<RelativeType> RelativeTypes { get; set; }
-
-        [Reactive]
-        public NeurotransmitterEffect? Effect { get; set; }
-
+               
         [Reactive]
         public IEnumerable<NeurotransmitterEffect> Effects { get; set; }
-
-        [Reactive]
-        public float? Strength { get; set; }
-
+               
         public bool AreTerminalParametersEditable { [ObservableAsProperty] get; }
         
         public bool IsRelativeTypeEditable { [ObservableAsProperty] get; }

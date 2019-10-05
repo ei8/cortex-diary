@@ -40,6 +40,7 @@ using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -141,7 +142,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
             var selector = this.WhenPropertyChanged(p => p.IsSelected)
                 .Where(p => p.Value)
-                .Subscribe(x => this.selectionService.SetSelectedComponents(new object[] { x.Sender }));
+                .Subscribe(x =>
+                {
+                    this.selectionService.SetSelectedComponents(new object[] { x.Sender });
+                    this.host.Target = NeuronViewModelBase.ConvertNeuronViewModelToEditorNeuron((NeuronViewModelBase)x.Sender);
+                });
 
             var highlighter = this.highlightService.WhenPropertyChanged(a => a.SelectedComponents)
                 .Subscribe(p =>
@@ -176,6 +181,20 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 selector.Dispose();
                 highlighter.Dispose();
             });
+        }
+
+        private static EditorNeuronData ConvertNeuronViewModelToEditorNeuron(NeuronViewModelBase n)
+        {
+            return new EditorNeuronData(
+                n.NeuronId,
+                n.Tag,
+                n.Effect == Domain.Model.Neurons.NeurotransmitterEffect.NotSet ? (NeurotransmitterEffect?)null : n.Effect,
+                n.Neuron.Type == Domain.Model.Neurons.RelativeType.NotSet ? (float?)null : n.Strength,
+                n.Neuron.Type == Domain.Model.Neurons.RelativeType.NotSet ? (Domain.Model.Neurons.RelativeType?)null : n.Neuron.Type,
+                n.Layer.Id,
+                n.Layer.Name,
+                n.Neuron.Version
+            );
         }
 
         private async Task OnDeleteClicked(SourceCache<Neuron, int> cache, object parameter)
