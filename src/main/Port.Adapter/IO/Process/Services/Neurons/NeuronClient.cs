@@ -33,11 +33,9 @@ using Polly;
 using Splat;
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
@@ -76,7 +74,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             var data = new
             {
                 Id = id,
-                Tag = tag,
+                Tag = HttpUtility.JavaScriptStringEncode(tag),
                 LayerId = layerId
             };
 
@@ -95,7 +93,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
         {
             var data = new
             {
-                Tag = tag
+                Tag = HttpUtility.JavaScriptStringEncode(tag)
             };
 
             await this.requestProvider.PatchAsync(

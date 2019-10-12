@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Notifications;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
@@ -12,64 +13,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public static class Helper
     {
-        public static string CleanForJSON(string s)
-        {
-            if (s == null || s.Length == 0)
-            {
-                return "";
-            }
-
-            char c = '\0';
-            int i;
-            int len = s.Length;
-            StringBuilder sb = new StringBuilder(len + 4);
-            String t;
-
-            for (i = 0; i < len; i += 1)
-            {
-                c = s[i];
-                switch (c)
-                {
-                    case '\\':
-                    case '"':
-                        sb.Append('\\');
-                        sb.Append(c);
-                        break;
-                    case '/':
-                        sb.Append('\\');
-                        sb.Append(c);
-                        break;
-                    case '\b':
-                        sb.Append("\\b");
-                        break;
-                    case '\t':
-                        sb.Append("\\t");
-                        break;
-                    case '\n':
-                        sb.Append("\\n");
-                        break;
-                    case '\f':
-                        sb.Append("\\f");
-                        break;
-                    case '\r':
-                        sb.Append("\\r");
-                        break;
-                    default:
-                        if (c < ' ')
-                        {
-                            t = "000" + String.Format("X", c);
-                            sb.Append("\\u" + t.Substring(t.Length - 4));
-                        }
-                        else
-                        {
-                            sb.Append(c);
-                        }
-                        break;
-                }
-            }
-            return sb.ToString();
-        }
-
         internal async static Task<Neuron> CreateNeuron(Func<Task<string>> tagRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, INotificationApplicationService notificationApplicationService, IStatusService statusService, string avatarUrl, string layerId)
         {
             Neuron result = null;
@@ -99,7 +42,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                         await neuronApplicationService.CreateNeuron(
                             avatarUrl,
                             n.NeuronId,
-                            ViewModels.Helper.CleanForJSON(n.Tag),
+                            n.Tag,
                             layerId
                             );
                         result = n;
@@ -145,7 +88,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                     await neuronApplicationService.CreateNeuron(
                         avatarUrl,
                         newNeuronId,
-                        ViewModels.Helper.CleanForJSON(tag),
+                        tag,
                         layerId
                     );
                     await terminalApplicationService.CreateTerminal(

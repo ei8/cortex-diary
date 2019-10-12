@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
@@ -83,11 +84,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
             else
                 path = $"{NeuronGraphQueryClient.GetNeuronsPathTemplate}/{id}";
 
-            return await this.requestProvider.GetAsync<IEnumerable<Neuron>>(
-               $"{avatarUrl}{path}{queryStringBuilder.ToString()}",
-               this.settingsService.AuthAccessToken,
-               token
-               );
+            return await NeuronGraphQueryClient.GetNeuronsUnescaped(avatarUrl, path, queryStringBuilder, token, requestProvider, settingsService);
         }
 
         public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken)) =>
@@ -126,11 +123,18 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 
             var path = central == null ? NeuronGraphQueryClient.GetNeuronsPathTemplate : string.Format(NeuronGraphQueryClient.GetRelativesPathTemplate, central.NeuronId);
 
-            return await this.requestProvider.GetAsync<IEnumerable<Neuron>>(
-                $"{avatarUrl}{path}{queryStringBuilder.ToString()}",
-                this.settingsService.AuthAccessToken,
-                token
-                );
+            return await NeuronGraphQueryClient.GetNeuronsUnescaped(avatarUrl, path, queryStringBuilder, token, requestProvider, settingsService);
+        }
+
+        private static async Task<IEnumerable<Neuron>> GetNeuronsUnescaped(string avatarUrl, string path, StringBuilder queryStringBuilder, CancellationToken token, IRequestProvider requestProvider, ISettingsService settingsService)
+        {
+            var result = await requestProvider.GetAsync<IEnumerable<Neuron>>(
+                           $"{avatarUrl}{path}{queryStringBuilder.ToString()}",
+                           settingsService.AuthAccessToken,
+                           token
+                           );
+            result.ToList().ForEach(n => n.Tag = Regex.Unescape(n.Tag));
+            return result;
         }
 
         private static void AppendQuery(IEnumerable<string> field, string fieldName, StringBuilder queryStringBuilder)
