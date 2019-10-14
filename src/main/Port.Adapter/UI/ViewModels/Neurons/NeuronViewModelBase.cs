@@ -67,7 +67,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly INeuronApplicationService neuronApplicationService;
         private readonly INeuronQueryService neuronQueryService;
         private readonly ITerminalApplicationService terminalApplicationService;
-        private readonly IOriginService originService;
         private readonly IStatusService statusService;
         private readonly IDialogService dialogService;
         private bool settingNeuron;
@@ -78,7 +77,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private const string MiscCategory = "Misc";
         
         protected NeuronViewModelBase(IAvatarViewer host, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronApplicationService neuronApplicationService = null,
-            INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, IOriginService originService = null, IExtendedSelectionService selectionService = null, IExtendedSelectionService highlightService = null, IStatusService statusService = null, IDialogService dialogService = null)
+            INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, IExtendedSelectionService selectionService = null, IExtendedSelectionService highlightService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.host = host;
             this.Id = node.Key;
@@ -100,7 +99,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.terminalApplicationService = terminalApplicationService ?? Locator.Current.GetService<ITerminalApplicationService>();
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Select.ToString());
             this.highlightService = highlightService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Highlight.ToString());
-            this.originService = originService ?? Locator.Current.GetService<IOriginService>();
             this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
             this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
 

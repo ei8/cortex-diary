@@ -1,0 +1,23 @@
+﻿@using Blazor.Data
+
+<ul>
+    @foreach (var child in Children)
+    {
+        <li>
+            <span @onclick="@child.Toggle">@child.GetIcon()</span>
+            <span>@child.tag</span>
+
+            @if (child.isExpanded)
+            {
+                <div>
+                    <TreeView Children="child.children"></TreeView>
+                </div>
+            }
+        </li>
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public NeuronNode[] Children { get; set; }
+}

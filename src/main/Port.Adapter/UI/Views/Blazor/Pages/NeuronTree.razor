@@ -1,0 +1,25 @@
+﻿@page "/tree"
+@using Blazor.Data
+
+<h1>Neuron Tree</h1>
+
+<input placeholder="Avatar URL" @bind="AvatarUrl" />
+<button @onclick="OnReload">Reload</button>
+
+<TreeView Children="Children"></TreeView>
+
+@code {
+    [Parameter]
+    public string AvatarUrl { get; set; }
+
+    [Parameter]
+    public NeuronNode[] Children { get; set; } = new NeuronNode[0];
+
+    private void OnReload()
+    {
+        var neuron1 = new NeuronNode("hello", new NeuronNode[] { new NeuronNode("world", new NeuronNode[0]), new NeuronNode("how", new NeuronNode[0]) });
+        var neuron2 = new NeuronNode("quick", new NeuronNode[] { new NeuronNode("brown", new NeuronNode[] { new NeuronNode("jumps", new NeuronNode[0]), new NeuronNode("over", new NeuronNode[0]) }), new NeuronNode("fox", new NeuronNode[0]) });
+
+        this.Children = new NeuronNode[] { neuron1, neuron2 };
+    }
+}
