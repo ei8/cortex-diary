@@ -215,7 +215,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             IdentityEndpoint = $"{identityServerUrl}/connect/authorize";
             TokenEndpoint = $"{identityServerUrl}/connect/token";
             LogoutEndpoint = $"{identityServerUrl}/connect/endsession";
-            IdentityCallback = $"{identityServerUrl}/cortex/diary/callback";
+            IdentityCallback = $"{identityServerUrl}/Account/LoginCallback";
             LogoutCallback = $"{identityServerUrl}/Account/Redirecting";
             RevocationEndpoint = $"{identityServerUrl}/connect/revocation";
         }

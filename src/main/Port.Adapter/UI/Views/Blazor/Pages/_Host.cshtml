@@ -11,6 +11,16 @@
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
+    <script type="text/javascript">
+        var receiveMessage = function (event) {
+            if (document.getElementById('currentUrl') != null)
+            {
+                document.getElementById('currentUrl').value = event.data;
+            }
+        }
+
+        window.addEventListener('message', receiveMessage, false);
+    </script>
 </head>
 <body>
     <app>
@@ -18,5 +28,6 @@
     </app>
 
     <script src="_framework/blazor.server.js"></script>
+    <script src="JsInterop.js"></script>
 </body>
 </html>

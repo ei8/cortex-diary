@@ -12,22 +12,23 @@ using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.Navigation;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Application.Settings;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {
     public class LoginViewModel : DialogViewModelBase
     {
-        private string _userName;
-        private string _password;
-        private bool _isMock;
-        private bool _isValid;
-        private bool _isLogin;
-        private string _authUrl;
+        private string userName;
+        private string password;
+        private bool isMock;
+        private bool isValid;
+        private bool isLogin;
+        private string authUrl;
 
         private ISettingsService settingsService;
-        private IOpenUrlService _openUrlService;
-        private IIdentityService _identityService;
+        private IOpenUrlService openUrlService;
+        private IIdentityService identityService;
 
         public LoginViewModel(
             ISettingsService settingsService = null,
@@ -36,11 +37,11 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             ) : base("Authentication")
         {
             this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
-            this._openUrlService = openUrlService ?? Locator.Current.GetService<IOpenUrlService>();
-            this._identityService = identityService ?? Locator.Current.GetService<IIdentityService>();
+            this.openUrlService = openUrlService ?? Locator.Current.GetService<IOpenUrlService>();
+            this.identityService = identityService ?? Locator.Current.GetService<IIdentityService>();
 
-            _userName = string.Empty;
-            _password = string.Empty;
+            userName = string.Empty;
+            password = string.Empty;
 
             this.UserDialogResult = false;
 
@@ -61,32 +62,32 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         public string UserName
         {
-            get => this._userName;
-            set => this.RaiseAndSetIfChanged(ref this._userName, value);
+            get => this.userName;
+            set => this.RaiseAndSetIfChanged(ref this.userName, value);
         }
 
         public string Password
         {
-            get => this._password;
-            set => this.RaiseAndSetIfChanged(ref this._password, value);
+            get => this.password;
+            set => this.RaiseAndSetIfChanged(ref this.password, value);
         }
 
         public bool IsMock
         {
-            get => this._isMock;
-            set => this.RaiseAndSetIfChanged(ref this._isMock, value);
+            get => this.isMock;
+            set => this.RaiseAndSetIfChanged(ref this.isMock, value);
         }
 
         public bool IsValid
         {
-            get => this._isValid;
-            set => this.RaiseAndSetIfChanged(ref this._isValid, value);
+            get => this.isValid;
+            set => this.RaiseAndSetIfChanged(ref this.isValid, value);
         }
 
         public bool IsLogin
         {
-            get => this._isLogin;
-            set => this.RaiseAndSetIfChanged(ref this._isLogin, value);
+            get => this.isLogin;
+            set => this.RaiseAndSetIfChanged(ref this.isLogin, value);
         }
 
         [Reactive]
@@ -94,8 +95,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         public string LoginUrl
         {
-            get => this._authUrl;
-            set => this.RaiseAndSetIfChanged(ref this._authUrl, value);
+            get => this.authUrl;
+            set => this.RaiseAndSetIfChanged(ref this.authUrl, value);
         }
 
         private string identityServerUrl;
@@ -160,7 +161,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             var ss = (SettingsService) this.settingsService;
             ss.ClientId = Constants.ClientId;
 
-            this.LoginUrl = _identityService.CreateAuthorizationRequest();
+            this.LoginUrl = identityService.CreateAuthorizationRequest();
 
             IsValid = true;
             IsLogin = true;
@@ -169,40 +170,35 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         private void Register()
         {
-            _openUrlService.OpenUrl(this.settingsService.RegisterWebsite);
+            openUrlService.OpenUrl(this.settingsService.RegisterWebsite);
         }
 
         private async Task NavigateAsync(string url)
         {
             this.IsNavigating = false;
-
-            var unescapedUrl = System.Net.WebUtility.UrlDecode(url);
-
-            if (unescapedUrl.StartsWith(this.settingsService.LogoutCallback))
+            var result = ProcessUrlResult.Empty;
+            
+            if ((result = (await IO.Process.Services.Identity.Helper.TryProcessUrl(
+                url, 
+                settingsService.IdentityCallback, 
+                settingsService.LogoutCallback, 
+                settingsService.AuthAccessToken, 
+                identityService
+                ))).Success)
             {
-                await this._identityService.RevokeAccessTokenAsync(this.settingsService.AuthAccessToken);
-                this.settingsService.AuthAccessToken = string.Empty;
-                this.settingsService.AuthIdToken = string.Empty;
-                IsLogin = false;
+                settingsService.AuthAccessToken = result.AccessToken;
+                settingsService.AuthIdToken = result.IdentityToken;
 
-                this.LoginUrl = _identityService.CreateAuthorizationRequest();
-            }
-            else if (unescapedUrl.Contains(this.settingsService.IdentityCallback))
-            {
-                var authResponse = new AuthorizeResponse(url);
-                if (!string.IsNullOrWhiteSpace(authResponse.Code))
+                switch (result.Type)
                 {
-                    var userToken = await _identityService.GetTokenAsync(authResponse.Code);
-                    string accessToken = userToken.AccessToken;
-
-                    if (!string.IsNullOrWhiteSpace(accessToken))
-                    {
-                        this.settingsService.AuthAccessToken = accessToken;
-                        this.settingsService.AuthIdToken = authResponse.IdentityToken;
-                        this.UserDialogResult = true;
-                        this.DialogResult = true;
-                    }
-                }
+                    case ProcessUrlType.Logout:
+                        this.IsLogin = false;
+                        this.LoginUrl = identityService.CreateAuthorizationRequest();
+                        break;
+                    case ProcessUrlType.SignIn:
+                        this.UserDialogResult = this.DialogResult = true;
+                        break;
+                }                
             }
         }
 

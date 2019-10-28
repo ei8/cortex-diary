@@ -43,7 +43,7 @@
                             </StackPanel>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Style="{x:Null}" Name="NewNotifications" Header="Time">
+                    <MenuItem Style="{x:Null}" Name="NewNotifications" Header="Notifications">
                         <MenuItem.Icon>
                             <StackPanel>
                                 <Image Source="pack://application:,,,/Dasz;component/images/notification.ico" />

@@ -264,7 +264,6 @@
     <Compile Include="Peripheral\PropertyGridView.xaml.cs">
       <DependentUpon>PropertyGridView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SettingsServiceImplementation.cs" />
     <Compile Include="DynamicHeightConverter.cs" />
     <Compile Include="WidthConverter.cs" />
     <Page Include="Dialogs\DialogSelectNeuronsView.xaml">

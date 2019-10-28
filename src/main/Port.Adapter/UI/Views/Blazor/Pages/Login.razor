@@ -1,0 +1,71 @@
+﻿@page "/login"
+@using works.ei8.Cortex.Diary.Application.Settings
+@using works.ei8.Cortex.Diary.Application.Identity
+@using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
+@using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
+@inject ISettingsService SettingsService
+@inject IIdentityService IdentityService
+@inject IJSRuntime JsRuntime
+
+<h3>Sign In</h3>
+<div>
+    <input placeholder="Server URL" @bind="IdentityServerUrl" />
+    <button @onclick="OnReload">Reload</button>
+    <input type="hidden" id="currentUrl" />
+    <iframe @onloadstart="this.OnLoad" @onload="this.OnLoad" src="@LoginUrl" style="overflow:auto;border:5px ridge blue;height:100%;width:100%;min-height:500px;" />    
+    <label>@this.TempSuccessMessage</label>
+</div>
+
+@code {
+    ElementReference browser;
+
+    public string IdentityServerUrl { get; set; }
+
+    public string LoginUrl { get; set; }
+
+    public string TempSuccessMessage { get; set; }
+
+    private async Task OnLoad(ProgressEventArgs e)
+    {
+        var url = await JsRuntime.InvokeAsync<string>("jsFunctions.getFieldValue", "currentUrl");
+        var result = ProcessUrlResult.Empty;
+
+        if ((result = (await Helper.TryProcessUrl(
+            url,
+            SettingsService.IdentityCallback,
+            SettingsService.LogoutCallback,
+            SettingsService.AuthAccessToken,
+            IdentityService
+            ))).Success)
+        {
+            SettingsService.AuthAccessToken = result.AccessToken;
+            SettingsService.AuthIdToken = result.IdentityToken;
+
+            switch (result.Type)
+            {
+                case ProcessUrlType.Logout:
+                    // TODO: this.IsLogin = false;
+                    // this.LoginUrl = IdentityService.CreateAuthorizationRequest();
+                    this.TempSuccessMessage = "Logged out";
+                    break;
+                case ProcessUrlType.SignIn:
+                    // TODO: this.UserDialogResult = this.DialogResult = true;
+                    this.TempSuccessMessage = "Signed-in";
+                    break;
+            }
+        }
+
+        // TODO: how to listen to frame navigation to the following if cortex/diary/callback is not an actual page in identity server
+        // http://10.93.127.70:9393/cortex/diary/callback#code=05b0e6959e8ec5582ae80ae2e95747dfb24df35d7fe30d6d9cf2197ece4c4e88&id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImNlZGYwODBiOTZkZjE1MTliYzM5ZmIzMThlZGY5ZWY1IiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NzEzMjQ0OTMsImV4cCI6MTU3MTQ5NzI5MywiaXNzIjoiaHR0cDovLzEwLjkzLjEyNy43MDo5MzkzIiwiYXVkIjoieGFtYXJpbiIsIm5vbmNlIjoiZDE1Nzg0OTg0NTIyNDY1ZmE1MDc0N2ZjZTM1YWZjMjIiLCJpYXQiOjE1NzEzMjQ0OTMsImNfaGFzaCI6IlVvdjYyNUZtZkVrc1E4ODZzOWktcXciLCJzaWQiOiI3NTlmNzAzYWUzMTJlOWMwYTg3YTE1MWM0OGE3Mzg5MyIsInN1YiI6ImNhMDA4Y2RlLTYxYmItNDI2MC05MmZiLTlhYmNjYTEyMDllZiIsImF1dGhfdGltZSI6MTU3MTMyNDQ5MywiaWRwIjoibG9jYWwiLCJhbXIiOlsicHdkIl19.oXQW3Ua8RaoRtOCGtzg_aejoTEeKtcS0ObKVUNZehe6DZ16qOsq5RyIFbuGFgSUPsJ8M5GDRH8qmOXfJeGspiz-um4sKARObFIftU3yYXryFtIoJ0nENTQ0v2JHBVJ2tgG_YXqifYkjVN2hQ3G72x8L-J0BXSi7hFdpr7di4ev34J1Q8WFwWgnmZF3H9ypjJAggiH8Sg-cF4uFSvvmXKdVbK6dk4L7Ztk5lyYKQX2LE_28VWk5Z3kA2qqIgHOPFxdUPTnnmztJoDDzBFaMl5dAhfHVO7BWRCnTv1VB_zBYWTKPj8ZndLrE4yGzi92tdk0HIdZg50Y_3weyLOWJ_n9A&scope=openid profile cortex-in cortex-grap
+        //h-out offline_access&session_state=BwVA1A6449A15ZqIs1VWs4p6NeNugXipq1KqygF3hSg.e744b2e4dbf0cd00585df8068dabb2e5
+
+        // handle page /cortex/diary/callback?
+    }
+
+    private void OnReload()
+    {
+        this.SettingsService.IdentityServerUrl = this.IdentityServerUrl;
+        ((SettingsService)this.SettingsService).ClientId = "xamarin";
+        this.LoginUrl = IdentityService.CreateAuthorizationRequest(); // works if not using frames and is navigated to as another page
+    }
+}
