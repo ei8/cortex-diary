@@ -12,6 +12,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Notifications;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
@@ -77,7 +78,19 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             await ViewModels.Neurons.Helper.SetStatusOnComplete(async () =>
             {
                 this.NotificationLog = await this.notificationApplicationService.GetNotificationLog(this.AvatarUrl, string.Empty);
-                this.Notifications = await NotificationsPaneViewModel.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl);
+                this.Notifications = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl, NotificationsPaneViewModel.neuronCache)).Select(nd => new NotificationViewModel(
+                    nd.Timestamp,
+                    nd.AuthorId,
+                    nd.Author,
+                    nd.TypeName,
+                    nd.Type,
+                    nd.Version,
+                    nd.ExpectedVersion,
+                    nd.Id,
+                    nd.Tag,
+                    nd.Data,
+                    nd.Details
+                    ));
 
                 this.InitLayer();
                 return true;
@@ -116,41 +129,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
         {
             this.LayerName = "[Base]";
             this.LayerId = Guid.Empty.ToString();
-        }
-
-        private static async Task<IEnumerable<NotificationViewModel>> UpdateCacheGetNotifications(NotificationLog notificationLog, INeuronGraphQueryClient neuronGraphQueryClient, string avatarUrl)
-        {
-            var ids = new List<string>();
-            var ns = notificationLog.NotificationList.ToList();
-            ns.ForEach(n =>
-            {
-                ids.Add(n.AuthorId);
-                ids.Add(n.Id);
-                dynamic d = JsonConvert.DeserializeObject(n.Data);
-                // NeuronCreated
-                if (n.TypeName.Contains(EventTypeNames.NeuronCreated.ToString()))
-                {
-                    // LayerId                    
-                    ids.Add(d.LayerId.ToString());
-                }
-                // TerminalCreated
-                else if (n.TypeName.Contains(EventTypeNames.TerminalCreated.ToString()))
-                {
-                    // PresynapticNeuronId
-                    ids.Add(d.PresynapticNeuronId.ToString());
-                    // PostsynapticNeuronId
-                    ids.Add(d.PostsynapticNeuronId.ToString());
-                }
-            }
-            );
-            ids.RemoveAll(i => NotificationsPaneViewModel.neuronCache.ContainsKey(i));
-
-            (await neuronGraphQueryClient.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { Id = ids.ToArray() }))
-                .ToList()
-                .ForEach(n => NotificationsPaneViewModel.neuronCache.Add(n.NeuronId, n));
-
-            return notificationLog.NotificationList.ToArray().Select(n => new NotificationViewModel(n, NotificationsPaneViewModel.neuronCache));
-        }
+        }        
 
         private async Task OnMoreClicked()
         {
@@ -159,7 +138,19 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             await ViewModels.Neurons.Helper.SetStatusOnComplete(async () =>
             {
                 this.NotificationLog = await this.notificationApplicationService.GetNotificationLog(this.AvatarUrl, this.NotificationLog.PreviousNotificationLogId);
-                this.Notifications = (await NotificationsPaneViewModel.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl)).Concat(this.Notifications);
+                this.Notifications = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl, NotificationsPaneViewModel.neuronCache)).Select(nd => new NotificationViewModel(
+                    nd.Timestamp,
+                    nd.AuthorId,
+                    nd.Author,
+                    nd.TypeName,
+                    nd.Type,
+                    nd.Version,
+                    nd.ExpectedVersion,
+                    nd.Id,
+                    nd.Tag,
+                    nd.Data,
+                    nd.Details
+                    )).Concat(this.Notifications);
                 return true;
             },
                 "Load more successful.",

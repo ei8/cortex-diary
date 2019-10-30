@@ -1,16 +1,12 @@
-﻿using Newtonsoft.Json;
-using org.neurul.Common.Events;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using System.Text;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
+namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
 {
-    public class NotificationViewModel : ReactiveObject
+    public struct NotificationData
     {
-        public NotificationViewModel(string timestamp, string authorId, string author, string typeName, string type, int version, int expectedVersion, string id, string tag, string data, string details)
+        public NotificationData(string timestamp, string authorId, string author, string typeName, string type, int version, int expectedVersion, string id, string tag, string data, string details)
         {
             this.Timestamp = timestamp;
             this.AuthorId = authorId;

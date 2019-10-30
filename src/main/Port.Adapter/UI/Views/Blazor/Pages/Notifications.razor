@@ -1,0 +1,52 @@
+﻿@page "/notifications"
+@using works.ei8.Cortex.Diary.Port.Adapter.UI.Common
+@using works.ei8.Cortex.Diary.Application.Notifications
+@using works.ei8.Cortex.Diary.Domain.Model.Neurons
+@using org.neurul.Common.Events
+@inject INotificationApplicationService NotificationApplicationService
+@inject INeuronGraphQueryClient NeuronGraphQueryClient
+
+<h3>Notifications</h3>
+<div>
+    <button @onclick="OnReload">Reload</button>
+    <button @onclick="OnMore">More</button>
+    <input placeholder="Avatar URL" @bind="AvatarUrl" />
+    <table class="table">
+        <thead>
+            <tr>
+                <th />
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var notif in this.NotificationItems)
+            {
+            <tr>
+                <td><b>@notif.Author</b> <small>&nbsp; @notif.Timestamp &nbsp; @notif.Type</small> <br /> @notif.Tag </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private static readonly IDictionary<string, Neuron> neuronCache = new Dictionary<string, Neuron>();
+
+    public string AvatarUrl { get; set; }
+
+    public NotificationLog NotificationLog { get; set; }
+
+    public IEnumerable<NotificationData> NotificationItems { get; set; } = new NotificationData[0];
+
+    private async Task OnReload()
+    {
+        this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, string.Empty);
+        this.NotificationItems = (await Helper.UpdateCacheGetNotifications(this.NotificationLog, NeuronGraphQueryClient, this.AvatarUrl, neuronCache));
+    }
+
+    private async Task OnMore()
+    {
+        this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, this.NotificationLog.PreviousNotificationLogId);
+        this.NotificationItems = (await Helper.UpdateCacheGetNotifications(this.NotificationLog, NeuronGraphQueryClient, this.AvatarUrl, neuronCache))
+            .Concat(this.NotificationItems);
+    }
+}

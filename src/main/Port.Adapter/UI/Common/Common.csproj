@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>works.ei8.Cortex.Diary.Port.Adapter.UI.Common</RootNamespace>
+    <AssemblyName>works.ei8.Cortex.Diary.Port.Adapter.UI.Common</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neurul.Common" Version="0.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Domain.Model\Domain.Model.csproj" />
+  </ItemGroup>
+
+</Project>

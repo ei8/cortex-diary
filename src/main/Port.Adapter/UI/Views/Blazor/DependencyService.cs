@@ -1,12 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Dependency;
+﻿using works.ei8.Cortex.Diary.Application.Dependency;
 using works.ei8.Cortex.Diary.Application.Settings;
 
-namespace Blazor
+namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
     public class DependencyService : IDependencyService
     {

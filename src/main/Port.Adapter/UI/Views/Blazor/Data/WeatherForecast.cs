@@ -1,6 +1,6 @@
 using System;
 
-namespace Blazor.Data
+namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
 {
     public class WeatherForecast
     {

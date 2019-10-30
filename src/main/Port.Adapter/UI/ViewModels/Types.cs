@@ -45,14 +45,6 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         internal const string ClientId = "xamarin";
     }
 
-    public enum EventTypeNames
-    {
-        NeuronCreated,
-        NeuronTagChanged,
-        TerminalCreated,
-        TerminalDeactivated
-    }
-
     public enum NewModeValue
     {
         NotSet,

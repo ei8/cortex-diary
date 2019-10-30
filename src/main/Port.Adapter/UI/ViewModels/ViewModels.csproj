@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\..\Application\Application.csproj" />
     <ProjectReference Include="..\..\..\Domain.Model\Domain.Model.csproj" />
     <ProjectReference Include="..\..\IO\Process\Services\Services.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
 </Project>
