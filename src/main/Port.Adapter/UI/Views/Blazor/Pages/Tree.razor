@@ -1,12 +1,23 @@
 ﻿@page "/tree"
-@using Blazor.Data
+@using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
+@using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
+@using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
 
-<h3>Tree</h3>
-
-<input placeholder="Avatar URL" @bind="AvatarUrl" />
-<button @onclick="OnReload">Reload</button>
-
-<TreeView Children="Children"></TreeView>
+<div class="top-row px-4">
+    <div class="title">
+        Tree
+    </div>
+    <div class="details">
+        <div><button @onclick="OnReload">Reload</button></div>
+        <input placeholder="Avatar URL" @bind="AvatarUrl" />
+    </div>
+</div>
+<div class="content px-4">
+    <TreeView Children="Children"></TreeView>
+</div>
+<div class="footer px-4">
+    <EditorBox />
+</div>
 
 @code {
     [Parameter]

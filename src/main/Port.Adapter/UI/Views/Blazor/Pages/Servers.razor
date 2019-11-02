@@ -7,12 +7,18 @@
 @inject IIdentityService IdentityService
 @inject IJSRuntime JsRuntime
 
-<h3>Server Explorer</h3>
-<div>
-    <input placeholder="Server URL" @bind="IdentityServerUrl" />
-    <button @onclick="OnReload">Reload</button>
-    <input type="hidden" id="currentUrl" />
-    <iframe @onloadstart="this.OnLoad" @onload="this.OnLoad" src="@LoginUrl" style="overflow:auto;height:100%;width:100%;min-height:500px;" />    
+<div class="top-row px-4">
+    <div class="title">
+        Server Explorer
+    </div>
+    <div class="details">
+        <div><button @onclick="OnReload">Reload</button></div>
+        <input placeholder="Server URL" @bind="IdentityServerUrl" />
+        <input type="hidden" id="currentUrl" />
+    </div>
+</div>
+<div class="content px-4">
+    <iframe @onloadstart="this.OnLoad" @onload="this.OnLoad" src="@LoginUrl" style="overflow:auto;height:100%;width:100%;min-height:500px;" />
     <label>@this.TempSuccessMessage</label>
 </div>
 
