@@ -8,23 +8,14 @@
 @using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
 
 <div class="top-row px-4">
-    <table>
-        <tr>
-            <td>
-                <h4>Notifications</h4>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button @onclick="OnReload">Reload</button>
-                <button @onclick="OnMore">More</button>
-                <input placeholder="Avatar URL" @bind="AvatarUrl" />
-            </td>
-            <td>
-                <a href="https://docs.microsoft.com/en-us/aspnet/" target="_blank">About</a>
-            </td>
-        </tr>
-    </table>
+    <div class="title">
+        Notifications
+    </div>
+    <div class="details">
+        <div><button title="Reload" @onclick="OnReload">Reload</button></div>
+        <div><button title="More" @onclick="OnMore">More</button></div>
+        <input placeholder="Avatar URL" @bind="AvatarUrl" />
+    </div>
 </div>
 <div class="content px-4">    
     <table>
