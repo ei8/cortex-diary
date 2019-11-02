@@ -18,7 +18,7 @@
     </div>
 </div>
 <div class="content px-4">
-    <iframe @onloadstart="this.OnLoad" @onload="this.OnLoad" src="@LoginUrl" style="overflow:auto;height:100%;width:100%;min-height:500px;" />
+    <iframe class="flexible" @onloadstart="this.OnLoad" @onload="this.OnLoad" src="@LoginUrl" />
     <label>@this.TempSuccessMessage</label>
 </div>
 
