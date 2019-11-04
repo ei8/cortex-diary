@@ -1,4 +1,6 @@
 ﻿@using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
+@using works.ei8.Cortex.Diary.Application.Neurons;
+@inject INeuronApplicationService NeuronApplicationService;
 
 <EditForm Model="@editorModel" style="width: 100%; height: 100%">
     <table style="width: 100%; height: 100%">
@@ -7,11 +9,26 @@
                 <InputTextArea placeholder="Tag" @bind-Value="@editorModel.Tag" style="width: 100%; height: 90%" />
             </td>
             <td style="vertical-align: bottom; padding-left: 5px; padding-bottom: 3px;">
-                <button>Send</button>
+                <button @onclick="OnSend">Send</button>
             </td>
-        </tr>
+        </tr>   
     </table>
 </EditForm>
 @code {
     private EditorModel editorModel = new EditorModel();
+
+    [Parameter]
+    public string AvatarUrl { get; set; }
+
+    [Parameter]
+    public EventCallback<string> AvatarUrlChanged { get; set; }
+
+    private async Task OnSend()
+    {
+        if (!string.IsNullOrEmpty(this.editorModel.Tag))
+        {
+            // TODO: use if possible works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.CreateRelative
+            await this.NeuronApplicationService.CreateNeuron(this.AvatarUrl, Guid.NewGuid().ToString(), this.editorModel.Tag, Guid.Empty.ToString());
+        }
+    }
 }

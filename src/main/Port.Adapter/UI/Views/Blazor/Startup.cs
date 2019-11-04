@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using works.ei8.Cortex.Diary.Application.Dependency;
 using works.ei8.Cortex.Diary.Application.Identity;
+using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Notifications;
 using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Settings;
@@ -43,6 +44,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             var nc = new NotificationClient();
             var nas = new NotificationApplicationService(nc);
             var ngqc = new NeuronGraphQueryClient(rp, ss);
+            var nec = new NeuronClient(rp, ss);
+            var neas = new NeuronApplicationService(nec);
 
             services.AddSingleton<IDependencyService>(dp);            
             services.AddSingleton<ISettingsService>(ss);            
@@ -51,6 +54,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<INotificationClient>(nc);
             services.AddSingleton<INotificationApplicationService>(nas);
             services.AddSingleton<INeuronGraphQueryClient>(ngqc);
+            services.AddSingleton<INeuronClient>(nec);
+            services.AddSingleton<INeuronApplicationService>(neas);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
