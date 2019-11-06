@@ -29,6 +29,7 @@
         {
             // TODO: use if possible works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.CreateRelative
             await this.NeuronApplicationService.CreateNeuron(this.AvatarUrl, Guid.NewGuid().ToString(), this.editorModel.Tag, Guid.Empty.ToString());
+            this.editorModel.Tag = string.Empty;
         }
     }
 }

@@ -61,6 +61,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UsePathBase("/d23");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -78,7 +80,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
-            });
+            });            
         }
     }
 }

@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  blazor:
+    image: ei8works/d23.api:0.1.1
+    build:
+      context: .
+      dockerfile: main\Port.Adapter\UI\Views\Blazor\Dockerfile

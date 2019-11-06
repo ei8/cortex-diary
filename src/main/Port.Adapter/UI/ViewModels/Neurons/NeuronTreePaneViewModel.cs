@@ -93,7 +93,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
             this.Target = null;
             this.Loading = false;
-            this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/hierarchy.ico";            
+            this.IconSourcePath = @"pack://application:,,,/d23;component/images/hierarchy.ico";            
         }
 
         private async Task OnAddClicked(SourceCache<Neuron, int> cache, object owner)

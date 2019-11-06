@@ -54,7 +54,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             this.SetLayerCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnSetLayerIdClicked(parameter));
 
             this.Loading = false;
-            this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/notification.ico";            
+            this.IconSourcePath = @"pack://application:,,,/d23;component/images/notification.ico";            
         }
 
         private static EditorNeuronData ConvertNotificationViewModelToEditorNeuron(NotificationViewModel n)

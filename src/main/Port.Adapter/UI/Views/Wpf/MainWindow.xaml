@@ -24,7 +24,7 @@
         xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf"
         xmlns:peripheral="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral"
         mc:Ignorable="d"
-        Title="d# neurUL Studio 2019 [Community Edition]" Height="450" Width="800" WindowState="Maximized" Icon="pack://application:,,,/Dasz;component/images/dasz.ico">
+        Title="d# neurUL Studio 2019 [Community Edition]" Height="450" Width="800" WindowState="Maximized" Icon="pack://application:,,,/d23;component/images/dasz.ico">
     <Window.Resources>
         <avalonDock:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
@@ -39,14 +39,14 @@
                     <MenuItem Style="{x:Null}" Name="NewNeuronTree" Header="Tree">
                         <MenuItem.Icon>
                             <StackPanel>
-                                <Image Source="pack://application:,,,/Dasz;component/images/hierarchy.ico" />
+                                <Image Source="pack://application:,,,/d23;component/images/hierarchy.ico" />
                             </StackPanel>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Style="{x:Null}" Name="NewNotifications" Header="Notifications">
                         <MenuItem.Icon>
                             <StackPanel>
-                                <Image Source="pack://application:,,,/Dasz;component/images/notification.ico" />
+                                <Image Source="pack://application:,,,/d23;component/images/notification.ico" />
                             </StackPanel>
                         </MenuItem.Icon>
                     </MenuItem>

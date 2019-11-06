@@ -237,7 +237,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 (vm, state) => !state ? "Strength must be greater than zero." : string.Empty
                 );
 
-            // TODO: this.IconSourcePath = @"pack://application:,,,/Dasz;component/images/wrench.ico";
+            // TODO: this.IconSourcePath = @"pack://application:,,,/d23;component/images/wrench.ico";
         }
 
         private void UpdateFromViewer(IAvatarViewer av)
