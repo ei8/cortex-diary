@@ -9,34 +9,54 @@
     </div>
 </div>
 <div class="content px-4">
-    <i>
-        <br />
-        dash - run or travel somewhere in a great hurry.
-        <br />
-        dashboard - the panel facing the driver of a vehicle or the pilot of an aircraft, containing instruments and controls.
-        <br />
-        dasz - (Polish) to give; to dish out; to proffer; to yield.
-        <br />
-        define - state or describe exactly the nature, scope, or meaning of.
-        <br />
-        delta - (Computing) a change or set of changes made to a file or program, especially as part of an update to a later version. <br />
-        &nbsp; &nbsp; (Mathematics) a finite increment. <br />
-        &nbsp; &nbsp; a triangular tract of sediment deposited at the mouth of a river, typically where it diverges into several outlets.
-        <br />
-        dendrite - the (usually) postsynaptic branch of a neuron that carries postsynaptic potentials toward the cell body.
-        <br />
-        dendron - (Greek) tree.
-        <br />
-        do - achieve or complete.
-        <br />
-        e-flat - is the fourth semitone of the solfège. It lies a diatonic semitone above D and a chromatic semitone below E, thus being enharmonic to D♯ (D-sharp) or re dièse.
-        <br />
-        hash - (function) used to map digital data of arbitrary size to digital data of fixed size. <br />
-        &nbsp; &nbsp; come to agreement on something after lengthy and vigorous discussion. <br />
-        &nbsp; &nbsp; the symbol #, used as a symbol on a phone keypad or computer keyboard or before a numeral. <br />
-        &nbsp; &nbsp; a dish of cooked meat cut into small pieces and cooked again, usually with potatoes.
-        <br />
-    </i>
+    <br />
+    <br />
+    <h3 style="padding-left:2px">@this.Word</h3>
+    <br />
+    <ul>
+        @foreach (string d in this.Definitions)
+        {
+            <li>@d</li>
+        }
+    </ul>
 </div>
 <br />
 
+@code {
+    private string Word { get; set; }
+
+    public string[] Definitions { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var option = GetDefinition();
+
+        this.Word = option.Item1;
+        this.Definitions = option.Item2;
+    }
+
+    private static Tuple<string, string[]> GetDefinition()
+    {
+        var options = new Tuple<string, string[]>[] {
+        Tuple.Create("dash", new string[] {"run or travel somewhere in a great hurry." }),
+        Tuple.Create("dashboard", new string[] {"the panel facing the driver of a vehicle or the pilot of an aircraft, containing instruments and controls." }),
+        Tuple.Create("dasz", new string[] {"(Polish) to give; to dish out; to proffer; to yield." }),
+        Tuple.Create("define", new string[] {"state or describe exactly the nature, scope, or meaning of." }),
+        Tuple.Create("delta", new string[] {
+            "(Computing) a change or set of changes made to a file or program, especially as part of an update to a later version.",
+            "(Mathematics) a finite increment.",
+            "a triangular tract of sediment deposited at the mouth of a river, typically where it diverges into several outlets." }),
+        Tuple.Create("dendrite", new string[] {"the (usually) postsynaptic branch of a neuron that carries postsynaptic potentials toward the cell body." }),
+        Tuple.Create("dendron", new string[] {"(Greek) tree." }),
+        Tuple.Create("do", new string[] {"achieve or complete." }),
+        Tuple.Create("e-flat", new string[] {"is the fourth semitone of the solfège. It lies a diatonic semitone above D and a chromatic semitone below E, thus being enharmonic to D♯ (D-sharp) or re dièse." }),
+        Tuple.Create("hash", new string[] {
+            "(function) used to map digital data of arbitrary size to digital data of fixed size.",
+            "come to agreement on something after lengthy and vigorous discussion.",
+            "the symbol #, used as a symbol on a phone keypad or computer keyboard or before a numeral.",
+            "a dish of cooked meat cut into small pieces and cooked again, usually with potatoes."
+        })
+        };
+        return options[new Random().Next(0, options.Length - 1)];
+    }
+}
