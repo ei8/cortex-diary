@@ -44,6 +44,7 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
+    // TODO: are the Post and Pre viewmodel derivations necessary?
     public abstract class NeuronViewModelBase : ReactiveObject, IDisposable, IEquatable<NeuronViewModelBase>
     {
         private readonly IAvatarViewer host;

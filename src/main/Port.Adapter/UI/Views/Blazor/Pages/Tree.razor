@@ -1,7 +1,9 @@
 ﻿@page "/tree"
+@using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
 @using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
 @using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
-@using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
+@using works.ei8.Cortex.Diary.Application.Neurons;
+@inject INeuronQueryService NeuronQueryService;
 
 <div class="top-row px-4">
     <div class="title">
@@ -13,24 +15,26 @@
     </div>
 </div>
 <div class="content px-4">
-    <TreeView Children="Children"></TreeView>
+    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children"></TreeView>
 </div>
 <div class="footer px-4">
-    <EditorBox />
+    <EditorBox AvatarUrl="@this.AvatarUrl" />
 </div>
 
 @code {
+    protected override void OnInitialized()
+    {
+        this.Children = new NeuronViewModel[0];
+    }
+
     [Parameter]
     public string AvatarUrl { get; set; }
 
     [Parameter]
-    public NeuronNode[] Children { get; set; } = new NeuronNode[0];
+    public NeuronViewModel[] Children { get; set; } = new NeuronViewModel[0];
 
-    private void OnReload()
+    private async Task OnReload()
     {
-        var neuron1 = new NeuronNode("hello", new NeuronNode[] { new NeuronNode("world", new NeuronNode[0]), new NeuronNode("how", new NeuronNode[0]) });
-        var neuron2 = new NeuronNode("quick", new NeuronNode[] { new NeuronNode("brown", new NeuronNode[] { new NeuronNode("jumps", new NeuronNode[0]), new NeuronNode("over", new NeuronNode[0]) }), new NeuronNode("fox", new NeuronNode[0]) });
-
-        this.Children = new NeuronNode[] { neuron1, neuron2 };
+        this.Children = (await NeuronQueryService.GetNeurons(this.AvatarUrl)).Select(n => new NeuronViewModel(n, this.AvatarUrl, NeuronQueryService)).ToArray();
     }
 }

@@ -46,6 +46,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             var ngqc = new NeuronGraphQueryClient(rp, ss);
             var nec = new NeuronClient(rp, ss);
             var neas = new NeuronApplicationService(nec);
+            var nqc = new NeuronGraphQueryClient(rp, ss);
+            var nqs = new NeuronQueryService(nqc);
 
             services.AddSingleton<IDependencyService>(dp);            
             services.AddSingleton<ISettingsService>(ss);            
@@ -56,6 +58,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<INeuronGraphQueryClient>(ngqc);
             services.AddSingleton<INeuronClient>(nec);
             services.AddSingleton<INeuronApplicationService>(neas);
+            services.AddSingleton<INeuronGraphQueryClient>(nqc);
+            services.AddSingleton<INeuronQueryService>(nqs);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,23 +1,33 @@
 ﻿@using Blazor.Data
+@using works.ei8.Cortex.Diary.Application.Neurons;
+@inject INeuronQueryService NeuronQueryService;
 
 <ul>
     @foreach (var child in Children)
     {
-        <li>
-            <span @onclick="@child.Toggle">@child.GetIcon()</span>
-            <span>@child.tag</span>
-
-            @if (child.isExpanded)
-            {
-                <div>
-                    <TreeView Children="child.children"></TreeView>
-                </div>
-            }
-        </li>
+    <li style="list-style-type: none;">
+        <span @onclick="@child.Toggle">@child.GetIcon()</span>
+        <span>@child.Tag</span>
+        <button @onclick="@child.OnReload">Reload</button>
+        @if (child.IsExpanded)
+        {
+            <div>
+                <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl"></TreeView>
+            </div>
+        }
+    </li>
     }
 </ul>
 
 @code {
+    protected override void OnInitialized()
+    {
+        this.Children = new NeuronViewModel[0];
+    }
+
     [Parameter]
-    public NeuronNode[] Children { get; set; }
+    public NeuronViewModel[] Children { get; set; }
+
+    [Parameter]
+    public string AvatarUrl { get; set; }
 }
