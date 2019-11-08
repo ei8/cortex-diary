@@ -68,7 +68,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                     }
                 });
 
-            this.IconSourcePath = @"pack://application:,,,/d23;component/images/graph.ico";
+            this.IconSourcePath = @"pack://application:,,,/d23-wpf;component/images/graph.ico";
         }
 
         public void InternallySelectNeuronAndTerminal(string neuronId, string terminalId)

@@ -30,8 +30,8 @@
                         <Setter Property="HorizontalAlignment" Value="Stretch" />
                     </Style>
                 </ToolBar.Resources>
-                <Button Name="LoadButton" Content="Load" VerticalAlignment="Top" Width="75"/>
-                <TextBox Name="IdentityServerUrl" materialDesign:HintAssist.Hint="Avatar Server URL" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolBarTray}}, Path=ActualWidth, Converter={StaticResource WidthConverter}, ConverterParameter='108'}" />
+                <Button Name="LoadButton" ToolBar.OverflowMode="Never" Content="Load" VerticalAlignment="Top" Width="75"/>
+                <TextBox Name="IdentityServerUrl" ToolBar.OverflowMode="Never" materialDesign:HintAssist.Hint="Avatar Server URL" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolBarTray}}, Path=ActualWidth, Converter={StaticResource WidthConverter}, ConverterParameter='108'}" />
             </ToolBar>
         </ToolBarTray>
         <ProgressBar Name="Progress" IsIndeterminate="True" Grid.Row="1" Grid.ZIndex="1" Height="2" VerticalAlignment="Top" />

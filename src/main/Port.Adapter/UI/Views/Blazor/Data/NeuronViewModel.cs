@@ -28,10 +28,24 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
 
         public bool IsExpanded { get; private set; }
 
+        public bool AreControlsVisible { get; private set; }
+        
         public void Toggle()
         {
             this.IsExpanded = !this.IsExpanded;
         }
+
+        public void ShowControls()
+        {
+            this.AreControlsVisible = true;
+        }
+
+        public void HideControls()
+        {
+            this.AreControlsVisible = false;
+        }
+
+
 
         public string GetIcon()
         {

@@ -5,10 +5,15 @@
 <ul>
     @foreach (var child in Children)
     {
-    <li style="list-style-type: none;">
-        <span @onclick="@child.Toggle">@child.GetIcon()</span>
-        <span>@child.Tag</span>
-        <button @onclick="@child.OnReload">Reload</button>
+    <li @onmouseout="child.HideControls" style="list-style-type: none;">
+        <span @onclick="child.Toggle">@child.GetIcon()</span>
+        <span @onmouseover="child.ShowControls" @onmouseout="child.HideControls">
+            @child.Tag
+                @if (child.AreControlsVisible)
+                {
+                    <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="child.OnReload">Reload</button>
+                }
+        </span>
         @if (child.IsExpanded)
         {
             <div>
