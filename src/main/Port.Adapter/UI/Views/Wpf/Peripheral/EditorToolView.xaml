@@ -57,6 +57,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Button Name="Select" Content="Select" />
+                    <ToggleButton Name="AutoNew" Content="Auto" Style="{x:Null}"/>
                     <Separator/>
                     <ToggleButton Name="Edit" Content="Edit" Style="{x:Null}" Padding="15" />                    
                 </ToolBar>

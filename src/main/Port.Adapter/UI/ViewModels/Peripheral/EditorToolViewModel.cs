@@ -51,7 +51,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 
             this.EditorState = EditorStateValue.Browse;
             this.TargetDraft = new EditorNeuronViewModel();
-            this.TargetCopy = null;
+            this.Target = null;
             this.InitDetailsSection();
 
             this.NewCommand = ReactiveCommand.Create(
@@ -90,7 +90,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                     vm => vm.EditorState,
                     vm => vm.AvatarUrl,
                     vm => vm.LayerName,
-                    vm => vm.TargetCopy,
+                    vm => vm.Target,
                     (esv, au, ln, t) => 
                         esv == EditorStateValue.Browse && 
                         !string.IsNullOrEmpty(au) && 
@@ -121,9 +121,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 
             this.WhenAnyValue(vm => vm.AvatarViewer.Target)
                 .Where(lt => this.EditorState == EditorStateValue.Browse)
-                .Subscribe(lt => this.TargetCopy = lt);
+                .Subscribe(lt => this.Target = lt);
 
-            this.WhenAnyValue(vm => vm.TargetCopy)
+            this.WhenAnyValue(vm => vm.Target)
                 .Subscribe(t =>
                 {
                     if (t == null)
@@ -245,7 +245,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
             this.AvatarUrl = av.AvatarUrl;
             this.LayerId = av.LayerId;
             this.LayerName = av.LayerName;
-            this.TargetCopy = av.Target;
+            this.Target = av.Target;
         }
 
         private void InitDetailsSection()
@@ -258,7 +258,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         {
             this.ProcessState = ProcessType.Cancelling;
 
-            this.TargetCopy = null;
+            this.Target = null;
             this.EditorState = EditorStateValue.Browse;
 
             this.ProcessState = ProcessType.Idle;
@@ -295,7 +295,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
             this.NewModes = Enum.GetValues(typeof(NewModeValue)).OfType<NewModeValue>().Where(
                 am => am != NewModeValue.NotSet && 
                     (
-                        this.TargetCopy != null || 
+                        this.Target != null || 
                         (am != NewModeValue.Relative && am != NewModeValue.Link)
                     )
                 );
@@ -304,7 +304,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         private async Task OnSaveClicked(object owner)
         {
             this.ProcessState = ProcessType.Saving;
-            
+            var previousEditorState = this.EditorState;
+
             switch (this.EditorState)
             {
                 case EditorStateValue.New:
@@ -358,6 +359,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                                 );
                             break;
                     }
+                    // TODO: reload Target and try to select created item
+                    // TODO: do this, or find newly created Neuron and assign to Target
+                    this.Target = null;
+
                     break;
                 case EditorStateValue.Edit:
                     await ViewModels.Helper.ChangeNeuronTag(
@@ -370,18 +375,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                         );
                     break;
             }
-            // TODO: reload Target and try to select created item
-            switch (this.EditorState)
-            {
-                case EditorStateValue.New:
-                    // TODO: do this, or find newly created Neuron and assign to Target
-                    this.TargetCopy = null;
-                    break;
-            }
             this.EditorState = EditorStateValue.Browse;
 
             this.ProcessState = ProcessType.Idle;
+
+            if (this.IsAutoNew && previousEditorState == EditorStateValue.New)
+                this.OnNewClicked();
         }
+
+        [Reactive]
+        public bool IsAutoNew { get; set; }
 
         [Reactive]
         public IEnumerable<NewModeValue> NewModes { get; set; }
@@ -403,7 +406,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         public string LayerName { get; set; }
 
         [Reactive]
-        public EditorNeuronData TargetCopy { get; set; }
+        public EditorNeuronData Target { get; set; }
 
         [Reactive]
         public EditorNeuronViewModel TargetDraft { get; set; }
