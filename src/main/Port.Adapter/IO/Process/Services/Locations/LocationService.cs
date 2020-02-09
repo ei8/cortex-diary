@@ -24,9 +24,9 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
+using org.neurul.Common.Http;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Locations;
-using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Settings;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Locations

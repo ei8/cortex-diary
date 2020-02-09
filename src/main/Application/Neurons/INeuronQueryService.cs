@@ -32,6 +32,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Graph.Client;
+using works.ei8.Cortex.Graph.Common;
 
 namespace works.ei8.Cortex.Diary.Application.Neurons
 {

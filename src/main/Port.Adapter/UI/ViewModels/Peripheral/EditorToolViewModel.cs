@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using org.neurul.Cortex.Common;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Abstractions;
 using ReactiveUI.Validation.Contexts;
@@ -13,10 +14,9 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Notifications;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using works.ei8.Cortex.Graph.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {
@@ -212,7 +212,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                     vm => vm.EditorState,
                     vm => vm.NewMode,
                     vm => vm.TargetDraft.RelativeType,
-                    (es, nm, rt) => es != EditorStateValue.New || nm == NewModeValue.Neuron || (rt != null && rt != Domain.Model.Neurons.RelativeType.NotSet)
+                    (es, nm, rt) => es != EditorStateValue.New || nm == NewModeValue.Neuron || (rt != null && rt != RelativeType.NotSet)
                     ),
                 (vm, state) => !state ? "Relative Type must be either Postsynaptic or Presynaptic." : string.Empty                    
                 );
@@ -222,7 +222,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                     vm => vm.EditorState,
                     vm => vm.NewMode,
                     vm => vm.TargetDraft.Effect,
-                    (es, nm, e) => es != EditorStateValue.New || nm == NewModeValue.Neuron || (e != null && e != Domain.Model.Neurons.NeurotransmitterEffect.NotSet)
+                    (es, nm, e) => es != EditorStateValue.New || nm == NewModeValue.Neuron || (e != null && e != NeurotransmitterEffect.NotSet)
                     ),
                 (vm, state) => !state ? "Effect must be either Excite or Inhibit." : string.Empty
                 );
@@ -250,7 +250,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 
         private void InitDetailsSection()
         {
-            this.RelativeTypes = Enum.GetValues(typeof(RelativeType)).OfType<RelativeType>().Where(rt => rt != Domain.Model.Neurons.RelativeType.NotSet);
+            this.RelativeTypes = Enum.GetValues(typeof(RelativeType)).OfType<RelativeType>().Where(rt => rt != RelativeType.NotSet);
             this.Effects = Enum.GetValues(typeof(NeurotransmitterEffect)).OfType<NeurotransmitterEffect>().Where(ne => ne != NeurotransmitterEffect.NotSet);
         }
 

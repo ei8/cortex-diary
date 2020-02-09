@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
-using org.neurul.Common.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Graph.Client;
+using works.ei8.Cortex.Graph.Common;
+using works.ei8.EventSourcing.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
 {
@@ -98,7 +98,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
 
             (await neuronGraphQueryClient.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { Id = ids.ToArray() }))
                 .ToList()
-                .ForEach(n => cache.Add(n.NeuronId, n));
+                .ForEach(n => cache.Add(n.Id, n));
 
             return notificationLog.NotificationList.ToArray().Select(n => Common.Helper.CreateNotificationData(n, cache));
         }

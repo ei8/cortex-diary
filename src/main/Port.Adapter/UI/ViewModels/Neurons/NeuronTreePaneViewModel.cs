@@ -47,6 +47,7 @@ using works.ei8.Cortex.Diary.Domain.Model.Origin;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using works.ei8.Cortex.Graph.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -74,15 +75,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.statusService.WhenPropertyChanged(s => s.Message)
                 .Subscribe(s => this.StatusMessage = s.Sender.Message);
 
-            bool DefaultPredicate(Node<Neuron, int> node) => node.IsRoot;
-            var cache = new SourceCache<Neuron, int>(x => x.Id);
+            bool DefaultPredicate(Node<UINeuron, int> node) => node.IsRoot;
+            var cache = new SourceCache<UINeuron, int>(x => x.UIId);
 
             this.AddCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnAddClicked(cache, parameter));
             this.SetLayerCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnSetLayerIdClicked(parameter));
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(cache));
 
             this.cleanUp = cache.AsObservableCache().Connect()
-                .TransformToTree(child => child.CentralId, Observable.Return((Func<Node<Neuron, int>, bool>)DefaultPredicate))
+                .TransformToTree(child => child.CentralUIId, Observable.Return((Func<Node<UINeuron, int>, bool>)DefaultPredicate))
                 .Transform(e =>
                     e.Item.Type == RelativeType.Postsynaptic ?
                     (NeuronViewModelBase)(new PostsynapticViewModel(this, e.Item.Tag, e, cache)) :
@@ -96,7 +97,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.IconSourcePath = @"pack://application:,,,/d23-wpf;component/images/hierarchy.ico";            
         }
 
-        private async Task OnAddClicked(SourceCache<Neuron, int> cache, object owner)
+        private async Task OnAddClicked(SourceCache<UINeuron, int> cache, object owner)
         {
             var n = await ViewModels.Helper.CreateNeuron(
                 async () =>
@@ -137,7 +138,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
                     {
                         this.LayerName = result.First().Tag;
-                        this.LayerId = result.First().NeuronId;
+                        this.LayerId = result.First().Id;
                         stat = true;
                     }
                     else
@@ -157,7 +158,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.LayerId = Guid.Empty.ToString();
         }
 
-        private async Task OnReloadClicked(SourceCache<Neuron, int> cache)
+        private async Task OnReloadClicked(SourceCache<UINeuron, int> cache)
         {
             this.Loading = true;
 
@@ -166,7 +167,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     cache.Clear();
                     var relatives = await this.neuronQueryService.GetNeurons(this.AvatarUrl);
                     this.originService.Save(this.AvatarUrl);
-                    cache.AddOrUpdate(relatives);
+                    var uiRelatives = ViewModels.Helper.ConvertNeuronsToUINeurons(null, relatives);
+                    cache.AddOrUpdate(uiRelatives);
                     this.InitLayer();
                     return true;
                 },

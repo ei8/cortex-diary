@@ -7,9 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Neurons\INeuronClient.cs" />
+    <Compile Remove="Neurons\INeuronGraphQueryClient.cs" />
+    <Compile Remove="Neurons\ITerminalClient.cs" />
+    <Compile Remove="Neurons\Neuron.cs" />
+    <Compile Remove="Neurons\NeuronQuery.cs" />
+    <Compile Remove="Neurons\Terminal.cs" />
+    <Compile Remove="Neurons\Types.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.13.9" />
-    <PackageReference Include="Neurul.Common" Version="0.1.6" />
+    <PackageReference Include="ei8.Cortex.Graph.Client" Version="0.1.3" />
+    <PackageReference Include="Neurul.Common" Version="0.1.15" />
+    <PackageReference Include="Neurul.Cortex.Common" Version="0.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="works.ei8.EventSourcing.Common" Version="0.1.0" />
   </ItemGroup>
 
 </Project>

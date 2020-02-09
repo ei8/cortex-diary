@@ -32,6 +32,7 @@ using Splat;
 using System.Threading;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Nucleus.Client.In;
 
 namespace works.ei8.Cortex.Diary.Application.Neurons
 {
@@ -44,9 +45,9 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
             this.neuronClient = neuronClient ?? Locator.Current.GetService<INeuronClient>();
         }
 
-        public async Task CreateNeuron(string avatarUrl, string id, string tag, string layerId, CancellationToken token = default(CancellationToken))
+        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.CreateNeuron(avatarUrl, id, tag, layerId, token);
+            await this.neuronClient.CreateNeuron(avatarUrl, id, tag, regionId, token);
         }
 
         public async Task ChangeNeuronTag(string avatarUrl, string id, string tag, int expectedVersion, CancellationToken token = default(CancellationToken))

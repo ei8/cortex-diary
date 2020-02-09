@@ -1,6 +1,6 @@
-﻿using org.neurul.Common.Events;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using works.ei8.EventSourcing.Common;
 
 namespace works.ei8.Cortex.Diary.Application.Notifications
 {

@@ -1,6 +1,6 @@
 ﻿using DynamicData.Binding;
 using Newtonsoft.Json;
-using org.neurul.Common.Events;
+using org.neurul.Cortex.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Splat;
@@ -16,6 +16,8 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using works.ei8.Cortex.Graph.Client;
+using works.ei8.EventSourcing.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 {
@@ -64,7 +66,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
                 n.Tag,
                 (NeurotransmitterEffect?)null,
                 (float?)null,
-                (Domain.Model.Neurons.RelativeType?)null,
+                (RelativeType?)null,
                 string.Empty,
                 string.Empty,
                 n.ExpectedVersion
@@ -111,7 +113,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
                 if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
                 {
                     this.LayerName = result.First().Tag;
-                    this.LayerId = result.First().NeuronId;
+                    this.LayerId = result.First().Id;
                     stat = true;
                 }
                 else

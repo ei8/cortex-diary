@@ -28,16 +28,12 @@
      support@ei8.works
  */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Graph.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {

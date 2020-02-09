@@ -32,16 +32,15 @@ using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.WpfGraphControl;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using GraphClient = works.ei8.Cortex.Graph.Client;
+using MsGraph = Microsoft.Msagl.Drawing.Graph;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 {
@@ -152,7 +151,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                         if (ep.EventArgs.PropertyName == nameof(NeuronGraphViewModel.ExternallySelectedNeuron))
                         {
                             this.graphViewer.Graph = null;
-                            Graph graph = new Graph();
+                            MsGraph graph = new MsGraph();
                             graph.Attr.LayerDirection = (LayerDirection)this.ViewModel.Layout;
 
                             NeuronViewModelBase root = this.ViewModel.ExternallySelectedNeuron;
@@ -186,7 +185,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
             return new Color((byte) alpha, value.R, value.G, value.B);
         }
 
-        private static void AddNeuronAndChildren(NeuronViewModelBase root, NeuronViewModelBase selectedNeuron, NeuronViewModelBase value, Graph graph)
+        private static void AddNeuronAndChildren(NeuronViewModelBase root, NeuronViewModelBase selectedNeuron, NeuronViewModelBase value, MsGraph graph)
         {
             NeuronGraphView.AddSingleNeuron(root, selectedNeuron, value, graph);
 
@@ -197,13 +196,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 
                 switch (value.Neuron.Type)
                 {
-                    case Domain.Model.Neurons.RelativeType.Postsynaptic:
+                    case GraphClient.RelativeType.Postsynaptic:
                         NeuronGraphView.AddEdge(selectedNeuron, value.TerminalId, value.Parent.Value.NeuronId, value.NeuronId, graph, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
                         break;
-                    case Domain.Model.Neurons.RelativeType.Presynaptic:
+                    case GraphClient.RelativeType.Presynaptic:
                         NeuronGraphView.AddEdge(selectedNeuron, value.TerminalId, value.NeuronId, value.Parent.Value.NeuronId, graph, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
                         break;
-                    case Domain.Model.Neurons.RelativeType.NotSet:
+                    case GraphClient.RelativeType.NotSet:
                         NeuronGraphView.AddEdge(selectedNeuron, value.NeuronId, value.NeuronId, value.Parent.Value.NeuronId, graph);
                         break;
                 }
@@ -214,7 +213,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                     NeuronGraphView.AddNeuronAndChildren(root, selectedNeuron, c, graph);
         }
 
-        private static void AddEdge(NeuronViewModelBase selectedNeuron, string id, string source, string target, Graph graph, string strength = "1", bool inhibitoryEndpoint = false)
+        private static void AddEdge(NeuronViewModelBase selectedNeuron, string id, string source, string target, MsGraph graph, string strength = "1", bool inhibitoryEndpoint = false)
         {
             if (graph.Edges.SingleOrDefault(e => e.Attr.Id == id) == null)                
             {
@@ -236,7 +235,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
             }
         }
 
-        private static void AddSingleNeuron(NeuronViewModelBase root, NeuronViewModelBase selectedNeuron, NeuronViewModelBase value, Graph graph)
+        private static void AddSingleNeuron(NeuronViewModelBase root, NeuronViewModelBase selectedNeuron, NeuronViewModelBase value, MsGraph graph)
         {
             var n = graph.AddNode(value.NeuronId);
             n.LabelText = value.Tag;

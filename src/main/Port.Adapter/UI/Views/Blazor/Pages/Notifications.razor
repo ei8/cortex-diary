@@ -1,8 +1,8 @@
 ﻿@page "/notifications"
 @using works.ei8.Cortex.Diary.Port.Adapter.UI.Common
 @using works.ei8.Cortex.Diary.Application.Notifications
-@using works.ei8.Cortex.Diary.Domain.Model.Neurons
-@using org.neurul.Common.Events
+@using works.ei8.Cortex.Graph.Client
+@using works.ei8.EventSourcing.Common
 @inject INotificationApplicationService NotificationApplicationService
 @inject INeuronGraphQueryClient NeuronGraphQueryClient
 @using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared

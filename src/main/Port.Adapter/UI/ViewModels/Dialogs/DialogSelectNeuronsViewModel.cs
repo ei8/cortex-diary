@@ -41,6 +41,7 @@ using System.Text;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Graph.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {

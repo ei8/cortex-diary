@@ -26,6 +26,7 @@
 
 using IdentityModel;
 using IdentityModel.Client;
+using org.neurul.Common.Http;
 using PCLCrypto;
 using Splat;
 using System;
@@ -34,7 +35,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Identity;
-using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Helpers;
 using static PCLCrypto.WinRTCrypto;
@@ -63,7 +63,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             dic.Add("client_id", this.settingsService.ClientId);
             dic.Add("client_secret", this.settingsService.ClientSecret);
             dic.Add("response_type", "code id_token");
-            dic.Add("scope", "openid profile offline_access cortex-in cortex-graph-out"); 
+            dic.Add("scope", "openid profile offline_access cortex-sentry cortex-graph-out"); 
             dic.Add("redirect_uri", this.settingsService.IdentityCallback);
             dic.Add("nonce", Guid.NewGuid().ToString("N"));
             //TODO: required if PKCE in server is true

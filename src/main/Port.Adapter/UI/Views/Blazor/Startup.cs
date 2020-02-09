@@ -3,20 +3,23 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using org.neurul.Common.Http;
 using works.ei8.Cortex.Diary.Application.Dependency;
 using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Notifications;
-using works.ei8.Cortex.Diary.Application.RequestProvider;
 using works.ei8.Cortex.Diary.Application.Settings;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Domain.Model.Notifications;
+using works.ei8.Cortex.Diary.Nucleus.Client.In;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
+using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Events;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Notifications;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.RequestProvider;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
+using works.ei8.Cortex.Graph.Client;
+using works.ei8.EventSourcing.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
@@ -40,24 +43,24 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             var ssi = new SettingsServiceImplementation();
             var dp = new DependencyService(ssi);
             var ss = new SettingsService(dp);
+            var ts = new TokenService(ss);
             var rp = new RequestProvider();
-            var nc = new NotificationClient();
-            var nas = new NotificationApplicationService(nc);
-            var ngqc = new NeuronGraphQueryClient(rp, ss);
-            var nec = new NeuronClient(rp, ss);
+            var nec = new HttpNeuronClient(rp, ts);
+            var esf = new EventSourceFactory();
+            var nas = new NotificationApplicationService(esf);
             var neas = new NeuronApplicationService(nec);
-            var nqc = new NeuronGraphQueryClient(rp, ss);
+            var nqc = new HttpNeuronGraphQueryClient(rp, ts);
             var nqs = new NeuronQueryService(nqc);
 
             services.AddSingleton<IDependencyService>(dp);            
             services.AddSingleton<ISettingsService>(ss);            
             services.AddSingleton<IRequestProvider>(rp);
             services.AddSingleton<IIdentityService>(new IdentityService(ss, rp));
-            services.AddSingleton<INotificationClient>(nc);
+            services.AddSingleton<IEventSourceFactory>(esf);
             services.AddSingleton<INotificationApplicationService>(nas);
-            services.AddSingleton<INeuronGraphQueryClient>(ngqc);
             services.AddSingleton<INeuronClient>(nec);
             services.AddSingleton<INeuronApplicationService>(neas);
+            services.AddSingleton<ITokenService>(ts);
             services.AddSingleton<INeuronGraphQueryClient>(nqc);
             services.AddSingleton<INeuronQueryService>(nqs);
         }

@@ -34,8 +34,8 @@ using System.Windows;
 using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using works.ei8.Cortex.Graph.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
 {

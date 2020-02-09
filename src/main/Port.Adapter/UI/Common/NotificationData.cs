@@ -4,6 +4,7 @@ using System.Text;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
 {
+    // TODO: transfer to (cortex diary nucleus client) / (cortex diary nucleus common - if populated in nucleus itself, to prevent diary from referencing nucleus)?
     public struct NotificationData
     {
         public NotificationData(string timestamp, string authorId, string author, string typeName, string type, int version, int expectedVersion, string id, string tag, string data, string details)

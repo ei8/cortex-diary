@@ -1,21 +1,32 @@
-﻿using System;
+﻿using org.neurul.Cortex.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Notifications;
 using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using works.ei8.Cortex.Graph.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public static class Helper
     {
-        internal async static Task<Neuron> CreateNeuron(Func<Task<string>> tagRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, INotificationApplicationService notificationApplicationService, IStatusService statusService, string avatarUrl, string layerId)
+        internal static IEnumerable<UINeuron> ConvertNeuronsToUINeurons(UINeuron central, IEnumerable<Neuron> neurons)
         {
-            Neuron result = null;
+            var uiNeurons = neurons.Select(n => new UINeuron(n)).ToArray();
+            uiNeurons.ToList().ForEach(un =>
+            {
+                un.UIId = Guid.NewGuid().GetHashCode();
+                un.CentralUIId = central != null ? central.UIId : int.MinValue;
+            });
+            return uiNeurons;
+        }
+
+        internal async static Task<UINeuron> CreateNeuron(Func<Task<string>> tagRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, INotificationApplicationService notificationApplicationService, IStatusService statusService, string avatarUrl, string regionId)
+        {
+            UINeuron result = null;
             await Neurons.Helper.SetStatusOnComplete(async () =>
             {
                 bool stat = false;
@@ -31,19 +42,19 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                         await Neurons.Helper.PromptSimilarExists(neuronQueryService, dialogService, avatarUrl, owner, tag)
                     )
                     {
-                        Neuron n = new Neuron
+                        UINeuron n = new UINeuron
                         {
                             Tag = tag,
-                            Id = Guid.NewGuid().GetHashCode(),
-                            NeuronId = Guid.NewGuid().ToString(),
+                            UIId = Guid.NewGuid().GetHashCode(),
+                            Id = Guid.NewGuid().ToString(),
                             Version = 1,
                         };
 
                         await neuronApplicationService.CreateNeuron(
                             avatarUrl,
-                            n.NeuronId,
+                            n.Id,
                             n.Tag,
-                            layerId
+                            regionId
                             );
                         result = n;
                         stat = true;
@@ -96,7 +107,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                         Guid.NewGuid().ToString(),
                         presynapticNeuronId,
                         postsynapticNeuronId,
-                        (NeurotransmitterEffect)int.Parse(tps[0]),
+                        (org.neurul.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]),
                         float.Parse(tps[1])
                         );
                     result = true;
@@ -128,9 +139,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                         await terminalApplicationService.CreateTerminal(
                             avatarUrl,
                             Guid.NewGuid().ToString(),
-                            relativeType == RelativeType.Presynaptic ? n.NeuronId : targetNeuronId,
-                            relativeType == RelativeType.Presynaptic ? targetNeuronId : n.NeuronId,
-                            (NeurotransmitterEffect)int.Parse(tps[0]),
+                            relativeType == RelativeType.Presynaptic ? n.Id : targetNeuronId,
+                            relativeType == RelativeType.Presynaptic ? targetNeuronId : n.Id,
+                            (org.neurul.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]),
                             float.Parse(tps[1])
                             );
                     }

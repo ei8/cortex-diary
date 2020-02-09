@@ -1,10 +1,4 @@
-﻿using Newtonsoft.Json;
-using org.neurul.Common.Events;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Common;
+﻿using ReactiveUI;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 {

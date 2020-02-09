@@ -28,14 +28,14 @@
      support@ei8.works
  */
 
-using DynamicData;
 using Splat;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Graph.Client;
+using works.ei8.Cortex.Graph.Common;
 
 namespace works.ei8.Cortex.Diary.Application.Neurons
 {
@@ -50,22 +50,12 @@ namespace works.ei8.Cortex.Diary.Application.Neurons
 
         public async Task<IEnumerable<Neuron>> GetNeuronById(string avatarUrl, string id, Neuron central = null, RelativeType type = RelativeType.NotSet, CancellationToken token = default(CancellationToken))
         {
-            var neurons = await this.neuronQueryClient.GetNeuronById(avatarUrl, id, central, type, token);
-            neurons.ToList().ForEach(n => {
-                n.Id = Guid.NewGuid().GetHashCode();
-                n.CentralId = central != null ? central.Id : int.MinValue;
-            });
-
-            return neurons;
+            return await this.neuronQueryClient.GetNeuronById(avatarUrl, id, central, type, token);
         }
 
         public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
         {
             var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, central, type, neuronQuery, limit, token);
-            relatives.ToList().ForEach(n => {
-                n.Id = Guid.NewGuid().GetHashCode();
-                n.CentralId = central != null ? central.Id : int.MinValue;
-            });
 
             if (central == null)
                 relatives = relatives.OrderBy(n => n.Tag);
