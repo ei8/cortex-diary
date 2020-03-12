@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Graph.Client;
+using works.ei8.Cortex.Diary.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {

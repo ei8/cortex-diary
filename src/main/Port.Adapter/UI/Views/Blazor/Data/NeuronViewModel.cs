@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Graph.Client;
+using works.ei8.Cortex.Diary.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
 {
@@ -57,7 +57,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
         public async Task OnReload()
         {
             this.IsExpanded = true;
-            this.Children = (await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron)).Select(n => new NeuronViewModel(n, this.avatarUrl, this.neuronQueryService)).ToArray();
+            this.Children = (await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron.Id)).Select(n => new NeuronViewModel(n, this.avatarUrl, this.neuronQueryService)).ToArray();
         }
     }
 }

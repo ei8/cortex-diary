@@ -33,15 +33,12 @@ using ReactiveUI;
 using Splat;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
-using System.Text;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
-using works.ei8.Cortex.Graph.Client;
+using works.ei8.Cortex.Diary.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {

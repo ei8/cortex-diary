@@ -1,5 +1,4 @@
 ﻿using DynamicData.Binding;
-using Newtonsoft.Json;
 using org.neurul.Cortex.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -11,12 +10,12 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Notifications;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Common;
+using works.ei8.Cortex.Diary.Nucleus.Client.Out;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
-using works.ei8.Cortex.Graph.Client;
 using works.ei8.EventSourcing.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
@@ -24,16 +23,16 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
     public class NotificationsPaneViewModel : PaneViewModel, IAvatarViewer
     {
         private readonly INotificationApplicationService notificationApplicationService;
-        private readonly INeuronGraphQueryClient neuronGraphQueryClient;
+        private readonly INeuronQueryClient neuronGraphQueryClient;
         private IExtendedSelectionService selectionService;
         private readonly IStatusService statusService;
         private readonly IDialogService dialogService;
         private static readonly IDictionary<string, Neuron> neuronCache = new Dictionary<string, Neuron>();
 
-        public NotificationsPaneViewModel(INotificationApplicationService neuronApplicationService = null, INeuronGraphQueryClient neuronGraphQueryClient = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null, IDialogService dialogService = null)
+        public NotificationsPaneViewModel(INotificationApplicationService neuronApplicationService = null, INeuronQueryClient neuronGraphQueryClient = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.notificationApplicationService = neuronApplicationService ?? Locator.Current.GetService<INotificationApplicationService>();
-            this.neuronGraphQueryClient = neuronGraphQueryClient ?? Locator.Current.GetService<INeuronGraphQueryClient>();
+            this.neuronGraphQueryClient = neuronGraphQueryClient ?? Locator.Current.GetService<INeuronQueryClient>();
             this.selectionService = selectionService ?? Locator.Current.GetService<IExtendedSelectionService>(SelectionContract.Select.ToString());
             this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
             this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();

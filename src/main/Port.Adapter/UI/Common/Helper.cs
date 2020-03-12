@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Graph.Client;
-using works.ei8.Cortex.Graph.Common;
+using works.ei8.Cortex.Diary.Common;
+using works.ei8.Cortex.Diary.Nucleus.Client.Out;
 using works.ei8.EventSourcing.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
@@ -69,7 +69,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
                 );
         }
 
-        public static async Task<IEnumerable<NotificationData>> UpdateCacheGetNotifications(NotificationLog notificationLog, INeuronGraphQueryClient neuronGraphQueryClient, string avatarUrl, IDictionary<string, Neuron> cache)
+        public static async Task<IEnumerable<NotificationData>> UpdateCacheGetNotifications(NotificationLog notificationLog, INeuronQueryClient neuronGraphQueryClient, string avatarUrl, IDictionary<string, Neuron> cache)
         {
             var ids = new List<string>();
             var ns = notificationLog.NotificationList.ToList();

@@ -29,35 +29,34 @@
  */
 
 using Splat;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Graph.Client;
-using works.ei8.Cortex.Graph.Common;
+using works.ei8.Cortex.Diary.Common;
+using works.ei8.Cortex.Diary.Nucleus.Client.Out;
 
 namespace works.ei8.Cortex.Diary.Application.Neurons
 {
     public class NeuronQueryService : INeuronQueryService
     {
-        private INeuronGraphQueryClient neuronQueryClient;
+        private INeuronQueryClient neuronQueryClient;
 
-        public NeuronQueryService(INeuronGraphQueryClient neuronQueryClient = null)
+        public NeuronQueryService(INeuronQueryClient neuronQueryClient = null)
         {
-            this.neuronQueryClient = neuronQueryClient ?? Locator.Current.GetService<INeuronGraphQueryClient>();
+            this.neuronQueryClient = neuronQueryClient ?? Locator.Current.GetService<INeuronQueryClient>();
         }
 
-        public async Task<IEnumerable<Neuron>> GetNeuronById(string avatarUrl, string id, Neuron central = null, RelativeType type = RelativeType.NotSet, CancellationToken token = default(CancellationToken))
+        public async Task<IEnumerable<Neuron>> GetNeuronById(string avatarUrl, string id, string centralId = null, RelativeType type = RelativeType.NotSet, CancellationToken token = default(CancellationToken))
         {
-            return await this.neuronQueryClient.GetNeuronById(avatarUrl, id, central, type, token);
+            return await this.neuronQueryClient.GetNeuronById(avatarUrl, id, centralId, type, token);
         }
 
-        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, Neuron central = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
+        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, string centralId = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
         {
-            var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, central, type, neuronQuery, limit, token);
+            var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, centralId, type, neuronQuery, limit, token);
 
-            if (central == null)
+            if (string.IsNullOrEmpty(centralId))
                 relatives = relatives.OrderBy(n => n.Tag);
             else
             {

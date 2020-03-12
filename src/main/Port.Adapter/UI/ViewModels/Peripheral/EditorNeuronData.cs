@@ -1,9 +1,6 @@
 ﻿using org.neurul.Cortex.Common;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
-using works.ei8.Cortex.Graph.Client;
+using works.ei8.Cortex.Diary.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {

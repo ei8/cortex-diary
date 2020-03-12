@@ -38,10 +38,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Common;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
-using works.ei8.Cortex.Graph.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -78,7 +77,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private const string TerminalCategory = "Terminal";
         private const string MiscCategory = "Misc";
         
-        protected NeuronViewModelBase(IAvatarViewer host, Node<UINeuron, int> node, SourceCache<UINeuron, int> cache, NeuronViewModelBase parent = null, INeuronApplicationService neuronApplicationService = null,
+        protected NeuronViewModelBase(IAvatarViewer host, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, INeuronApplicationService neuronApplicationService = null,
             INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, IExtendedSelectionService selectionService = null, IExtendedSelectionService highlightService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.host = host;
@@ -197,7 +196,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             );
         }
 
-        private async Task OnDeleteClicked(SourceCache<UINeuron, int> cache, object parameter)
+        private async Task OnDeleteClicked(SourceCache<Neuron, int> cache, object parameter)
         {
             await Helper.SetStatusOnComplete(async () =>
                 {
@@ -248,7 +247,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             );
         }
 
-        private async Task OnNeuronTagChanged(SourceCache<UINeuron, int> cache, PropertyValue<NeuronViewModelBase, string> x)
+        private async Task OnNeuronTagChanged(SourceCache<Neuron, int> cache, PropertyValue<NeuronViewModelBase, string> x)
         {
             if (!this.settingNeuron)
             {
@@ -266,7 +265,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             }
         }
 
-        private void SetNeuron(UINeuron neuron)
+        private void SetNeuron(Neuron neuron)
         {
             this.settingNeuron = true;
             this.Neuron = neuron;
@@ -312,7 +311,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.settingNeuron = false;
         }
 
-        private async Task OnReload(SourceCache<UINeuron, int> cache, int millisecondsDelay = 0)
+        private async Task OnReload(SourceCache<Neuron, int> cache, int millisecondsDelay = 0)
         {
             this.host.Loading = true;
 
@@ -325,7 +324,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 var reloadedNeuron = (await this.neuronQueryService.GetNeuronById(
                     this.host.AvatarUrl,
                     this.Neuron.Id,
-                    this.Parent.ConvertOr(n => n.Neuron, () => null),
+                    this.Parent.ConvertOr(n => n.Neuron.Id, () => null),
                     this.Neuron.Type
                     )).First();
                 NeuronViewModelBase.CopyNeuronData(this.Neuron, reloadedNeuron);
@@ -333,8 +332,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
                 // reload relatives
                 cache.Remove(NeuronViewModelBase.GetAllChildren(cache, this.Neuron.UIId));
-                var relatives = await this.neuronQueryService.GetNeurons(this.host.AvatarUrl, this.Neuron);
-                cache.AddOrUpdate(ViewModels.Helper.ConvertNeuronsToUINeurons(this.Neuron, relatives));
+                var relatives = await this.neuronQueryService.GetNeurons(this.host.AvatarUrl, this.Neuron.Id);
+                relatives.FillUIIds(this.Neuron);
+                cache.AddOrUpdate(relatives);
                 return true;
             },
             "Neuron reloaded successfully.",
@@ -344,7 +344,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.host.Loading = false;
         }
 
-        private static IEnumerable<UINeuron> GetAllChildren(SourceCache<UINeuron, int> cache, int parentId)
+        private static IEnumerable<Neuron> GetAllChildren(SourceCache<Neuron, int> cache, int parentId)
         {
             var currList = cache.Items.Where(i => i.CentralUIId == parentId);
             currList.ToList().ForEach(n => currList = currList.Concat(NeuronViewModelBase.GetAllChildren(cache, n.UIId)));
@@ -364,21 +364,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             target.Errors = source.Errors;
 
             if (source.Terminal != null)
-            {
-                target.Terminal = new Terminal();
-                target.Terminal.Id = source.Terminal.Id;
-                target.Terminal.PresynapticNeuronId = source.Terminal.PresynapticNeuronId;
-                target.Terminal.PostsynapticNeuronId = source.Terminal.PostsynapticNeuronId;
-                target.Terminal.Effect = source.Terminal.Effect;
-                target.Terminal.Strength = source.Terminal.Strength;
-                target.Terminal.Version = source.Terminal.Version;
-                target.Terminal.AuthorId = source.Terminal.AuthorId;
-                target.Terminal.AuthorTag = source.Terminal.AuthorTag;
-                target.Terminal.Timestamp = source.Terminal.Timestamp;
-            }
+                target.Terminal = new Terminal(source.Terminal);
         }
 
-        private async Task OnAddPresynaptic(SourceCache<UINeuron, int> cache, object owner)
+        private async Task OnAddPresynaptic(SourceCache<Neuron, int> cache, object owner)
         {
             var success = await ViewModels.Helper.CreateRelative(
                 async () =>
@@ -422,7 +411,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             return tps;
         }
 
-        private async Task OnAddPostsynaptic(SourceCache<UINeuron, int> cache, object owner)
+        private async Task OnAddPostsynaptic(SourceCache<Neuron, int> cache, object owner)
         {
             var success = await ViewModels.Helper.LinkRelative(
                 async () =>
@@ -455,7 +444,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         }
 
         [Browsable(false)]
-        public UINeuron Neuron { get; private set; }
+        public Neuron Neuron { get; private set; }
 
         private string childrenCountText;
 

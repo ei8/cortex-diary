@@ -31,15 +31,14 @@
 using DynamicData;
 using System.ComponentModel;
 using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
-using works.ei8.Cortex.Graph.Client;
+using works.ei8.Cortex.Diary.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     [DisplayName("Presynaptic Neuron")]
     public class PresynapticViewModel : NeuronViewModelBase
     {
-        public PresynapticViewModel(IAvatarViewer host, string tag, Node<UINeuron, int> node, SourceCache<UINeuron, int> cache, NeuronViewModelBase parent = null, 
+        public PresynapticViewModel(IAvatarViewer host, string tag, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, 
             INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, 
             IExtendedSelectionService selectionService = null) : 
             base(host, node, cache, parent, neuronApplicationService, neuronQueryService, terminalApplicationService, selectionService)

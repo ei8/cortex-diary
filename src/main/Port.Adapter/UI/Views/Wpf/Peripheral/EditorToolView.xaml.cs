@@ -1,14 +1,10 @@
 ﻿using ReactiveUI;
-using ReactiveUI.Validation.Components.Abstractions;
-using ReactiveUI.Validation.Extensions;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
-using ModelNeurons = works.ei8.Cortex.Diary.Domain.Model.Neurons;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 {

@@ -8,10 +8,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Events
 {
     public class EventSourceFactory : IEventSourceFactory
     {
-        public EventSource CreateEventSource(string storeUrl)
+        public IEventSource Create(string inStoreUrl, string outStoreUrl, Guid authorId)
         {
-            var nc = new HttpNotificationClient(storeUrl);
-            return new EventSource(storeUrl, null, null, null, nc);
+            var nc = new HttpNotificationClient(outStoreUrl);
+            return new EventSource(inStoreUrl, outStoreUrl, null, null, null, nc);
         }
     }
 }

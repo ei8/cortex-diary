@@ -37,9 +37,9 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using works.ei8.Cortex.Diary.Common;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
-using GraphClient = works.ei8.Cortex.Graph.Client;
 using MsGraph = Microsoft.Msagl.Drawing.Graph;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
@@ -196,13 +196,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 
                 switch (value.Neuron.Type)
                 {
-                    case GraphClient.RelativeType.Postsynaptic:
+                    case RelativeType.Postsynaptic:
                         NeuronGraphView.AddEdge(selectedNeuron, value.TerminalId, value.Parent.Value.NeuronId, value.NeuronId, graph, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
                         break;
-                    case GraphClient.RelativeType.Presynaptic:
+                    case RelativeType.Presynaptic:
                         NeuronGraphView.AddEdge(selectedNeuron, value.TerminalId, value.NeuronId, value.Parent.Value.NeuronId, graph, value.Neuron.Terminal.Strength, value.Neuron.Terminal.Effect == "-1");
                         break;
-                    case GraphClient.RelativeType.NotSet:
+                    case RelativeType.NotSet:
                         NeuronGraphView.AddEdge(selectedNeuron, value.NeuronId, value.NeuronId, value.Parent.Value.NeuronId, graph);
                         break;
                 }

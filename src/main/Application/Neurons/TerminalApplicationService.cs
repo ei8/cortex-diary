@@ -2,7 +2,6 @@
 using Splat;
 using System.Threading;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
 using works.ei8.Cortex.Diary.Nucleus.Client.In;
 
 namespace works.ei8.Cortex.Diary.Application.Neurons

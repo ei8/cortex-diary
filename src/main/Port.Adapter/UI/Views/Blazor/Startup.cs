@@ -9,16 +9,12 @@ using works.ei8.Cortex.Diary.Application.Identity;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Notifications;
 using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
-using works.ei8.Cortex.Diary.Domain.Model.Notifications;
 using works.ei8.Cortex.Diary.Nucleus.Client.In;
+using works.ei8.Cortex.Diary.Nucleus.Client.Out;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Events;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
-using works.ei8.Cortex.Graph.Client;
 using works.ei8.EventSourcing.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
@@ -46,10 +42,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             var ts = new TokenService(ss);
             var rp = new RequestProvider();
             var nec = new HttpNeuronClient(rp, ts);
-            var esf = new EventSourceFactory();
+            var esf = new IO.Process.Services.Events.EventSourceFactory();
             var nas = new NotificationApplicationService(esf);
             var neas = new NeuronApplicationService(nec);
-            var nqc = new HttpNeuronGraphQueryClient(rp, ts);
+            var nqc = new HttpNeuronQueryClient(rp, ts);
             var nqs = new NeuronQueryService(nqc);
 
             services.AddSingleton<IDependencyService>(dp);            
@@ -61,7 +57,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<INeuronClient>(nec);
             services.AddSingleton<INeuronApplicationService>(neas);
             services.AddSingleton<ITokenService>(ts);
-            services.AddSingleton<INeuronGraphQueryClient>(nqc);
+            services.AddSingleton<INeuronQueryClient>(nqc);
             services.AddSingleton<INeuronQueryService>(nqs);
         }
 

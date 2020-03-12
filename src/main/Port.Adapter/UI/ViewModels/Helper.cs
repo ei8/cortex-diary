@@ -1,32 +1,28 @@
-﻿using org.neurul.Cortex.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Notifications;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
+using works.ei8.Cortex.Diary.Common;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
-using works.ei8.Cortex.Graph.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public static class Helper
     {
-        internal static IEnumerable<UINeuron> ConvertNeuronsToUINeurons(UINeuron central, IEnumerable<Neuron> neurons)
+        internal static void FillUIIds(this IEnumerable<Neuron> neurons, Neuron central)
         {
-            var uiNeurons = neurons.Select(n => new UINeuron(n)).ToArray();
-            uiNeurons.ToList().ForEach(un =>
+            neurons.ToList().ForEach(un =>
             {
                 un.UIId = Guid.NewGuid().GetHashCode();
                 un.CentralUIId = central != null ? central.UIId : int.MinValue;
             });
-            return uiNeurons;
         }
 
-        internal async static Task<UINeuron> CreateNeuron(Func<Task<string>> tagRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, INotificationApplicationService notificationApplicationService, IStatusService statusService, string avatarUrl, string regionId)
+        internal async static Task<Neuron> CreateNeuron(Func<Task<string>> tagRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, INotificationApplicationService notificationApplicationService, IStatusService statusService, string avatarUrl, string regionId)
         {
-            UINeuron result = null;
+            Neuron result = null;
             await Neurons.Helper.SetStatusOnComplete(async () =>
             {
                 bool stat = false;
@@ -42,7 +38,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                         await Neurons.Helper.PromptSimilarExists(neuronQueryService, dialogService, avatarUrl, owner, tag)
                     )
                     {
-                        UINeuron n = new UINeuron
+                        Neuron n = new Neuron
                         {
                             Tag = tag,
                             UIId = Guid.NewGuid().GetHashCode(),

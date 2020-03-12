@@ -37,15 +37,11 @@ using works.ei8.Cortex.Diary.Application.Neurons;
 using works.ei8.Cortex.Diary.Application.Notifications;
 using works.ei8.Cortex.Diary.Application.OpenUrl;
 using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Domain.Model.Neurons;
-using works.ei8.Cortex.Diary.Domain.Model.Notifications;
 using works.ei8.Cortex.Diary.Domain.Model.Origin;
-using works.ei8.Cortex.Diary.Nucleus.Client;
 using works.ei8.Cortex.Diary.Nucleus.Client.In;
+using works.ei8.Cortex.Diary.Nucleus.Client.Out;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Events;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Origins;
 using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
@@ -53,7 +49,6 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs;
-using works.ei8.Cortex.Graph.Client;
 using works.ei8.EventSourcing.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
@@ -75,10 +70,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             Locator.CurrentMutable.RegisterLazySingleton(() => new SettingsService(), typeof(ISettingsService));            
             Locator.CurrentMutable.RegisterLazySingleton(() => new RequestProvider(), typeof(IRequestProvider));
             Locator.CurrentMutable.RegisterLazySingleton(() => new IdentityService(), typeof(IIdentityService));
-            Locator.CurrentMutable.RegisterLazySingleton(() => new EventSourceFactory(), typeof(IEventSourceFactory));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new IO.Process.Services.Events.EventSourceFactory(), typeof(IEventSourceFactory));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NotificationApplicationService(), typeof(INotificationApplicationService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new TokenService(), typeof(ITokenService));
-            Locator.CurrentMutable.RegisterLazySingleton(() => new HttpNeuronGraphQueryClient(), typeof(INeuronGraphQueryClient));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new HttpNeuronQueryClient(), typeof(INeuronQueryClient));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronQueryService(), typeof(INeuronQueryService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new HttpNeuronClient(), typeof(INeuronClient));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NeuronApplicationService(), typeof(INeuronApplicationService));

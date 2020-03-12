@@ -1,10 +1,11 @@
 ﻿@page "/notifications"
 @using works.ei8.Cortex.Diary.Port.Adapter.UI.Common
 @using works.ei8.Cortex.Diary.Application.Notifications
-@using works.ei8.Cortex.Graph.Client
+@using works.ei8.Cortex.Diary.Common
+@using works.ei8.Cortex.Diary.Nucleus.Client.Out
 @using works.ei8.EventSourcing.Common
 @inject INotificationApplicationService NotificationApplicationService
-@inject INeuronGraphQueryClient NeuronGraphQueryClient
+@inject INeuronQueryClient HttpNeuronQueryClient
 @using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
 
 <div class="top-row px-4">
@@ -17,7 +18,7 @@
         <input placeholder="Avatar URL" @bind="AvatarUrl" />
     </div>
 </div>
-<div class="content px-4">    
+<div class="content px-4">
     <table>
         <thead>
             <tr>
@@ -50,13 +51,13 @@
     private async Task OnReload()
     {
         this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, string.Empty);
-        this.NotificationItems = (await Helper.UpdateCacheGetNotifications(this.NotificationLog, NeuronGraphQueryClient, this.AvatarUrl, neuronCache));
+        this.NotificationItems = (await Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache));
     }
 
     private async Task OnMore()
     {
         this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, this.NotificationLog.PreviousNotificationLogId);
-        this.NotificationItems = (await Helper.UpdateCacheGetNotifications(this.NotificationLog, NeuronGraphQueryClient, this.AvatarUrl, neuronCache))
+        this.NotificationItems = (await Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache))
             .Concat(this.NotificationItems);
     }
 }

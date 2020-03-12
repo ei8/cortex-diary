@@ -33,9 +33,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Application.Neurons;
+using works.ei8.Cortex.Diary.Common;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
-using works.ei8.Cortex.Graph.Client;
-using works.ei8.Cortex.Graph.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {

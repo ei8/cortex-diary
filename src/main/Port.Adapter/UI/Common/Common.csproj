@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ei8.Cortex.Graph.Client" Version="0.1.3" />
+    <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.4" />
+    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.7" />
     <PackageReference Include="Neurul.Common" Version="0.1.15" />
   </ItemGroup>
 
