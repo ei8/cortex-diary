@@ -222,17 +222,11 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="works.ei8.Cortex.Diary.Common, Version=0.1.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Common.0.1.4\lib\netstandard2.0\works.ei8.Cortex.Diary.Common.dll</HintPath>
+    <Reference Include="works.ei8.Cortex.Diary.Common, Version=0.1.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Common.0.1.6\lib\netstandard2.0\works.ei8.Cortex.Diary.Common.dll</HintPath>
     </Reference>
-    <Reference Include="works.ei8.Cortex.Diary.Nucleus.Client, Version=0.1.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Nucleus.Client.0.1.7\lib\netstandard2.0\works.ei8.Cortex.Diary.Nucleus.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="works.ei8.EventSourcing.Client, Version=0.1.13.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.EventSourcing.Client.0.1.13\lib\netstandard2.0\works.ei8.EventSourcing.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="works.ei8.EventSourcing.Common, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.EventSourcing.Common.0.1.1\lib\netstandard2.0\works.ei8.EventSourcing.Common.dll</HintPath>
+    <Reference Include="works.ei8.Cortex.Diary.Nucleus.Client, Version=0.1.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Nucleus.Client.0.1.10\lib\netstandard2.0\works.ei8.Cortex.Diary.Nucleus.Client.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock, Version=3.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\Extended.Wpf.Toolkit.3.4.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>

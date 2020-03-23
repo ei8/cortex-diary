@@ -16,7 +16,6 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
-using works.ei8.EventSourcing.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 {

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using works.ei8.Cortex.Diary.Common;
 using works.ei8.Cortex.Diary.Nucleus.Client.Out;
-using works.ei8.EventSourcing.Common;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
 {
@@ -39,7 +38,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
                 string layer =
                     data.LayerId == Guid.Empty.ToString() ?
                         "Base Layer" :
-                        cache.ContainsKey(data.LayerId.ToString()) ?
+                        data.LayerId != null && cache.ContainsKey(data.LayerId.ToString()) ?
                             cache[data.LayerId.ToString()].Tag :
                             "(Layer not found)"
                             ;
@@ -81,8 +80,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
                 // NeuronCreated
                 if (n.TypeName.Contains(EventTypeNames.NeuronCreated.ToString()))
                 {
-                    // LayerId                    
-                    ids.Add(d.LayerId.ToString());
+                    // LayerId   
+                    if (d.LayerId != null)
+                        ids.Add(d.LayerId.ToString());
                 }
                 // TerminalCreated
                 else if (n.TypeName.Contains(EventTypeNames.TerminalCreated.ToString()))
@@ -95,10 +95,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
             }
             );
             ids.RemoveAll(i => cache.ContainsKey(i));
+            ids = new List<string>(ids.Distinct());
 
-            (await neuronGraphQueryClient.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { Id = ids.ToArray() }))
-                .ToList()
-                .ForEach(n => cache.Add(n.Id, n));
+            if (ids.Count() > 0)
+                (await neuronGraphQueryClient.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { Id = ids.ToArray() }))
+                    .ToList()
+                    .ForEach(n => cache.Add(n.Id, n));
 
             return notificationLog.NotificationList.ToArray().Select(n => Common.Helper.CreateNotificationData(n, cache));
         }

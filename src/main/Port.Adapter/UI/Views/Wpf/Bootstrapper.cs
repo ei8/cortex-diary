@@ -49,7 +49,6 @@ using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
 using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs;
-using works.ei8.EventSourcing.Client;
 
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
@@ -70,7 +69,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
             Locator.CurrentMutable.RegisterLazySingleton(() => new SettingsService(), typeof(ISettingsService));            
             Locator.CurrentMutable.RegisterLazySingleton(() => new RequestProvider(), typeof(IRequestProvider));
             Locator.CurrentMutable.RegisterLazySingleton(() => new IdentityService(), typeof(IIdentityService));
-            Locator.CurrentMutable.RegisterLazySingleton(() => new IO.Process.Services.Events.EventSourceFactory(), typeof(IEventSourceFactory));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new HttpNotificationClient(), typeof(INotificationClient));
             Locator.CurrentMutable.RegisterLazySingleton(() => new NotificationApplicationService(), typeof(INotificationApplicationService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new TokenService(), typeof(ITokenService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new HttpNeuronQueryClient(), typeof(INeuronQueryClient));
