@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.10" />
+    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.11" />
     <PackageReference Include="IdentityModel" Version="3.10.10" />
     <PackageReference Include="Neurul.Common" Version="0.1.15" />
     <PackageReference Include="Neurul.Cortex.Common" Version="0.1.2" />
