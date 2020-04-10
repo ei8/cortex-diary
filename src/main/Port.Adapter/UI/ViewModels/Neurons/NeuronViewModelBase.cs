@@ -56,7 +56,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private float strength;
 
         private LastModifiedInfo lastModified;
-        private LayerInfo layerInfo;
+        private RegionInfo regionInfo;
         private string terminalId;
 
         private bool isExpanded;
@@ -190,8 +190,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 n.Effect == NeurotransmitterEffect.NotSet ? (NeurotransmitterEffect?)null : n.Effect,
                 n.Neuron.Type == RelativeType.NotSet ? (float?)null : n.Strength,
                 n.Neuron.Type == RelativeType.NotSet ? (RelativeType?)null : n.Neuron.Type,
-                n.Layer.Id,
-                n.Layer.Name,
+                n.Region.Id,
+                n.Region.Name,
                 n.Neuron.Version
             );
         }
@@ -284,10 +284,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     Version = neuron.Version
                 }
             };
-            this.layerInfo = new LayerInfo()
+            this.regionInfo = new RegionInfo()
             {
-                Id = neuron.LayerId,
-                Name = string.IsNullOrEmpty(neuron.LayerTag) ? "[Base]" : neuron.LayerTag
+                Id = neuron.RegionId,
+                Name = string.IsNullOrEmpty(neuron.RegionTag) ? "[Base]" : neuron.RegionTag
             };
         
             if (neuron.Terminal != null)
@@ -357,8 +357,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             target.Tag = source.Tag;
             target.AuthorId = source.AuthorId;
             target.AuthorTag = source.AuthorTag;
-            target.LayerId = source.LayerId;
-            target.LayerTag = source.LayerTag;
+            target.RegionId = source.RegionId;
+            target.RegionTag = source.RegionTag;
             target.Timestamp = source.Timestamp;
             target.Version = source.Version;
             target.Errors = source.Errors;
@@ -393,7 +393,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 this.terminalApplicationService,
                 this.statusService,                
                 this.host.AvatarUrl,
-                this.host.LayerId,
+                this.host.RegionId,
                 this.Neuron.Id,
                 RelativeType.Presynaptic
                 );
@@ -504,10 +504,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         }
 
         [Category(NeuronViewModelBase.NeuronCategory)]
-        public LayerInfo Layer
+        public RegionInfo Region
         {
-            get => this.layerInfo;
-            set => this.RaiseAndSetIfChanged(ref this.layerInfo, value);
+            get => this.regionInfo;
+            set => this.RaiseAndSetIfChanged(ref this.regionInfo, value);
         }
 
         [ParenthesizePropertyName(true)]

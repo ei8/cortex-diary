@@ -20,10 +20,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         public NeurotransmitterEffect? Effect { get; set; }
 
         [Reactive]
-        public string LayerId { get; set; }
+        public string RegionId { get; set; }
 
         [Reactive]
-        public string LayerName { get; set; }
+        public string RegionName { get; set; }
 
         [Reactive]
         public IEnumerable<Neuron> LinkCandidates { get; set; }
@@ -46,8 +46,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
             this.Effect = null;
             this.Strength = null;
             this.RelativeType = null;
-            this.LayerId = string.Empty;
-            this.LayerName = string.Empty;
+            this.RegionId = string.Empty;
+            this.RegionName = string.Empty;
             this.Version = 0;
         }
     }

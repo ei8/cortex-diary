@@ -6,7 +6,7 @@ using System.Text;
 namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class LayerInfo
+    public class RegionInfo
     {
         [ReadOnly(true)]
         public string Id { get; set; }

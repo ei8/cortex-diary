@@ -36,7 +36,7 @@
                 <Button Name="Reload" ToolBar.OverflowMode="Never" Width="80">Reload</Button>
                 <TextBox Name="AvatarUrl" ToolBar.OverflowMode="Never" materialDesign:HintAssist.Hint="Avatar URL" Grid.Column="1" VerticalAlignment="Center" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolBarTray}}, Path=ActualWidth, Converter={StaticResource WidthConverter}, ConverterParameter='243'}"></TextBox>
                 <Button Name="Add" ToolBar.OverflowMode="Never" Grid.Column="2" Width="65" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">Add</Button>
-                <Button Name="SetLayer" ToolBar.OverflowMode="Never" Grid.Column="2" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">Layer</Button>
+                <Button Name="SetRegion" ToolBar.OverflowMode="Never" Grid.Column="2" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">Region</Button>
             </ToolBar>
         </ToolBarTray>
         <ProgressBar Name="Progress" IsIndeterminate="True" Grid.Row="1" Grid.ZIndex="1" Height="3" VerticalAlignment="Top" />
@@ -281,7 +281,7 @@
             <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
                 <Label Name="StatusMessage" Width="auto" VerticalContentAlignment="Center" />
             </ScrollViewer>
-            <Label Name="LayerName" Width="auto" Grid.Column="1" VerticalContentAlignment="Center" />            
+            <Label Name="RegionName" Width="auto" Grid.Column="1" VerticalContentAlignment="Center" />            
         </Grid>        
     </Grid>
 </UserControl>

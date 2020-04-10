@@ -36,7 +36,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
                     });
 
                 d(this.Bind(this.ViewModel, vm => vm.AvatarUrl, v => v.AvatarUrl.Text));
-                d(this.Bind(this.ViewModel, vm => vm.LayerName, v => v.LayerName.Text));
+                d(this.Bind(this.ViewModel, vm => vm.RegionName, v => v.RegionName.Text));
                 d(this.OneWayBind(this.ViewModel, vm => vm.Target, v => v.Target.Text, sn => sn == null ? string.Empty : sn.Tag));
                 d(this.Bind(this.ViewModel, vm => vm.TargetDraft.Tag, v => v.TagText.Text));
                 d(this.OneWayBind(this.ViewModel, vm => vm.EditorState, v => v.TagText.IsEnabled, es => es != ViewModels.EditorStateValue.Browse));

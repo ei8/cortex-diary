@@ -35,14 +35,14 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
             dynamic data = JsonConvert.DeserializeObject(notification.Data);
             if (type == EventTypeNames.NeuronCreated.ToString())
             {
-                string layer =
-                    data.LayerId == Guid.Empty.ToString() ?
-                        "Base Layer" :
-                        data.LayerId != null && cache.ContainsKey(data.LayerId.ToString()) ?
-                            cache[data.LayerId.ToString()].Tag :
-                            "(Layer not found)"
+                string region =
+                    data.RegionId == Guid.Empty.ToString() ?
+                        "Base Region" :
+                        data.RegionId != null && cache.ContainsKey(data.RegionId.ToString()) ?
+                            cache[data.RegionId.ToString()].Tag :
+                            "(Region not found)"
                             ;
-                details = $"Neuron created in layer '{layer}'.";
+                details = $"Neuron created in region '{region}'.";
             }
             else if (type == EventTypeNames.NeuronTagChanged.ToString())
             {
@@ -80,9 +80,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
                 // NeuronCreated
                 if (n.TypeName.Contains(EventTypeNames.NeuronCreated.ToString()))
                 {
-                    // LayerId   
-                    if (d.LayerId != null)
-                        ids.Add(d.LayerId.ToString());
+                    // RegionId   
+                    if (d.RegionId != null)
+                        ids.Add(d.RegionId.ToString());
                 }
                 // TerminalCreated
                 else if (n.TypeName.Contains(EventTypeNames.TerminalCreated.ToString()))

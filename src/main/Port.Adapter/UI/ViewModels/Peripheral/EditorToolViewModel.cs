@@ -59,7 +59,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 this.WhenAnyValue(
                     vm => vm.EditorState,
                     vm => vm.AvatarUrl,
-                    vm => vm.LayerName,
+                    vm => vm.RegionName,
                     (esv, au, ln) => esv == EditorStateValue.Browse && !string.IsNullOrEmpty(au) && !string.IsNullOrEmpty(ln)
                     )
                 );
@@ -89,7 +89,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 this.WhenAnyValue(
                     vm => vm.EditorState,
                     vm => vm.AvatarUrl,
-                    vm => vm.LayerName,
+                    vm => vm.RegionName,
                     vm => vm.Target,
                     (esv, au, ln, t) => 
                         esv == EditorStateValue.Browse && 
@@ -137,8 +137,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                         this.TargetDraft.Effect = t.Effect;
                         this.TargetDraft.Strength = t.Strength;
                         this.TargetDraft.RelativeType = t.RelativeType;
-                        this.TargetDraft.LayerId = t.LayerId;
-                        this.TargetDraft.LayerName = t.LayerName;
+                        this.TargetDraft.RegionId = t.RegionId;
+                        this.TargetDraft.RegionName = t.RegionName;
                         this.TargetDraft.Version = t.Version;
                     }
                 });
@@ -151,13 +151,13 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                 .Where(au => this.EditorState == EditorStateValue.Browse)
                 .Subscribe(au => this.AvatarUrl = au);
 
-            this.WhenAnyValue(vm => vm.AvatarViewer.LayerId)
+            this.WhenAnyValue(vm => vm.AvatarViewer.RegionId)
                 .Where(li => this.EditorState == EditorStateValue.Browse)
-                .Subscribe(li => this.LayerId = li);
+                .Subscribe(li => this.RegionId = li);
 
-            this.WhenAnyValue(vm => vm.AvatarViewer.LayerName)
+            this.WhenAnyValue(vm => vm.AvatarViewer.RegionName)
                 .Where(ln => this.EditorState == EditorStateValue.Browse)
-                .Subscribe(ln => this.LayerName = ln);
+                .Subscribe(ln => this.RegionName = ln);
 
             this.WhenAnyValue(vm => vm.EditorState, vm => vm.TargetDraft.RelativeType)
                 .Select(x => x.Item1 == EditorStateValue.New && x.Item2 != null)
@@ -243,8 +243,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         private void UpdateFromViewer(IAvatarViewer av)
         {
             this.AvatarUrl = av.AvatarUrl;
-            this.LayerId = av.LayerId;
-            this.LayerName = av.LayerName;
+            this.RegionId = av.RegionId;
+            this.RegionName = av.RegionName;
             this.Target = av.Target;
         }
 
@@ -321,7 +321,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                                 this.notificationApplicationService,
                                 this.statusService,
                                 this.AvatarUrl,
-                                this.LayerId
+                                this.RegionId
                                 );
                             break;
                         case NewModeValue.Relative:
@@ -338,7 +338,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
                                 this.terminalApplicationService,
                                 this.statusService,
                                 this.AvatarUrl,
-                                this.LayerId,
+                                this.RegionId,
                                 this.TargetDraft.Id,
                                 this.TargetDraft.RelativeType.Value
                                 );
@@ -398,12 +398,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         [Reactive]
         public string AvatarUrl { get; set; }
 
-        // TODO: Rename to Default Layer ID - to be used for New Neurons only, not ones that are being edited
+        // TODO: Rename to Default Region ID - to be used for New Neurons only, not ones that are being edited
         [Reactive]
-        public string LayerId { get; set; }
+        public string RegionId { get; set; }
 
         [Reactive]
-        public string LayerName { get; set; }
+        public string RegionName { get; set; }
 
         [Reactive]
         public EditorNeuronData Target { get; set; }

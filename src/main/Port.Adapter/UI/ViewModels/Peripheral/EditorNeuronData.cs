@@ -6,15 +6,15 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {
     public class EditorNeuronData : IEquatable<EditorNeuronData>
     {
-        public EditorNeuronData(string id, string tag, NeurotransmitterEffect? effect, float? strength, RelativeType? relativeType, string layerId, string layerName, int version)
+        public EditorNeuronData(string id, string tag, NeurotransmitterEffect? effect, float? strength, RelativeType? relativeType, string regionId, string regionName, int version)
         {
             this.Id = id;
             this.Tag = tag;
             this.Effect = effect;
             this.Strength = strength;
             this.RelativeType = relativeType;
-            this.LayerId = layerId;
-            this.LayerName = layerName;
+            this.RegionId = regionId;
+            this.RegionName = regionName;
             this.Version = version;
         }
 
@@ -22,9 +22,9 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 
         public NeurotransmitterEffect? Effect { get; }
 
-        public string LayerId { get; }
+        public string RegionId { get; }
 
-        public string LayerName { get; }
+        public string RegionName { get; }
 
         public RelativeType? RelativeType { get; }
 
@@ -40,8 +40,8 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
             if (ReferenceEquals(this, other)) return true;
             return this.Id == other.Id &&
                 this.Effect == other.Effect &&
-                this.LayerId == other.LayerId &&
-                this.LayerName == other.LayerName &&
+                this.RegionId == other.RegionId &&
+                this.RegionName == other.RegionName &&
                 this.RelativeType == other.RelativeType &&
                 this.Strength == other.Strength &&
                 this.Tag == other.Tag &&

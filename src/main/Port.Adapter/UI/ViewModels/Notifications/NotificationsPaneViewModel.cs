@@ -51,7 +51,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             this.LoadCommand = ReactiveCommand.Create(async () => await this.OnLoadClicked());
             var canMore = this.WhenAnyValue<NotificationsPaneViewModel, bool, NotificationLog>(x => x.NotificationLog, nl => nl != null && nl.PreviousNotificationLogId != null);
             this.MoreCommand = ReactiveCommand.Create(async () => await this.OnMoreClicked(), canMore);
-            this.SetLayerCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnSetLayerIdClicked(parameter));
+            this.SetRegionCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnSetRegionIdClicked(parameter));
 
             this.Loading = false;
             this.IconSourcePath = @"pack://application:,,,/d23-wpf;component/images/notification.ico";            
@@ -92,7 +92,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
                     nd.Details
                     ));
 
-                this.InitLayer();
+                this.InitRegion();
                 return true;
             },
                 "Load successful.",
@@ -102,33 +102,33 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             this.Loading = false;
         }
 
-        private async Task OnSetLayerIdClicked(object parameter)
+        private async Task OnSetRegionIdClicked(object parameter)
         {
             await ViewModels.Neurons.Helper.SetStatusOnComplete(async () =>
             {
                 bool stat = false;
 
-                if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
+                if ((await this.dialogService.ShowDialogSelectNeurons("Select Region Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
                 {
-                    this.LayerName = result.First().Tag;
-                    this.LayerId = result.First().Id;
+                    this.RegionName = result.First().Tag;
+                    this.RegionId = result.First().Id;
                     stat = true;
                 }
                 else
-                    this.InitLayer();
+                    this.InitRegion();
 
                 return stat;
             },
-                "Layer set successfully.",
+                "Region set successfully.",
                 this.statusService,
-                "Layer set cancelled."
+                "Region set cancelled."
                 );
         }
 
-        private void InitLayer()
+        private void InitRegion()
         {
-            this.LayerName = "[Base]";
-            this.LayerId = Guid.Empty.ToString();
+            this.RegionName = "[Base]";
+            this.RegionId = Guid.Empty.ToString();
         }        
 
         private async Task OnMoreClicked()
@@ -167,10 +167,10 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
         public NotificationLog NotificationLog { get; set; }
 
         [Reactive]
-        public string LayerId { get; set; }
+        public string RegionId { get; set; }
         
         [Reactive]
-        public string LayerName { get; set; }
+        public string RegionName { get; set; }
 
         [Reactive]
         public string AvatarUrl { get; set; }
@@ -179,7 +179,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 
         public ReactiveCommand<Unit, Task> MoreCommand { get; }
 
-        public ReactiveCommand<object, Unit> SetLayerCommand { get; }
+        public ReactiveCommand<object, Unit> SetRegionCommand { get; }
 
         [Reactive]
         public string StatusMessage { get; set; }

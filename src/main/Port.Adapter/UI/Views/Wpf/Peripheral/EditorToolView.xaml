@@ -68,7 +68,7 @@
             <ScrollViewer VerticalScrollBarVisibility="Hidden">
                 <StackPanel Name="DetailsPanel" Height="Auto" Orientation="Vertical" Margin="10,10,0,0" MaxWidth="350">
                     <TextBox Name="AvatarUrl" Style="{DynamicResource MaterialDesignFilledTextFieldTextBox}" FontWeight="DemiBold" Margin="0,0,0,3" materialDesign:HintAssist.Hint="Avatar URL" IsReadOnly="True" MinWidth="350" />
-                    <TextBox Name="LayerName" Style="{DynamicResource MaterialDesignFilledTextFieldTextBox}" FontWeight="DemiBold" Margin="0,0,0,3" materialDesign:HintAssist.Hint="Layer" IsReadOnly="True" MinWidth="350" />
+                    <TextBox Name="RegionName" Style="{DynamicResource MaterialDesignFilledTextFieldTextBox}" FontWeight="DemiBold" Margin="0,0,0,3" materialDesign:HintAssist.Hint="Region" IsReadOnly="True" MinWidth="350" />
                     <TextBox Name="Target" Style="{DynamicResource MaterialDesignFilledTextFieldTextBox}"  FontWeight="DemiBold" TextWrapping="NoWrap" materialDesign:HintAssist.Hint="Target" IsReadOnly="True" MinWidth="350" />
                 </StackPanel>
             </ScrollViewer>

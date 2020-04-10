@@ -65,7 +65,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             return result;
         }
 
-        internal async static Task<bool> CreateRelative(Func<Task<string>> tagRetriever, Func<object, Task<string[]>> terminalParametersRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, IStatusService statusService, string avatarUrl, string layerId, string targetNeuronId, RelativeType relativeType)
+        internal async static Task<bool> CreateRelative(Func<Task<string>> tagRetriever, Func<object, Task<string[]>> terminalParametersRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, IStatusService statusService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType)
         {
             bool result = false;
             await Neurons.Helper.SetStatusOnComplete(async () =>
@@ -96,7 +96,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                         avatarUrl,
                         newNeuronId,
                         tag,
-                        layerId
+                        regionId
                     );
                     await terminalApplicationService.CreateTerminal(
                         avatarUrl,

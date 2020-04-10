@@ -78,7 +78,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             var cache = new SourceCache<Neuron, int>(x => x.UIId);
 
             this.AddCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnAddClicked(cache, parameter));
-            this.SetLayerCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnSetLayerIdClicked(parameter));
+            this.SetRegionCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnSetRegionIdClicked(parameter));
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(cache));
 
             this.cleanUp = cache.AsObservableCache().Connect()
@@ -121,40 +121,40 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 this.notificationApplicationService,
                 this.statusService, 
                 this.AvatarUrl, 
-                this.LayerId
+                this.RegionId
                 );
 
             if (n != null)
                 cache.AddOrUpdate(n);
         }
 
-        private async Task OnSetLayerIdClicked(object parameter)
+        private async Task OnSetRegionIdClicked(object parameter)
         {
             await Helper.SetStatusOnComplete(async() =>
                 {
                     bool stat = false;
 
-                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Layer Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Region Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
                     {
-                        this.LayerName = result.First().Tag;
-                        this.LayerId = result.First().Id;
+                        this.RegionName = result.First().Tag;
+                        this.RegionId = result.First().Id;
                         stat = true;
                     }
                     else
-                        this.InitLayer();
+                        this.InitRegion();
 
                     return stat;                    
                 },
-                "Layer set successfully.",
+                "Region set successfully.",
                 this.statusService,
-                "Layer set cancelled."
+                "Region set cancelled."
                 );
         }
 
-        private void InitLayer()
+        private void InitRegion()
         {
-            this.LayerName = "[Base]";
-            this.LayerId = Guid.Empty.ToString();
+            this.RegionName = "[Base]";
+            this.RegionId = Guid.Empty.ToString();
         }
 
         private async Task OnReloadClicked(SourceCache<Neuron, int> cache)
@@ -168,7 +168,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     this.originService.Save(this.AvatarUrl);
                     relatives.FillUIIds(null);
                     cache.AddOrUpdate(relatives);
-                    this.InitLayer();
+                    this.InitRegion();
                     return true;
                 },
                 "Reload successful.",
@@ -181,12 +181,12 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         public ReactiveCommand<object, Unit> AddCommand { get; }
 
         [Reactive]
-        public string LayerId { get; set; }
+        public string RegionId { get; set; }
         
         [Reactive]
-        public string LayerName { get; set; }
+        public string RegionName { get; set; }
         
-        public ReactiveCommand<object, Unit> SetLayerCommand { get; }
+        public ReactiveCommand<object, Unit> SetRegionCommand { get; }
 
         [Reactive]
         public string AvatarUrl { get; set; }
