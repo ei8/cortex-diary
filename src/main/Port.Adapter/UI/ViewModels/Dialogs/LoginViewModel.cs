@@ -7,15 +7,15 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Dialog;
-using works.ei8.Cortex.Diary.Application.Identity;
-using works.ei8.Cortex.Diary.Application.Navigation;
-using works.ei8.Cortex.Diary.Application.OpenUrl;
-using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
+using ei8.Cortex.Diary.Application.Dialog;
+using ei8.Cortex.Diary.Application.Identity;
+using ei8.Cortex.Diary.Application.Navigation;
+using ei8.Cortex.Diary.Application.OpenUrl;
+using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {
     public class LoginViewModel : DialogViewModelBase
     {

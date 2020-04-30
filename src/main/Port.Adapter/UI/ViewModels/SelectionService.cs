@@ -36,7 +36,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public class SelectionService : ReactiveObject, IExtendedSelectionService
     {

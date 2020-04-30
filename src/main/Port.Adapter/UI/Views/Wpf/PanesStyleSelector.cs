@@ -21,11 +21,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     public class PanesStyleSelector : StyleSelector
     {

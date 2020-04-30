@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 {
     /// <summary>
     /// Interaction logic for EditorToolView.xaml

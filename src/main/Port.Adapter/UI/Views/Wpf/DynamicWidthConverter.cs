@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     public class DynamicWidthConverter : MarkupExtension, IMultiValueConverter
     {

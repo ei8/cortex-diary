@@ -35,7 +35,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Text;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public interface IExtendedSelectionService : ISelectionService, INotifyPropertyChanged
     {

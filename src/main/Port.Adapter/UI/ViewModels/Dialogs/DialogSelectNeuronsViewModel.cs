@@ -37,10 +37,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Common;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {
     public class DialogSelectNeuronsViewModel : DialogViewModelBase, IDisposable
     {

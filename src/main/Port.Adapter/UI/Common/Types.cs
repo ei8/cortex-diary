@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Common
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
 {
     public enum EventTypeNames
     {

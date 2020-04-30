@@ -31,9 +31,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Common;
 
-namespace works.ei8.Cortex.Diary.Application.Neurons
+namespace ei8.Cortex.Diary.Application.Neurons
 {
     public interface INeuronQueryService
     {

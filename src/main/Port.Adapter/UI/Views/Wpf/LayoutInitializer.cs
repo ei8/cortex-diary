@@ -16,11 +16,11 @@
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
 using System.Linq;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 using Xceed.Wpf.AvalonDock.Layout;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     public class LayoutInitializer : ILayoutUpdateStrategy
     {

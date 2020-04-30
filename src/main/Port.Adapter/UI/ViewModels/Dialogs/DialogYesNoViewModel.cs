@@ -32,7 +32,7 @@ using ReactiveUI;
 using System.Reactive;
 using System.Windows.Input;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {
     /// <summary>
     /// https://www.c-sharpcorner.com/article/dialogs-in-wpf-mvvm/

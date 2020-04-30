@@ -1,8 +1,8 @@
 ﻿using IdentityModel.Client;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Identity;
+using ei8.Cortex.Diary.Application.Identity;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
+namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {
     public class Helper
     {

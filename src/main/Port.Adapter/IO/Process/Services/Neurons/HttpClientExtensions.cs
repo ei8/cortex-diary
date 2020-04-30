@@ -35,7 +35,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
+namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Neurons
 {
     // https://stackoverflow.com/questions/26218764/patch-async-requests-with-windows-web-http-httpclient-class
     // TODO: Transfer to common library if still used

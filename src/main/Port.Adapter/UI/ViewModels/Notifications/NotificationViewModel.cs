@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 {
     public class NotificationViewModel : ReactiveObject
     {

@@ -32,9 +32,9 @@ using ReactiveUI;
 using System;
 using System.Reactive.Linq;
 using System.Windows;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
 {
     /// <summary>
     /// Interaction logic for DialogWindow.

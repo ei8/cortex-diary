@@ -3,21 +3,21 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using org.neurul.Common.Http;
-using works.ei8.Cortex.Diary.Application.Dependency;
-using works.ei8.Cortex.Diary.Application.Identity;
-using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Application.Notifications;
-using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Nucleus.Client.In;
-using works.ei8.Cortex.Diary.Nucleus.Client.Out;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
-using works.ei8.EventSourcing.Client;
+using neurUL.Common.Http;
+using ei8.Cortex.Diary.Application.Dependency;
+using ei8.Cortex.Diary.Application.Identity;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Application.Notifications;
+using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Nucleus.Client.In;
+using ei8.Cortex.Diary.Nucleus.Client.Out;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
+using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
+using ei8.EventSourcing.Client;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
     public class Startup
     {

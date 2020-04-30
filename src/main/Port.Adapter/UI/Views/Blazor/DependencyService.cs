@@ -1,7 +1,7 @@
-﻿using works.ei8.Cortex.Diary.Application.Dependency;
-using works.ei8.Cortex.Diary.Application.Settings;
+﻿using ei8.Cortex.Diary.Application.Dependency;
+using ei8.Cortex.Diary.Application.Settings;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
     public class DependencyService : IDependencyService
     {

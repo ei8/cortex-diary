@@ -26,7 +26,7 @@
 
 using System.Threading.Tasks;
 
-namespace works.ei8.Cortex.Diary.Application.Identity
+namespace ei8.Cortex.Diary.Application.Identity
 {
     public interface IIdentityService
     {

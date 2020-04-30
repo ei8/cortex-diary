@@ -20,9 +20,9 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     public partial class MainWindow : Window, IViewFor<Workspace>
     {

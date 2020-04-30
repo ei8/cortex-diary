@@ -33,10 +33,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Common;
-using works.ei8.Cortex.Diary.Nucleus.Client.Out;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Nucleus.Client.Out;
 
-namespace works.ei8.Cortex.Diary.Application.Neurons
+namespace ei8.Cortex.Diary.Application.Neurons
 {
     public class NeuronQueryService : INeuronQueryService
     {

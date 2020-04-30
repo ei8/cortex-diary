@@ -26,7 +26,7 @@
 
 using IdentityModel;
 using IdentityModel.Client;
-using org.neurul.Common.Http;
+using neurUL.Common.Http;
 using PCLCrypto;
 using Splat;
 using System;
@@ -34,12 +34,12 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Identity;
-using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Helpers;
+using ei8.Cortex.Diary.Application.Identity;
+using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Helpers;
 using static PCLCrypto.WinRTCrypto;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
+namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {
     public class IdentityService : IIdentityService
     {

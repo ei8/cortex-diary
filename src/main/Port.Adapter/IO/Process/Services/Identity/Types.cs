@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
+namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {
     public struct ProcessUrlResult
     {

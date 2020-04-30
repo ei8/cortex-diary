@@ -28,15 +28,15 @@
      support@ei8.works
  */
 
-using org.neurul.Common;
+using neurUL.Common;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Common;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     internal class Helper
     {

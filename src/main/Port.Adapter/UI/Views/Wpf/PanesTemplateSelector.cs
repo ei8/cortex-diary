@@ -17,12 +17,12 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 using Xceed.Wpf.AvalonDock.Layout;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     public class PanesTemplateSelector : DataTemplateSelector
     {

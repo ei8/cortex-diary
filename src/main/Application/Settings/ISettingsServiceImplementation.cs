@@ -24,7 +24,7 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
-namespace works.ei8.Cortex.Diary.Application.Settings
+namespace ei8.Cortex.Diary.Application.Settings
 {
     public interface ISettingsServiceImplementation
     {

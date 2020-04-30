@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>works.ei8.Cortex.Diary.Application</AssemblyName>
-    <RootNamespace>works.ei8.Cortex.Diary.Application</RootNamespace>
+    <AssemblyName>ei8.Cortex.Diary.Application</AssemblyName>
+    <RootNamespace>ei8.Cortex.Diary.Application</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.13.9" />
-    <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.7" />
-    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.11" />
-    <PackageReference Include="Neurul.Common" Version="0.1.17" />
+    <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.8" />
+    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.12" />
+    <PackageReference Include="Neurul.Common" Version="0.1.19" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
     <PackageReference Include="Splat" Version="9.0.5" />
   </ItemGroup>

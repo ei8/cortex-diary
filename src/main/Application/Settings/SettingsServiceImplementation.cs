@@ -32,7 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace works.ei8.Cortex.Diary.Application.Settings
+namespace ei8.Cortex.Diary.Application.Settings
 {
     public class SettingsServiceImplementation : ISettingsServiceImplementation
     {

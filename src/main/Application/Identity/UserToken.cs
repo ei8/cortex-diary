@@ -26,7 +26,7 @@
 
 using Newtonsoft.Json;
 
-namespace works.ei8.Cortex.Diary.Application.Identity
+namespace ei8.Cortex.Diary.Application.Identity
 {
     public class UserToken
     {

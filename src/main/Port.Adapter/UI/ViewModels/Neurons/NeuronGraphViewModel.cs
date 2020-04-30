@@ -36,10 +36,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {
     public class NeuronGraphViewModel : ToolViewModel
     {

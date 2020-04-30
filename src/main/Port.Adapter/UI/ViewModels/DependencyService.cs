@@ -29,9 +29,9 @@
  */
 
 using Splat;
-using works.ei8.Cortex.Diary.Application.Dependency;
+using ei8.Cortex.Diary.Application.Dependency;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public class DependencyService : IDependencyService
     {

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services</AssemblyName>
-    <RootNamespace>works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services</RootNamespace>
+    <AssemblyName>ei8.Cortex.Diary.Port.Adapter.IO.Process.Services</AssemblyName>
+    <RootNamespace>ei8.Cortex.Diary.Port.Adapter.IO.Process.Services</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,10 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.11" />
+    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.12" />
     <PackageReference Include="IdentityModel" Version="3.10.10" />
-    <PackageReference Include="Neurul.Common" Version="0.1.17" />
-    <PackageReference Include="Neurul.Cortex.Common" Version="0.1.2" />
+    <PackageReference Include="Neurul.Common" Version="0.1.19" />
+    <PackageReference Include="Neurul.Cortex.Common" Version="0.1.4" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
     <PackageReference Include="NLog" Version="4.5.0" />
     <PackageReference Include="PCLCrypto" Version="2.1.32-alpha" />

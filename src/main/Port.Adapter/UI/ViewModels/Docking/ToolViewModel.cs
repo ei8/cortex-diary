@@ -17,7 +17,7 @@
 
 using ReactiveUI;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 {
     public class ToolViewModel : PaneViewModel
     {

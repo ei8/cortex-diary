@@ -25,7 +25,7 @@
 using DynamicData;
 using DynamicData.Binding;
 using DynamicData.Kernel;
-using org.neurul.Cortex.Common;
+using neurUL.Cortex.Common;
 using ReactiveUI;
 using Splat;
 using System;
@@ -37,12 +37,12 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Common;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     // TODO: are the Post and Pre viewmodel derivations necessary?
     public abstract class NeuronViewModelBase : ReactiveObject, IDisposable, IEquatable<NeuronViewModelBase>

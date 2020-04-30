@@ -24,7 +24,7 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
-namespace works.ei8.Cortex.Diary.Application.Locations
+namespace ei8.Cortex.Diary.Application.Locations
 {
     public class Location
     {

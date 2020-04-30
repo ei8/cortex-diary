@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs.LoginView"
+﻿<UserControl x:Class="ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs.LoginView"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
             TextElement.FontWeight="Regular"

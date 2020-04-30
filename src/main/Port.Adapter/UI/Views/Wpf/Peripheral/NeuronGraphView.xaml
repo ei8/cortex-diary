@@ -10,8 +10,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral"
-             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral.NeuronGraphView"
+             xmlns:local="clr-namespace:ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral"
+             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral.NeuronGraphView"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">    
     <Grid>

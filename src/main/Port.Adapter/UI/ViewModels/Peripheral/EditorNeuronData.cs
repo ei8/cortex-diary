@@ -1,8 +1,8 @@
-﻿using org.neurul.Cortex.Common;
+﻿using neurUL.Cortex.Common;
 using System;
-using works.ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Common;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {
     public class EditorNeuronData : IEquatable<EditorNeuronData>
     {

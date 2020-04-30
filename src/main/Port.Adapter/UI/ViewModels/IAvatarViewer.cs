@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public interface IAvatarViewer : INotifyPropertyChanged
     {

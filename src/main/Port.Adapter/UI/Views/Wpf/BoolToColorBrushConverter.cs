@@ -33,7 +33,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     // https://stackoverflow.com/a/32526689
     [ValueConversion(typeof(bool), typeof(SolidColorBrush))]

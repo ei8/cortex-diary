@@ -26,7 +26,7 @@
 
 using System.Threading.Tasks;
 
-namespace works.ei8.Cortex.Diary.Application.Navigation
+namespace ei8.Cortex.Diary.Application.Navigation
 {
     public interface INavigationService<TViewModelBase>
     {

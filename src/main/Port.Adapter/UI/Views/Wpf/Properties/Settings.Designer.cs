@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Properties {
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

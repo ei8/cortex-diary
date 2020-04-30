@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class ModificationInfo

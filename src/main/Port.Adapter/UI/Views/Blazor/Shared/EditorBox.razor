@@ -1,5 +1,5 @@
-﻿@using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
-@using works.ei8.Cortex.Diary.Application.Neurons;
+﻿@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
+@using ei8.Cortex.Diary.Application.Neurons;
 @inject INeuronApplicationService NeuronApplicationService;
 
 <EditForm Model="@editorModel" style="width: 100%; height: 100%">
@@ -27,7 +27,7 @@
     {
         if (!string.IsNullOrEmpty(this.editorModel.Tag))
         {
-            // TODO: use if possible works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.CreateRelative
+            // TODO: use if possible ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.CreateRelative
             await this.NeuronApplicationService.CreateNeuron(this.AvatarUrl, Guid.NewGuid().ToString(), this.editorModel.Tag, Guid.Empty.ToString());
             this.editorModel.Tag = string.Empty;
         }

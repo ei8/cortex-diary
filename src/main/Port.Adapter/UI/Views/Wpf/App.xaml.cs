@@ -33,7 +33,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     /// <summary>
     /// Interaction logic for App.xaml

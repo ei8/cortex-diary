@@ -1,11 +1,11 @@
-﻿using org.neurul.Common.Http;
+﻿using neurUL.Common.Http;
 using Splat;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using works.ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Application.Settings;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services
+namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services
 {
     public class TokenService : ITokenService
     {

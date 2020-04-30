@@ -40,15 +40,15 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Application.Notifications;
-using works.ei8.Cortex.Diary.Common;
-using works.ei8.Cortex.Diary.Domain.Model.Origin;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Application.Notifications;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Domain.Model.Origin;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     public class NeuronTreePaneViewModel : PaneViewModel, IAvatarViewer, IDisposable
     {

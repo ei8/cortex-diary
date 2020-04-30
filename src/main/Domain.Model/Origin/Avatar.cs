@@ -32,7 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace works.ei8.Cortex.Diary.Domain.Model.Origin
+namespace ei8.Cortex.Diary.Domain.Model.Origin
 {
     public class Avatar
     {

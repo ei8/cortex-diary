@@ -22,7 +22,7 @@ using System.Linq;
 using System.Text;
 // TODO: using System.Windows.Media;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 {
     public class PaneViewModel : ReactiveObject
     {

@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.OpenUrl;
+using ei8.Cortex.Diary.Application.OpenUrl;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     public class OpenUrlService : IOpenUrlService
     {

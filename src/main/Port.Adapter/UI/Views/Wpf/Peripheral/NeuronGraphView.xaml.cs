@@ -37,12 +37,12 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using works.ei8.Cortex.Diary.Common;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 using MsGraph = Microsoft.Msagl.Drawing.Graph;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 {
     public partial class NeuronGraphView : UserControl, IViewFor<NeuronGraphViewModel>
     {

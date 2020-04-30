@@ -23,15 +23,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Identity;
-using works.ei8.Cortex.Diary.Application.OpenUrl;
-using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Application.Identity;
+using ei8.Cortex.Diary.Application.OpenUrl;
+using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking
 {
     public class Workspace : ReactiveObject
     {

@@ -14,9 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral
 {
     /// <summary>
     /// Interaction logic for PropertyGridView.xaml

@@ -31,13 +31,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
-using works.ei8.Cortex.Diary.Application.Identity;
-using works.ei8.Cortex.Diary.Application.OpenUrl;
-using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Common;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Application.Identity;
+using ei8.Cortex.Diary.Application.OpenUrl;
+using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
 {
     /// <summary>
     /// https://www.c-sharpcorner.com/article/dialogs-in-wpf-mvvm/

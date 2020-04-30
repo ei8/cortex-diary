@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 
-namespace works.ei8.Cortex.Diary.Application.Settings
+namespace ei8.Cortex.Diary.Application.Settings
 {
     public interface ISettingsService
     {

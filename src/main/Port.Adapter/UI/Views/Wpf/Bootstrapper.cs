@@ -28,29 +28,29 @@
      support@ei8.works
  */
 
-using org.neurul.Common.Http;
+using neurUL.Common.Http;
 using ReactiveUI;
 using Splat;
-using works.ei8.Cortex.Diary.Application.Dependency;
-using works.ei8.Cortex.Diary.Application.Identity;
-using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Application.Notifications;
-using works.ei8.Cortex.Diary.Application.OpenUrl;
-using works.ei8.Cortex.Diary.Application.Settings;
-using works.ei8.Cortex.Diary.Domain.Model.Origin;
-using works.ei8.Cortex.Diary.Nucleus.Client.In;
-using works.ei8.Cortex.Diary.Nucleus.Client.Out;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Origins;
-using works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs;
+using ei8.Cortex.Diary.Application.Dependency;
+using ei8.Cortex.Diary.Application.Identity;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Application.Notifications;
+using ei8.Cortex.Diary.Application.OpenUrl;
+using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Domain.Model.Origin;
+using ei8.Cortex.Diary.Nucleus.Client.In;
+using ei8.Cortex.Diary.Nucleus.Client.Out;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Origins;
+using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
+using ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     public class Bootstrapper
     {

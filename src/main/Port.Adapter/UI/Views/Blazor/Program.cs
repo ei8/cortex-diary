@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
     public class Program
     {

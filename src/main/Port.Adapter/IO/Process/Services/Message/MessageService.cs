@@ -31,10 +31,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using works.ei8.Cortex.Diary.Application.Dependency;
-using works.ei8.Cortex.Diary.Application.Message;
+using ei8.Cortex.Diary.Application.Dependency;
+using ei8.Cortex.Diary.Application.Message;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Message
+namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Message
 {
     public class MessageService : IMessageService
     {

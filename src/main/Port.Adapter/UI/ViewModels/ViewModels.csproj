@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels</RootNamespace>
+    <RootNamespace>ei8.Cortex.Diary.Port.Adapter.UI.ViewModels</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,11 +16,11 @@
 
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.13.9" />
-    <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.7" />
-    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.11" />
+    <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.8" />
+    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.12" />
     <PackageReference Include="IdentityModel" Version="3.10.10" />
-    <PackageReference Include="Neurul.Common" Version="0.1.17" />
-    <PackageReference Include="Neurul.Cortex.Common" Version="0.1.2" />
+    <PackageReference Include="Neurul.Common" Version="0.1.19" />
+    <PackageReference Include="Neurul.Cortex.Common" Version="0.1.4" />
     <PackageReference Include="ReactiveUI" Version="10.3.1" />
     <PackageReference Include="ReactiveUI.Fody" Version="10.3.1" />
     <PackageReference Include="ReactiveUI.Validation" Version="1.4.1" />

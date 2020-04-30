@@ -14,9 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     /// <summary>
     /// Interaction logic for NotificationPaneView.xaml

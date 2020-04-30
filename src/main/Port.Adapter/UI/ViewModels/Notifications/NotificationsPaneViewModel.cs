@@ -1,5 +1,5 @@
 ﻿using DynamicData.Binding;
-using org.neurul.Cortex.Common;
+using neurUL.Cortex.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Splat;
@@ -9,15 +9,15 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Notifications;
-using works.ei8.Cortex.Diary.Common;
-using works.ei8.Cortex.Diary.Nucleus.Client.Out;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.Common;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Diary.Application.Notifications;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Nucleus.Client.Out;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 {
     public class NotificationsPaneViewModel : PaneViewModel, IAvatarViewer
     {

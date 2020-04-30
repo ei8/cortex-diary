@@ -1,9 +1,9 @@
-﻿<Application x:Class="works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.App"
+﻿<Application x:Class="ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf"
-             xmlns:dialogs="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;assembly=ViewModels"
-             xmlns:wpfdialogs="clr-namespace:works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs"
+             xmlns:local="clr-namespace:ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf"
+             xmlns:dialogs="clr-namespace:ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;assembly=ViewModels"
+             xmlns:wpfdialogs="clr-namespace:ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs"
              Startup="Application_Startup"
              DispatcherUnhandledException="App_DispatcherUnhandledException" >
     <Application.Resources>

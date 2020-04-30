@@ -33,9 +33,9 @@ using System;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
     public partial class NeuronTreeView : UserControl, IViewFor<NeuronTreePaneViewModel>
     {

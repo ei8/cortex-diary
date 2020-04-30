@@ -30,10 +30,10 @@
 
 using DynamicData;
 using System.ComponentModel;
-using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Common;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     [DisplayName("Presynaptic Neuron")]
     public class PresynapticViewModel : NeuronViewModelBase

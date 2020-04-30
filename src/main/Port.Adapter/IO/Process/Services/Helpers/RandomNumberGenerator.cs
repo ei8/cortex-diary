@@ -26,7 +26,7 @@
 
 using System.Text;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Helpers
+namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Helpers
 {
     internal static class RandomNumberGenerator
     {

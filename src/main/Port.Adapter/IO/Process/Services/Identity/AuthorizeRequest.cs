@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
+namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {
     public class AuthorizeRequest
     {

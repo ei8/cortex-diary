@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Application.Notifications;
-using works.ei8.Cortex.Diary.Common;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Application.Notifications;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public static class Helper
     {
@@ -103,7 +103,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                         Guid.NewGuid().ToString(),
                         presynapticNeuronId,
                         postsynapticNeuronId,
-                        (org.neurul.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]),
+                        (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]),
                         float.Parse(tps[1])
                         );
                     result = true;
@@ -137,7 +137,7 @@ namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                             Guid.NewGuid().ToString(),
                             relativeType == RelativeType.Presynaptic ? n.Id : targetNeuronId,
                             relativeType == RelativeType.Presynaptic ? targetNeuronId : n.Id,
-                            (org.neurul.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]),
+                            (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]),
                             float.Parse(tps[1])
                             );
                     }

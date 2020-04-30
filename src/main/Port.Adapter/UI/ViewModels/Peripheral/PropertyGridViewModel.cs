@@ -32,9 +32,9 @@ using DynamicData.Binding;
 using ReactiveUI;
 using Splat;
 using System;
-using works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {
     public class PropertyGridViewModel : ToolViewModel
     {

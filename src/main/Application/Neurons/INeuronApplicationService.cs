@@ -31,7 +31,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace works.ei8.Cortex.Diary.Application.Neurons
+namespace ei8.Cortex.Diary.Application.Neurons
 {
     public interface INeuronApplicationService
     {

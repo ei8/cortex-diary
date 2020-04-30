@@ -31,9 +31,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using works.ei8.Cortex.Diary.Domain.Model.Origin;
+using ei8.Cortex.Diary.Domain.Model.Origin;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Origins
+namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Origins
 {
     public class AvatarUrl
     {

@@ -26,7 +26,7 @@
 
 using System.Threading.Tasks;
 
-namespace works.ei8.Cortex.Diary.Application.Dialog
+namespace ei8.Cortex.Diary.Application.Dialog
 {
     public interface IDialogService
     {

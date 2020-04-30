@@ -1,10 +1,10 @@
-﻿using org.neurul.Cortex.Common;
+﻿using neurUL.Cortex.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
-using works.ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Common;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {
     public class EditorNeuronViewModel : ReactiveObject
     {

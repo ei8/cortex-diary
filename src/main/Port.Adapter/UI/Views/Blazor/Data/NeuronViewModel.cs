@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Application.Neurons;
-using works.ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Common;
 
-namespace works.ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
 {
     public class NeuronViewModel
     {
