@@ -1,6 +1,6 @@
 ﻿/*
     This file is part of the d# project.
-    Copyright (c) 2016-2018 ei8
+    Copyright (c) 2016-2020 ei8
     Authors: ei8
      This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License version 3
