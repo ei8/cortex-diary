@@ -15,7 +15,6 @@ using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
-using ei8.EventSourcing.Client;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
@@ -42,8 +41,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             var ts = new TokenService(ss);
             var rp = new RequestProvider();
             var nec = new HttpNeuronClient(rp, ts);
-            var esf = new IO.Process.Services.Events.EventSourceFactory();
-            var nas = new NotificationApplicationService(esf);
+            var nc = new HttpNotificationClient(rp, ts);
+            var nas = new NotificationApplicationService(nc);
             var neas = new NeuronApplicationService(nec);
             var nqc = new HttpNeuronQueryClient(rp, ts);
             var nqs = new NeuronQueryService(nqc);
@@ -52,7 +51,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<ISettingsService>(ss);            
             services.AddSingleton<IRequestProvider>(rp);
             services.AddSingleton<IIdentityService>(new IdentityService(ss, rp));
-            services.AddSingleton<IEventSourceFactory>(esf);
             services.AddSingleton<INotificationApplicationService>(nas);
             services.AddSingleton<INeuronClient>(nec);
             services.AddSingleton<INeuronApplicationService>(neas);
