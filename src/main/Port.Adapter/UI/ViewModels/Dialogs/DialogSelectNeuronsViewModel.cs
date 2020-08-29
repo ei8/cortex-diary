@@ -71,7 +71,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             try
             {
                 list.Clear();
-                var neurons = await this.neuronQueryService.GetNeurons(this.avatarUrl);
+                var neurons = await this.neuronQueryService.GetNeurons(this.avatarUrl, new NeuronQuery());
                 list.AddRange(neurons);
                 this.StatusMessage = "Reload successful.";
             }

@@ -42,8 +42,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
             this.AreControlsVisible = false;
         }
 
-
-
         public string GetIcon()
         {
             if (IsExpanded)
@@ -57,7 +55,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
         public async Task OnReload()
         {
             this.IsExpanded = true;
-            this.Children = (await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron.Id)).Select(n => new NeuronViewModel(n, this.avatarUrl, this.neuronQueryService)).ToArray();
+            this.Children = (await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron.Id, new NeuronQuery())).Select(n => new NeuronViewModel(n, this.avatarUrl, this.neuronQueryService)).ToArray();
         }
     }
 }

@@ -320,19 +320,32 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
             await Helper.SetStatusOnComplete(async () =>
             {
-                // reload self
-                var reloadedNeuron = (await this.neuronQueryService.GetNeuronById(
-                    this.host.AvatarUrl,
-                    this.Neuron.Id,
-                    this.Parent.ConvertOr(n => n.Neuron.Id, () => null),
-                    this.Neuron.Type
-                    )).First();
+                Neuron reloadedNeuron = null;
+
+                if (this.Parent.HasValue)
+                    // reload self
+                    reloadedNeuron = (await this.neuronQueryService.GetNeuronById(
+                        this.host.AvatarUrl,
+                        this.Neuron.Id,
+                        this.Parent.Value.Neuron.Id,
+                        new NeuronQuery() { 
+                            RelativeValues = (RelativeValues)Enum.Parse(typeof(RelativeValues), ((int)this.Neuron.Type).ToString()) 
+                        }
+                        )).First();
+                else
+                    reloadedNeuron = await this.neuronQueryService.GetNeuronById(
+                        this.host.AvatarUrl,
+                        this.Neuron.Id,
+                        new NeuronQuery() { 
+                            RelativeValues = (RelativeValues)Enum.Parse(typeof(RelativeValues), ((int)this.Neuron.Type).ToString()) }
+                        );
+
                 NeuronViewModelBase.CopyNeuronData(this.Neuron, reloadedNeuron);
                 this.SetNeuron(this.Neuron);
 
                 // reload relatives
                 cache.Remove(NeuronViewModelBase.GetAllChildren(cache, this.Neuron.UIId));
-                var relatives = await this.neuronQueryService.GetNeurons(this.host.AvatarUrl, this.Neuron.Id);
+                var relatives = await this.neuronQueryService.GetNeurons(this.host.AvatarUrl, this.Neuron.Id, new NeuronQuery());
                 relatives.FillUIIds(this.Neuron);
                 cache.AddOrUpdate(relatives);
                 return true;
@@ -361,7 +374,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             target.RegionTag = source.RegionTag;
             target.Timestamp = source.Timestamp;
             target.Version = source.Version;
-            target.Errors = source.Errors;
+            target.Active = source.Active;
 
             if (source.Terminal != null)
                 target.Terminal = new Terminal(source.Terminal);

@@ -164,7 +164,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             await Helper.SetStatusOnComplete(async () =>
                 {
                     cache.Clear();
-                    var relatives = await this.neuronQueryService.GetNeurons(this.AvatarUrl);
+                    var relatives = await this.neuronQueryService.GetNeurons(this.AvatarUrl, new NeuronQuery());
                     this.originService.Save(this.AvatarUrl);
                     relatives.FillUIIds(null);
                     cache.AddOrUpdate(relatives);

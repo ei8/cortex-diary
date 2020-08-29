@@ -50,7 +50,15 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
             }
             else if (type == EventTypeNames.TerminalCreated.ToString())
             {
-                details = $"Terminal created between Presynaptic Neuron '{cache[data.PresynapticNeuronId.ToString()].Tag}' and Postsynaptic Neuron '{cache[data.PostsynapticNeuronId.ToString()].Tag}'.";
+                var presynapticTag = cache.ContainsKey(data.PresynapticNeuronId.ToString()) ?
+                    cache[data.PresynapticNeuronId.ToString()].Tag :
+                    "Missing: " + data.PresynapticNeuronId.ToString();
+
+                var postsynaptictag = cache.ContainsKey(data.PostsynapticNeuronId.ToString()) ?
+                    cache[data.PostsynapticNeuronId.ToString()].Tag :
+                    "Missing: " + data.PostsynapticNeuronId.ToString();
+
+                details = $"Terminal created between Presynaptic Neuron '{presynapticTag}' and Postsynaptic Neuron '{postsynaptictag}'.";
             }
 
             return new NotificationData(

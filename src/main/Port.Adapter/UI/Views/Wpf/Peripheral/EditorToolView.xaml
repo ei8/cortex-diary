@@ -96,13 +96,17 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <TextBox Name="TagText" FontSize="15" Style="{DynamicResource MaterialDesignOutlinedTextFieldTextBox}" materialDesign:HintAssist.Hint="Tag" materialDesign:HintAssist.IsFloating="False" VerticalContentAlignment="Bottom" VerticalAlignment="Stretch" Margin="10,10,10,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
-                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,7,0,0">
-                    <ComboBox Name="RelativeType" Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Margin="15,-12,0,0" materialDesign:HintAssist.FloatingScale="0.70" materialDesign:HintAssist.Hint="Relative Type" materialDesign:HintAssist.FloatingOffset="0,-12" >
+                <TextBox Name="ReferenceUrl" Grid.Row="1" Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="10,0,10,0" materialDesign:HintAssist.Hint="Reference URL" IsReadOnly="True" materialDesign:HintAssist.FloatingOffset="0,-12" />
+                <TextBox Name="RegionValue" Grid.Row="2" Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="10,0,10,0" materialDesign:HintAssist.Hint="Region" IsReadOnly="True" materialDesign:HintAssist.FloatingOffset="0,-12" />
+                <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,0,0,0">
+                    <ComboBox Name="RelativeType" Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Margin="10,-12,0,0" materialDesign:HintAssist.FloatingScale="0.70" materialDesign:HintAssist.Hint="Relative Type" materialDesign:HintAssist.FloatingOffset="0,-12" >
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}"/>

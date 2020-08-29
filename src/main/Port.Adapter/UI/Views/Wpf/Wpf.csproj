@@ -86,11 +86,11 @@
       <HintPath>..\..\..\..\..\packages\DynamicData.6.13.9\lib\net461\DynamicData.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ei8.Cortex.Diary.Common, Version=0.1.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Common.0.1.8\lib\netstandard2.0\ei8.Cortex.Diary.Common.dll</HintPath>
+    <Reference Include="ei8.Cortex.Diary.Common, Version=0.1.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Common.0.1.10\lib\netstandard2.0\ei8.Cortex.Diary.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ei8.Cortex.Diary.Nucleus.Client, Version=0.1.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Nucleus.Client.0.1.12\lib\netstandard2.0\ei8.Cortex.Diary.Nucleus.Client.dll</HintPath>
+    <Reference Include="ei8.Cortex.Diary.Nucleus.Client, Version=0.1.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Nucleus.Client.0.1.13\lib\netstandard2.0\ei8.Cortex.Diary.Nucleus.Client.dll</HintPath>
     </Reference>
     <Reference Include="IdentityModel, Version=3.10.10.0, Culture=neutral, PublicKeyToken=e7877f4675df049f, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\IdentityModel.3.10.10\lib\net452\IdentityModel.dll</HintPath>
@@ -122,8 +122,8 @@
     <Reference Include="neurUL.Common, Version=0.1.19.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\neurUL.Common.0.1.19\lib\netstandard2.0\neurUL.Common.dll</HintPath>
     </Reference>
-    <Reference Include="neurUL.Common.Http, Version=0.1.11.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\neurUL.Common.Http.0.1.11\lib\netstandard2.0\neurUL.Common.Http.dll</HintPath>
+    <Reference Include="neurUL.Common.Http, Version=0.1.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\neurUL.Common.Http.0.1.13\lib\netstandard2.0\neurUL.Common.Http.dll</HintPath>
     </Reference>
     <Reference Include="neurUL.Cortex.Common, Version=0.1.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\neurUL.Cortex.Common.0.1.4\lib\netstandard2.0\neurUL.Cortex.Common.dll</HintPath>
