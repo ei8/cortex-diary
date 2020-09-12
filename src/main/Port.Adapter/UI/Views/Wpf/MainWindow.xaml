@@ -24,7 +24,7 @@
         xmlns:local="clr-namespace:ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf"
         xmlns:peripheral="clr-namespace:ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Peripheral"
         mc:Ignorable="d"
-        Title="d# neurUL Studio 2019 [Community Edition]" Height="450" Width="800" WindowState="Maximized" Icon="pack://application:,,,/d23-wpf;component/images/dasz.ico">
+        Title="d# neurUL Studio 2020 [Community Edition]" Height="450" Width="800" WindowState="Maximized" Icon="pack://application:,,,/d23-wpf;component/images/dasz.ico">
     <Window.Resources>
         <avalonDock:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>

@@ -30,6 +30,14 @@
 
 using DynamicData;
 using DynamicData.Binding;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Application.Notifications;
+using ei8.Cortex.Diary.Domain.Model.Origin;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Library.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Splat;
@@ -40,13 +48,6 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Application.Neurons;
-using ei8.Cortex.Diary.Application.Notifications;
-using ei8.Cortex.Diary.Common;
-using ei8.Cortex.Diary.Domain.Model.Origin;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -74,15 +75,15 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.statusService.WhenPropertyChanged(s => s.Message)
                 .Subscribe(s => this.StatusMessage = s.Sender.Message);
 
-            bool DefaultPredicate(Node<Neuron, int> node) => node.IsRoot;
-            var cache = new SourceCache<Neuron, int>(x => x.UIId);
+            bool DefaultPredicate(Node<UINeuron, int> node) => node.IsRoot;
+            var cache = new SourceCache<UINeuron, int>(x => x.UIId);
 
             this.AddCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnAddClicked(cache, parameter));
             this.SetRegionCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnSetRegionIdClicked(parameter));
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(cache));
 
             this.cleanUp = cache.AsObservableCache().Connect()
-                .TransformToTree(child => child.CentralUIId, Observable.Return((Func<Node<Neuron, int>, bool>)DefaultPredicate))
+                .TransformToTree(child => child.CentralUIId, Observable.Return((Func<Node<UINeuron, int>, bool>)DefaultPredicate))
                 .Transform(e =>
                     e.Item.Type == RelativeType.Postsynaptic ?
                     (NeuronViewModelBase)(new PostsynapticViewModel(this, e.Item.Tag, e, cache)) :
@@ -96,7 +97,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.IconSourcePath = @"pack://application:,,,/d23-wpf;component/images/hierarchy.ico";            
         }
 
-        private async Task OnAddClicked(SourceCache<Neuron, int> cache, object owner)
+        private async Task OnAddClicked(SourceCache<UINeuron, int> cache, object owner)
         {
             var n = await ViewModels.Helper.CreateNeuron(
                 async () =>
@@ -134,7 +135,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 {
                     bool stat = false;
 
-                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Region Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
+                    if ((await this.dialogService.ShowDialogSelectNeurons("Select Region Neuron", this.AvatarUrl, parameter, false, out IEnumerable<UINeuron> result)).GetValueOrDefault())
                     {
                         this.RegionName = result.First().Tag;
                         this.RegionId = result.First().Id;
@@ -157,14 +158,16 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.RegionId = Guid.Empty.ToString();
         }
 
-        private async Task OnReloadClicked(SourceCache<Neuron, int> cache)
+        private async Task OnReloadClicked(SourceCache<UINeuron, int> cache)
         {
             this.Loading = true;
 
             await Helper.SetStatusOnComplete(async () =>
                 {
                     cache.Clear();
-                    var relatives = await this.neuronQueryService.GetNeurons(this.AvatarUrl, new NeuronQuery());
+                    var relatives = new List<UINeuron>();
+                    (await this.neuronQueryService.GetNeurons(this.AvatarUrl, new NeuronQuery()))
+                        .ToList().ForEach(n => relatives.Add(n.ToInternalType()));
                     this.originService.Save(this.AvatarUrl);
                     relatives.FillUIIds(null);
                     cache.AddOrUpdate(relatives);

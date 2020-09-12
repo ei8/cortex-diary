@@ -1,17 +1,18 @@
-﻿using System;
+﻿using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Application.Notifications;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Library.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Application.Neurons;
-using ei8.Cortex.Diary.Application.Notifications;
-using ei8.Cortex.Diary.Common;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public static class Helper
     {
-        internal static void FillUIIds(this IEnumerable<Neuron> neurons, Neuron central)
+        internal static void FillUIIds(this IEnumerable<UINeuron> neurons, UINeuron central)
         {
             neurons.ToList().ForEach(un =>
             {
@@ -20,9 +21,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             });
         }
 
-        internal async static Task<Neuron> CreateNeuron(Func<Task<string>> tagRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, INotificationApplicationService notificationApplicationService, IStatusService statusService, string avatarUrl, string regionId)
+        internal async static Task<UINeuron> CreateNeuron(Func<Task<string>> tagRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, INotificationApplicationService notificationApplicationService, IStatusService statusService, string avatarUrl, string regionId)
         {
-            Neuron result = null;
+            UINeuron result = null;
             await Neurons.Helper.SetStatusOnComplete(async () =>
             {
                 bool stat = false;
@@ -38,7 +39,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                         await Neurons.Helper.PromptSimilarExists(neuronQueryService, dialogService, avatarUrl, owner, tag)
                     )
                     {
-                        Neuron n = new Neuron
+                        var n = new UINeuron
                         {
                             Tag = tag,
                             UIId = Guid.NewGuid().GetHashCode(),
@@ -118,7 +119,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             return result;
         }
 
-        internal async static Task<bool> LinkRelative(Func<Task<IEnumerable<Neuron>>> linkCandidatesRetriever, Func<object, Task<string[]>> terminalParametersRetriever, object owner, ITerminalApplicationService terminalApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, RelativeType relativeType)
+        internal async static Task<bool> LinkRelative(Func<Task<IEnumerable<UINeuron>>> linkCandidatesRetriever, Func<object, Task<string[]>> terminalParametersRetriever, object owner, ITerminalApplicationService terminalApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, RelativeType relativeType)
         {
             bool result = false;
             await Neurons.Helper.SetStatusOnComplete(async () =>

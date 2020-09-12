@@ -17,6 +17,8 @@ using ei8.Cortex.Diary.Application.Notifications;
 using ei8.Cortex.Diary.Common;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Library.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {
@@ -272,7 +274,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 
         private async Task OnSelectClicked(object parameter)
         {
-            if ((await this.dialogService.ShowDialogSelectNeurons("Select Neuron(s)", this.AvatarUrl, parameter, true, out IEnumerable<Neuron> result)).GetValueOrDefault())
+            if ((await this.dialogService.ShowDialogSelectNeurons("Select Neuron(s)", this.AvatarUrl, parameter, true, out IEnumerable<UINeuron> result)).GetValueOrDefault())
             {
                 this.TargetDraft.LinkCandidates = result;
             }

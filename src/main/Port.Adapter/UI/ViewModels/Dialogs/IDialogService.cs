@@ -28,12 +28,12 @@
      support@ei8.works
  */
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.OpenUrl;
 using ei8.Cortex.Diary.Application.Settings;
-using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {
@@ -44,7 +44,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
     {
         Task<bool?> ShowDialogYesNo(string message, object owner, out DialogResult result);
 
-        Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<Neuron> result);
+        Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<UINeuron> result);
 
         Task<bool?> ShowDialogTextInput(string message, object owner, out string result);
 

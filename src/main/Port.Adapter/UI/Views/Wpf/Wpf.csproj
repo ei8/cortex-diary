@@ -86,11 +86,17 @@
       <HintPath>..\..\..\..\..\packages\DynamicData.6.13.9\lib\net461\DynamicData.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ei8.Cortex.Diary.Common, Version=0.1.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Common.0.1.10\lib\netstandard2.0\ei8.Cortex.Diary.Common.dll</HintPath>
+    <Reference Include="ei8.Cortex.Diary.Common, Version=0.1.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Common.0.1.11\lib\netstandard2.0\ei8.Cortex.Diary.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ei8.Cortex.Diary.Nucleus.Client, Version=0.1.13.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Nucleus.Client.0.1.13\lib\netstandard2.0\ei8.Cortex.Diary.Nucleus.Client.dll</HintPath>
+    <Reference Include="ei8.Cortex.Diary.Nucleus.Client, Version=0.1.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Nucleus.Client.0.1.14\lib\netstandard2.0\ei8.Cortex.Diary.Nucleus.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="ei8.Cortex.Library.Client, Version=0.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Library.Client.0.1.4\lib\netstandard2.0\ei8.Cortex.Library.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="ei8.Cortex.Library.Common, Version=0.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Library.Common.0.1.3\lib\netstandard2.0\ei8.Cortex.Library.Common.dll</HintPath>
     </Reference>
     <Reference Include="IdentityModel, Version=3.10.10.0, Culture=neutral, PublicKeyToken=e7877f4675df049f, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\IdentityModel.3.10.10\lib\net452\IdentityModel.dll</HintPath>
@@ -433,6 +439,10 @@
     <ProjectReference Include="..\..\..\IO\Process\Services\Services.csproj">
       <Project>{69654AC7-999C-493A-88A6-7B5357EBFCF4}</Project>
       <Name>Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Common.csproj">
+      <Project>{5AD374E6-F50F-4026-BD1A-FE75DD7F7769}</Project>
+      <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ViewModels\ViewModels.csproj">
       <Project>{8A593F0A-9C94-4353-B317-7A4E599C122F}</Project>

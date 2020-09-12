@@ -35,6 +35,7 @@ using System.Threading.Tasks;
 using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Common;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Library.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {

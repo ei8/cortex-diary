@@ -28,13 +28,13 @@
      support@ei8.works
  */
 
+using ei8.Cortex.Library.Client.Out;
+using ei8.Cortex.Library.Common;
 using Splat;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Common;
-using ei8.Cortex.Diary.Nucleus.Client.Out;
 
 namespace ei8.Cortex.Diary.Application.Neurons
 {

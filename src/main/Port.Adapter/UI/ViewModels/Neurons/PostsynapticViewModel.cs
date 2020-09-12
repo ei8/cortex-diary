@@ -29,16 +29,16 @@
  */
 
 using DynamicData;
-using System.ComponentModel;
 using ei8.Cortex.Diary.Application.Neurons;
-using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using System.ComponentModel;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
     [DisplayName("Postsynaptic Neuron")]
     public class PostsynapticViewModel : NeuronViewModelBase
     {
-        public PostsynapticViewModel(IAvatarViewer host, string tag, Node<Neuron, int> node, SourceCache<Neuron, int> cache, NeuronViewModelBase parent = null, 
+        public PostsynapticViewModel(IAvatarViewer host, string tag, Node<UINeuron, int> node, SourceCache<UINeuron, int> cache, NeuronViewModelBase parent = null, 
             INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, ITerminalApplicationService terminalApplicationService = null, 
             IExtendedSelectionService selectionService = null) : 
             base(host, node, cache, parent, neuronApplicationService, neuronQueryService, terminalApplicationService, selectionService)

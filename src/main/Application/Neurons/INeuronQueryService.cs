@@ -28,10 +28,10 @@
      support@ei8.works
  */
 
+using ei8.Cortex.Library.Common;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Common;
 
 namespace ei8.Cortex.Diary.Application.Neurons
 {

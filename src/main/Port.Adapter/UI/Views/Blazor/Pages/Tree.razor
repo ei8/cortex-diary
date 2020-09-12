@@ -1,8 +1,9 @@
 ﻿@page "/tree"
+@using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
 @using ei8.Cortex.Diary.Application.Neurons;
-@using ei8.Cortex.Diary.Common; 
+@using ei8.Cortex.Library.Common;
 @inject INeuronQueryService NeuronQueryService;
 
 <div class="top-row px-4">
@@ -35,6 +36,9 @@
 
     private async Task OnReload()
     {
-        this.Children = (await NeuronQueryService.GetNeurons(this.AvatarUrl, new NeuronQuery())).Select(n => new NeuronViewModel(n, this.AvatarUrl, NeuronQueryService)).ToArray();
+        var children = new List<NeuronViewModel>();
+        (await NeuronQueryService.GetNeurons(this.AvatarUrl, new NeuronQuery())).ToList().ForEach(n =>
+            children.Add(new NeuronViewModel(n.ToInternalType(), this.AvatarUrl, NeuronQueryService)));
+        this.Children = children.ToArray();
     }
 }

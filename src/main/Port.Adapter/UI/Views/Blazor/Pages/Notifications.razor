@@ -2,7 +2,7 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common
 @using ei8.Cortex.Diary.Application.Notifications
 @using ei8.Cortex.Diary.Common
-@using ei8.Cortex.Diary.Nucleus.Client.Out
+@using ei8.Cortex.Library.Client.Out
 @inject INotificationApplicationService NotificationApplicationService
 @inject INeuronQueryClient HttpNeuronQueryClient
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
@@ -39,7 +39,7 @@
 </div>
 
 @code {
-    private static readonly IDictionary<string, Neuron> neuronCache = new Dictionary<string, Neuron>();
+    private static readonly IDictionary<string, UINeuron> neuronCache = new Dictionary<string, UINeuron>();
 
     public string AvatarUrl { get; set; }
 
