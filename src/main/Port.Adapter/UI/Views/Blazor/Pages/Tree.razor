@@ -1,6 +1,5 @@
 ﻿@page "/tree"
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
 @using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Library.Common;
@@ -19,7 +18,7 @@
     <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children"></TreeView>
 </div>
 <div class="footer px-4">
-    <EditorBox AvatarUrl="@this.AvatarUrl" />
+    <ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared.EditorBox AvatarUrl="@this.AvatarUrl" />
 </div>
 
 @code {
@@ -37,8 +36,10 @@
     private async Task OnReload()
     {
         var children = new List<NeuronViewModel>();
-        (await NeuronQueryService.GetNeurons(this.AvatarUrl, new NeuronQuery())).ToList().ForEach(n =>
-            children.Add(new NeuronViewModel(n.ToInternalType(), this.AvatarUrl, NeuronQueryService)));
+        (await NeuronQueryService.GetNeurons(this.AvatarUrl, new NeuronQuery()))
+            .Neurons
+            .ToList().ForEach(n =>
+            children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, NeuronQueryService)));
         this.Children = children.ToArray();
     }
 }

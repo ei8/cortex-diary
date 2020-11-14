@@ -129,7 +129,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
         private void InitRegion()
         {
             this.RegionName = "[Base]";
-            this.RegionId = Guid.Empty.ToString();
+            this.RegionId = string.Empty;
         }        
 
         private async Task OnMoreClicked()

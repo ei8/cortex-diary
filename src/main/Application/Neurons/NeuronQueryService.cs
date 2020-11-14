@@ -47,34 +47,37 @@ namespace ei8.Cortex.Diary.Application.Neurons
             this.neuronQueryClient = neuronQueryClient ?? Locator.Current.GetService<INeuronQueryClient>();
         }
 
-        public async Task<Neuron> GetNeuronById(string avatarUrl, string id, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
+        public async Task<QueryResult> GetNeuronById(string avatarUrl, string id, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
             return await this.neuronQueryClient.GetNeuronById(avatarUrl, id, neuronQuery, token);
         }
 
-        public async Task<IEnumerable<Neuron>> GetNeuronById(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
+        public async Task<QueryResult> GetNeuronById(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
             return await this.neuronQueryClient.GetNeuronById(avatarUrl, id, centralId, neuronQuery, token);
         }
 
-        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
+        public async Task<QueryResult> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
-            var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, neuronQuery, token);
-            relatives = relatives.OrderBy(n => n.Tag);
-            return relatives;
+            return await this.neuronQueryClient.GetNeurons(avatarUrl, neuronQuery, token);
         }
 
-        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
+        public async Task<QueryResult> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
             var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, centralId, neuronQuery, token);
 
-            var posts = relatives.Where(n => n.Type == RelativeType.Postsynaptic);
-            var pres = relatives.Where(n => n.Type == RelativeType.Presynaptic);
+            var posts = relatives.Neurons.Where(n => n.Type == RelativeType.Postsynaptic);
+            var pres = relatives.Neurons.Where(n => n.Type == RelativeType.Presynaptic);
             posts = posts.ToList().OrderBy(n => n.Tag);
             pres = pres.ToList().OrderBy(n => n.Tag);
-            relatives = posts.Concat(pres);
+            relatives.Neurons = posts.Concat(pres);
 
             return relatives;
+        }
+
+        public async Task<QueryResult> SendQuery(string queryUrl, CancellationToken token = default)
+        {
+            return await this.neuronQueryClient.SendQuery(queryUrl, token);
         }
     }
 }

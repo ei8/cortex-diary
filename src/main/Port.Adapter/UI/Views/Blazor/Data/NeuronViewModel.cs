@@ -58,8 +58,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
         {
             this.IsExpanded = true;
             var children = new List<NeuronViewModel>();
-            (await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron.Id, new NeuronQuery())).ToList().ForEach(n =>
-                children.Add(new NeuronViewModel(n.ToInternalType(), this.avatarUrl, this.neuronQueryService))
+            (await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron.Id, new NeuronQuery()))
+                .Neurons
+                .ToList().ForEach(n =>
+                children.Add(new NeuronViewModel(new UINeuron(n), this.avatarUrl, this.neuronQueryService))
             );
             this.Children = children.ToArray();
         }

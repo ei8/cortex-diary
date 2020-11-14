@@ -29,7 +29,9 @@ using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
+using neurUL.Common.Domain.Model;
 using neurUL.Cortex.Common;
 using ReactiveUI;
 using Splat;
@@ -56,8 +58,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private NeurotransmitterEffect effect;
         private float strength;
 
-        private LastModifiedInfo lastModified;
-        private RegionInfo regionInfo;
+        private AuthorEventInfo creation;
+        private AuthorEventInfo lastModification;
+        private AuthorEventInfo unifiedLastModification;
+        private AuthorEventInfo terminalCreation;
+        private AuthorEventInfo terminalLastModification;
+        private NeuronInfo regionInfo;
+        private int version;
+        private int terminalVersion;
         private string terminalId;
 
         private bool isExpanded;
@@ -192,7 +200,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 n.Neuron.Type == RelativeType.NotSet ? (float?)null : n.Strength,
                 n.Neuron.Type == RelativeType.NotSet ? (RelativeType?)null : n.Neuron.Type,
                 n.Region.Id,
-                n.Region.Name,
+                n.Region.Tag,
                 n.Neuron.Version
             );
         }
@@ -272,24 +280,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             this.Neuron = neuron;
             this.NeuronId = neuron.Id;
             this.Tag = neuron.Tag;
-            this.LastModified = new LastModifiedInfo()
-            {
-                Neuron = new ModificationInfo()
-                {
-                    Author = new AuthorInfo()
-                    {
-                        Id = neuron.AuthorId,
-                        Name = neuron.AuthorTag
-                    },
-                    Timestamp = neuron.Timestamp,
-                    Version = neuron.Version
-                }
-            };
-            this.regionInfo = new RegionInfo()
-            {
-                Id = neuron.RegionId,
-                Name = string.IsNullOrEmpty(neuron.RegionTag) ? "[Base]" : neuron.RegionTag
-            };
+            this.Creation = new AuthorEventInfo(neuron.Creation);
+            this.LastModification = new AuthorEventInfo(neuron.LastModification);
+            this.UnifiedLastModification = new AuthorEventInfo(neuron.UnifiedLastModification);
+            this.Region = new NeuronInfo(neuron.Region);
+            this.Version = neuron.Version;
         
             if (neuron.Terminal != null)
             {
@@ -298,16 +293,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     this.Effect = (NeurotransmitterEffect)ie;
                 if (float.TryParse(neuron.Terminal.Strength, out float fs))
                     this.Strength = fs;
-                this.LastModified.Terminal = new ModificationInfo()
-                {
-                    Author = new AuthorInfo()
-                    {
-                        Id = neuron.Terminal.AuthorId,
-                        Name = neuron.Terminal.AuthorTag
-                    },
-                    Timestamp = neuron.Terminal.Timestamp,
-                    Version = neuron.Terminal.Version
-                };
+
+                this.TerminalCreation = new AuthorEventInfo(neuron.Terminal.Creation);
+                this.TerminalLastModification = new AuthorEventInfo(neuron.Terminal.LastModification);
+                this.TerminalVersion = neuron.Terminal.Version;                
             }
             this.settingNeuron = false;
         }
@@ -322,34 +311,37 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             await Helper.SetStatusOnComplete(async () =>
             {
                 UINeuron reloadedNeuron = null;
-
+                                
                 if (this.Parent.HasValue)
                     // reload self
-                    reloadedNeuron = (await this.neuronQueryService.GetNeuronById(
+                    reloadedNeuron = new UINeuron((await this.neuronQueryService.GetNeuronById(
                         this.host.AvatarUrl,
                         this.Neuron.Id,
                         this.Parent.Value.Neuron.Id,
                         new NeuronQuery() { 
                             RelativeValues = (RelativeValues)Enum.Parse(typeof(RelativeValues), ((int)this.Neuron.Type).ToString()) 
                         }
-                        )).First().ToInternalType();
+                        )).Neurons.First()
+                        );
                 else
-                    reloadedNeuron = (await this.neuronQueryService.GetNeuronById(
+                    reloadedNeuron = new UINeuron((await this.neuronQueryService.GetNeuronById(
                         this.host.AvatarUrl,
                         this.Neuron.Id,
                         new NeuronQuery() { 
                             RelativeValues = (RelativeValues)Enum.Parse(typeof(RelativeValues), ((int)this.Neuron.Type).ToString()) }
                         )
-                    ).ToInternalType();
+                    ).Neurons.First()
+                    );
 
-                NeuronViewModelBase.CopyNeuronData(this.Neuron, reloadedNeuron);
+                this.Neuron.CopyData(reloadedNeuron);
                 this.SetNeuron(this.Neuron);
 
                 // reload relatives
                 cache.Remove(NeuronViewModelBase.GetAllChildren(cache, this.Neuron.UIId));
                 var relatives = new List<UINeuron>();
                 (await this.neuronQueryService.GetNeurons(this.host.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
-                    .ToList().ForEach(n => relatives.Add(n.ToInternalType()));
+                    .Neurons
+                    .ToList().ForEach(n => relatives.Add(new UINeuron(n)));
                 relatives.FillUIIds(this.Neuron);
                 cache.AddOrUpdate(relatives);
                 return true;
@@ -366,21 +358,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             var currList = cache.Items.Where(i => i.CentralUIId == parentId);
             currList.ToList().ForEach(n => currList = currList.Concat(NeuronViewModelBase.GetAllChildren(cache, n.UIId)));
             return currList;
-        }
-
-        private static void CopyNeuronData(UINeuron target, UINeuron source)
-        {
-            target.Tag = source.Tag;
-            target.AuthorId = source.AuthorId;
-            target.AuthorTag = source.AuthorTag;
-            target.RegionId = source.RegionId;
-            target.RegionTag = source.RegionTag;
-            target.Timestamp = source.Timestamp;
-            target.Version = source.Version;
-            target.Active = source.Active;
-
-            if (source.Terminal != null)
-                target.Terminal = new Terminal(source.Terminal);
         }
 
         private async Task OnAddPresynaptic(SourceCache<UINeuron, int> cache, object owner)
@@ -512,18 +489,66 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         }
 
         [Category(NeuronViewModelBase.MiscCategory)]
-        [DisplayName("Last Modified")]
-        public LastModifiedInfo LastModified
+        [DisplayName("Creation")]
+        public AuthorEventInfo Creation
         {
-            get => this.lastModified;
-            set => this.RaiseAndSetIfChanged(ref this.lastModified, value);
+            get => this.creation;
+            set => this.RaiseAndSetIfChanged(ref this.creation, value);
+        }
+
+        [Category(NeuronViewModelBase.MiscCategory)]
+        [DisplayName("Last Modification")]
+        public AuthorEventInfo LastModification
+        {
+            get => this.lastModification;
+            set => this.RaiseAndSetIfChanged(ref this.lastModification, value);
+        }
+
+        [Category(NeuronViewModelBase.MiscCategory)]
+        [DisplayName("(Unified) Last Modification")]
+        public AuthorEventInfo UnifiedLastModification
+        {
+            get => this.unifiedLastModification;
+            set => this.RaiseAndSetIfChanged(ref this.unifiedLastModification, value);
+        }
+
+        [Category(NeuronViewModelBase.MiscCategory)]
+        [DisplayName("Terminal Creation")]
+        public AuthorEventInfo TerminalCreation
+        {
+            get => this.terminalCreation;
+            set => this.RaiseAndSetIfChanged(ref this.terminalCreation, value);
+        }
+
+        [Category(NeuronViewModelBase.MiscCategory)]
+        [DisplayName("Terminal Last Modification")]
+        public AuthorEventInfo TerminalLastModification
+        {
+            get => this.terminalLastModification;
+            set => this.RaiseAndSetIfChanged(ref this.terminalLastModification, value);
         }
 
         [Category(NeuronViewModelBase.NeuronCategory)]
-        public RegionInfo Region
+        public NeuronInfo Region
         {
             get => this.regionInfo;
             set => this.RaiseAndSetIfChanged(ref this.regionInfo, value);
+        }
+
+        [Category(NeuronViewModelBase.MiscCategory)]
+        [DisplayName("Version")]
+        public int Version
+        {
+            get => this.version;
+            set => this.RaiseAndSetIfChanged(ref this.version, value);
+        }
+
+        [Category(NeuronViewModelBase.MiscCategory)]
+        [DisplayName("Terminal Version")]
+        public int TerminalVersion
+        {
+            get => this.terminalVersion;
+            set => this.RaiseAndSetIfChanged(ref this.terminalVersion, value);
         }
 
         [ParenthesizePropertyName(true)]

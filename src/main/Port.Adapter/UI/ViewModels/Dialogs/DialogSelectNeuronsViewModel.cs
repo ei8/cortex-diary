@@ -72,7 +72,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             try
             {
                 list.Clear();
-                (await this.neuronQueryService.GetNeurons(this.avatarUrl, new NeuronQuery())).ToList().ForEach(n => list.Add(n.ToInternalType()));                
+                (await this.neuronQueryService.GetNeurons(this.avatarUrl, new NeuronQuery()))
+                    .Neurons.ToList().ForEach(n => list.Add(new UINeuron(n)));                
                 this.StatusMessage = "Reload successful.";
             }
             catch (Exception ex)

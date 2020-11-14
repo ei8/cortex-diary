@@ -37,7 +37,10 @@ using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
+using Nancy.Helpers;
+using neurUL.Common.Domain.Model;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Splat;
@@ -61,15 +64,16 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly INotificationApplicationService notificationApplicationService;
         private readonly IOriginService originService;
         private readonly IStatusService statusService;
-        
-        public NeuronTreePaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, INotificationApplicationService notificationApplicationService = null,  
+        private string queryUrl;
+
+        public NeuronTreePaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, INotificationApplicationService notificationApplicationService = null,
             IStatusService statusService = null, IDialogService dialogService = null, IOriginService originService = null)
         {
             this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
             this.notificationApplicationService = notificationApplicationService ?? Locator.Current.GetService<INotificationApplicationService>();
-            this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();            
+            this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
             this.originService = originService ?? Locator.Current.GetService<IOriginService>();
 
             this.statusService.WhenPropertyChanged(s => s.Message)
@@ -79,8 +83,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             var cache = new SourceCache<UINeuron, int>(x => x.UIId);
 
             this.AddCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnAddClicked(cache, parameter));
-            this.SetRegionCommand = ReactiveCommand.Create<object>(async(parameter) => await this.OnSetRegionIdClicked(parameter));
-            this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(cache));
+            this.SetRegionCommand = ReactiveCommand.Create<object>(async (parameter) => await this.OnSetRegionIdClicked(parameter));
+            this.ReloadCommand = ReactiveCommand.Create(async () => await this.OnReloadClicked(cache));
 
             this.cleanUp = cache.AsObservableCache().Connect()
                 .TransformToTree(child => child.CentralUIId, Observable.Return((Func<Node<UINeuron, int>, bool>)DefaultPredicate))
@@ -94,7 +98,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
             this.Target = null;
             this.Loading = false;
-            this.IconSourcePath = @"pack://application:,,,/d23-wpf;component/images/hierarchy.ico";            
+            this.IconSourcePath = @"pack://application:,,,/d23-wpf;component/images/hierarchy.ico";
         }
 
         private async Task OnAddClicked(SourceCache<UINeuron, int> cache, object owner)
@@ -114,14 +118,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         result = r;
 
                     return result;
-                }, 
+                },
                 owner,
                 this.dialogService,
-                this.neuronQueryService, 
+                this.neuronQueryService,
                 this.neuronApplicationService,
                 this.notificationApplicationService,
-                this.statusService, 
-                this.AvatarUrl, 
+                this.statusService,
+                this.AvatarUrl,
                 this.RegionId
                 );
 
@@ -131,7 +135,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         private async Task OnSetRegionIdClicked(object parameter)
         {
-            await Helper.SetStatusOnComplete(async() =>
+            await Helper.SetStatusOnComplete(async () =>
                 {
                     bool stat = false;
 
@@ -144,7 +148,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                     else
                         this.InitRegion();
 
-                    return stat;                    
+                    return stat;
                 },
                 "Region set successfully.",
                 this.statusService,
@@ -155,7 +159,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private void InitRegion()
         {
             this.RegionName = "[Base]";
-            this.RegionId = Guid.Empty.ToString();
+            this.RegionId = string.Empty;
         }
 
         private async Task OnReloadClicked(SourceCache<UINeuron, int> cache)
@@ -166,8 +170,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 {
                     cache.Clear();
                     var relatives = new List<UINeuron>();
-                    (await this.neuronQueryService.GetNeurons(this.AvatarUrl, new NeuronQuery()))
-                        .ToList().ForEach(n => relatives.Add(n.ToInternalType()));
+                    (await this.neuronQueryService.SendQuery(this.QueryUrl))
+                        .Neurons
+                        .ToList().ForEach(n => relatives.Add(new UINeuron(n))
+                    );
                     this.originService.Save(this.AvatarUrl);
                     relatives.FillUIIds(null);
                     cache.AddOrUpdate(relatives);
@@ -185,11 +191,23 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         [Reactive]
         public string RegionId { get; set; }
-        
+
         [Reactive]
         public string RegionName { get; set; }
-        
+
         public ReactiveCommand<object, Unit> SetRegionCommand { get; }
+
+        public string QueryUrl
+        {
+            get => this.queryUrl;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref this.queryUrl, value);
+                this.AvatarUrl = Library.Client.QueryUrl.TryParse(value, out QueryUrl rurl) ?
+                    rurl.AvatarUrl : 
+                    string.Empty;
+            }
+        }
 
         [Reactive]
         public string AvatarUrl { get; set; }

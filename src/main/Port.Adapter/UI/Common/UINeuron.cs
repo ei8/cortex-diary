@@ -6,8 +6,22 @@ using System.Text;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
 {
-    public class UINeuron : Neuron, IEquatable<UINeuron>
+    public class UINeuron : NeuronResult, IEquatable<UINeuron>
     {
+        public UINeuron()
+        {
+        }
+
+        public UINeuron(UINeuron original) : this((NeuronResult) original)
+        {
+            this.UIId = original.UIId;
+            this.CentralUIId = original.CentralUIId;
+        }
+
+        public UINeuron(NeuronResult original) : base(original)
+        {
+        }
+
         [JsonIgnore]
         public int UIId { get; set; }
 
@@ -42,6 +56,23 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
         public static bool operator !=(UINeuron left, UINeuron right)
         {
             return !Equals(left, right);
+        }
+
+        public void CopyData(UINeuron original)
+        {
+            this.Id = original.Id;
+            this.Tag = original.Tag;
+            this.Creation = new Library.Common.AuthorEventInfo(original.Creation);
+            this.LastModification = new Library.Common.AuthorEventInfo(original.LastModification);
+            this.UnifiedLastModification = new Library.Common.AuthorEventInfo(original.UnifiedLastModification);
+            this.Region = new Library.Common.NeuronInfo(original.Region);
+            this.Version = original.Version;
+            this.Active = original.Active;
+            this.ReadOnly = original.ReadOnly;
+            this.restrictionReasons = new List<string>(original.restrictionReasons);
+
+            if (original.Terminal != null)
+                this.Terminal = new Terminal(original.Terminal);
         }
     }
 }

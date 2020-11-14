@@ -49,7 +49,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
                     .Where(x => x != null)
                     .Subscribe(x => this.ViewModel = (NeuronTreePaneViewModel)x);
 
-                d(this.Bind(this.ViewModel, vm => vm.AvatarUrl, v => v.AvatarUrl.Text));
+                d(this.Bind(this.ViewModel, vm => vm.QueryUrl, v => v.QueryUrl.Text));
                 d(this.Bind(this.ViewModel, vm => vm.RegionName, v => v.RegionName.Content));
                 d(this.Bind(this.ViewModel, vm => vm.StatusMessage, v => v.StatusMessage.Content));
 

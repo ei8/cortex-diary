@@ -10,7 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ei8.Cortex.Library.Common" Version="0.1.3" />
+    <PackageReference Include="ei8.Cortex.Library.Client" Version="0.1.9" />
+    <PackageReference Include="ei8.Cortex.Library.Common" Version="0.1.14" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
   </ItemGroup>
 

@@ -37,9 +37,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
             if (type == EventTypeNames.NeuronCreated.ToString())
             {
                 string region =
-                    data.RegionId == Guid.Empty.ToString() ?
+                    string.IsNullOrEmpty(data.RegionId) ?
                         "Base Region" :
-                        data.RegionId != null && cache.ContainsKey(data.RegionId.ToString()) ?
+                        !string.IsNullOrEmpty(data.RegionId) && cache.ContainsKey(data.RegionId.ToString()) ?
                             cache[data.RegionId.ToString()].Tag :
                             "(Region not found)"
                             ;
@@ -108,8 +108,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
 
             if (ids.Count() > 0)
                 (await neuronGraphQueryClient.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { Id = ids.ToArray() }))
+                    .Neurons
                     .ToList()
-                    .ForEach(n => cache.Add(n.Id, n.ToInternalType()));
+                    .ForEach(n => cache.Add(n.Id, new UINeuron(n))
+                );
 
             return notificationLog.NotificationList.ToArray().Select(n => Common.Helper.CreateNotificationData(n, cache));
         }
