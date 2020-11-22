@@ -1,4 +1,12 @@
 ﻿using DynamicData.Binding;
+using ei8.Cortex.Diary.Application.Notifications;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
+using ei8.Cortex.Library.Client.Out;
+using ei8.Cortex.Library.Common;
 using neurUL.Cortex.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -9,13 +17,6 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Application.Notifications;
-using ei8.Cortex.Diary.Common;
-using ei8.Cortex.Diary.Nucleus.Client.Out;
-using ei8.Cortex.Diary.Port.Adapter.UI.Common;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
 {
@@ -26,7 +27,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
         private IExtendedSelectionService selectionService;
         private readonly IStatusService statusService;
         private readonly IDialogService dialogService;
-        private static readonly IDictionary<string, Neuron> neuronCache = new Dictionary<string, Neuron>();
+        private static readonly IDictionary<string, UINeuron> neuronCache = new Dictionary<string, UINeuron>();
 
         public NotificationsPaneViewModel(INotificationApplicationService neuronApplicationService = null, INeuronQueryClient neuronGraphQueryClient = null, IExtendedSelectionService selectionService = null, IStatusService statusService = null, IDialogService dialogService = null)
         {
@@ -108,7 +109,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
             {
                 bool stat = false;
 
-                if ((await this.dialogService.ShowDialogSelectNeurons("Select Region Neuron", this.AvatarUrl, parameter, false, out IEnumerable<Neuron> result)).GetValueOrDefault())
+                if ((await this.dialogService.ShowDialogSelectNeurons("Select Region Neuron", this.AvatarUrl, parameter, false, out IEnumerable<UINeuron> result)).GetValueOrDefault())
                 {
                     this.RegionName = result.First().Tag;
                     this.RegionId = result.First().Id;
@@ -128,7 +129,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
         private void InitRegion()
         {
             this.RegionName = "[Base]";
-            this.RegionId = Guid.Empty.ToString();
+            this.RegionId = string.Empty;
         }        
 
         private async Task OnMoreClicked()

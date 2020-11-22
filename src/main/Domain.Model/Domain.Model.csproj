@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.13.9" />
-    <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.8" />
+    <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.11" />
     <PackageReference Include="Neurul.Common" Version="0.1.19" />
     <PackageReference Include="Neurul.Cortex.Common" Version="0.1.4" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />

@@ -28,14 +28,14 @@
      support@ei8.works
  */
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.OpenUrl;
 using ei8.Cortex.Diary.Application.Settings;
-using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
 {
@@ -44,9 +44,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs
     /// </summary>
     public class DialogService : IDialogService
     {
-        public Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<Neuron> result)
+        public Task<bool?> ShowDialogSelectNeurons(string message, string avatarUrl, object owner, bool allowMultiSelect, out IEnumerable<UINeuron> result)
         {
-            return this.ShowDialog<IEnumerable<Neuron>>(new DialogSelectNeuronsViewModel(message, avatarUrl, allowMultiSelect), owner, out result, "Select Neuron(s)", 500, 600);
+            return this.ShowDialog<IEnumerable<UINeuron>>(new DialogSelectNeuronsViewModel(message, avatarUrl, allowMultiSelect), owner, out result, "Select Neuron(s)", 500, 600);
         }
 
         public Task<bool?> ShowDialogYesNo(string message, object owner, out DialogResult result)

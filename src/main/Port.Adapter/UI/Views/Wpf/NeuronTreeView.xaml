@@ -34,7 +34,7 @@
         <ToolBarTray IsLocked="True" ClipToBounds="True">
             <ToolBar Band="1" BandIndex="1">
                 <Button Name="Reload" ToolBar.OverflowMode="Never" Width="80">Reload</Button>
-                <TextBox Name="AvatarUrl" ToolBar.OverflowMode="Never" materialDesign:HintAssist.Hint="Avatar URL" Grid.Column="1" VerticalAlignment="Center" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolBarTray}}, Path=ActualWidth, Converter={StaticResource WidthConverter}, ConverterParameter='243'}"></TextBox>
+                <TextBox Name="QueryUrl" ToolBar.OverflowMode="Never" materialDesign:HintAssist.Hint="Query URL" Grid.Column="1" VerticalAlignment="Center" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolBarTray}}, Path=ActualWidth, Converter={StaticResource WidthConverter}, ConverterParameter='243'}"></TextBox>
                 <Button Name="Add" ToolBar.OverflowMode="Never" Grid.Column="2" Width="65" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">Add</Button>
                 <Button Name="SetRegion" ToolBar.OverflowMode="Never" Grid.Column="2" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">Region</Button>
             </ToolBar>

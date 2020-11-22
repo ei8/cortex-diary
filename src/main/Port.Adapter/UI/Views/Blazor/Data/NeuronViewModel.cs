@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Library.Common;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Application.Neurons;
-using ei8.Cortex.Diary.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
 {
@@ -9,7 +11,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
-        public NeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
+        public NeuronViewModel(UINeuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
             this.Neuron = neuron;
             this.Tag = neuron.Tag;
@@ -19,7 +21,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
 
         public NeuronViewModel[] Children { get; set; }
 
-        public Neuron Neuron { get; private set; }
+        public UINeuron Neuron { get; private set; }
 
         public string Tag { get; private set; }
 
@@ -42,8 +44,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
             this.AreControlsVisible = false;
         }
 
-
-
         public string GetIcon()
         {
             if (IsExpanded)
@@ -57,7 +57,13 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
         public async Task OnReload()
         {
             this.IsExpanded = true;
-            this.Children = (await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron.Id)).Select(n => new NeuronViewModel(n, this.avatarUrl, this.neuronQueryService)).ToArray();
+            var children = new List<NeuronViewModel>();
+            (await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron.Id, new NeuronQuery()))
+                .Neurons
+                .ToList().ForEach(n =>
+                children.Add(new NeuronViewModel(new UINeuron(n), this.avatarUrl, this.neuronQueryService))
+            );
+            this.Children = children.ToArray();
         }
     }
 }

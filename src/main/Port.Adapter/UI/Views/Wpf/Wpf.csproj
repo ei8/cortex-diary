@@ -61,10 +61,10 @@
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
-    <ManifestCertificateThumbprint>CFDCDC60672C89CB0D8C39DE6689C53F7062BB86</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>46BD28626B3A275C18AFF4458542F085326C4641</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Wpf_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>Wpf_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -86,11 +86,17 @@
       <HintPath>..\..\..\..\..\packages\DynamicData.6.13.9\lib\net461\DynamicData.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ei8.Cortex.Diary.Common, Version=0.1.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Common.0.1.8\lib\netstandard2.0\ei8.Cortex.Diary.Common.dll</HintPath>
+    <Reference Include="ei8.Cortex.Diary.Common, Version=0.1.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Common.0.1.11\lib\netstandard2.0\ei8.Cortex.Diary.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ei8.Cortex.Diary.Nucleus.Client, Version=0.1.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Nucleus.Client.0.1.12\lib\netstandard2.0\ei8.Cortex.Diary.Nucleus.Client.dll</HintPath>
+    <Reference Include="ei8.Cortex.Diary.Nucleus.Client, Version=0.1.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Nucleus.Client.0.1.14\lib\netstandard2.0\ei8.Cortex.Diary.Nucleus.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="ei8.Cortex.Library.Client, Version=0.1.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Library.Client.0.1.9\lib\netstandard2.0\ei8.Cortex.Library.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="ei8.Cortex.Library.Common, Version=0.1.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Library.Common.0.1.14\lib\netstandard2.0\ei8.Cortex.Library.Common.dll</HintPath>
     </Reference>
     <Reference Include="IdentityModel, Version=3.10.10.0, Culture=neutral, PublicKeyToken=e7877f4675df049f, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\IdentityModel.3.10.10\lib\net452\IdentityModel.dll</HintPath>
@@ -122,8 +128,8 @@
     <Reference Include="neurUL.Common, Version=0.1.19.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\neurUL.Common.0.1.19\lib\netstandard2.0\neurUL.Common.dll</HintPath>
     </Reference>
-    <Reference Include="neurUL.Common.Http, Version=0.1.11.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\neurUL.Common.Http.0.1.11\lib\netstandard2.0\neurUL.Common.Http.dll</HintPath>
+    <Reference Include="neurUL.Common.Http, Version=0.1.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\neurUL.Common.Http.0.1.13\lib\netstandard2.0\neurUL.Common.Http.dll</HintPath>
     </Reference>
     <Reference Include="neurUL.Cortex.Common, Version=0.1.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\neurUL.Cortex.Common.0.1.4\lib\netstandard2.0\neurUL.Cortex.Common.dll</HintPath>
@@ -189,6 +195,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reactive, Version=4.1.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\System.Reactive.4.1.6\lib\net46\System.Reactive.dll</HintPath>
       <Private>True</Private>
@@ -401,6 +410,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Wpf_1_TemporaryKey.pfx" />
     <None Include="Wpf_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -433,6 +443,10 @@
     <ProjectReference Include="..\..\..\IO\Process\Services\Services.csproj">
       <Project>{69654AC7-999C-493A-88A6-7B5357EBFCF4}</Project>
       <Name>Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Common.csproj">
+      <Project>{5AD374E6-F50F-4026-BD1A-FE75DD7F7769}</Project>
+      <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ViewModels\ViewModels.csproj">
       <Project>{8A593F0A-9C94-4353-B317-7A4E599C122F}</Project>

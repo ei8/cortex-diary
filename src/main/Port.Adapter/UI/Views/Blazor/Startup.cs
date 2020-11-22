@@ -1,9 +1,3 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using neurUL.Common.Http;
 using ei8.Cortex.Diary.Application.Dependency;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Neurons;
@@ -15,6 +9,13 @@ using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
+using ei8.Cortex.Library.Client.Out;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using neurUL.Common.Http;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {

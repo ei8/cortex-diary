@@ -1,6 +1,7 @@
 ﻿using neurUL.Cortex.Common;
 using System;
 using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Library.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {

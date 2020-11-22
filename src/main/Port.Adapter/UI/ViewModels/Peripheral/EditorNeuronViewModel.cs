@@ -3,6 +3,8 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
 using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Library.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
 {
@@ -26,7 +28,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
         public string RegionName { get; set; }
 
         [Reactive]
-        public IEnumerable<Neuron> LinkCandidates { get; set; }
+        public IEnumerable<UINeuron> LinkCandidates { get; set; }
 
         [Reactive]
         public RelativeType? RelativeType { get; set; }

@@ -35,6 +35,7 @@ using System.Threading.Tasks;
 using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Common;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
+using ei8.Cortex.Library.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 {
@@ -57,7 +58,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         internal async static Task<bool> PromptSimilarExists(INeuronQueryService queryService, IDialogService dialogService, string avatarUrl, object owner, string result)
         {
-            return !(await queryService.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { TagContains = new string[] { result } })).Any() ||
+            return !(await queryService.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { TagContains = new string[] { result } })).Neurons.Any() ||
                     (await dialogService.ShowDialogYesNo("Other Neuron(s) containing a similar Tag value already exists. Are you sure you wish to continue?", owner, out DialogResult yesno2)).GetValueOrDefault();
         }
     }

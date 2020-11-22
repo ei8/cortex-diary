@@ -29,6 +29,9 @@
  */
 
 using DynamicData;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Library.Common;
 using ReactiveUI;
 using Splat;
 using System;
@@ -37,8 +40,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Application.Neurons;
-using ei8.Cortex.Diary.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 {
@@ -46,7 +47,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
     {
         private readonly string avatarUrl;
         private readonly INeuronQueryService neuronQueryService;
-        private readonly ReadOnlyObservableCollection<Neuron> neurons;
+        private readonly ReadOnlyObservableCollection<UINeuron> neurons;
         private readonly IDisposable cleanUp;
         
         public DialogSelectNeuronsViewModel(string message, string avatarUrl, bool allowMultiSelect, INeuronQueryService neuronQueryService = null) : 
@@ -55,7 +56,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             this.avatarUrl = avatarUrl;
             this.AllowMultiSelect = allowMultiSelect;
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
-            var list = new SourceList<Neuron>();
+            var list = new SourceList<UINeuron>();
             this.ReloadCommand = ReactiveCommand.Create(async() => await this.OnReloadClicked(list));
             this.SelectCommand = ReactiveCommand.Create(this.OnSelectedClicked);
             this.UserDialogResult = null;
@@ -66,13 +67,13 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
                 .Subscribe();
         }
 
-        private async Task OnReloadClicked(SourceList<Neuron> list)
+        private async Task OnReloadClicked(SourceList<UINeuron> list)
         {
             try
             {
                 list.Clear();
-                var neurons = await this.neuronQueryService.GetNeurons(this.avatarUrl);
-                list.AddRange(neurons);
+                (await this.neuronQueryService.GetNeurons(this.avatarUrl, new NeuronQuery()))
+                    .Neurons.ToList().ForEach(n => list.Add(new UINeuron(n)));                
                 this.StatusMessage = "Reload successful.";
             }
             catch (Exception ex)
@@ -85,14 +86,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
         {
             if (this.selectedNeurons != null)
             {
-                this.UserDialogResult = this.selectedNeurons.Cast<Neuron>();
+                this.UserDialogResult = this.selectedNeurons.Cast<UINeuron>();
                 this.DialogResult = true;
             }
             else
                 this.StatusMessage = "No Neuron selected.";
         }
         
-        public ReadOnlyObservableCollection<Neuron> Neurons => this.neurons;
+        public ReadOnlyObservableCollection<UINeuron> Neurons => this.neurons;
 
         public ReactiveCommand<Unit, Task> ReloadCommand { get; }
 

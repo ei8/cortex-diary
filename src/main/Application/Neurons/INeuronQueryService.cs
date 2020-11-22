@@ -28,17 +28,23 @@
      support@ei8.works
  */
 
+using ei8.Cortex.Library.Common;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Common;
 
 namespace ei8.Cortex.Diary.Application.Neurons
 {
     public interface INeuronQueryService
     {
-        Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, string centralId = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken));
+        Task<QueryResult> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken));
 
-        Task<IEnumerable<Neuron>> GetNeuronById(string avatarUrl, string id, string centralId = null, RelativeType type = RelativeType.NotSet, CancellationToken token = default(CancellationToken));
+        Task<QueryResult> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken));
+
+        Task<QueryResult> GetNeuronById(string avatarUrl, string id, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken));
+
+        Task<QueryResult> GetNeuronById(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken));
+
+        Task<QueryResult> SendQuery(string queryUrl, CancellationToken token = default(CancellationToken));
     }
 }

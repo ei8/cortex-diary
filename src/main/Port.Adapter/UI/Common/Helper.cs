@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Library.Client.Out;
+using ei8.Cortex.Library.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Common;
-using ei8.Cortex.Diary.Nucleus.Client.Out;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
 {
@@ -12,7 +13,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
     {
         private const string TypeNamePrefix = "neurUL.Cortex.Domain.Model.Neurons.";
 
-        public static NotificationData CreateNotificationData(Notification notification, IDictionary<string, Neuron> cache)
+        public static NotificationData CreateNotificationData(Diary.Common.Notification notification, IDictionary<string, UINeuron> cache)
         {
             var d = DateTime.Parse(notification.Timestamp);
             var timestamp = $"{d.ToShortDateString()} {d.ToShortTimeString()}";
@@ -36,9 +37,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
             if (type == EventTypeNames.NeuronCreated.ToString())
             {
                 string region =
-                    data.RegionId == Guid.Empty.ToString() ?
+                    string.IsNullOrEmpty(data.RegionId) ?
                         "Base Region" :
-                        data.RegionId != null && cache.ContainsKey(data.RegionId.ToString()) ?
+                        !string.IsNullOrEmpty(data.RegionId) && cache.ContainsKey(data.RegionId.ToString()) ?
                             cache[data.RegionId.ToString()].Tag :
                             "(Region not found)"
                             ;
@@ -50,7 +51,15 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
             }
             else if (type == EventTypeNames.TerminalCreated.ToString())
             {
-                details = $"Terminal created between Presynaptic Neuron '{cache[data.PresynapticNeuronId.ToString()].Tag}' and Postsynaptic Neuron '{cache[data.PostsynapticNeuronId.ToString()].Tag}'.";
+                var presynapticTag = cache.ContainsKey(data.PresynapticNeuronId.ToString()) ?
+                    cache[data.PresynapticNeuronId.ToString()].Tag :
+                    "Missing: " + data.PresynapticNeuronId.ToString();
+
+                var postsynaptictag = cache.ContainsKey(data.PostsynapticNeuronId.ToString()) ?
+                    cache[data.PostsynapticNeuronId.ToString()].Tag :
+                    "Missing: " + data.PostsynapticNeuronId.ToString();
+
+                details = $"Terminal created between Presynaptic Neuron '{presynapticTag}' and Postsynaptic Neuron '{postsynaptictag}'.";
             }
 
             return new NotificationData(
@@ -68,7 +77,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
                 );
         }
 
-        public static async Task<IEnumerable<NotificationData>> UpdateCacheGetNotifications(NotificationLog notificationLog, INeuronQueryClient neuronGraphQueryClient, string avatarUrl, IDictionary<string, Neuron> cache)
+        public static async Task<IEnumerable<NotificationData>> UpdateCacheGetNotifications(NotificationLog notificationLog, INeuronQueryClient neuronGraphQueryClient, string avatarUrl, IDictionary<string, UINeuron> cache)
         {
             var ids = new List<string>();
             var ns = notificationLog.NotificationList.ToList();
@@ -99,13 +108,15 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
 
             if (ids.Count() > 0)
                 (await neuronGraphQueryClient.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { Id = ids.ToArray() }))
+                    .Neurons
                     .ToList()
-                    .ForEach(n => cache.Add(n.Id, n));
+                    .ForEach(n => cache.Add(n.Id, new UINeuron(n))
+                );
 
             return notificationLog.NotificationList.ToArray().Select(n => Common.Helper.CreateNotificationData(n, cache));
         }
 
-        private static string SafeGetTag(string id, IDictionary<string, Neuron> cache)
+        private static string SafeGetTag(string id, IDictionary<string, UINeuron> cache)
         {
             return cache.ContainsKey(id) ?
                                     cache[id].Tag :

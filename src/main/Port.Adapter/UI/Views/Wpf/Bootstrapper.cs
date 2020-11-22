@@ -28,9 +28,6 @@
      support@ei8.works
  */
 
-using neurUL.Common.Http;
-using ReactiveUI;
-using Splat;
 using ei8.Cortex.Diary.Application.Dependency;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Neurons;
@@ -49,6 +46,10 @@ using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf.Dialogs;
+using ei8.Cortex.Library.Client.Out;
+using neurUL.Common.Http;
+using ReactiveUI;
+using Splat;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Wpf
 {
