@@ -1,0 +1,44 @@
+﻿@page "/Account/LoginCallback"
+@using ei8.Cortex.Diary.Application.Settings
+@using ei8.Cortex.Diary.Application.Identity
+@using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
+@inject ISettingsService SettingsService
+@inject IIdentityService IdentityService;
+@inject NavigationManager NavManager
+
+<h3>@successMessage</h3>
+@code {
+    private string successMessage = "Initial";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var url = this.NavManager.Uri;
+            var result = ProcessUrlResult.Empty;
+
+            if ((result = await Helper.TryProcessUrl(
+                url,
+                SettingsService.IdentityCallback,
+                SettingsService.LogoutCallback,
+                SettingsService.AuthAccessToken,
+                IdentityService
+                )).Success)
+            {
+                SettingsService.AuthAccessToken = result.AccessToken;
+                SettingsService.AuthIdToken = result.IdentityToken;
+
+                switch (result.Type)
+                {
+                    case ProcessUrlType.Logout:
+                        this.successMessage = "Logged out";
+                        break;
+                    case ProcessUrlType.SignIn:
+                        this.successMessage = "Signed-in";
+                        break;
+                }
+                this.StateHasChanged();
+            }
+        }
+    }
+}

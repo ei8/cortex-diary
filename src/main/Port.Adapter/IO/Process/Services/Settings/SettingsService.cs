@@ -68,6 +68,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdLogoutCallback = "logout_callback";
         private const string IdRevocationEndpoint = "revocation_endpoint";
         private const string IdIdentityServerUrl = "identity_server_url";
+        private const string IdApplicationUrl = "application_url";
 
         private readonly string AccessTokenDefault = string.Empty;
         private readonly string IdTokenDefault = string.Empty;
@@ -88,6 +89,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string LogoutCallbackDefault = string.Empty;
         private readonly string RevocationEndpointDefault = string.Empty;
         private readonly string IdentityServerUrlDefault = string.Empty;
+        private readonly string ApplicationUrlDefault = string.Empty;
 
         #endregion
 
@@ -214,10 +216,24 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             RegisterWebsite = $"{identityServerUrl}/Account/Register";
             IdentityEndpoint = $"{identityServerUrl}/connect/authorize";
             TokenEndpoint = $"{identityServerUrl}/connect/token";
-            LogoutEndpoint = $"{identityServerUrl}/connect/endsession";
-            IdentityCallback = $"{identityServerUrl}/Account/LoginCallback";
+            LogoutEndpoint = $"{identityServerUrl}/connect/endsession";            
             LogoutCallback = $"{identityServerUrl}/Account/Redirecting";
             RevocationEndpoint = $"{identityServerUrl}/connect/revocation";
+        }
+
+        public string ApplicationUrl
+        {
+            get => AppSettings.GetValueOrDefault(IdApplicationUrl, ApplicationUrlDefault);
+            set
+            {
+                AppSettings.AddOrUpdateValue(IdApplicationUrl, value);
+                this.UpdateAppEndpoint(this.ApplicationUrl);
+            }
+        }
+
+        private void UpdateAppEndpoint(string appUrl)
+        {
+            IdentityCallback = $"{appUrl}/Account/LoginCallback";
         }
 
         public void Clear()

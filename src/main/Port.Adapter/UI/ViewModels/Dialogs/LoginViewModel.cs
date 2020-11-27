@@ -46,7 +46,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             this.UserDialogResult = false;
 
             this.WhenAnyValue(x => x.IdentityServerUrl)
-                .Subscribe(s => this.settingsService.IdentityServerUrl = s);
+                .Subscribe(s =>
+                {
+                    this.settingsService.IdentityServerUrl = s;
+                    // TODO: this.settingsService.ApplicationUrl = "http://192.168.1.110:59053"; // TEMP ONLY!!!
+                });
 
             // TODO: this.MockSignInCommand = ReactiveCommand.Create(async () => await MockSignInAsync());
             this.SignInCommand = ReactiveCommand.Create(async () => await SignInAsync());

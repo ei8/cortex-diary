@@ -50,6 +50,7 @@ namespace ei8.Cortex.Diary.Application.Settings
         string LogoutCallback { get; set; }
         string RevocationEndpoint { get; set; }
         string IdentityServerUrl { get; set; }
+        string ApplicationUrl { get; set; }
 
         void Clear();
     }

@@ -2,11 +2,9 @@
 @using ei8.Cortex.Diary.Application.Settings
 @using ei8.Cortex.Diary.Application.Identity
 @using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
-@using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 @inject ISettingsService SettingsService
 @inject IIdentityService IdentityService
-@inject IJSRuntime JsRuntime
-
+@inject NavigationManager NavManager
 <div class="top-row px-4">
     <div class="title">
         Server Explorer
@@ -14,55 +12,17 @@
     <div class="details">
         <div><button @onclick="OnReload">Reload</button></div>
         <input placeholder="Server URL" @bind="IdentityServerUrl" />
-        <input type="hidden" id="currentUrl" />
     </div>
-</div>
-<div class="content px-4">
-    <iframe class="flexible" @onloadstart="this.OnLoad" @onload="this.OnLoad" src="@LoginUrl" />
-    <label>@this.TempSuccessMessage</label>
 </div>
 
 @code {
-    ElementReference browser;
-
     public string IdentityServerUrl { get; set; }
 
-    public string LoginUrl { get; set; }
-
-    public string TempSuccessMessage { get; set; }
-
-    private async Task OnLoad(ProgressEventArgs e)
-    {
-        var url = await JsRuntime.InvokeAsync<string>("jsFunctions.getFieldValue", "currentUrl");
-        var result = ProcessUrlResult.Empty;
-
-        if ((result = (await Helper.TryProcessUrl(
-            url,
-            SettingsService.IdentityCallback,
-            SettingsService.LogoutCallback,
-            SettingsService.AuthAccessToken,
-            IdentityService
-            ))).Success)
-        {
-            SettingsService.AuthAccessToken = result.AccessToken;
-            SettingsService.AuthIdToken = result.IdentityToken;
-
-            switch (result.Type)
-            {
-                case ProcessUrlType.Logout:
-                    this.TempSuccessMessage = "Logged out";
-                    break;
-                case ProcessUrlType.SignIn:
-                    this.TempSuccessMessage = "Signed-in";
-                    break;
-            }
-        }
-    }
-
-    private void OnReload()
+    private async Task OnReload()
     {
         this.SettingsService.IdentityServerUrl = this.IdentityServerUrl;
+        this.SettingsService.ApplicationUrl = this.NavManager.BaseUri.TrimEnd('/');
         ((SettingsService)this.SettingsService).ClientId = "xamarin";
-        this.LoginUrl = IdentityService.CreateAuthorizationRequest(); // works if not using frames and is navigated to as another page
+        this.NavManager.NavigateTo(IdentityService.CreateAuthorizationRequest()); // works if not using frames and is navigated to as another page
     }
 }

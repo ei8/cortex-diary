@@ -12,7 +12,9 @@
   <ItemGroup>
     <PackageReference Include="ei8.Cortex.Library.Client" Version="0.1.9" />
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.1.14" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
