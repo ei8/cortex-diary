@@ -1,6 +1,8 @@
 ﻿using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
+using IdentityModel.Client;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,9 +31,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
 
         public bool AreControlsVisible { get; private set; }
         
-        public void Toggle()
+        public async Task Toggle()
         {
             this.IsExpanded = !this.IsExpanded;
+
+            if (this.IsExpanded)
+                await this.OnReload();
         }
 
         public void ShowControls()
@@ -58,12 +63,15 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
         {
             this.IsExpanded = true;
             var children = new List<NeuronViewModel>();
-            (await this.neuronQueryService.GetNeurons(this.avatarUrl, this.Neuron.Id, new NeuronQuery()))
-                .Neurons
-                .ToList().ForEach(n =>
-                children.Add(new NeuronViewModel(new UINeuron(n), this.avatarUrl, this.neuronQueryService))
-            );
-            this.Children = children.ToArray();
+            if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
+            {
+                (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
+                    .Neurons
+                    .ToList().ForEach(n =>
+                    children.Add(new NeuronViewModel(new UINeuron(n), this.avatarUrl, this.neuronQueryService))
+                );
+                this.Children = children.ToArray();
+            }
         }
     }
 }
