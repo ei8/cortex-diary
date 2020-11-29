@@ -2,29 +2,41 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
 @using ei8.Cortex.Diary.Application.Neurons;
-@using ei8.Cortex.Library.Common;
+@using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @inject INeuronQueryService NeuronQueryService;
+@inject IContextMenuService ContextMenuService;
 
 <div class="top-row px-4">
-    <div class="title">
-        Tree
-    </div>
+    <br />
     <div class="details">
-        <div><button @onclick="OnReload">Reload</button></div>
-        <input placeholder="Avatar URL" @bind="AvatarUrl" />
+        <button class="btn btn-primary btn-sm" @onclick="OnReload">Reload</button>
+        <input class="form-control form-control-sm" placeholder="Avatar URL" @bind="AvatarUrl" />
     </div>
 </div>
 <div class="content px-4">
     <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children"></TreeView>
 </div>
-<div class="footer px-4">
-    <ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared.EditorBox AvatarUrl="@this.AvatarUrl" />
-</div>
+@if (this.IsContextMenuVisible)
+{
+    <div class="footer px-4">
+        Hello there!
+        <br />
+        <button @onclick="() => this.ShowContextMenu(false)">Close</button>
+    </div>
+}
+else
+{
+    <div class="footer px-4">
+        <EditorBox AvatarUrl="@this.AvatarUrl" />
+    </div>
+}
 
 @code {
     protected override void OnInitialized()
     {
         this.Children = new NeuronViewModel[0];
+        this.ContextMenuService.MenuRequested += this.MenuRequested;
     }
 
     [Parameter]
@@ -33,11 +45,24 @@
     [Parameter]
     public NeuronViewModel[] Children { get; set; } = new NeuronViewModel[0];
 
+    public bool IsContextMenuVisible { get; set; } = false;
+
     private async Task OnReload()
     {
         var children = new List<NeuronViewModel>();
         var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
-        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, NeuronQueryService)));
+        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.NeuronQueryService)));
         this.Children = children.ToArray();
+    }
+
+    private void MenuRequested()
+    {
+        this.ShowContextMenu(true);
+    }
+
+    private void ShowContextMenu(bool visible)
+    {
+        this.IsContextMenuVisible = visible;
+        this.StateHasChanged();
     }
 }

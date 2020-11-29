@@ -1,17 +1,19 @@
 ﻿@using Blazor.Data
 @using ei8.Cortex.Diary.Application.Neurons;
+@using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 @inject INeuronQueryService NeuronQueryService;
+@inject IContextMenuService ContextMenuService;
 
 <ul>
     @foreach (var child in Children)
     {
-    <li @onmouseout="child.HideControls" style="list-style-type: none;">
+    <li @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
         <span @onclick="child.Toggle">@child.GetIcon()</span>
-        <span @onmouseover="child.ShowControls" @onmouseout="child.HideControls">
+        <span @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)">
             @child.Tag
                 @if (child.AreControlsVisible)
                 {
-                    <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="child.OnReload">Reload</button>
+                    <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.ContextMenuService.Request(child)">...</button>
                 }
         </span>
         @if (child.IsExpanded)

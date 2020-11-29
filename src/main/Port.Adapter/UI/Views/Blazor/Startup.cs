@@ -8,6 +8,7 @@ using ei8.Cortex.Diary.Nucleus.Client.Out;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
 using ei8.Cortex.Library.Client.Out;
 using Microsoft.AspNetCore.Builder;
@@ -47,6 +48,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             var neas = new NeuronApplicationService(nec);
             var nqc = new HttpNeuronQueryClient(rp, ts);
             var nqs = new NeuronQueryService(nqc);
+            var cms = new ContextMenuService();
 
             services.AddSingleton<IDependencyService>(dp);            
             services.AddSingleton<ISettingsService>(ss);            
@@ -58,6 +60,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<ITokenService>(ts);
             services.AddSingleton<INeuronQueryClient>(nqc);
             services.AddSingleton<INeuronQueryService>(nqs);
+            services.AddSingleton<IContextMenuService>(cms);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

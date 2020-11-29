@@ -1,5 +1,6 @@
 ﻿using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
 using IdentityModel.Client;
@@ -13,6 +14,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
+
         public NeuronViewModel(UINeuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
             this.Neuron = neuron;
@@ -30,7 +32,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
         public bool IsExpanded { get; private set; }
 
         public bool AreControlsVisible { get; private set; }
-        
+
         public async Task Toggle()
         {
             this.IsExpanded = !this.IsExpanded;
@@ -39,19 +41,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
                 await this.OnReload();
         }
 
-        public void ShowControls()
+        public void ShowControls(bool visible)
         {
-            this.AreControlsVisible = true;
-        }
-
-        public void HideControls()
-        {
-            this.AreControlsVisible = false;
+            this.AreControlsVisible = visible;
         }
 
         public string GetIcon()
         {
-            if (IsExpanded)
+            if (this.IsExpanded)
             {
                 return "-";
             }
