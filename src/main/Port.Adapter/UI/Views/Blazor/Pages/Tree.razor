@@ -3,40 +3,45 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
 @using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
+@using ei8.Cortex.Library.Client;
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ContextMenus;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @inject INeuronQueryService NeuronQueryService;
-@inject IContextMenuService ContextMenuService;
+@inject INeuronApplicationService NeuronApplicationService;
 
 <div class="top-row px-4">
     <br />
     <div class="details">
-        <button class="btn btn-primary btn-sm" @onclick="OnReload">Reload</button>
+        <button class="btn btn-primary btn-sm" @onclick="this.Reload">Reload</button>
         <input class="form-control form-control-sm" placeholder="Avatar URL" @bind="AvatarUrl" />
     </div>
 </div>
 <div class="content px-4">
-    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children"></TreeView>
+    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" OnMenuRequested="@this.MenuRequested"></TreeView>
 </div>
-@if (this.IsContextMenuVisible)
-{
-    <div class="footer px-4">
-        Hello there!
-        <br />
-        <button @onclick="() => this.ShowContextMenu(false)">Close</button>
-    </div>
-}
-else
-{
-    <div class="footer px-4">
-        <EditorBox AvatarUrl="@this.AvatarUrl" />
-    </div>
-}
 
+<NeuronContextMenu OnOptionSelected="@this.OptionSelected" IsVisible="@this.IsContextMenuVisible" />    
+
+@switch (this.SelectedOption)
+{
+    case ContextMenuOption.Edit:
+        <div class="footer px-4">
+            <EditorBox AvatarUrl="@this.AvatarUrl" SelectedOption="@this.SelectedOption" SelectedNeuron="@this.SelectedNeuron"/>
+        </div>
+        break;
+    case ContextMenuOption.Delete:
+        <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
+        break;
+    case ContextMenuOption.New:
+        <div class="footer px-4">
+            <EditorBox AvatarUrl="@this.AvatarUrl" SelectedOption="@this.SelectedOption" SelectedNeuron="@this.SelectedNeuron"/>
+        </div>
+        break;
+}
 @code {
     protected override void OnInitialized()
     {
         this.Children = new NeuronViewModel[0];
-        this.ContextMenuService.MenuRequested += this.MenuRequested;
     }
 
     [Parameter]
@@ -45,9 +50,23 @@ else
     [Parameter]
     public NeuronViewModel[] Children { get; set; } = new NeuronViewModel[0];
 
-    public bool IsContextMenuVisible { get; set; } = false;
+    private bool IsConfirmVisible { get; set; } = false;
 
-    private async Task OnReload()
+    private bool IsContextMenuVisible { get; set; } = false;
+
+    private ContextMenuOption SelectedOption { get; set; } = ContextMenuOption.New;
+
+    private NeuronViewModel SelectedNeuron { get; set; } = null;
+
+    private string ProcessSelectionTag(string format)
+    {
+        return this.SelectedNeuron is NeuronViewModel ?
+            string.Format(format, this.SelectedNeuron.Tag) :
+            "[Error: Not a valid Neuron]"
+            ;
+    }
+
+    private async Task Reload()
     {
         var children = new List<NeuronViewModel>();
         var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
@@ -55,14 +74,41 @@ else
         this.Children = children.ToArray();
     }
 
-    private void MenuRequested()
+    private async void MenuRequested(NeuronViewModel selection)
     {
-        this.ShowContextMenu(true);
+        this.SelectedNeuron = selection;
+        this.IsContextMenuVisible = true;
+
+        await this.InvokeAsync(() => this.StateHasChanged());
+    }
+
+    private async void OptionSelected(ContextMenuOption selection)
+    {
+        this.IsContextMenuVisible = false;
+        this.SelectedOption = selection;
+        if (this.SelectedOption == ContextMenuOption.Delete)
+            this.IsConfirmVisible = true;
+
+        await this.InvokeAsync(() => this.StateHasChanged());
     }
 
     private void ShowContextMenu(bool visible)
     {
         this.IsContextMenuVisible = visible;
-        this.StateHasChanged();
+    }
+
+    private async void ConfirmDelete()
+    {
+        if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result))
+        {
+            await this.NeuronApplicationService.DeactivateNeuron(result.AvatarUrl, this.SelectedNeuron.Neuron.Id, this.SelectedNeuron.Neuron.Version);
+        }
+    }
+
+    private async void CloseConfirmation()
+    {
+        this.SelectedNeuron = null;
+        this.SelectedOption = ContextMenuOption.New;
+        await this.InvokeAsync(() => this.StateHasChanged());
     }
 }

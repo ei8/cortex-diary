@@ -17,7 +17,7 @@
             var url = this.NavManager.Uri;
             var result = ProcessUrlResult.Empty;
 
-            if ((result = await Helper.TryProcessUrl(
+            if ((result = await IO.Process.Services.Identity.Helper.TryProcessUrl(
                 url,
                 SettingsService.IdentityCallback,
                 SettingsService.LogoutCallback,

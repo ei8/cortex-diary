@@ -1,8 +1,6 @@
 ﻿@using Blazor.Data
 @using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
-@inject INeuronQueryService NeuronQueryService;
-@inject IContextMenuService ContextMenuService;
 
 <ul>
     @foreach (var child in Children)
@@ -13,7 +11,7 @@
             @child.Tag
                 @if (child.AreControlsVisible)
                 {
-                    <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.ContextMenuService.Request(child)">...</button>
+                    <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.OnMenuRequested.InvokeAsync(child)">...</button>
                 }
         </span>
         @if (child.IsExpanded)
@@ -37,4 +35,7 @@
 
     [Parameter]
     public string AvatarUrl { get; set; }
+
+    [Parameter]
+    public EventCallback<NeuronViewModel> OnMenuRequested { get; set; }
 }

@@ -46,13 +46,13 @@
     private async Task OnReload()
     {
         this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, string.Empty);
-        this.NotificationItems = (await Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache));
+        this.NotificationItems = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache));
     }
 
     private async Task OnMore()
     {
         this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, this.NotificationLog.PreviousNotificationLogId);
-        this.NotificationItems = (await Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache))
+        this.NotificationItems = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache))
             .Concat(this.NotificationItems);
     }
 }
