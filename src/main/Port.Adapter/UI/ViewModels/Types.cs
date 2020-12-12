@@ -69,6 +69,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 
     public enum ContextMenuOption
     {
+        NotSet,
         New,
         Edit,
         Delete,

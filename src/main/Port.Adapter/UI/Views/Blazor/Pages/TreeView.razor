@@ -5,22 +5,22 @@
 <ul>
     @foreach (var child in Children)
     {
-    <li @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
-        <span @onclick="child.Toggle">@child.GetIcon()</span>
-        <span @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)">
-            @child.Tag
+        <li @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
+            <span @onclick="child.Toggle">@child.GetIcon()</span>
+            <span @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)">
+                @child.Tag
                 @if (child.AreControlsVisible)
                 {
-                    <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.OnMenuRequested.InvokeAsync(child)">...</button>
+                    <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemMenu(child)">...</button>
                 }
-        </span>
-        @if (child.IsExpanded)
-        {
-            <div>
-                <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl"></TreeView>
-            </div>
-        }
-    </li>
+            </span>
+            @if (child.IsExpanded)
+            {
+                <div>
+                    <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl"></TreeView>
+                </div>
+            }
+        </li>
     }
 </ul>
 
@@ -37,5 +37,29 @@
     public string AvatarUrl { get; set; }
 
     [Parameter]
-    public EventCallback<NeuronViewModel> OnMenuRequested { get; set; }
+    public EventCallback OnMenuRequested { get; set; }
+
+    [Parameter]
+    public EventCallback<NeuronViewModel> SelectedNeuronChanged { get; set; }
+
+    private NeuronViewModel selectedNeuron;
+    [Parameter]
+    public NeuronViewModel SelectedNeuron
+    {
+        get => this.selectedNeuron;
+        set
+        {
+            if (this.selectedNeuron != value)
+            {
+                this.selectedNeuron = value;
+                this.SelectedNeuronChanged.InvokeAsync(this.selectedNeuron);
+            }
+        }
+    }
+
+    private async void RequestItemMenu(NeuronViewModel neuronViewModel)
+    {
+        this.SelectedNeuron = neuronViewModel;
+        await this.OnMenuRequested.InvokeAsync(this);
+    }
 }

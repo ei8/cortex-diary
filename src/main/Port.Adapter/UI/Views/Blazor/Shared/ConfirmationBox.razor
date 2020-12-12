@@ -40,8 +40,23 @@
     [Parameter]
     public string Title { get; set; }
 
+    private bool isVisible;
     [Parameter]
-    public bool IsVisible { get; set; }
+    public bool IsVisible
+    {
+        get => this.isVisible;
+        set
+        {
+            if (this.isVisible != value)
+            {
+                this.isVisible = value;
+                this.IsVisibleChanged.InvokeAsync(this.isVisible);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
 
     private async void Close()
     {

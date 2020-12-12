@@ -17,27 +17,14 @@
     </div>
 </div>
 <div class="content px-4">
-    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" OnMenuRequested="@this.MenuRequested"></TreeView>
+    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested"></TreeView>
 </div>
+<div class="footer px-4">
+    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedOption="@this.SelectedOption" SelectedNeuron="@this.EditNeuron"/>
+</div>
+<NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
+<ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 
-<NeuronContextMenu OnOptionSelected="@this.OptionSelected" IsVisible="@this.IsContextMenuVisible" />    
-
-@switch (this.SelectedOption)
-{
-    case ContextMenuOption.Edit:
-        <div class="footer px-4">
-            <EditorBox AvatarUrl="@this.AvatarUrl" SelectedOption="@this.SelectedOption" SelectedNeuron="@this.SelectedNeuron"/>
-        </div>
-        break;
-    case ContextMenuOption.Delete:
-        <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
-        break;
-    case ContextMenuOption.New:
-        <div class="footer px-4">
-            <EditorBox AvatarUrl="@this.AvatarUrl" SelectedOption="@this.SelectedOption" SelectedNeuron="@this.SelectedNeuron"/>
-        </div>
-        break;
-}
 @code {
     protected override void OnInitialized()
     {
@@ -54,17 +41,39 @@
 
     private bool IsContextMenuVisible { get; set; } = false;
 
-    private ContextMenuOption SelectedOption { get; set; } = ContextMenuOption.New;
+    private ContextMenuOption selectedOption = ContextMenuOption.New;
+    public ContextMenuOption SelectedOption
+    {
+        get => this.selectedOption;
+        set
+        {
+            if (this.selectedOption != value)
+            {
+                this.selectedOption = value;
+                switch (this.SelectedOption)
+                {
+                    case ContextMenuOption.New:
+                        this.SelectedNeuron = null;
+                        this.EditNeuron = null;
+                        break;
+                    case ContextMenuOption.Delete:
+                        this.IsConfirmVisible = true;
+                        break;
+                    case ContextMenuOption.Edit:
+                        this.EditNeuron = this.SelectedNeuron;
+                        break;
+                }
+            }
+        }
+    }
 
     private NeuronViewModel SelectedNeuron { get; set; } = null;
 
-    private string ProcessSelectionTag(string format)
-    {
-        return this.SelectedNeuron is NeuronViewModel ?
+    private NeuronViewModel EditNeuron { get; set; } = null;
+
+    private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
             string.Format(format, this.SelectedNeuron.Tag) :
-            "[Error: Not a valid Neuron]"
-            ;
-    }
+            "[Error: Not a valid Neuron]";
 
     private async Task Reload()
     {
@@ -74,28 +83,7 @@
         this.Children = children.ToArray();
     }
 
-    private async void MenuRequested(NeuronViewModel selection)
-    {
-        this.SelectedNeuron = selection;
-        this.IsContextMenuVisible = true;
-
-        await this.InvokeAsync(() => this.StateHasChanged());
-    }
-
-    private async void OptionSelected(ContextMenuOption selection)
-    {
-        this.IsContextMenuVisible = false;
-        this.SelectedOption = selection;
-        if (this.SelectedOption == ContextMenuOption.Delete)
-            this.IsConfirmVisible = true;
-
-        await this.InvokeAsync(() => this.StateHasChanged());
-    }
-
-    private void ShowContextMenu(bool visible)
-    {
-        this.IsContextMenuVisible = visible;
-    }
+    private async void MenuRequested() => this.IsContextMenuVisible = true;
 
     private async void ConfirmDelete()
     {
@@ -105,10 +93,5 @@
         }
     }
 
-    private async void CloseConfirmation()
-    {
-        this.SelectedNeuron = null;
-        this.SelectedOption = ContextMenuOption.New;
-        await this.InvokeAsync(() => this.StateHasChanged());
-    }
+    private async void CloseConfirmation() => Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
 }

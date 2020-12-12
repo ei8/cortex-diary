@@ -9,7 +9,7 @@
     <table style="width: 100%; height: 100%">
         <tr>
             <td style="width: 100%; height: 100%; padding: 0px; vertical-align:bottom;" rowspan="2">
-                <InputTextArea placeholder="Tag" @bind-Value="@editorNeuronViewModel.Tag" style="width: 100%; height: 90%" />
+                <InputTextArea placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" style="width: 100%; height: 90%" />
             </td>
             <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px;">
                 <button @onclick="OnCancel">Cancel</button>
@@ -25,38 +25,54 @@
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
 
-    protected async override Task OnInitializedAsync()
+    [Parameter]
+    public string AvatarUrl { get; set; }
+
+    private ContextMenuOption selectedOption { get; set; }
+    [Parameter]
+    public ContextMenuOption SelectedOption
     {
-        switch (this.SelectedOption)
+        get => this.selectedOption;
+        set
         {
-            case ContextMenuOption.New:
-                this.SelectedNeuron = null;
-                break;
-            case ContextMenuOption.Edit:
-                var targetNeuron = this.SelectedNeuron;
-                if (targetNeuron != null)
+            if (this.selectedOption != value)
+            {
+                this.selectedOption = value;
+                this.SelectedOptionChanged.InvokeAsync(this.selectedOption);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<ContextMenuOption> SelectedOptionChanged { get; set; }
+
+    private NeuronViewModel selectedNeuron;
+    [Parameter]
+    public NeuronViewModel SelectedNeuron
+    {
+        get => this.selectedNeuron;
+        set
+        {
+            if (this.selectedNeuron != value)
+            {
+                this.selectedNeuron = value;
+                if (this.selectedNeuron != null)
                 {
-                    this.editorNeuronViewModel.Id = targetNeuron.Neuron.Id;
-                    this.editorNeuronViewModel.Tag = targetNeuron.Tag;
+                    this.editorNeuronViewModel.Id = this.selectedNeuron.Neuron.Id;
+                    this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
                     // TODO: this.editorNeuronViewModel.Effect = targetNeuron.Effect;
                     //this.editorNeuronViewModel.Strength = targetNeuron.Strength;
                     //this.editorNeuronViewModel.RelativeType = targetNeuron.RelativeType;
                     //this.editorNeuronViewModel.RegionId = targetNeuron.RegionId;
                     //this.editorNeuronViewModel.RegionName = targetNeuron.RegionName;
-                    this.editorNeuronViewModel.Version = targetNeuron.Neuron.Version;
+                    this.editorNeuronViewModel.Version = this.selectedNeuron.Neuron.Version;
                 }
-                break;
+            }
+
+            if (this.selectedNeuron == null)
+                this.editorNeuronViewModel.Initialize();
         }
     }
-
-    [Parameter]
-    public string AvatarUrl { get; set; }
-
-    [Parameter]
-    public ContextMenuOption SelectedOption { get; set; }
-
-    [Parameter]
-    public NeuronViewModel SelectedNeuron { get; set; }
 
     private async Task OnSend()
     {
@@ -75,20 +91,13 @@
                     break;
             }
 
-            this.Initialize();
+            Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
         }
     }
 
     private async Task OnCancel()
     {
         // TODO: ask user if sure to proceed, all unsaved changes (if any) will be lost        
-        this.Initialize();
-    }
-
-    private void Initialize()
-    {
-        this.editorNeuronViewModel.Initialize();
-        this.SelectedNeuron = null;
-        this.SelectedOption = ContextMenuOption.New;
+        Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
     }
 }
