@@ -1,27 +1,60 @@
-﻿@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
+﻿@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
 @using ei8.Cortex.Diary.Application.Neurons;
-@using ei8.Cortex.Library.Client;
+@using ei8.Cortex.Library.Client;   
+@using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 @inject INeuronApplicationService NeuronApplicationService;
 
-<EditForm Model="@editorNeuronViewModel" style="width: 100%; height: 100%">
-    <table style="width: 100%; height: 100%">
-        <tr>
-            <td style="width: 100%; height: 100%; padding: 0px; vertical-align:bottom;" rowspan="2">
-                <InputTextArea placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" style="width: 100%; height: 90%" />
-            </td>
-            <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px;">
-                <button @onclick="OnCancel">Cancel</button>
-            </td>
-        </tr>
-        <tr>
-            <td style="vertical-align: bottom; padding-left: 5px; padding-bottom: 3px;">
-                <button @onclick="OnSend">Send</button>
-            </td>
-        </tr>
-    </table>
-</EditForm>
+<div class="container-fluid">
+    <EditForm Model="@editorNeuronViewModel">
+        <div class="row">
+            <div class="col p-0">
+                <div class="container-fluid">
+                    @if (this.SelectedOption == ContextMenuOption.AddRelative)
+                    {
+                        <div class="row">
+                            <div class="col p-0">
+                                <p class="p-0 m-0 font-weight-bold">
+                                    @("Adding New Relative to '" + this.CentralNeuron.Tag + "'")
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col p-0">
+                                <NullableRelativeTypeSelect class="btn btn-secondary dropdown-toggle" @bind-Value="@this.editorNeuronViewModel.RelativeType">
+                                    <option value="">--Select--</option>
+                                    <option value="@RelativeType.Postsynaptic">Postsynaptic</option>
+                                    <option value="@RelativeType.Presynaptic">Presynaptic</option>
+                                </NullableRelativeTypeSelect>
+                            </div>
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="col pt-1 pb-1 p-0">
+                            <InputTextArea class="form-control w-100" placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" rows="4" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-1 flex-fixed-width-item">
+                <div class="container h-100">
+                    <div class="row h-50 justify-content-end">
+                        <div class="col p-0">
+                            <button class="btn btn-secondary btn-sm" style="width:80px" @onclick="OnCancel">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="row h-50 align-items-end justify-content-end">
+                        <div class="col p-0">
+                            <button class="btn btn-primary btn-sm" style="width:80px" @onclick="OnSend">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
 
@@ -73,6 +106,9 @@
                 this.editorNeuronViewModel.Initialize();
         }
     }
+
+    [Parameter]
+    public NeuronViewModel CentralNeuron { get; set; }
 
     private async Task OnSend()
     {

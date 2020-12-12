@@ -23,53 +23,61 @@
                                 <button @onclick="() => this.SelectOption(ContextMenuOption.Delete)">Delete</button>
                             </td>
                         </tr>
+                        <tr>
+                            <td style="vertical-align: bottom; padding-left: 5px; padding-bottom: 3px;">
+                                <button @onclick="() => this.SelectOption(ContextMenuOption.AddRelative)">Add New Relative</button>
+                            </td>
+                            <td style="vertical-align: bottom; padding-left: 5px; padding-bottom: 3px;">
+                                <button @onclick="() => this.SelectOption(ContextMenuOption.LinkRelative)">Link Existing Relative</button>
+                            </td>
+                        </tr>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 }
- @code {
-     private bool isVisible;
-     [Parameter]
-     public bool IsVisible
-     {
-         get => this.isVisible;
-         set
-         {
-             if (this.isVisible != value)
-             {
-                 this.isVisible = value;
-                 this.IsVisibleChanged.InvokeAsync(this.isVisible);
-             }
-         }
-     }
+@code {
+    private bool isVisible;
+    [Parameter]
+    public bool IsVisible
+    {
+        get => this.isVisible;
+        set
+        {
+            if (this.isVisible != value)
+            {
+                this.isVisible = value;
+                this.IsVisibleChanged.InvokeAsync(this.isVisible);
+            }
+        }
+    }
 
-     [Parameter]
-     public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
 
-     private void SelectOption(ContextMenuOption option)
-     {
-         this.IsVisible = false;
-         this.SelectedOption = ContextMenuOption.NotSet;
-         this.SelectedOption = option;
-     }
+    private void SelectOption(ContextMenuOption option)
+    {
+        this.IsVisible = false;
+        this.SelectedOption = ContextMenuOption.NotSet;
+        this.SelectedOption = option;
+    }
 
-     private ContextMenuOption selectedOption { get; set; }
-     [Parameter]
-     public ContextMenuOption SelectedOption
-     {
-         get => this.selectedOption;
-         set
-         {
-             if (this.selectedOption != value)
-             {
-                 this.selectedOption = value;
-                 this.SelectedOptionChanged.InvokeAsync(this.selectedOption);
-             }
-         }
-     }
+    private ContextMenuOption selectedOption { get; set; }
+    [Parameter]
+    public ContextMenuOption SelectedOption
+    {
+        get => this.selectedOption;
+        set
+        {
+            if (this.selectedOption != value)
+            {
+                this.selectedOption = value;
+                this.SelectedOptionChanged.InvokeAsync(this.selectedOption);
+            }
+        }
+    }
 
-     [Parameter]
-     public EventCallback<ContextMenuOption> SelectedOptionChanged { get; set; }
- }
+    [Parameter]
+    public EventCallback<ContextMenuOption> SelectedOptionChanged { get; set; }
+}

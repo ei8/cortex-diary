@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ei8.Cortex.Library.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
 {
@@ -12,6 +9,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
         public string Id { get; set; }
         public string Tag { get; set; }
         public int Version { get; set; }
+        public RelativeType? RelativeType { get; set; }
 
         public void Initialize()
         {
