@@ -1,5 +1,4 @@
-﻿using ei8.Cortex.Library.Common;
-using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
 {
-    public class NullableRelativeTypeSelect : InputSelect<RelativeType?>
+    public class NullableInputSelect<T> : InputSelect<T?> where T : struct
     {
-        protected override bool TryParseValueFromString(string value, out RelativeType? result, out string validationErrorMessage)
+        protected override bool TryParseValueFromString(string value, out T? result, out string validationErrorMessage)
         {
             if (string.IsNullOrWhiteSpace(value))
                 result = null;
-            else if (Enum.TryParse<RelativeType>(value, out RelativeType itemVal))
+            else if (Enum.TryParse<T>(value, out T itemVal))
                 result = itemVal;
             else
             {
@@ -26,7 +25,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
             return true;
         }
 
-        protected override string FormatValueAsString(RelativeType? value)
+        protected override string FormatValueAsString(T? value)
         {
             if (!value.HasValue)
                 return "";

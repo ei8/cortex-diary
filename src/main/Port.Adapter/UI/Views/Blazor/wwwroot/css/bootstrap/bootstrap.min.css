@@ -8,3 +8,10 @@
 .flex-fixed-width-item {
     flex: 0 0 80px;
 }
+.form-control-xs {
+    height: calc(1em + .6rem + 2px) !important;
+    padding: .125rem .25rem !important;
+    font-size: .9rem !important;
+    line-height: 1.5;
+    border-radius: .2rem;
+}

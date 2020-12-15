@@ -4,6 +4,7 @@
 @using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
+@using neurUL.Cortex.Common;
 @inject INeuronApplicationService NeuronApplicationService;
 
 <div class="container-fluid">
@@ -21,12 +22,22 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col p-0">
-                                <NullableRelativeTypeSelect class="btn btn-secondary dropdown-toggle" @bind-Value="@this.editorNeuronViewModel.RelativeType">
-                                    <option value="">--Select--</option>
+                            <div class="col p-0 pr-1 col-auto">
+                                <NullableInputSelect class="btn btn-secondary btn-sm dropdown-toggle" T="RelativeType" @bind-Value="this.editorNeuronViewModel.RelativeType">
+                                    <option value="">--Select Type--</option>
                                     <option value="@RelativeType.Postsynaptic">Postsynaptic</option>
                                     <option value="@RelativeType.Presynaptic">Presynaptic</option>
-                                </NullableRelativeTypeSelect>
+                                </NullableInputSelect>
+                            </div>
+                            <div class="col p-0 pr-1 col-auto">
+                                <NullableInputSelect class="btn btn-secondary btn-sm dropdown-toggle" T="NeurotransmitterEffect" @bind-Value="this.editorNeuronViewModel.Effect">
+                                    <option value="">--Select Effect--</option>
+                                    <option value="@NeurotransmitterEffect.Excite">Excite</option>
+                                    <option value="@NeurotransmitterEffect.Inhibit">Inhibit</option>
+                                </NullableInputSelect>
+                            </div>
+                            <div class="col pr-1 p-0">
+                                <InputNumber class="form-control-xs" placeholder="Strength" @bind-Value="this.editorNeuronViewModel.Strength" />
                             </div>
                         </div>
                     }

@@ -10,6 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Shared\NullableNeurotransmitterEffectSelect.cs" />
+    <Compile Remove="Shared\NullableRelativeTypeSelect.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ei8.Cortex.Library.Client" Version="0.1.9" />
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.1.14" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
