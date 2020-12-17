@@ -4,14 +4,13 @@
 @using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 @using ei8.Cortex.Library.Client;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ContextMenus;
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @inject INeuronQueryService NeuronQueryService;
 @inject INeuronApplicationService NeuronApplicationService;
 
-<div class="top-row px-4">
-    <br />
-    <div class="details">
+<div class="top-row px-4" style="padding-top:12px">
+    <div class="details align-middle ">
         <button class="btn btn-primary btn-sm" @onclick="this.Reload">Reload</button>
         <input class="form-control form-control-sm ml-1" placeholder="Avatar URL" @bind="AvatarUrl" />
     </div>
