@@ -45,9 +45,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             var ts = new TokenService(ss);
             var rp = new RequestProvider();
             var nec = new HttpNeuronClient(rp, ts);
+            var tec = new HttpTerminalClient(rp, ts);
             var nc = new HttpNotificationClient(rp, ts);
             var nas = new NotificationApplicationService(nc);
             var neas = new NeuronApplicationService(nec);
+            var tas = new TerminalApplicationService(tec);
             var nqc = new HttpNeuronQueryClient(rp, ts);
             var nqs = new NeuronQueryService(nqc);
 
@@ -58,6 +60,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<INotificationApplicationService>(nas);
             services.AddSingleton<INeuronClient>(nec);
             services.AddSingleton<INeuronApplicationService>(neas);
+            services.AddSingleton<ITerminalApplicationService>(tas);
             services.AddSingleton<ITokenService>(ts);
             services.AddSingleton<INeuronQueryClient>(nqc);
             services.AddSingleton<INeuronQueryService>(nqs);

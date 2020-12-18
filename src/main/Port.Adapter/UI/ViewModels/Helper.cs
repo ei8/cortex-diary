@@ -3,6 +3,7 @@ using ei8.Cortex.Diary.Application.Notifications;
 using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using ei8.Cortex.Library.Common;
+using neurUL.Cortex.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,35 +79,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                     await Neurons.Helper.PromptSimilarExists(neuronQueryService, dialogService, avatarUrl, owner, tag))
                 {
                     string[] tps = await terminalParametersRetriever(owner);
-                    var presynapticNeuronId = string.Empty;
-                    var postsynapticNeuronId = string.Empty;
-                    var newNeuronId = string.Empty;
-
-                    if (relativeType == RelativeType.Presynaptic)
-                    {
-                        newNeuronId = presynapticNeuronId = Guid.NewGuid().ToString();
-                        postsynapticNeuronId = targetNeuronId;
-                    }
-                    else if (relativeType == RelativeType.Postsynaptic)
-                    {
-                        presynapticNeuronId = targetNeuronId;
-                        newNeuronId = postsynapticNeuronId = Guid.NewGuid().ToString();
-                    }
-
-                    await neuronApplicationService.CreateNeuron(
-                        avatarUrl,
-                        newNeuronId,
-                        tag,
-                        regionId
-                    );
-                    await terminalApplicationService.CreateTerminal(
-                        avatarUrl,
-                        Guid.NewGuid().ToString(),
-                        presynapticNeuronId,
-                        postsynapticNeuronId,
-                        (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]),
-                        float.Parse(tps[1])
-                        );
+                    await Helper.CreateRelativeCore(neuronApplicationService, terminalApplicationService, avatarUrl, regionId, targetNeuronId, relativeType, tag, (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]), float.Parse(tps[1]));
                     result = true;
                     stat = true;
                 }
@@ -117,6 +90,39 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 $"{relativeType.ToString()} creation cancelled."
             );
             return result;
+        }
+
+        public static async Task CreateRelativeCore(INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType, string tag, NeurotransmitterEffect effect, float strength)
+        {
+            var presynapticNeuronId = string.Empty;
+            var postsynapticNeuronId = string.Empty;
+            var newNeuronId = string.Empty;
+
+            if (relativeType == RelativeType.Presynaptic)
+            {
+                newNeuronId = presynapticNeuronId = Guid.NewGuid().ToString();
+                postsynapticNeuronId = targetNeuronId;
+            }
+            else if (relativeType == RelativeType.Postsynaptic)
+            {
+                presynapticNeuronId = targetNeuronId;
+                newNeuronId = postsynapticNeuronId = Guid.NewGuid().ToString();
+            }
+
+            await neuronApplicationService.CreateNeuron(
+                avatarUrl,
+                newNeuronId,
+                tag,
+                regionId
+            );
+            await terminalApplicationService.CreateTerminal(
+                avatarUrl,
+                Guid.NewGuid().ToString(),
+                presynapticNeuronId,
+                postsynapticNeuronId,
+                effect,
+                strength
+                );
         }
 
         internal async static Task<bool> LinkRelative(Func<Task<IEnumerable<UINeuron>>> linkCandidatesRetriever, Func<object, Task<string[]>> terminalParametersRetriever, object owner, ITerminalApplicationService terminalApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, RelativeType relativeType)

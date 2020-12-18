@@ -7,6 +7,7 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using neurUL.Cortex.Common;
 @inject INeuronApplicationService NeuronApplicationService;
+@inject ITerminalApplicationService TerminalApplicationService; 
 
 <div class="container-fluid">
     <EditForm Model="@editorNeuronViewModel">
@@ -18,7 +19,7 @@
                         <div class="row">
                             <div class="col p-0">
                                 <p class="p-0 m-0 font-weight-bold">
-                                    @("Adding New Relative to '" + this.CentralNeuron.Tag + "'")
+                                    @("Adding New Relative to '" + this.SelectedNeuron.Tag + "'")
                                 </p>
                             </div>
                         </div>
@@ -52,7 +53,7 @@
                             <button class="btn btn-secondary btn-sm" @onclick="OnSearchNeuron">Region...</button>
                         </div>
                         <div class="col-auto pb-1 p-0">
-                            <InputText class="form-control-sm" style="width:150px" readonly placeholder="[Base]" @bind-Value="@this.RegionNeuronTag" />
+                            <input class="form-control-sm" style="width:150px" readonly value="@(this.RegionNeuron != null ? this.RegionNeuron.Tag : "[Base]")" />
                         </div>
                     </div>
                 </div>
@@ -112,14 +113,17 @@
                 this.selectedNeuron = value;
                 if (this.selectedNeuron != null)
                 {
-                    this.editorNeuronViewModel.Id = this.selectedNeuron.Neuron.Id;
-                    this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
-                    // TODO: this.editorNeuronViewModel.Effect = targetNeuron.Effect;
-                    //this.editorNeuronViewModel.Strength = targetNeuron.Strength;
-                    //this.editorNeuronViewModel.RelativeType = targetNeuron.RelativeType;
-                    //this.editorNeuronViewModel.RegionId = targetNeuron.RegionId;
-                    //this.editorNeuronViewModel.RegionName = targetNeuron.RegionName;
-                    this.editorNeuronViewModel.Version = this.selectedNeuron.Neuron.Version;
+                    if (this.SelectedOption == ContextMenuOption.Edit)
+                    {
+                        this.editorNeuronViewModel.Id = this.selectedNeuron.Neuron.Id;
+                        this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
+                        // TODO: this.editorNeuronViewModel.Effect = targetNeuron.Effect;
+                        //this.editorNeuronViewModel.Strength = targetNeuron.Strength;
+                        //this.editorNeuronViewModel.RelativeType = targetNeuron.RelativeType;
+                        //this.editorNeuronViewModel.RegionId = targetNeuron.RegionId;
+                        //this.editorNeuronViewModel.RegionName = targetNeuron.RegionName;
+                        this.editorNeuronViewModel.Version = this.selectedNeuron.Neuron.Version;
+                    }
                 }
             }
 
@@ -128,14 +132,9 @@
         }
     }
 
-    public string RegionNeuronTag { get => this.RegionNeuron != null ? this.RegionNeuron.Tag : string.Empty; set { } }
-
     public NeuronViewModel RegionNeuron { get; set; }
 
     private bool IsSearchNeuronVisible { get; set; } = false;
-
-    [Parameter]
-    public NeuronViewModel CentralNeuron { get; set; }
 
     private async Task OnSend()
     {
@@ -147,10 +146,28 @@
             switch (this.SelectedOption)
             {
                 case ContextMenuOption.New:
-                    await this.NeuronApplicationService.CreateNeuron(result.AvatarUrl, Guid.NewGuid().ToString(), this.editorNeuronViewModel.Tag, string.Empty);
+                    await this.NeuronApplicationService.CreateNeuron(
+                        result.AvatarUrl,
+                        Guid.NewGuid().ToString(),
+                        this.editorNeuronViewModel.Tag,
+                        this.RegionNeuron != null ? this.RegionNeuron.Neuron.Id : null
+                        );
                     break;
                 case ContextMenuOption.Edit:
                     await this.NeuronApplicationService.ChangeNeuronTag(result.AvatarUrl, this.editorNeuronViewModel.Id, this.editorNeuronViewModel.Tag, this.editorNeuronViewModel.Version);
+                    break;
+                case ContextMenuOption.AddRelative:
+                    await ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Helper.CreateRelativeCore(
+                        this.NeuronApplicationService,
+                        this.TerminalApplicationService,
+                        result.AvatarUrl,
+                        this.RegionNeuron != null ? this.RegionNeuron.Neuron.Id : null,
+                        this.SelectedNeuron.Neuron.Id,
+                        this.editorNeuronViewModel.RelativeType.Value,
+                        this.editorNeuronViewModel.Tag,
+                        this.editorNeuronViewModel.Effect.Value,
+                        this.editorNeuronViewModel.Strength.Value
+                        );
                     break;
             }
 

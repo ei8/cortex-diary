@@ -19,7 +19,7 @@
     <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested"></TreeView>
 </div>
 <div class="footer px-4 h-auto">
-    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedOption="@this.SelectedOption" SelectedNeuron="@this.EditNeuron" CentralNeuron="@this.CentralNeuron"/>
+    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedOption="@this.SelectedOption" SelectedNeuron="@this.EditNeuron" />
 </div>
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -54,16 +54,13 @@
                     case ContextMenuOption.New:
                         this.SelectedNeuron = null;
                         this.EditNeuron = null;
-                        this.CentralNeuron = null;
                         break;
                     case ContextMenuOption.Delete:
                         this.IsConfirmVisible = true;
                         break;
                     case ContextMenuOption.Edit:
-                        this.EditNeuron = this.SelectedNeuron;
-                        break;
                     case ContextMenuOption.AddRelative:
-                        this.CentralNeuron = this.SelectedNeuron;
+                        this.EditNeuron = this.SelectedNeuron;
                         break;
                 }
             }
@@ -73,8 +70,6 @@
     private NeuronViewModel SelectedNeuron { get; set; } = null;
 
     private NeuronViewModel EditNeuron { get; set; } = null;
-
-    private NeuronViewModel CentralNeuron { get; set; } = null;
 
     private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
             string.Format(format, this.SelectedNeuron.Tag) :
