@@ -24,7 +24,8 @@
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 
-@code {
+@code 
+{
     protected override void OnInitialized()
     {
         this.Children = new NeuronViewModel[0];
@@ -60,6 +61,7 @@
                         break;
                     case ContextMenuOption.Edit:
                     case ContextMenuOption.AddRelative:
+                    case ContextMenuOption.LinkRelative:
                         this.EditNeuron = this.SelectedNeuron;
                         break;
                 }
