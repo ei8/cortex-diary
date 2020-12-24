@@ -137,21 +137,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 {
                     string[] tps = await terminalParametersRetriever(owner);
 
-                    foreach (var n in candidates)
-                    {
-                        await terminalApplicationService.CreateTerminal(
-                            avatarUrl,
-                            Guid.NewGuid().ToString(),
-                            relativeType == RelativeType.Presynaptic ? n.Id : targetNeuronId,
-                            relativeType == RelativeType.Presynaptic ? targetNeuronId : n.Id,
-                            (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]),
-                            float.Parse(tps[1])
-                            );
-                    }
+                    await Helper.LinkRelativeCore(terminalApplicationService, avatarUrl, targetNeuronId, relativeType, candidates, (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]), float.Parse(tps[1]));
                     result = true;
                     stat = true;
                 }
-                                
+
                 return stat;
             },
                 $"{relativeType.ToString()} linked successfully.",
@@ -159,6 +149,21 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 $"{relativeType.ToString()} linking cancelled."
             );
             return result;
+        }
+
+        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<UINeuron> candidates, NeurotransmitterEffect effect, float strength)
+        {
+            foreach (var n in candidates)
+            {
+                await terminalApplicationService.CreateTerminal(
+                    avatarUrl,
+                    Guid.NewGuid().ToString(),
+                    relativeType == RelativeType.Presynaptic ? n.Id : targetNeuronId,
+                    relativeType == RelativeType.Presynaptic ? targetNeuronId : n.Id,
+                    effect,
+                    strength
+                    );
+            }
         }
 
         internal async static Task<bool> ChangeNeuronTag(string tag, INeuronApplicationService neuronApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, int expectedVersion)

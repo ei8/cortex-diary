@@ -19,7 +19,7 @@
                         <div class="row">
                             <div class="col p-0">
                                 <p class="p-0 m-0 font-weight-bold">
-                                    @(string.Format(this.GetOptionDescriptionFormat(), this.SelectedNeuron.Tag))
+                                    @this.GetOptionDescription()
                                 </p>
                             </div>
                         </div>
@@ -55,13 +55,21 @@
                     {
                         <div class="row">
                             <div class="col py-1 px-0">
-                                <InputTextArea class="form-control w-100" placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" rows="4" />
+                                <ListView Items="@this.editorNeuronViewModel.LinkCandidates" Render="@true">
+                                    <ItemTemplate Context="itemContext">
+                                        <ConditionalDisplay Show="@true">
+                                            <li style="list-style:none" @key="@itemContext.Id">
+                                                <label for="@itemContext.Tag">@(!string.IsNullOrEmpty(itemContext.Tag) ? itemContext.Tag : " ")</label>
+                                            </li>
+                                        </ConditionalDisplay>
+                                    </ItemTemplate>
+                                </ListView>
                             </div>
                             <div class="col-auto p-0">
                                 <div class="container">
                                     <div class="row">
                                         <div class="col-auto p-1">
-                                            <button class="btn btn-secondary btn-sm" style="width:25px">+</button>
+                                            <button class="btn btn-secondary btn-sm" style="width:25px" @onclick="this.OnSearchLinkNeuron">+</button>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -75,10 +83,10 @@
                     }
                     <div class="row">
                         <div class="col-auto pb-1 pr-1 p-0">
-                            <button class="btn btn-secondary btn-sm" @onclick="OnSearchNeuron">Region...</button>
+                            <button class="btn btn-secondary btn-sm" @onclick="this.OnSearchRegionNeuron">Region...</button>
                         </div>
                         <div class="col-auto pb-1 p-0">
-                            <input class="form-control-sm" style="width:150px" readonly value="@(this.RegionNeuron != null ? this.RegionNeuron.Tag : "[Base]")" />
+                            <input class="form-control-sm" style="width:150px" readonly value="@this.editorNeuronViewModel.RegionTag" />
                         </div>
                     </div>
                 </div>
@@ -100,7 +108,8 @@
         </div>
     </EditForm>
 </div>
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchNeuronVisible" @bind-SelectedNeuron="this.RegionNeuron"/>
+<NeuronSearchBox @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron"/>
+<NeuronSearchBox @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" />
 
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
@@ -108,7 +117,7 @@
     [Parameter]
     public string AvatarUrl { get; set; }
 
-    private ContextMenuOption selectedOption { get; set; }
+    private ContextMenuOption selectedOption;
     [Parameter]
     public ContextMenuOption SelectedOption
     {
@@ -118,6 +127,34 @@
             if (this.selectedOption != value)
             {
                 this.selectedOption = value;
+
+                if (this.SelectedOption == ContextMenuOption.Edit)
+                {
+                    if (this.selectedNeuron != null)
+                    {
+                        // similar to NeuronViewModelBase.SetNeuron
+                        this.editorNeuronViewModel.Id = this.selectedNeuron.Neuron.Id;
+                        this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
+                        // TODO: this.editorNeuronViewModel.RelativeType = this.selectedNeuron.Neuron.RelativeType;
+                        this.editorNeuronViewModel.RegionId = this.selectedNeuron.Neuron.Region.Id;
+                        this.editorNeuronViewModel.RegionTag = this.selectedNeuron.Neuron.Region.Tag;
+                        this.editorNeuronViewModel.Version = this.selectedNeuron.Neuron.Version;
+
+                        if (this.selectedNeuron.Neuron.Terminal != null)
+                        {
+                            // TODO: this.TerminalId = neuron.Terminal.Id;
+                            if (int.TryParse(this.selectedNeuron.Neuron.Terminal.Effect, out int ie))
+                                this.editorNeuronViewModel.Effect = (NeurotransmitterEffect)ie;
+                            if (float.TryParse(this.selectedNeuron.Neuron.Terminal.Strength, out float fs))
+                                this.editorNeuronViewModel.Strength = fs;
+
+                            // TODO: this.TerminalCreation = new AuthorEventInfo(neuron.Terminal.Creation);
+                            //this.TerminalLastModification = new AuthorEventInfo(neuron.Terminal.LastModification);
+                            //this.TerminalVersion = neuron.Terminal.Version;
+                        }
+                    }
+                }
+
                 this.SelectedOptionChanged.InvokeAsync(this.selectedOption);
             }
         }
@@ -136,35 +173,65 @@
             if (this.selectedNeuron != value)
             {
                 this.selectedNeuron = value;
-                if (this.selectedNeuron != null)
-                {
-                    if (this.SelectedOption == ContextMenuOption.Edit)
-                    {
-                        this.editorNeuronViewModel.Id = this.selectedNeuron.Neuron.Id;
-                        this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
-                        // TODO: this.editorNeuronViewModel.Effect = targetNeuron.Effect;
-                        //this.editorNeuronViewModel.Strength = targetNeuron.Strength;
-                        //this.editorNeuronViewModel.RelativeType = targetNeuron.RelativeType;
-                        //this.editorNeuronViewModel.RegionId = targetNeuron.RegionId;
-                        //this.editorNeuronViewModel.RegionName = targetNeuron.RegionName;
-                        this.editorNeuronViewModel.Version = this.selectedNeuron.Neuron.Version;
-                    }
-                }
-            }
 
-            if (this.selectedNeuron == null)
-                this.editorNeuronViewModel.Initialize();
+                if (this.selectedNeuron == null)
+                    this.editorNeuronViewModel.Initialize();
+            }
         }
     }
 
-    public NeuronViewModel RegionNeuron { get; set; }
+    private NeuronViewModel selectedRegionNeuron;
+    private NeuronViewModel SelectedRegionNeuron
+    {
+        get => this.selectedRegionNeuron;
+        set
+        {
+            if (this.selectedRegionNeuron != value)
+            {
+                this.selectedRegionNeuron = value;
 
-    private bool IsSearchNeuronVisible { get; set; } = false;
+                if (this.selectedRegionNeuron != null)
+                {
+                    this.editorNeuronViewModel.RegionId = this.selectedRegionNeuron.Neuron.Id;
+                    this.editorNeuronViewModel.RegionTag = this.selectedRegionNeuron.Neuron.Tag;
+                }
+                else
+                    this.editorNeuronViewModel.InitializeRegion();
+            }
+        }
+    }
+
+    private bool IsSearchRegionNeuronVisible { get; set; } = false;
+
+
+
+    private NeuronViewModel selectedLinkNeuron;
+    private NeuronViewModel SelectedLinkNeuron
+    {
+        get => this.selectedLinkNeuron;
+        set
+        {
+            if (this.selectedLinkNeuron != value)
+            {
+                this.selectedLinkNeuron = value;
+
+                if (this.selectedLinkNeuron != null)
+                {
+                    // add to linkcandidates
+                    this.editorNeuronViewModel.LinkCandidates = this.editorNeuronViewModel.LinkCandidates.Append(this.selectedLinkNeuron.Neuron).ToArray();
+                    this.selectedLinkNeuron = null;
+                }
+            }
+        }
+    }
+
+    private bool IsSearchLinkNeuronVisible { get; set; } = false;
 
     private async Task OnSend()
     {
         if (
-            !string.IsNullOrEmpty(this.editorNeuronViewModel.Tag) &&
+            // TODO: should be validated by the UI (javascript)
+            // DEL: !string.IsNullOrEmpty(this.editorNeuronViewModel.Tag) &&
             QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result)
             )
         {
@@ -175,8 +242,8 @@
                         result.AvatarUrl,
                         Guid.NewGuid().ToString(),
                         this.editorNeuronViewModel.Tag,
-                        this.RegionNeuron != null ? this.RegionNeuron.Neuron.Id : null
-                        );
+                        this.editorNeuronViewModel.RegionId
+                        ); ;
                     break;
                 case ContextMenuOption.Edit:
                     await this.NeuronApplicationService.ChangeNeuronTag(result.AvatarUrl, this.editorNeuronViewModel.Id, this.editorNeuronViewModel.Tag, this.editorNeuronViewModel.Version);
@@ -186,10 +253,21 @@
                         this.NeuronApplicationService,
                         this.TerminalApplicationService,
                         result.AvatarUrl,
-                        this.RegionNeuron != null ? this.RegionNeuron.Neuron.Id : null,
+                        this.editorNeuronViewModel.RegionId,
                         this.SelectedNeuron.Neuron.Id,
                         this.editorNeuronViewModel.RelativeType.Value,
                         this.editorNeuronViewModel.Tag,
+                        this.editorNeuronViewModel.Effect.Value,
+                        this.editorNeuronViewModel.Strength.Value
+                        );
+                    break;
+                case ContextMenuOption.LinkRelative:
+                    await ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Helper.LinkRelativeCore(
+                        this.TerminalApplicationService,
+                        result.AvatarUrl,
+                        this.SelectedNeuron.Neuron.Id,
+                        this.editorNeuronViewModel.RelativeType.Value,
+                        this.editorNeuronViewModel.LinkCandidates,
                         this.editorNeuronViewModel.Effect.Value,
                         this.editorNeuronViewModel.Strength.Value
                         );
@@ -206,12 +284,17 @@
         Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
     }
 
-    private void OnSearchNeuron()
+    private void OnSearchLinkNeuron()
     {
-        this.IsSearchNeuronVisible = true;
+        this.IsSearchLinkNeuronVisible = true;
     }
 
-    private string GetOptionDescriptionFormat()
+    private void OnSearchRegionNeuron()
+    {
+        this.IsSearchRegionNeuronVisible = true;
+    }
+
+    private string GetOptionDescription()
     {
         string result = string.Empty;
         switch (this.SelectedOption)
@@ -226,6 +309,6 @@
                 result = "Editing '{0}'";
                 break;
         }
-        return result;
+        return string.Format(result, (this.SelectedNeuron != null ? this.SelectedNeuron.Tag : string.Empty));
     }
 }

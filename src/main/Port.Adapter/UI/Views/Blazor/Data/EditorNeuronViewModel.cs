@@ -1,10 +1,13 @@
-﻿using ei8.Cortex.Library.Common;
+﻿using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Library.Common;
 using neurUL.Cortex.Common;
+using System.Collections.Generic;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
 {
     public class EditorNeuronViewModel
     {
+        public const string BaseRegionTag = "[Base]";
         public EditorNeuronViewModel() => this.Initialize();
 
         public string Id { get; set; }
@@ -13,6 +16,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
         public RelativeType? RelativeType { get; set; }
         public NeurotransmitterEffect? Effect { get; set; }
         public float? Strength { get; set; }
+        public string RegionId { get; set; }
+        public string RegionTag { get; set; }
+        public IReadOnlyList<UINeuron> LinkCandidates { get; set; }
 
         public void Initialize()
         {
@@ -22,6 +28,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
             this.RelativeType = null;
             this.Effect = null;
             this.Strength = null;
+            this.InitializeRegion();
+            this.LinkCandidates = new UINeuron[0];
+        }
+
+        public void InitializeRegion()
+        {
+            this.RegionId = string.Empty;
+            this.RegionTag = EditorNeuronViewModel.BaseRegionTag;
         }
     }
 }
