@@ -13,7 +13,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
         public string Id { get; set; }
         public string Tag { get; set; }
         public int Version { get; set; }
-        public RelativeType? RelativeType { get; set; }
+        public RelativeType? Type { get; set; }
         public NeurotransmitterEffect? Effect { get; set; }
         public float? Strength { get; set; }
         public string RegionId { get; set; }
@@ -25,7 +25,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
             this.Id = string.Empty;
             this.Tag = string.Empty;
             this.Version = 0;
-            this.RelativeType = null;
+            this.Type = null;
             this.Effect = null;
             this.Strength = null;
             this.InitializeRegion();

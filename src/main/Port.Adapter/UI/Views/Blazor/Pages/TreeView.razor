@@ -3,24 +3,27 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 
 <ul>
-    @foreach (var child in Children)
+    @if (this.Children != null)
     {
-        <li @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
-            <span @onclick="child.Toggle">@child.GetIcon()</span>
-            <span @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)">
-                @child.Tag
-                @if (child.AreControlsVisible)
+        @foreach (var child in Children)
+        {
+            <li @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
+                <span @onclick="child.Toggle">@child.GetIcon()</span>
+                <span @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)">
+                    @child.Tag
+                    @if (child.AreControlsVisible && this.CanShowControls)
+                    {
+                        <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemMenu(child)">...</button>
+                    }
+                </span>
+                @if (child.IsExpanded)
                 {
-                    <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemMenu(child)">...</button>
+                    <div>
+                        <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls"/>
+                    </div>
                 }
-            </span>
-            @if (child.IsExpanded)
-            {
-                <div>
-                    <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl"></TreeView>
-                </div>
-            }
-        </li>
+            </li>
+        }
     }
 </ul>
 
@@ -57,9 +60,32 @@
         }
     }
 
+    [Parameter]
+    public EventCallback<bool> CanShowControlsChanged { get; set; }
+
+    private bool canShowControls;
+    [Parameter]
+    public bool CanShowControls
+    {
+        get => this.canShowControls;
+        set
+        {
+            if (this.canShowControls != value)
+            {
+                this.canShowControls = value;
+                this.CanShowControlsChanged.InvokeAsync(this.canShowControls);
+            }
+        }
+    }
+
     private async void RequestItemMenu(NeuronViewModel neuronViewModel)
     {
         this.SelectedNeuron = neuronViewModel;
+        this.MenuRequested();
+    }
+
+    private async void MenuRequested()
+    {
         await this.OnMenuRequested.InvokeAsync(this);
     }
 }

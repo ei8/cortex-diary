@@ -1,13 +1,13 @@
 ﻿@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
 @using ei8.Cortex.Diary.Application.Neurons;
-@using ei8.Cortex.Library.Client;   
+@using ei8.Cortex.Library.Client;
 @using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using neurUL.Cortex.Common;
 @inject INeuronApplicationService NeuronApplicationService;
-@inject ITerminalApplicationService TerminalApplicationService; 
+@inject ITerminalApplicationService TerminalApplicationService;
 
 <div class="container-fluid">
     <EditForm Model="@editorNeuronViewModel">
@@ -23,25 +23,29 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col p-0 pr-1 col-auto">
-                                <NullableInputSelect class="btn btn-secondary btn-sm dropdown-toggle" T="RelativeType" @bind-Value="this.editorNeuronViewModel.RelativeType">
-                                    <option value="">--Select Type--</option>
-                                    <option value="@RelativeType.Postsynaptic">Postsynaptic</option>
-                                    <option value="@RelativeType.Presynaptic">Presynaptic</option>
-                                </NullableInputSelect>
+                        // if not editing or, if editing non root
+                        @if (this.SelectedOption != ContextMenuOption.Edit || this.editorNeuronViewModel.Type != RelativeType.NotSet)
+                        {
+                            <div class="row">
+                                <div class="col p-0 pr-1 col-auto">
+                                    <NullableInputSelect class="btn btn-secondary btn-sm dropdown-toggle" T="RelativeType" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @bind-Value="this.editorNeuronViewModel.Type">
+                                        <option value="">--Select Type--</option>
+                                        <option value="@RelativeType.Postsynaptic">Postsynaptic</option>
+                                        <option value="@RelativeType.Presynaptic">Presynaptic</option>
+                                    </NullableInputSelect>
+                                </div>
+                                <div class="col p-0 pr-1 col-auto">
+                                    <NullableInputSelect class="btn btn-secondary btn-sm dropdown-toggle" T="NeurotransmitterEffect" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @bind-Value="this.editorNeuronViewModel.Effect">
+                                        <option value="">--Select Effect--</option>
+                                        <option value="@NeurotransmitterEffect.Excite">Excite</option>
+                                        <option value="@NeurotransmitterEffect.Inhibit">Inhibit</option>
+                                    </NullableInputSelect>
+                                </div>
+                                <div class="col pr-1 p-0">
+                                    <InputNumber class="form-control-xs" placeholder="Strength" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @bind-Value="this.editorNeuronViewModel.Strength" />
+                                </div>
                             </div>
-                            <div class="col p-0 pr-1 col-auto">
-                                <NullableInputSelect class="btn btn-secondary btn-sm dropdown-toggle" T="NeurotransmitterEffect" @bind-Value="this.editorNeuronViewModel.Effect">
-                                    <option value="">--Select Effect--</option>
-                                    <option value="@NeurotransmitterEffect.Excite">Excite</option>
-                                    <option value="@NeurotransmitterEffect.Inhibit">Inhibit</option>
-                                </NullableInputSelect>
-                            </div>
-                            <div class="col pr-1 p-0">
-                                <InputNumber class="form-control-xs" placeholder="Strength" @bind-Value="this.editorNeuronViewModel.Strength" />
-                            </div>
-                        </div>
+                        }
                     }
                     @if (this.SelectedOption != ContextMenuOption.LinkRelative)
                     {
@@ -59,6 +63,7 @@
                                     <ItemTemplate Context="itemContext">
                                         <ConditionalDisplay Show="@true">
                                             <li style="list-style:none" @key="@itemContext.Id">
+                                                <input type="radio" id="@itemContext.Id" checked="@(this.RemovingLinkNeuron != null && this.RemovingLinkNeuron.Id == itemContext.Id)" @onchange="@(() => { this.RemovingLinkNeuron = itemContext; })" />
                                                 <label for="@itemContext.Tag">@(!string.IsNullOrEmpty(itemContext.Tag) ? itemContext.Tag : " ")</label>
                                             </li>
                                         </ConditionalDisplay>
@@ -74,7 +79,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-auto pl-1">
-                                            <button class="btn btn-secondary btn-sm" style="width:25px">-</button>
+                                            <button class="btn btn-secondary btn-sm" style="width:25px" @onclick="this.OnRemoveSelectedLinkNeuron">-</button>
                                         </div>
                                     </div>
                                 </div>
@@ -83,7 +88,7 @@
                     }
                     <div class="row">
                         <div class="col-auto pb-1 pr-1 p-0">
-                            <button class="btn btn-secondary btn-sm" @onclick="this.OnSearchRegionNeuron">Region...</button>
+                            <button class="btn btn-secondary btn-sm" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @onclick="this.OnSearchRegionNeuron">Region...</button>
                         </div>
                         <div class="col-auto pb-1 p-0">
                             <input class="form-control-sm" style="width:150px" readonly value="@this.editorNeuronViewModel.RegionTag" />
@@ -108,7 +113,7 @@
         </div>
     </EditForm>
 </div>
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron"/>
+<NeuronSearchBox @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
 <NeuronSearchBox @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" />
 
 @code {
@@ -116,6 +121,8 @@
 
     [Parameter]
     public string AvatarUrl { get; set; }
+
+    private UINeuron RemovingLinkNeuron { get; set; }
 
     private ContextMenuOption selectedOption;
     [Parameter]
@@ -135,7 +142,7 @@
                         // similar to NeuronViewModelBase.SetNeuron
                         this.editorNeuronViewModel.Id = this.selectedNeuron.Neuron.Id;
                         this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
-                        // TODO: this.editorNeuronViewModel.RelativeType = this.selectedNeuron.Neuron.RelativeType;
+                        this.editorNeuronViewModel.Type = this.selectedNeuron.Neuron.Type;
                         this.editorNeuronViewModel.RegionId = this.selectedNeuron.Neuron.Region.Id;
                         this.editorNeuronViewModel.RegionTag = this.selectedNeuron.Neuron.Region.Tag;
                         this.editorNeuronViewModel.Version = this.selectedNeuron.Neuron.Version;
@@ -203,8 +210,6 @@
 
     private bool IsSearchRegionNeuronVisible { get; set; } = false;
 
-
-
     private NeuronViewModel selectedLinkNeuron;
     private NeuronViewModel SelectedLinkNeuron
     {
@@ -255,7 +260,7 @@
                         result.AvatarUrl,
                         this.editorNeuronViewModel.RegionId,
                         this.SelectedNeuron.Neuron.Id,
-                        this.editorNeuronViewModel.RelativeType.Value,
+                        this.editorNeuronViewModel.Type.Value,
                         this.editorNeuronViewModel.Tag,
                         this.editorNeuronViewModel.Effect.Value,
                         this.editorNeuronViewModel.Strength.Value
@@ -266,7 +271,7 @@
                         this.TerminalApplicationService,
                         result.AvatarUrl,
                         this.SelectedNeuron.Neuron.Id,
-                        this.editorNeuronViewModel.RelativeType.Value,
+                        this.editorNeuronViewModel.Type.Value,
                         this.editorNeuronViewModel.LinkCandidates,
                         this.editorNeuronViewModel.Effect.Value,
                         this.editorNeuronViewModel.Strength.Value
@@ -280,13 +285,21 @@
 
     private async Task OnCancel()
     {
-        // TODO: ask user if sure to proceed, all unsaved changes (if any) will be lost        
+        // TODO: ask user if sure to proceed, all unsaved changes (if any) will be lost
         Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
     }
 
     private void OnSearchLinkNeuron()
     {
         this.IsSearchLinkNeuronVisible = true;
+    }
+
+    private void OnRemoveSelectedLinkNeuron()
+    {
+        var lcs = this.editorNeuronViewModel.LinkCandidates;
+        lcs = lcs.Where(un => un.Id != this.RemovingLinkNeuron.Id).ToArray();
+        this.editorNeuronViewModel.LinkCandidates = lcs;
+        this.RemovingLinkNeuron = null;
     }
 
     private void OnSearchRegionNeuron()

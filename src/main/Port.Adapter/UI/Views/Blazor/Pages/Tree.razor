@@ -4,10 +4,12 @@
 @using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 @using ei8.Cortex.Library.Client;
+@using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @inject INeuronQueryService NeuronQueryService;
 @inject INeuronApplicationService NeuronApplicationService;
+@inject ITerminalApplicationService TerminalApplicationService;
 
 <div class="top-row px-4" style="padding-top:12px">
     <div class="details align-middle ">
@@ -16,7 +18,7 @@
     </div>
 </div>
 <div class="content px-4">
-    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested"></TreeView>
+    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" />
 </div>
 <div class="footer px-4 h-auto">
     <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedOption="@this.SelectedOption" SelectedNeuron="@this.EditNeuron" />
@@ -24,7 +26,7 @@
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 
-@code 
+@code
 {
     protected override void OnInitialized()
     {
@@ -55,6 +57,7 @@
                     case ContextMenuOption.New:
                         this.SelectedNeuron = null;
                         this.EditNeuron = null;
+                        this.CanShowControls = true;
                         break;
                     case ContextMenuOption.Delete:
                         this.IsConfirmVisible = true;
@@ -62,12 +65,15 @@
                     case ContextMenuOption.Edit:
                     case ContextMenuOption.AddRelative:
                     case ContextMenuOption.LinkRelative:
+                        this.CanShowControls = false;
                         this.EditNeuron = this.SelectedNeuron;
                         break;
                 }
             }
         }
     }
+
+    private bool CanShowControls { get; set; } = true;
 
     private NeuronViewModel SelectedNeuron { get; set; } = null;
 
@@ -91,7 +97,18 @@
     {
         if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result))
         {
-            await this.NeuronApplicationService.DeactivateNeuron(result.AvatarUrl, this.SelectedNeuron.Neuron.Id, this.SelectedNeuron.Neuron.Version);
+            if (this.SelectedNeuron.Neuron.Type == RelativeType.NotSet)
+                await this.NeuronApplicationService.DeactivateNeuron(
+                    result.AvatarUrl,
+                    this.SelectedNeuron.Neuron.Id,
+                    this.SelectedNeuron.Neuron.Version
+                    );
+            else
+                await this.TerminalApplicationService.DeactivateTerminal(
+                    result.AvatarUrl,
+                    this.SelectedNeuron.Neuron.Terminal.Id,
+                    this.SelectedNeuron.Neuron.Terminal.Version
+                    );
         }
     }
 
