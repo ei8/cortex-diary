@@ -30,8 +30,8 @@
                                 <div class="col p-0 pr-1 col-auto">
                                     <NullableInputSelect class="btn btn-secondary btn-sm dropdown-toggle" T="RelativeType" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @bind-Value="this.editorNeuronViewModel.Type">
                                         <option value="">--Select Type--</option>
-                                        <option value="@RelativeType.Postsynaptic">Postsynaptic</option>
-                                        <option value="@RelativeType.Presynaptic">Presynaptic</option>
+                                        <option value="@RelativeType.Presynaptic">Sender</option>
+                                        <option value="@RelativeType.Postsynaptic">Receiver</option>
                                     </NullableInputSelect>
                                 </div>
                                 <div class="col p-0 pr-1 col-auto">

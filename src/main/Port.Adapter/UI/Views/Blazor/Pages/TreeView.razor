@@ -28,13 +28,8 @@
 </ul>
 
 @code {
-    protected override void OnInitialized()
-    {
-        this.Children = new NeuronViewModel[0];
-    }
-
     [Parameter]
-    public NeuronViewModel[] Children { get; set; }
+    public NeuronViewModel[] Children { get; set; } = new NeuronViewModel[0];
 
     [Parameter]
     public string AvatarUrl { get; set; }
