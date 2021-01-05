@@ -1,13 +1,14 @@
-﻿@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
-@using ei8.Cortex.Diary.Application.Neurons;
+﻿@using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Library.Client;
 @using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using neurUL.Cortex.Common;
-@inject INeuronApplicationService NeuronApplicationService;
-@inject ITerminalApplicationService TerminalApplicationService;
+@inject INeuronApplicationService neuronApplicationService;
+@inject ITerminalApplicationService terminalApplicationService;
+@inject IToastService toastService; 
 
 <div class="container-fluid">
     <EditForm Model="@editorNeuronViewModel">
@@ -180,12 +181,16 @@
             if (this.selectedNeuron != value)
             {
                 this.selectedNeuron = value;
-
-                if (this.selectedNeuron == null)
-                    this.editorNeuronViewModel.Initialize();
             }
+
+            if (this.selectedNeuron == null)
+                this.editorNeuronViewModel.Initialize();
         }
     }
+
+    [Parameter]
+    public EventCallback<NeuronViewModel> SelectedNeuronChanged { get; set; }
+
 
     private NeuronViewModel selectedRegionNeuron;
     private NeuronViewModel SelectedRegionNeuron
@@ -240,43 +245,56 @@
             QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result)
             )
         {
-            switch (this.SelectedOption)
+            string description = string.Empty;
+            try
             {
-                case ContextMenuOption.New:
-                    await this.NeuronApplicationService.CreateNeuron(
-                        result.AvatarUrl,
-                        Guid.NewGuid().ToString(),
-                        this.editorNeuronViewModel.Tag,
-                        this.editorNeuronViewModel.RegionId
-                        ); ;
-                    break;
-                case ContextMenuOption.Edit:
-                    await this.NeuronApplicationService.ChangeNeuronTag(result.AvatarUrl, this.editorNeuronViewModel.Id, this.editorNeuronViewModel.Tag, this.editorNeuronViewModel.Version);
-                    break;
-                case ContextMenuOption.AddRelative:
-                    await ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Helper.CreateRelativeCore(
-                        this.NeuronApplicationService,
-                        this.TerminalApplicationService,
-                        result.AvatarUrl,
-                        this.editorNeuronViewModel.RegionId,
-                        this.SelectedNeuron.Neuron.Id,
-                        this.editorNeuronViewModel.Type.Value,
-                        this.editorNeuronViewModel.Tag,
-                        this.editorNeuronViewModel.Effect.Value,
-                        this.editorNeuronViewModel.Strength.Value
-                        );
-                    break;
-                case ContextMenuOption.LinkRelative:
-                    await ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Helper.LinkRelativeCore(
-                        this.TerminalApplicationService,
-                        result.AvatarUrl,
-                        this.SelectedNeuron.Neuron.Id,
-                        this.editorNeuronViewModel.Type.Value,
-                        this.editorNeuronViewModel.LinkCandidates,
-                        this.editorNeuronViewModel.Effect.Value,
-                        this.editorNeuronViewModel.Strength.Value
-                        );
-                    break;
+                switch (this.SelectedOption)
+                {
+                    case ContextMenuOption.New:
+                        await this.neuronApplicationService.CreateNeuron(
+                            result.AvatarUrl,
+                            Guid.NewGuid().ToString(),
+                            this.editorNeuronViewModel.Tag,
+                            this.editorNeuronViewModel.RegionId
+                            );
+                        description = "Neuron created";
+                        break;
+                    case ContextMenuOption.Edit:
+                        await this.neuronApplicationService.ChangeNeuronTag(result.AvatarUrl, this.editorNeuronViewModel.Id, this.editorNeuronViewModel.Tag, this.editorNeuronViewModel.Version);
+                        description = "Neuron saved";
+                        break;
+                    case ContextMenuOption.AddRelative:
+                        await ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Helper.CreateRelativeCore(
+                            this.neuronApplicationService,
+                            this.terminalApplicationService,
+                            result.AvatarUrl,
+                            this.editorNeuronViewModel.RegionId,
+                            this.SelectedNeuron.Neuron.Id,
+                            this.editorNeuronViewModel.Type.Value,
+                            this.editorNeuronViewModel.Tag,
+                            this.editorNeuronViewModel.Effect.Value,
+                            this.editorNeuronViewModel.Strength.Value
+                            );
+                        description = "Relative added";
+                        break;
+                    case ContextMenuOption.LinkRelative:
+                        await ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Helper.LinkRelativeCore(
+                            this.terminalApplicationService,
+                            result.AvatarUrl,
+                            this.SelectedNeuron.Neuron.Id,
+                            this.editorNeuronViewModel.Type.Value,
+                            this.editorNeuronViewModel.LinkCandidates,
+                            this.editorNeuronViewModel.Effect.Value,
+                            this.editorNeuronViewModel.Strength.Value
+                            );
+                        description = "Relative linked";
+                        break;
+                }
+                this.toastService.ShowSuccess($"{description} successfully.");
+            }
+            catch (Exception ex)
+            {
+                this.toastService.ShowError(ex.Message);
             }
 
             Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);

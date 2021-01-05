@@ -1,6 +1,6 @@
-﻿@using Blazor.Data
-@using ei8.Cortex.Diary.Application.Neurons;
+﻿@using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 
 <ul>
     @if (this.Children != null)
@@ -19,7 +19,7 @@
                 @if (child.IsExpanded)
                 {
                     <div>
-                        <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls"/>
+                        <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" />
                     </div>
                 }
             </li>

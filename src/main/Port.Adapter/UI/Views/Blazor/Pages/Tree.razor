@@ -1,15 +1,16 @@
 ﻿@page "/tree"
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 @using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 @using ei8.Cortex.Library.Client;
 @using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
-@inject INeuronQueryService NeuronQueryService;
-@inject INeuronApplicationService NeuronApplicationService;
-@inject ITerminalApplicationService TerminalApplicationService;
+@inject INeuronQueryService neuronQueryService;
+@inject INeuronApplicationService neuronApplicationService;
+@inject ITerminalApplicationService terminalApplicationService;
+@inject IToastService toastService;
 
 <div class="top-row px-4" style="padding-top:12px">
     <div class="details align-middle ">
@@ -21,7 +22,7 @@
     <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" />
 </div>
 <div class="footer px-4 h-auto">
-    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedOption="@this.SelectedOption" SelectedNeuron="@this.EditNeuron" />
+    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
 </div>
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -77,7 +78,15 @@
 
     private NeuronViewModel SelectedNeuron { get; set; } = null;
 
-    private NeuronViewModel EditNeuron { get; set; } = null;
+    private NeuronViewModel editNeuron = null;
+    private NeuronViewModel EditNeuron
+    {
+        get => this.editNeuron;
+        set
+        {
+            this.editNeuron = value;
+        }
+    }
 
     private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
             string.Format(format, this.SelectedNeuron.Tag) :
@@ -86,8 +95,8 @@
     private async Task Reload()
     {
         var children = new List<NeuronViewModel>();
-        var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
-        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.NeuronQueryService)));
+        var ns = (await this.neuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
+        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
         this.Children = children.ToArray();
     }
 
@@ -97,18 +106,34 @@
     {
         if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result))
         {
-            if (this.SelectedNeuron.Neuron.Type == RelativeType.NotSet)
-                await this.NeuronApplicationService.DeactivateNeuron(
-                    result.AvatarUrl,
-                    this.SelectedNeuron.Neuron.Id,
-                    this.SelectedNeuron.Neuron.Version
-                    );
-            else
-                await this.TerminalApplicationService.DeactivateTerminal(
-                    result.AvatarUrl,
-                    this.SelectedNeuron.Neuron.Terminal.Id,
-                    this.SelectedNeuron.Neuron.Terminal.Version
-                    );
+            try
+            {
+                string description = string.Empty;
+
+                if (this.SelectedNeuron.Neuron.Type == RelativeType.NotSet)
+                {
+                    await this.neuronApplicationService.DeactivateNeuron(
+                        result.AvatarUrl,
+                        this.SelectedNeuron.Neuron.Id,
+                        this.SelectedNeuron.Neuron.Version
+                        );
+                    description = "Neuron removed";
+                }
+                else
+                {
+                    await this.terminalApplicationService.DeactivateTerminal(
+                        result.AvatarUrl,
+                        this.SelectedNeuron.Neuron.Terminal.Id,
+                        this.SelectedNeuron.Neuron.Terminal.Version
+                        );
+                    description = "Terminal removed";
+                }
+                this.toastService.ShowSuccess($"{description} successfully.");
+            }
+            catch (Exception ex)
+            {
+                this.toastService.ShowError(ex.Message);
+            }
         }
     }
 

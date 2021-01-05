@@ -13,14 +13,15 @@
     <link href="css/site.css" rel="stylesheet" />
     <script type="text/javascript">
         var receiveMessage = function (event) {
-            if (document.getElementById('currentUrl') != null)
-            {
+            if (document.getElementById('currentUrl') != null) {
                 document.getElementById('currentUrl').value = event.data;
             }
         }
 
         window.addEventListener('message', receiveMessage, false);
     </script>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="_content/Blazored.Toast/blazored-toast.css" rel="stylesheet" />
 </head>
 <body>
     <app>

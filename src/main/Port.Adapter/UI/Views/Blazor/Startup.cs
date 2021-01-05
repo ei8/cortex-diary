@@ -1,3 +1,4 @@
+using Blazored.Toast;
 using ei8.Cortex.Diary.Application.Dependency;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Neurons;
@@ -9,7 +10,7 @@ using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
-using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data;
+using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Services;
 using ei8.Cortex.Library.Client.Out;
 using Microsoft.AspNetCore.Builder;
@@ -37,7 +38,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+            services.AddBlazoredToast();
 
             var ssi = new SettingsServiceImplementation();
             var dp = new Services.DependencyService(ssi);

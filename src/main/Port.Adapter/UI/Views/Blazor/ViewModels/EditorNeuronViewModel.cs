@@ -3,7 +3,7 @@ using ei8.Cortex.Library.Common;
 using neurUL.Cortex.Common;
 using System.Collections.Generic;
 
-namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Data
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 {
     public class EditorNeuronViewModel
     {

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.Toast" Version="3.1.2" />
     <PackageReference Include="ei8.Cortex.Library.Client" Version="0.1.9" />
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.1.14" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
