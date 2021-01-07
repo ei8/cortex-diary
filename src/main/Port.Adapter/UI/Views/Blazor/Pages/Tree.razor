@@ -94,10 +94,17 @@
 
     private async Task Reload()
     {
-        var children = new List<NeuronViewModel>();
-        var ns = (await this.neuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
-        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
-        this.Children = children.ToArray();
+        try
+        {
+            var children = new List<NeuronViewModel>();
+            var ns = (await this.neuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
+            ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
+            this.Children = children.ToArray();
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
     }
 
     private async void MenuRequested() => this.IsContextMenuVisible = true;
