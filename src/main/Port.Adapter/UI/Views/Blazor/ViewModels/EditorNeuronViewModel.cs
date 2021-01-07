@@ -1,4 +1,5 @@
 ﻿using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 using ei8.Cortex.Library.Common;
 using neurUL.Cortex.Common;
 using System.Collections.Generic;
@@ -9,7 +10,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
     {
         public const string BaseRegionTag = "[Base]";
         public EditorNeuronViewModel() => this.Initialize();
-
         public string Id { get; set; }
         public string Tag { get; set; }
         public int Version { get; set; }
@@ -19,6 +19,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
         public string RegionId { get; set; }
         public string RegionTag { get; set; }
         public IReadOnlyList<UINeuron> LinkCandidates { get; set; }
+        public bool IsRoot { get; set; }
+        public ContextMenuOption SelectedOption { get; set; }        
 
         public void Initialize()
         {
@@ -30,6 +32,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
             this.Strength = null;
             this.InitializeRegion();
             this.LinkCandidates = new UINeuron[0];
+            this.IsRoot = true;
         }
 
         public void InitializeRegion()
