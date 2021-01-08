@@ -92,11 +92,11 @@
     <Reference Include="ei8.Cortex.Diary.Nucleus.Client, Version=0.1.14.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\ei8.Cortex.Diary.Nucleus.Client.0.1.14\lib\netstandard2.0\ei8.Cortex.Diary.Nucleus.Client.dll</HintPath>
     </Reference>
-    <Reference Include="ei8.Cortex.Library.Client, Version=0.1.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Library.Client.0.1.9\lib\netstandard2.0\ei8.Cortex.Library.Client.dll</HintPath>
+    <Reference Include="ei8.Cortex.Library.Client, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Library.Client.0.2.0\lib\netstandard2.0\ei8.Cortex.Library.Client.dll</HintPath>
     </Reference>
-    <Reference Include="ei8.Cortex.Library.Common, Version=0.1.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Library.Common.0.1.14\lib\netstandard2.0\ei8.Cortex.Library.Common.dll</HintPath>
+    <Reference Include="ei8.Cortex.Library.Common, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\ei8.Cortex.Library.Common.0.2.0\lib\netstandard2.0\ei8.Cortex.Library.Common.dll</HintPath>
     </Reference>
     <Reference Include="IdentityModel, Version=3.10.10.0, Culture=neutral, PublicKeyToken=e7877f4675df049f, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\IdentityModel.3.10.10\lib\net452\IdentityModel.dll</HintPath>
