@@ -20,6 +20,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using neurUL.Common.Http;
 using System.ComponentModel.Design;
+using Blazorise;
+using Blazorise.Icons.FontAwesome;
+using Blazorise.Bootstrap;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
@@ -39,6 +42,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddBlazoredToast();
+
+            services
+                .AddBlazorise(o =>
+                {
+                    o.ChangeTextOnKeyPress = true;
+                })
+                .AddBootstrapProviders()
+                .AddFontAwesomeIcons();
 
             var ssi = new SettingsServiceImplementation();
             var dp = new Services.DependencyService(ssi);
@@ -84,6 +95,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.ApplicationServices
+                .UseBootstrapProviders()
+                .UseFontAwesomeIcons();
 
             app.UseEndpoints(endpoints =>
             {

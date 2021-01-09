@@ -7,6 +7,7 @@
 @using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
+@using Blazorise.Icons.FontAwesome;
 @inject INeuronQueryService neuronQueryService;
 @inject INeuronApplicationService neuronApplicationService;
 @inject ITerminalApplicationService terminalApplicationService;
@@ -14,12 +15,46 @@
 
 <div class="top-row px-4" style="padding-top:12px">
     <div class="details align-middle ">
-        <button class="btn btn-primary btn-sm" @onclick="this.Reload">Reload</button>
-        <input class="form-control form-control-sm ml-1" placeholder="Avatar URL" @bind="AvatarUrl" />
+        <button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px" title="Reload">
+            <Blazorise.Icon Name="FontAwesomeIcons.Redo" />
+        </button>
+        <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />   
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown show p-0">
+                @if (expandSubNavSettings)
+                {
+                    <button class="btn btn-light btn-sm ml-1" @onclick="() => expandSubNavSettings = !expandSubNavSettings" title="Options">
+                        <Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
+                        @((MarkupString)"Options")
+                    </button>
+                    <li class="dropdown-menu show p-0" aria-labelledby="navbarDropdown" @onclick="() => expandSubNavSettings = !expandSubNavSettings">
+                        <li class="nav-item pl-2 p-0">
+                            <NavLink class="nav-link text-dark" title=@(this.RenderDirection == RenderDirectionValue.TopToBottom ? "First At Top (e-mail style)" : "First At Bottom (chat style)") @onclick="() => this.RenderDirection = this.RenderDirection == RenderDirectionValue.TopToBottom ? RenderDirectionValue.BottomToTop : RenderDirectionValue.TopToBottom">
+                                <Blazorise.Icon Name="FontAwesomeIcons.Sort" Class="px-2" />
+                                @if (this.RenderDirection == RenderDirectionValue.TopToBottom)
+                                {
+                                    @((MarkupString)"First At Top")
+                                }
+                                else
+                                {
+                                    @((MarkupString)"First At Bottom")
+                                }
+                            </NavLink>
+                        </li>
+                    </li>
+                }
+                else
+                {
+                    <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="() => expandSubNavSettings = !expandSubNavSettings" title="Options">
+                        <Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
+                    </button>
+                }
+            </li>
+        </ul>
     </div>
 </div>
 <div class="content px-4">
-    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" />
+    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" @bind-RenderDirection="@this.RenderDirection" />
 </div>
 <div class="footer px-4 h-auto">
     <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
@@ -29,6 +64,8 @@
 
 @code
 {
+    private bool expandSubNavSettings;
+
     protected override void OnInitialized()
     {
         this.Children = new NeuronViewModel[0];
@@ -43,6 +80,8 @@
     private bool IsConfirmVisible { get; set; } = false;
 
     private bool IsContextMenuVisible { get; set; } = false;
+
+    private RenderDirectionValue RenderDirection { get; set; } = RenderDirectionValue.TopToBottom;
 
     private ContextMenuOption selectedOption = ContextMenuOption.New;
     public ContextMenuOption SelectedOption

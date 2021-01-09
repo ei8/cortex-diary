@@ -28,14 +28,46 @@
 </ul>
 
 @code {
+    private NeuronViewModel[] children = new NeuronViewModel[0];
     [Parameter]
-    public NeuronViewModel[] Children { get; set; } = new NeuronViewModel[0];
+    public NeuronViewModel[] Children
+    {
+        get => this.children;
+        set
+        {
+            if (this.children != value)
+            {
+                if (this.renderDirection == RenderDirectionValue.BottomToTop && value != null)
+                    this.children = value.Reverse().ToArray();
+                else
+                    this.children = value;
+            }
+        }
+    }
 
     [Parameter]
     public string AvatarUrl { get; set; }
 
     [Parameter]
     public EventCallback OnMenuRequested { get; set; }
+
+    [Parameter]
+    public EventCallback<RenderDirectionValue> RenderDirectionChanged { get; set; }
+
+    private RenderDirectionValue renderDirection;
+    [Parameter]
+    public RenderDirectionValue RenderDirection
+    {
+        get => this.renderDirection;
+        set
+        {
+            if (this.renderDirection != value)
+            {
+                this.renderDirection = value;
+                this.RenderDirectionChanged.InvokeAsync(this.renderDirection);
+            }
+        }
+    }
 
     [Parameter]
     public EventCallback<NeuronViewModel> SelectedNeuronChanged { get; set; }

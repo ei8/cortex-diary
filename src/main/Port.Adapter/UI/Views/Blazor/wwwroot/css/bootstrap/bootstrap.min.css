@@ -15,3 +15,9 @@
     line-height: 1.5;
     border-radius: .2rem;
 }
+a[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    top: -200%;
+    left: 0;
+}

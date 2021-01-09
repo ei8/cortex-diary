@@ -76,4 +76,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         AddRelative,
         LinkRelative        
     }
+
+    public enum RenderDirectionValue
+    {
+        TopToBottom,
+        BottomToTop
+    }
 }
