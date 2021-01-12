@@ -19,6 +19,18 @@
         }
 
         window.addEventListener('message', receiveMessage, false);
+
+        var BlazorScrollToId = function (id) {
+            debugger;
+            const element = document.getElementById(id);
+            if (element instanceof HTMLElement) {
+                element.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                    inline: "nearest"
+                });
+            }
+        }
     </script>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
     <link href="_content/Blazored.Toast/blazored-toast.css" rel="stylesheet" />

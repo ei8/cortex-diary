@@ -22,6 +22,10 @@
                         <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" />
                     </div>
                 }
+                @if(this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
+                {
+                    <h1 id="bottom" />
+                }
             </li>
         }
     }
