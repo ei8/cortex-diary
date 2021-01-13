@@ -2,14 +2,26 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 
-<ul>
+<ul @attributes="SetRootStyle()">
     @if (this.Children != null)
     {
+        string lastAuthor = string.Empty;
         @foreach (var child in Children)
         {
-            <li @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
-                <span @onclick="child.Toggle">@child.GetIcon()</span>
-                <span @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)">
+            string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
+            <li class="p-1 my-1" @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
+                @if (currentAuthor != lastAuthor)
+                {
+                    lastAuthor = currentAuthor;
+                    <small class="pl-2" style="font-size:x-small">
+                        &nbsp;&nbsp;@lastAuthor
+                    </small>
+                    <div style="line-height:30%;">
+                        <br>
+                    </div>
+                }                
+                <span style="font-family:monospace" @onclick="child.Toggle">@child.GetIcon()</span>
+                <span class="p-1" style="border-radius:.40rem; background-color: #e6e6e6" @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)">
                     @child.Tag
                     @if (child.AreControlsVisible && this.CanShowControls)
                     {
@@ -19,7 +31,7 @@
                 @if (child.IsExpanded)
                 {
                     <div>
-                        <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" />
+                        <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" IsRoot="false"/>
                     </div>
                 }
                 @if(this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
@@ -31,7 +43,7 @@
     }
 </ul>
 
-@code {
+@code {        
     private NeuronViewModel[] children = new NeuronViewModel[0];
     [Parameter]
     public NeuronViewModel[] Children
@@ -48,6 +60,9 @@
             }
         }
     }
+
+    [Parameter]
+    public bool IsRoot { get; set; } = true;
 
     [Parameter]
     public string AvatarUrl { get; set; }
@@ -118,5 +133,12 @@
     private async void MenuRequested()
     {
         await this.OnMenuRequested.InvokeAsync(this);
+    }
+
+    Dictionary<string, object> SetRootStyle()
+    {
+        var dict = new Dictionary<string, object>();
+        if (this.IsRoot) dict.Add("style", "padding-left:3px");
+        return dict;
     }
 }
