@@ -10,7 +10,7 @@
         {
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
             <li class="p-0 my-1" @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
-                <div class="container">
+                <div class="container m-0">
                     @if (currentAuthor != lastAuthor)
                     {
                         lastAuthor = currentAuthor;
