@@ -9,35 +9,45 @@
         @foreach (var child in Children)
         {
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
-            <li class="p-1 my-1" @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
-                @if (currentAuthor != lastAuthor)
-                {
-                    lastAuthor = currentAuthor;
-                    <small class="pl-2" style="font-size:x-small">
-                        &nbsp;&nbsp;@lastAuthor
-                    </small>
-                    <div style="line-height:30%;">
-                        <br>
-                    </div>
-                }                
-                <span style="font-family:monospace" @onclick="child.Toggle">@child.GetIcon()</span>
-                <span class="p-1" style="border-radius:.40rem; background-color: #e6e6e6" @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)">
-                    @child.Tag
-                    @if (child.AreControlsVisible && this.CanShowControls)
+            <li class="p-0 my-1" @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
+                <div class="container">
+                    @if (currentAuthor != lastAuthor)
                     {
-                        <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemMenu(child)">...</button>
+                        lastAuthor = currentAuthor;
+                        <div class="row">
+                            <div class="col-auto p-1" />
+                            <div class="col-auto pl-2">                            
+                                <small style="font-size:x-small">
+                                    @lastAuthor
+                                </small>                            
+                            </div>
+                        </div>
                     }
-                </span>
-                @if (child.IsExpanded)
-                {
-                    <div>
-                        <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" IsRoot="false"/>
+                    <div class="row">
+                        <div class="col-auto p-1" style="font-family:monospace" @onclick="child.Toggle">
+                            @child.GetIcon()
+                        </div>
+                        <div class="col-auto p-1" @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)" style="border-radius:.40rem; background-color: #e6e6e6">                            
+                            @child.Tag
+                            @if (child.AreControlsVisible && this.CanShowControls)
+                            {
+                                <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemMenu(child)">...</button>
+                            }
+                        </div>
                     </div>
-                }
-                @if(this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
-                {
-                    <h1 id="bottom" />
-                }
+                    @if (child.IsExpanded)
+                    {
+                        <div class="row">
+                            <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" IsRoot="false" />
+                        </div>
+                    }
+                    @if (this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
+                    {
+                        <div class="row">
+                            <h1 id="bottom" />
+                        </div>
+                    }
+                </div>
             </li>
         }
     }
