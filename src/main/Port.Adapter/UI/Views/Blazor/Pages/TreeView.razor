@@ -27,18 +27,19 @@
                         <div class="col-auto p-1" style="font-family:monospace" @onclick="child.Toggle">
                             @child.GetIcon()
                         </div>
-                        <div class="col-auto p-1" @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)" style="border-radius:.40rem; background-color: #e6e6e6">                            
+                        <div class="col-auto p-1" @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)" style="border-radius:.40rem; background-color: #e6e6e6">
                             @child.Tag
                             @if (child.AreControlsVisible && this.CanShowControls)
                             {
                                 <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemMenu(child)">...</button>
+                                <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemInfo(child)">info</button>
                             }
                         </div>
                     </div>
                     @if (child.IsExpanded)
                     {
                         <div class="row">
-                            <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" IsRoot="false" />
+                            <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-CanShowControls="@this.CanShowControls" IsRoot="false" />
                         </div>
                     }
                     @if (this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
@@ -79,6 +80,9 @@
 
     [Parameter]
     public EventCallback OnMenuRequested { get; set; }
+
+    [Parameter]
+    public EventCallback OnInfoRequested { get; set; }
 
     [Parameter]
     public EventCallback<RenderDirectionValue> RenderDirectionChanged { get; set; }
@@ -136,13 +140,26 @@
 
     private async void RequestItemMenu(NeuronViewModel neuronViewModel)
     {
+        neuronViewModel.ShowControls(false);
         this.SelectedNeuron = neuronViewModel;
         this.MenuRequested();
+    }
+
+    private async void RequestItemInfo(NeuronViewModel neuronViewModel)
+    {
+        neuronViewModel.ShowControls(false);
+        this.SelectedNeuron = neuronViewModel;
+        this.InfoRequested();
     }
 
     private async void MenuRequested()
     {
         await this.OnMenuRequested.InvokeAsync(this);
+    }
+
+    private async void InfoRequested()
+    {
+        await this.OnInfoRequested.InvokeAsync(this);
     }
 
     Dictionary<string, object> SetRootStyle()

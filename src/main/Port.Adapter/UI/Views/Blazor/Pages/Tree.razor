@@ -15,6 +15,9 @@
 @inject NavigationManager navigationManager;
 @inject IJSRuntime JSRuntime
 
+<NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
+<ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
+<NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
 <div class="top-row px-4" style="padding-top:12px;z-index:1">
     <div class="details align-middle ">
         <button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px" title="Reload">
@@ -56,13 +59,11 @@
     </div>
 </div>
 <div class="content px-4">
-    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" @bind-CanShowControls="@this.CanShowControls" @bind-RenderDirection="@this.RenderDirection" />
+    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-CanShowControls="@this.CanShowControls" @bind-RenderDirection="@this.RenderDirection" />
 </div>
 <div class="footer px-4 h-auto">
     <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
 </div>
-<NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
-<ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 
 @code
 {
@@ -75,9 +76,9 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (this.RenderDirection == RenderDirectionValue.BottomToTop)
+        if (this.RenderDirection == RenderDirectionValue.BottomToTop && !(this.IsContextMenuVisible || this.IsInfoVisible))
             await this.ScrollToFragment("bottom");
-            
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -90,6 +91,8 @@
     private bool IsConfirmVisible { get; set; } = false;
 
     private bool IsContextMenuVisible { get; set; } = false;
+
+    private bool IsInfoVisible { get; set; } = false;
 
     private RenderDirectionValue RenderDirection { get; set; } = RenderDirectionValue.TopToBottom;
 
@@ -166,6 +169,8 @@
     }
 
     private async void MenuRequested() => this.IsContextMenuVisible = true;
+
+    private async void InfoRequested() => this.IsInfoVisible = true;
 
     private async void ConfirmDelete()
     {
