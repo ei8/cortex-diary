@@ -67,6 +67,7 @@
 
 @code
 {
+    private bool reloading = false;
     private bool expandSubNavSettings;
 
     protected override void OnInitialized()
@@ -76,8 +77,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (this.RenderDirection == RenderDirectionValue.BottomToTop && !(this.IsContextMenuVisible || this.IsInfoVisible))
+        if (this.RenderDirection == RenderDirectionValue.BottomToTop && this.reloading)
+        {
             await this.ScrollToFragment("bottom");
+            this.reloading = false;
+        }
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -148,6 +152,7 @@
     {
         try
         {
+            this.reloading = true;
             var children = new List<NeuronViewModel>();
             var ns = (await this.neuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
             ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
