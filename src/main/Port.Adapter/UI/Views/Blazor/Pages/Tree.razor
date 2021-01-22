@@ -1,19 +1,24 @@
 ﻿@page "/tree"
-@using ei8.Cortex.Diary.Port.Adapter.UI.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
-@using ei8.Cortex.Diary.Application.Neurons;
-@using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
-@using ei8.Cortex.Library.Client;
-@using ei8.Cortex.Library.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;    
+@using ei8.Cortex.Diary.Port.Adapter.UI.Common
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
+@using ei8.Cortex.Diary.Application.Neurons
+@using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
+@using ei8.Cortex.Library.Client
+@using ei8.Cortex.Library.Common
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
 @using Blazorise.Icons.FontAwesome;
-@inject INeuronQueryService neuronQueryService;
-@inject INeuronApplicationService neuronApplicationService;
-@inject ITerminalApplicationService terminalApplicationService;
-@inject IToastService toastService;
-@inject NavigationManager navigationManager;
+@using ei8.Cortex.Diary.Application.Settings
+@using ei8.Cortex.Diary.Application.Identity
+@using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
+@inject INeuronQueryService neuronQueryService
+@inject INeuronApplicationService neuronApplicationService
+@inject ITerminalApplicationService terminalApplicationService
+@inject IToastService toastService
+@inject NavigationManager navigationManager
 @inject IJSRuntime JSRuntime
+@inject ISettingsService SettingsService
+@inject IIdentityService IdentityService
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -24,38 +29,36 @@
             <Blazorise.Icon Name="FontAwesomeIcons.Redo" />
         </button>
         <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item dropdown show p-0">
-                @if (expandSubNavSettings)
-                {
-                    <button class="btn btn-light btn-sm ml-1" @onclick="() => expandSubNavSettings = !expandSubNavSettings" title="Options">
-                        <Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
-                        @((MarkupString)"Options")
-                    </button>
-                    <li class="dropdown-menu show p-0" aria-labelledby="navbarDropdown" @onclick="() => expandSubNavSettings = !expandSubNavSettings">
-                        <li class="nav-item pl-2 p-0">
-                            <NavLink class="nav-link text-dark" title=@(this.RenderDirection == RenderDirectionValue.TopToBottom ? "First At Top (e-mail style)" : "First At Bottom (chat style)") @onclick="() => this.RenderDirection = this.RenderDirection == RenderDirectionValue.TopToBottom ? RenderDirectionValue.BottomToTop : RenderDirectionValue.TopToBottom">
-                                <Blazorise.Icon Name="FontAwesomeIcons.Sort" Class="px-2" />
-                                @if (this.RenderDirection == RenderDirectionValue.TopToBottom)
-                                {
-                                    @((MarkupString)"First At Top")
-                                }
-                                else
-                                {
-                                    @((MarkupString)"First At Bottom")
-                                }
-                            </NavLink>
-                        </li>
-                    </li>
-                }
-                else
-                {
-                    <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="() => expandSubNavSettings = !expandSubNavSettings" title="Options">
-                        <Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
-                    </button>
-                }
-            </li>
-        </ul>
+        <Dropdown RightAligned="true" @ref="this.userDropdown">
+            <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowUserMenu" title="Options">
+                <Blazorise.Icon Name="FontAwesomeIcons.UserSecret" />
+            </button>
+            <Blazorise.DropdownMenu style="width:250px">
+                <input class="form-control form-control-xs ml-2 rounded" placeholder="ID Server URL" @bind="this.IdServerUrl" style="width:232px"/>
+                <DropdownItem @onclick="this.LoadIdServer">
+                    <Blazorise.Icon Name="FontAwesomeIcons.SignInAlt" Class="px-2" />
+                    Sign-In
+                </DropdownItem>
+            </Blazorise.DropdownMenu>
+        </Dropdown>
+        <Dropdown RightAligned="true" @ref="this.optionsDropdown">
+            <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowOptionsMenu" title="Options">
+                <Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
+            </button>
+            <Blazorise.DropdownMenu>
+                <DropdownItem @onclick="this.ToggleRenderDirection">
+                    <Blazorise.Icon Name="FontAwesomeIcons.Sort" Class="px-2" />
+                    @if (this.RenderDirection == RenderDirectionValue.TopToBottom)
+                    {
+                        @((MarkupString)"First At Top")
+                    }
+                    else
+                    {
+                        @((MarkupString)"First At Bottom")
+                    }
+                </DropdownItem>
+            </Blazorise.DropdownMenu>
+        </Dropdown>
     </div>
 </div>
 <div class="content px-4">
@@ -69,6 +72,45 @@
 {
     private bool reloading = false;
     private bool expandSubNavSettings;
+    private Dropdown userDropdown;
+    private Dropdown optionsDropdown;
+
+    private async Task LoadIdServer()
+    {
+        this.SettingsService.IdentityServerUrl = this.IdServerUrl;
+        this.SettingsService.ApplicationUrl = this.navigationManager.BaseUri.TrimEnd('/');
+        ((SettingsService)this.SettingsService).ClientId = "xamarin";
+        this.navigationManager.NavigateTo(IdentityService.CreateAuthorizationRequest()); // works if not using frames and is navigated to as another page
+    }
+
+    private void ShowUserMenu()
+    {
+        if (this.userDropdown.Visible)
+            this.userDropdown.Hide();
+        else
+            this.userDropdown.Show();
+
+        this.optionsDropdown.Hide();
+    }
+
+    private void ShowOptionsMenu()
+    {
+        if (this.optionsDropdown.Visible)
+            this.optionsDropdown.Hide();
+        else
+            this.optionsDropdown.Show();
+
+        this.userDropdown.Hide();
+    }
+
+    private void ToggleRenderDirection()
+    {
+        this.RenderDirection = this.RenderDirection == RenderDirectionValue.TopToBottom ?
+            RenderDirectionValue.BottomToTop :
+            RenderDirectionValue.TopToBottom;
+
+        this.optionsDropdown.Hide();
+    }
 
     protected override void OnInitialized()
     {
@@ -85,6 +127,8 @@
 
         await base.OnAfterRenderAsync(firstRender);
     }
+
+    public string IdServerUrl { get; set; }
 
     [Parameter]
     public string AvatarUrl { get; set; }
