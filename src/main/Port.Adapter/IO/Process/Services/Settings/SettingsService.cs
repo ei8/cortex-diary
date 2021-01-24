@@ -93,6 +93,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
 
         #endregion
 
+        #region User-specific
         public string AuthAccessToken
         {
             get => AppSettings.GetValueOrDefault(IdAccessToken, AccessTokenDefault);
@@ -104,6 +105,74 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             get => AppSettings.GetValueOrDefault(IdToken, IdTokenDefault);
             set => AppSettings.AddOrUpdateValue(IdToken, value);
         }
+        #endregion
+
+        #region IdentityServer
+        public string RegisterWebsite
+        {
+            get => AppSettings.GetValueOrDefault(IdRegisterWebsite, RegisterWebsiteDefault);
+            set => AppSettings.AddOrUpdateValue(IdRegisterWebsite, value);
+        }
+
+        public string IdentityEndpoint
+        {
+            get => AppSettings.GetValueOrDefault(IdIdentityEndpoint, IdentityEndpointDefault);
+            set => AppSettings.AddOrUpdateValue(IdIdentityEndpoint, value);
+        }
+
+        public string TokenEndpoint
+        {
+            get => AppSettings.GetValueOrDefault(IdTokenEndpoint, TokenEndpointDefault);
+            set => AppSettings.AddOrUpdateValue(IdTokenEndpoint, value);
+        }
+
+        public string LogoutEndpoint
+        {
+            get => AppSettings.GetValueOrDefault(IdLogoutEndpoint, LogoutEndpointDefault);
+            set => AppSettings.AddOrUpdateValue(IdLogoutEndpoint, value);
+        }
+
+        public string LogoutCallback
+        {
+            get => AppSettings.GetValueOrDefault(IdLogoutCallback, LogoutCallbackDefault);
+            set => AppSettings.AddOrUpdateValue(IdLogoutCallback, value);
+        }
+
+        public string RevocationEndpoint
+        {
+            get => AppSettings.GetValueOrDefault(IdRevocationEndpoint, RevocationEndpointDefault);
+            set => AppSettings.AddOrUpdateValue(IdRevocationEndpoint, value);
+        }
+        #endregion
+
+        #region Application
+        public string IdentityCallback
+        {
+            get => AppSettings.GetValueOrDefault(IdIdentityCallback, IdentityCallbackDefault);
+            set => AppSettings.AddOrUpdateValue(IdIdentityCallback, value);
+        }
+        #endregion
+
+        #region BaseUrls
+        public string IdentityServerUrl
+        {
+            get => AppSettings.GetValueOrDefault(IdIdentityServerUrl, IdentityServerUrlDefault);
+            set
+            {
+                AppSettings.AddOrUpdateValue(IdIdentityServerUrl, value);
+                this.UpdateEndpoint(this.IdentityServerUrl);
+            }
+        }
+        public string ApplicationUrl
+        {
+            get => AppSettings.GetValueOrDefault(IdApplicationUrl, ApplicationUrlDefault);
+            set
+            {
+                AppSettings.AddOrUpdateValue(IdApplicationUrl, value);
+                this.UpdateAppEndpoint(this.ApplicationUrl);
+            }
+        }
+        #endregion
 
         public bool UseMocks
         {
@@ -151,64 +220,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         {
             get => AppSettings.GetValueOrDefault(IdAuthToken, AuthTokenDefault);
             set => AppSettings.AddOrUpdateValue(IdAuthToken, value);
-        }
-
-        public string RegisterWebsite
-        {
-            get => AppSettings.GetValueOrDefault(IdRegisterWebsite, RegisterWebsiteDefault);
-            set => AppSettings.AddOrUpdateValue(IdRegisterWebsite, value);
-        }
-
-        public string IdentityEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdIdentityEndpoint, IdentityEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdIdentityEndpoint, value);
-        }
+        }        
 
         public string LocationEndpoint
         {
             get => AppSettings.GetValueOrDefault(IdLocationEndpoint, LocationEndpointDefault);
             set => AppSettings.AddOrUpdateValue(IdLocationEndpoint, value);
-        }
-
-        public string TokenEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdTokenEndpoint, TokenEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdTokenEndpoint, value);
-        }
-
-        public string LogoutEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdLogoutEndpoint, LogoutEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdLogoutEndpoint, value);
-        }
-
-        public string IdentityCallback
-        {
-            get => AppSettings.GetValueOrDefault(IdIdentityCallback, IdentityCallbackDefault);
-            set => AppSettings.AddOrUpdateValue(IdIdentityCallback, value);
-        }
-
-        public string LogoutCallback
-        {
-            get => AppSettings.GetValueOrDefault(IdLogoutCallback, LogoutCallbackDefault);
-            set => AppSettings.AddOrUpdateValue(IdLogoutCallback, value);
-        }
-
-        public string RevocationEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdRevocationEndpoint, RevocationEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdRevocationEndpoint, value);
-        }
-
-        public string IdentityServerUrl
-        {
-            get => AppSettings.GetValueOrDefault(IdIdentityServerUrl, IdentityServerUrlDefault);
-            set
-            {
-                AppSettings.AddOrUpdateValue(IdIdentityServerUrl, value);
-                this.UpdateEndpoint(this.IdentityServerUrl);
-            }
         }
 
         private void UpdateEndpoint(string identityServerUrl)
@@ -219,16 +236,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             LogoutEndpoint = $"{identityServerUrl}/connect/endsession";            
             LogoutCallback = $"{identityServerUrl}/Account/Redirecting";
             RevocationEndpoint = $"{identityServerUrl}/connect/revocation";
-        }
-
-        public string ApplicationUrl
-        {
-            get => AppSettings.GetValueOrDefault(IdApplicationUrl, ApplicationUrlDefault);
-            set
-            {
-                AppSettings.AddOrUpdateValue(IdApplicationUrl, value);
-                this.UpdateAppEndpoint(this.ApplicationUrl);
-            }
         }
 
         private void UpdateAppEndpoint(string appUrl)
