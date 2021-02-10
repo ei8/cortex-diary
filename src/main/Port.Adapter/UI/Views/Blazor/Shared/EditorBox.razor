@@ -5,8 +5,9 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
+@using ei8.Cortex.Diary.Domain.Model;
 @using neurUL.Cortex.Common;
-@using Blazored.FluentValidation; 
+@using Blazored.FluentValidation;
 @inject INeuronApplicationService neuronApplicationService;
 @inject ITerminalApplicationService terminalApplicationService;
 @inject IToastService toastService;
@@ -124,11 +125,14 @@
         </div>
     </EditForm>
 </div>
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" />
+<NeuronSearchBox @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" SelectedSignInInfo="@this.SelectedSignInInfo" />
+<NeuronSearchBox @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" SelectedSignInInfo="@this.SelectedSignInInfo" />
 
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
+
+    [Parameter]
+    public SignInInfo SelectedSignInInfo { get; set; }
 
     [Parameter]
     public string AvatarUrl { get; set; }
@@ -266,12 +270,19 @@
                             result.AvatarUrl,
                             Guid.NewGuid().ToString(),
                             this.editorNeuronViewModel.Tag,
-                            this.editorNeuronViewModel.RegionId
+                            this.editorNeuronViewModel.RegionId,
+                            this.SelectedSignInInfo.AuthAccessToken
                             );
                         description = "Neuron created";
                         break;
                     case ContextMenuOption.Edit:
-                        await this.neuronApplicationService.ChangeNeuronTag(result.AvatarUrl, this.editorNeuronViewModel.Id, this.editorNeuronViewModel.Tag, this.editorNeuronViewModel.Version);
+                        await this.neuronApplicationService.ChangeNeuronTag(
+                            result.AvatarUrl, 
+                            this.editorNeuronViewModel.Id, 
+                            this.editorNeuronViewModel.Tag, 
+                            this.editorNeuronViewModel.Version,
+                            this.SelectedSignInInfo.AuthAccessToken
+                            );
                         description = "Neuron saved";
                         break;
                     case ContextMenuOption.AddRelative:
@@ -284,7 +295,8 @@
                             this.editorNeuronViewModel.Type.Value,
                             this.editorNeuronViewModel.Tag,
                             this.editorNeuronViewModel.Effect.Value,
-                            this.editorNeuronViewModel.Strength.Value
+                            this.editorNeuronViewModel.Strength.Value,
+                            this.SelectedSignInInfo.AuthAccessToken
                             );
                         description = "Relative added";
                         break;
@@ -296,7 +308,8 @@
                             this.editorNeuronViewModel.Type.Value,
                             this.editorNeuronViewModel.LinkCandidates,
                             this.editorNeuronViewModel.Effect.Value,
-                            this.editorNeuronViewModel.Strength.Value
+                            this.editorNeuronViewModel.Strength.Value,
+                            this.SelectedSignInInfo.AuthAccessToken
                             );
                         description = "Relative linked";
                         break;

@@ -32,7 +32,7 @@ using DynamicData;
 using DynamicData.Binding;
 using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Application.Notifications;
-using ei8.Cortex.Diary.Domain.Model.Origin;
+// TODO: using ei8.Cortex.Diary.Domain.Model.Origin;
 using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs;
 using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Docking;
@@ -62,19 +62,17 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         private readonly INeuronApplicationService neuronApplicationService;
         private readonly INeuronQueryService neuronQueryService;
         private readonly INotificationApplicationService notificationApplicationService;
-        private readonly IOriginService originService;
         private readonly IStatusService statusService;
         private string queryUrl;
 
         public NeuronTreePaneViewModel(INeuronApplicationService neuronApplicationService = null, INeuronQueryService neuronQueryService = null, INotificationApplicationService notificationApplicationService = null,
-            IStatusService statusService = null, IDialogService dialogService = null, IOriginService originService = null)
+            IStatusService statusService = null, IDialogService dialogService = null)
         {
             this.dialogService = dialogService ?? Locator.Current.GetService<IDialogService>();
             this.neuronApplicationService = neuronApplicationService ?? Locator.Current.GetService<INeuronApplicationService>();
             this.neuronQueryService = neuronQueryService ?? Locator.Current.GetService<INeuronQueryService>();
             this.notificationApplicationService = notificationApplicationService ?? Locator.Current.GetService<INotificationApplicationService>();
             this.statusService = statusService ?? Locator.Current.GetService<IStatusService>();
-            this.originService = originService ?? Locator.Current.GetService<IOriginService>();
 
             this.statusService.WhenPropertyChanged(s => s.Message)
                 .Subscribe(s => this.StatusMessage = s.Sender.Message);
@@ -103,34 +101,34 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         private async Task OnAddClicked(SourceCache<UINeuron, int> cache, object owner)
         {
-            var n = await ViewModels.Helper.CreateNeuron(
-                async () =>
-                {
-                    string result = string.Empty;
+        // TODO:   var n = await ViewModels.Helper.CreateNeuron(
+        //        async () =>
+        //        {
+        //            string result = string.Empty;
 
-                    if (
-                        (await this.dialogService.ShowDialogTextInput(
-                        "Enter Neuron Tag: ",
-                        owner,
-                        out string r
-                        )).GetValueOrDefault()
-                        )
-                        result = r;
+        //            if (
+        //                (await this.dialogService.ShowDialogTextInput(
+        //                "Enter Neuron Tag: ",
+        //                owner,
+        //                out string r
+        //                )).GetValueOrDefault()
+        //                )
+        //                result = r;
 
-                    return result;
-                },
-                owner,
-                this.dialogService,
-                this.neuronQueryService,
-                this.neuronApplicationService,
-                this.notificationApplicationService,
-                this.statusService,
-                this.AvatarUrl,
-                this.RegionId
-                );
+        //            return result;
+        //        },
+        //        owner,
+        //        this.dialogService,
+        //        this.neuronQueryService,
+        //        this.neuronApplicationService,
+        //        this.notificationApplicationService,
+        //        this.statusService,
+        //        this.AvatarUrl,
+        //        this.RegionId
+        //        );
 
-            if (n != null)
-                cache.AddOrUpdate(n);
+        //    if (n != null)
+        //        cache.AddOrUpdate(n);
         }
 
         private async Task OnSetRegionIdClicked(object parameter)
@@ -166,23 +164,23 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         {
             this.Loading = true;
 
-            await Helper.SetStatusOnComplete(async () =>
-                {
-                    cache.Clear();
-                    var relatives = new List<UINeuron>();
-                    (await this.neuronQueryService.SendQuery(this.QueryUrl))
-                        .Neurons
-                        .ToList().ForEach(n => relatives.Add(new UINeuron(n))
-                    );
-                    this.originService.Save(this.AvatarUrl);
-                    relatives.FillUIIds(null);
-                    cache.AddOrUpdate(relatives);
-                    this.InitRegion();
-                    return true;
-                },
-                "Reload successful.",
-                this.statusService
-            );
+            // TODO: await Helper.SetStatusOnComplete(async () =>
+            //    {
+            //        cache.Clear();
+            //        var relatives = new List<UINeuron>();
+            //        (await this.neuronQueryService.SendQuery(this.QueryUrl))
+            //            .Neurons
+            //            .ToList().ForEach(n => relatives.Add(new UINeuron(n))
+            //        );
+            //        this.originService.Save(this.AvatarUrl);
+            //        relatives.FillUIIds(null);
+            //        cache.AddOrUpdate(relatives);
+            //        this.InitRegion();
+            //        return true;
+            //    },
+            //    "Reload successful.",
+            //    this.statusService
+            //);
 
             this.Loading = false;
         }

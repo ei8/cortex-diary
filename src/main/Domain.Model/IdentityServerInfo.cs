@@ -32,29 +32,26 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ei8.Cortex.Diary.Domain.Model.Origin
+namespace ei8.Cortex.Diary.Domain.Model
 {
-    /// <summary>
-    /// Serves as an in-memory storage of servers and avatars that haven't been persisted in a home avatar. Once persisted, this should be cleared.
-    /// </summary>
-    public interface IOriginsCacheService
+    public class IdentityServerInfo
     {
-        void Add(Avatar value);
+        public IdentityServerInfo()
+        {
+            this.Url = string.Empty;
+        }
+        public string Url { get; set; }
 
-        void Add(Server value);
+        public string RegistrationEndpoint => $"{this.Url}/Account/Register";
 
-        bool ContainsAvatar(string avatarUrl);
+        public string AuthorizeEndpoint => $"{this.Url}/connect/authorize";
 
-        Avatar GetAvatarByUrl(string avatarUrl);
+        public string TokenEndpoint => $"{this.Url}/connect/token";
 
-        bool ContainsServer(string serverUrl);
+        public string UserInfoEndpoint => $"{this.Url}/connect/userinfo";
 
-        Server GetServerByUrl(string serverUrl);
+        public string LogoutEndpoint => $"{this.Url}/connect/endsession";
 
-        // TODO: void ClearOfflineData();
-
-        //IEnumerable<Avatar> OfflineAvatars { get; }
-
-        //IEnumerable<Server> OfflineServers { get; }
+        public string RevocationEndpoint => $"{this.Url}/connect/revocation";
     }
 }

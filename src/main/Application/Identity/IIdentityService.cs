@@ -24,15 +24,18 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
+using ei8.Cortex.Diary.Domain.Model;
+using IdentityModel.Client;
 using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Application.Identity
 {
     public interface IIdentityService
     {
-        string CreateAuthorizationRequest();
-        string CreateLogoutRequest(string token);
-        Task<UserToken> GetTokenAsync(string code);
-        Task RevokeAccessTokenAsync(string token);
+        string CreateAuthorizationRequest(string authorizeEndpoint);
+        string CreateLogoutRequest(string bearerToken, string identityServerUrl);
+        Task<TokenResponse> GetTokenAsync(string code, string tokenEndpoint);
+        Task<TokenRevocationResponse> RevokeAccessTokenAsync(string bearerToken, string revocationEndpoint);
+        Task<UserInfoResponse> GetUserInfoAsync(string bearerToken, string userInfoEndpoint);
     }
 }

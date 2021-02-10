@@ -6,7 +6,7 @@
 @inject INotificationApplicationService NotificationApplicationService
 @inject INeuronQueryClient HttpNeuronQueryClient
 
-@* TODO: Remove since it is unused? *@
+@* TODO: Remove since it is unused?
 <div class="top-row px-4">
     <div class="title">
         Notifications
@@ -33,27 +33,27 @@
             }
         </tbody>
     </table>
-</div>
+</div>*@
 
 @code {
-    private static readonly IDictionary<string, UINeuron> neuronCache = new Dictionary<string, UINeuron>();
+    // TODO: private static readonly IDictionary<string, UINeuron> neuronCache = new Dictionary<string, UINeuron>();
 
-    public string AvatarUrl { get; set; }
+    //public string AvatarUrl { get; set; }
 
-    public NotificationLog NotificationLog { get; set; }
+    //public NotificationLog NotificationLog { get; set; }
 
-    public IEnumerable<NotificationData> NotificationItems { get; set; } = new NotificationData[0];
+    //public IEnumerable<NotificationData> NotificationItems { get; set; } = new NotificationData[0];
 
-    private async Task OnReload()
-    {
-        this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, string.Empty);
-        this.NotificationItems = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache));
-    }
+    //private async Task OnReload()
+    //{
+    //    this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, string.Empty);
+    //    this.NotificationItems = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache));
+    //}
 
-    private async Task OnMore()
-    {
-        this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, this.NotificationLog.PreviousNotificationLogId);
-        this.NotificationItems = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache))
-            .Concat(this.NotificationItems);
-    }
+    //private async Task OnMore()
+    //{
+    //    this.NotificationLog = await this.NotificationApplicationService.GetNotificationLog(this.AvatarUrl, this.NotificationLog.PreviousNotificationLogId);
+    //    this.NotificationItems = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, HttpNeuronQueryClient, this.AvatarUrl, neuronCache))
+    //        .Concat(this.NotificationItems);
+    //}
 }

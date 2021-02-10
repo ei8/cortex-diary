@@ -30,8 +30,6 @@ namespace ei8.Cortex.Diary.Application.Settings
 {
     public interface ISettingsService
     {
-        string AuthAccessToken { get; set; }
-        string AuthIdToken { get; set; }
         bool UseMocks { get; set; }
         bool UseFakeLocation { get; set; }
         string Latitude { get; set; }
@@ -40,16 +38,8 @@ namespace ei8.Cortex.Diary.Application.Settings
 
         string ClientId { get; }
         string ClientSecret { get; }
-        string AuthToken { get; set; }
-        string RegisterWebsite { get; set; }
-        string IdentityEndpoint { get; set; }
-        string LocationEndpoint { get; set; }
-        string TokenEndpoint { get; set; }
-        string LogoutEndpoint { get; set; }
-        string IdentityCallback { get; set; }
+        string LoginCallback { get; set; }
         string LogoutCallback { get; set; }
-        string RevocationEndpoint { get; set; }
-        string IdentityServerUrl { get; set; }
         string ApplicationUrl { get; set; }
 
         void Clear();

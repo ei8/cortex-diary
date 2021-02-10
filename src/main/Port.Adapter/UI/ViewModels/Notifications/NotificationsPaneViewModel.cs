@@ -76,29 +76,29 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
         {
             this.Loading = true;
 
-            await ViewModels.Neurons.Helper.SetStatusOnComplete(async () =>
-            {
-                this.NotificationLog = await this.notificationApplicationService.GetNotificationLog(this.AvatarUrl, string.Empty);
-                this.Notifications = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl, NotificationsPaneViewModel.neuronCache)).Select(nd => new NotificationViewModel(
-                    nd.Timestamp,
-                    nd.AuthorId,
-                    nd.Author,
-                    nd.TypeName,
-                    nd.Type,
-                    nd.Version,
-                    nd.ExpectedVersion,
-                    nd.Id,
-                    nd.Tag,
-                    nd.Data,
-                    nd.Details
-                    ));
+            // TODO: await ViewModels.Neurons.Helper.SetStatusOnComplete(async () =>
+            //{
+            //    this.NotificationLog = await this.notificationApplicationService.GetNotificationLog(this.AvatarUrl, string.Empty);
+            //    this.Notifications = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl, NotificationsPaneViewModel.neuronCache)).Select(nd => new NotificationViewModel(
+            //        nd.Timestamp,
+            //        nd.AuthorId,
+            //        nd.Author,
+            //        nd.TypeName,
+            //        nd.Type,
+            //        nd.Version,
+            //        nd.ExpectedVersion,
+            //        nd.Id,
+            //        nd.Tag,
+            //        nd.Data,
+            //        nd.Details
+            //        ));
 
-                this.InitRegion();
-                return true;
-            },
-                "Load successful.",
-                this.statusService
-            );
+            //    this.InitRegion();
+            //    return true;
+            //},
+            //    "Load successful.",
+            //    this.statusService
+            //);
 
             this.Loading = false;
         }
@@ -136,27 +136,27 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Notifications
         {
             this.Loading = true;
 
-            await ViewModels.Neurons.Helper.SetStatusOnComplete(async () =>
-            {
-                this.NotificationLog = await this.notificationApplicationService.GetNotificationLog(this.AvatarUrl, this.NotificationLog.PreviousNotificationLogId);
-                this.Notifications = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl, NotificationsPaneViewModel.neuronCache)).Select(nd => new NotificationViewModel(
-                    nd.Timestamp,
-                    nd.AuthorId,
-                    nd.Author,
-                    nd.TypeName,
-                    nd.Type,
-                    nd.Version,
-                    nd.ExpectedVersion,
-                    nd.Id,
-                    nd.Tag,
-                    nd.Data,
-                    nd.Details
-                    )).Concat(this.Notifications);
-                return true;
-            },
-                "Load more successful.",
-                this.statusService
-            );
+            // TODO: await ViewModels.Neurons.Helper.SetStatusOnComplete(async () =>
+            //{
+            //    this.NotificationLog = await this.notificationApplicationService.GetNotificationLog(this.AvatarUrl, this.NotificationLog.PreviousNotificationLogId);
+            //    this.Notifications = (await Common.Helper.UpdateCacheGetNotifications(this.NotificationLog, this.neuronGraphQueryClient, this.AvatarUrl, NotificationsPaneViewModel.neuronCache)).Select(nd => new NotificationViewModel(
+            //        nd.Timestamp,
+            //        nd.AuthorId,
+            //        nd.Author,
+            //        nd.TypeName,
+            //        nd.Type,
+            //        nd.Version,
+            //        nd.ExpectedVersion,
+            //        nd.Id,
+            //        nd.Tag,
+            //        nd.Data,
+            //        nd.Details
+            //        )).Concat(this.Notifications);
+            //    return true;
+            //},
+            //    "Load more successful.",
+            //    this.statusService
+            //);
 
             this.Loading = false;
         }

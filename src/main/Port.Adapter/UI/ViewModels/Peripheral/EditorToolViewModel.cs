@@ -311,70 +311,70 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Peripheral
             switch (this.EditorState)
             {
                 case EditorStateValue.New:
-                    switch (this.NewMode)
-                    {
-                        case NewModeValue.Neuron:
-                            await ViewModels.Helper.CreateNeuron(
-                                () => Task.FromResult(this.TargetDraft.Tag),
-                                owner,
-                                this.dialogService,
-                                this.neuronQueryService,
-                                this.neuronApplicationService,
-                                this.notificationApplicationService,
-                                this.statusService,
-                                this.AvatarUrl,
-                                this.RegionId
-                                );
-                            break;
-                        case NewModeValue.Relative:
-                            await ViewModels.Helper.CreateRelative(
-                                () => Task.FromResult(this.TargetDraft.Tag),
-                                (o) => Task.FromResult(new string[] {
-                                    ((int)this.TargetDraft.Effect).ToString(),
-                                    this.TargetDraft.Strength.ToString()
-                                }),
-                                owner,
-                                this.dialogService,
-                                this.neuronQueryService,
-                                this.neuronApplicationService,
-                                this.terminalApplicationService,
-                                this.statusService,
-                                this.AvatarUrl,
-                                this.RegionId,
-                                this.TargetDraft.Id,
-                                this.TargetDraft.RelativeType.Value
-                                );
-                            break;
-                        case NewModeValue.Link:
-                            await ViewModels.Helper.LinkRelative(
-                                () => Task.FromResult(this.TargetDraft.LinkCandidates),
-                                (o) => Task.FromResult(new string[] {
-                                    ((int)this.TargetDraft.Effect).ToString(),
-                                    this.TargetDraft.Strength.ToString()
-                                }),
-                                owner,
-                                this.terminalApplicationService,
-                                this.statusService,
-                                this.AvatarUrl,
-                                this.TargetDraft.Id,
-                                this.TargetDraft.RelativeType.Value
-                                );
-                            break;
-                    }
+                    // TODO: switch (this.NewMode)
+                    //{
+                    //    case NewModeValue.Neuron:
+                    //        await ViewModels.Helper.CreateNeuron(
+                    //            () => Task.FromResult(this.TargetDraft.Tag),
+                    //            owner,
+                    //            this.dialogService,
+                    //            this.neuronQueryService,
+                    //            this.neuronApplicationService,
+                    //            this.notificationApplicationService,
+                    //            this.statusService,
+                    //            this.AvatarUrl,
+                    //            this.RegionId
+                    //            );
+                    //        break;
+                    //    case NewModeValue.Relative:
+                    //        await ViewModels.Helper.CreateRelative(
+                    //            () => Task.FromResult(this.TargetDraft.Tag),
+                    //            (o) => Task.FromResult(new string[] {
+                    //                ((int)this.TargetDraft.Effect).ToString(),
+                    //                this.TargetDraft.Strength.ToString()
+                    //            }),
+                    //            owner,
+                    //            this.dialogService,
+                    //            this.neuronQueryService,
+                    //            this.neuronApplicationService,
+                    //            this.terminalApplicationService,
+                    //            this.statusService,
+                    //            this.AvatarUrl,
+                    //            this.RegionId,
+                    //            this.TargetDraft.Id,
+                    //            this.TargetDraft.RelativeType.Value
+                    //            );
+                    //        break;
+                    //    case NewModeValue.Link:
+                    //        await ViewModels.Helper.LinkRelative(
+                    //            () => Task.FromResult(this.TargetDraft.LinkCandidates),
+                    //            (o) => Task.FromResult(new string[] {
+                    //                ((int)this.TargetDraft.Effect).ToString(),
+                    //                this.TargetDraft.Strength.ToString()
+                    //            }),
+                    //            owner,
+                    //            this.terminalApplicationService,
+                    //            this.statusService,
+                    //            this.AvatarUrl,
+                    //            this.TargetDraft.Id,
+                    //            this.TargetDraft.RelativeType.Value
+                    //            );
+                    //        break;
+                    //}
                     // TODO: reload Target and try to select created item
                     // TODO: do this, or find newly created Neuron and assign to Target
                     this.Target = null;
 
                     break;
                 case EditorStateValue.Edit:
-                    await ViewModels.Helper.ChangeNeuronTag(
-                        this.TargetDraft.Tag,
-                        this.neuronApplicationService,
-                        this.statusService,
-                        this.AvatarUrl,
-                        this.TargetDraft.Id,
-                        this.TargetDraft.Version
-                        );
+                    // TODO: await ViewModels.Helper.ChangeNeuronTag(
+                    //    this.TargetDraft.Tag,
+                    //    this.neuronApplicationService,
+                    //    this.statusService,
+                    //    this.AvatarUrl,
+                    //    this.TargetDraft.Id,
+                    //    this.TargetDraft.Version
+                    //    );
                     break;
             }
             this.EditorState = EditorStateValue.Browse;

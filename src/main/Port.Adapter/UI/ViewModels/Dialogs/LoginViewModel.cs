@@ -48,7 +48,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             this.WhenAnyValue(x => x.IdentityServerUrl)
                 .Subscribe(s =>
                 {
-                    this.settingsService.IdentityServerUrl = s;
+                    // TODO: this.settingsService.IdentityServerUrl = s;
                     // TODO: this.settingsService.ApplicationUrl = "http://192.168.1.110:59053"; // TEMP ONLY!!!
                 });
 
@@ -165,7 +165,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             var ss = (SettingsService) this.settingsService;
             ss.ClientId = Constants.ClientId;
 
-            this.LoginUrl = identityService.CreateAuthorizationRequest();
+            // TODO: this.LoginUrl = identityService.CreateAuthorizationRequest();
 
             IsValid = true;
             IsLogin = true;
@@ -174,7 +174,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
 
         private void Register()
         {
-            openUrlService.OpenUrl(this.settingsService.RegisterWebsite);
+            // TODO: openUrlService.OpenUrl(this.settingsService.RegisterWebsite);
         }
 
         private async Task NavigateAsync(string url)
@@ -182,28 +182,28 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Dialogs
             this.IsNavigating = false;
             var result = ProcessUrlResult.Empty;
             
-            if ((result = (await IO.Process.Services.Identity.Helper.TryProcessUrl(
-                url, 
-                settingsService.IdentityCallback, 
-                settingsService.LogoutCallback, 
-                settingsService.AuthAccessToken, 
-                identityService
-                ))).Success)
-            {
-                settingsService.AuthAccessToken = result.AccessToken;
-                settingsService.AuthIdToken = result.IdentityToken;
+            // TODO: if ((result = (await IO.Process.Services.Identity.Helper.TryProcessUrl(
+            //    url, 
+            //    settingsService.IdentityCallback, 
+            //    settingsService.LogoutCallback, 
+            //    settingsService.AuthAccessToken, 
+            //    identityService
+            //    ))).Success)
+            //{
+            //    settingsService.AuthAccessToken = result.AccessToken;
+            //    settingsService.AuthIdToken = result.IdentityToken;
 
-                switch (result.Type)
-                {
-                    case ProcessUrlType.Logout:
-                        this.IsLogin = false;
-                        this.LoginUrl = identityService.CreateAuthorizationRequest();
-                        break;
-                    case ProcessUrlType.SignIn:
-                        this.UserDialogResult = this.DialogResult = true;
-                        break;
-                }                
-            }
+            //    switch (result.Type)
+            //    {
+            //        case ProcessUrlType.Logout:
+            //            this.IsLogin = false;
+            //            this.LoginUrl = identityService.CreateAuthorizationRequest();
+            //            break;
+            //        case ProcessUrlType.SignIn:
+            //            this.UserDialogResult = this.DialogResult = true;
+            //            break;
+            //    }                
+            //}
         }
 
         // TODO: Necessary?

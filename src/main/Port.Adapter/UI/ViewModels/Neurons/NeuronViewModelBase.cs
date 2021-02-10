@@ -222,27 +222,27 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                         switch (this.Neuron.Type)
                         {
                             case RelativeType.NotSet:
-                                await this.neuronApplicationService.DeactivateNeuron(
-                                    this.host.AvatarUrl,
-                                    this.NeuronId,
-                                    this.Neuron.Version
-                                );
+                                // TODO: await this.neuronApplicationService.DeactivateNeuron(
+                                //    this.host.AvatarUrl,
+                                //    this.NeuronId,
+                                //    this.Neuron.Version
+                                //);
                                 cache.Remove(this.Neuron);
                                 break;
                             case RelativeType.Postsynaptic:
-                                await this.terminalApplicationService.DeactivateTerminal(
-                                    this.host.AvatarUrl,
-                                    this.Neuron.Terminal.Id,
-                                    this.Neuron.Terminal.Version
-                                    );
+                                // TODO: await this.terminalApplicationService.DeactivateTerminal(
+                                //    this.host.AvatarUrl,
+                                //    this.Neuron.Terminal.Id,
+                                //    this.Neuron.Terminal.Version
+                                //    );
                                 cache.Remove(this.Neuron);
                                 break;
                             case RelativeType.Presynaptic:
-                                await this.terminalApplicationService.DeactivateTerminal(
-                                    this.host.AvatarUrl,
-                                    this.Neuron.Terminal.Id,
-                                    this.Neuron.Terminal.Version
-                                    );
+                                // TODO: await this.terminalApplicationService.DeactivateTerminal(
+                                //    this.host.AvatarUrl,
+                                //    this.Neuron.Terminal.Id,
+                                //    this.Neuron.Terminal.Version
+                                //    );
                                 cache.Remove(this.Neuron);
                                 break;
                         }
@@ -260,17 +260,17 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
         {
             if (!this.settingNeuron)
             {
-                var success = await ViewModels.Helper.ChangeNeuronTag(
-                    x.Value,
-                    this.neuronApplicationService,
-                    this.statusService,
-                    this.host.AvatarUrl,
-                    this.neuronId,
-                    this.Neuron.Version
-                    );
+                // TODO: var success = await ViewModels.Helper.ChangeNeuronTag(
+                //    x.Value,
+                //    this.neuronApplicationService,
+                //    this.statusService,
+                //    this.host.AvatarUrl,
+                //    this.neuronId,
+                //    this.Neuron.Version
+                //    );
 
-                if (success)
-                    await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
+                //if (success)
+                //    await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
             }
         }
 
@@ -312,26 +312,26 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
             {
                 UINeuron reloadedNeuron = null;
                                 
-                if (this.Parent.HasValue)
-                    // reload self
-                    reloadedNeuron = new UINeuron((await this.neuronQueryService.GetNeuronById(
-                        this.host.AvatarUrl,
-                        this.Neuron.Id,
-                        this.Parent.Value.Neuron.Id,
-                        new NeuronQuery() { 
-                            RelativeValues = (RelativeValues)Enum.Parse(typeof(RelativeValues), ((int)this.Neuron.Type).ToString()) 
-                        }
-                        )).Neurons.First()
-                        );
-                else
-                    reloadedNeuron = new UINeuron((await this.neuronQueryService.GetNeuronById(
-                        this.host.AvatarUrl,
-                        this.Neuron.Id,
-                        new NeuronQuery() { 
-                            RelativeValues = (RelativeValues)Enum.Parse(typeof(RelativeValues), ((int)this.Neuron.Type).ToString()) }
-                        )
-                    ).Neurons.First()
-                    );
+                // TODO: if (this.Parent.HasValue)
+                //    // reload self
+                //    reloadedNeuron = new UINeuron((await this.neuronQueryService.GetNeuronById(
+                //        this.host.AvatarUrl,
+                //        this.Neuron.Id,
+                //        this.Parent.Value.Neuron.Id,
+                //        new NeuronQuery() { 
+                //            RelativeValues = (RelativeValues)Enum.Parse(typeof(RelativeValues), ((int)this.Neuron.Type).ToString()) 
+                //        }
+                //        )).Neurons.First()
+                //        );
+                //else
+                //    reloadedNeuron = new UINeuron((await this.neuronQueryService.GetNeuronById(
+                //        this.host.AvatarUrl,
+                //        this.Neuron.Id,
+                //        new NeuronQuery() { 
+                //            RelativeValues = (RelativeValues)Enum.Parse(typeof(RelativeValues), ((int)this.Neuron.Type).ToString()) }
+                //        )
+                //    ).Neurons.First()
+                //    );
 
                 this.Neuron.CopyData(reloadedNeuron);
                 this.SetNeuron(this.Neuron);
@@ -339,9 +339,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
                 // reload relatives
                 cache.Remove(NeuronViewModelBase.GetAllChildren(cache, this.Neuron.UIId));
                 var relatives = new List<UINeuron>();
-                (await this.neuronQueryService.GetNeurons(this.host.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
-                    .Neurons
-                    .ToList().ForEach(n => relatives.Add(new UINeuron(n)));
+                // TODO: (await this.neuronQueryService.GetNeurons(this.host.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
+                //    .Neurons
+                //    .ToList().ForEach(n => relatives.Add(new UINeuron(n)));
                 relatives.FillUIIds(this.Neuron);
                 cache.AddOrUpdate(relatives);
                 return true;
@@ -362,37 +362,37 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         private async Task OnAddPresynaptic(SourceCache<UINeuron, int> cache, object owner)
         {
-            var success = await ViewModels.Helper.CreateRelative(
-                async () =>
-                {
-                    string result = string.Empty;
+            // TODO: var success = await ViewModels.Helper.CreateRelative(
+            //    async () =>
+            //    {
+            //        string result = string.Empty;
 
-                    if (
-                        (await this.dialogService.ShowDialogTextInput(
-                        "Enter Presynaptic Tag: ",
-                        owner,
-                        out string r
-                        )).GetValueOrDefault()
-                        )
-                        result = r;
+            //        if (
+            //            (await this.dialogService.ShowDialogTextInput(
+            //            "Enter Presynaptic Tag: ",
+            //            owner,
+            //            out string r
+            //            )).GetValueOrDefault()
+            //            )
+            //            result = r;
 
-                    return result;
-                },
-                async (o) => await this.AskUserTerminalParameters(o),
-                owner,
-                this.dialogService,
-                this.neuronQueryService,
-                this.neuronApplicationService,
-                this.terminalApplicationService,
-                this.statusService,                
-                this.host.AvatarUrl,
-                this.host.RegionId,
-                this.Neuron.Id,
-                RelativeType.Presynaptic
-                );
+            //        return result;
+            //    },
+            //    async (o) => await this.AskUserTerminalParameters(o),
+            //    owner,
+            //    this.dialogService,
+            //    this.neuronQueryService,
+            //    this.neuronApplicationService,
+            //    this.terminalApplicationService,
+            //    this.statusService,                
+            //    this.host.AvatarUrl,
+            //    this.host.RegionId,
+            //    this.Neuron.Id,
+            //    RelativeType.Presynaptic
+            //    );
 
-            if (success)
-                await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
+            //if (success)
+            //    await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
         }
 
         private async Task<string[]> AskUserTerminalParameters(object parameter)
@@ -406,34 +406,34 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Neurons
 
         private async Task OnAddPostsynaptic(SourceCache<UINeuron, int> cache, object owner)
         {
-            var success = await ViewModels.Helper.LinkRelative(
-                async () =>
-                {
-                    IEnumerable<UINeuron> result = new UINeuron[0];
+            // TODO: var success = await ViewModels.Helper.LinkRelative(
+            //    async () =>
+            //    {
+            //        IEnumerable<UINeuron> result = new UINeuron[0];
 
-                    if (
-                        (await this.dialogService.ShowDialogSelectNeurons(
-                            "Select Neuron(s)", 
-                            this.host.AvatarUrl, 
-                            owner, 
-                            true, 
-                            out IEnumerable<UINeuron> r)).GetValueOrDefault()
-                        )
-                        result = r;
+            //        if (
+            //            (await this.dialogService.ShowDialogSelectNeurons(
+            //                "Select Neuron(s)", 
+            //                this.host.AvatarUrl, 
+            //                owner, 
+            //                true, 
+            //                out IEnumerable<UINeuron> r)).GetValueOrDefault()
+            //            )
+            //            result = r;
 
-                    return result;
-                },
-                async (o) => await this.AskUserTerminalParameters(o),
-                owner,
-                this.terminalApplicationService,
-                this.statusService,
-                this.host.AvatarUrl,
-                this.Neuron.Id,
-                RelativeType.Postsynaptic
-                );
+            //        return result;
+            //    },
+            //    async (o) => await this.AskUserTerminalParameters(o),
+            //    owner,
+            //    this.terminalApplicationService,
+            //    this.statusService,
+            //    this.host.AvatarUrl,
+            //    this.Neuron.Id,
+            //    RelativeType.Postsynaptic
+            //    );
             
-            if (success)
-                await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
+            //if (success)
+            //    await this.OnReload(cache, NeuronViewModelBase.ReloadDelay);
         }
 
         [Browsable(false)]

@@ -16,9 +16,9 @@ namespace ei8.Cortex.Diary.Application.Notifications
             this.notificationClient = notificationClient ?? Locator.Current.GetService<INotificationClient>();
         }
 
-        public async Task<NotificationLog> GetNotificationLog(string avatarUrl, string notificationLogId, CancellationToken token = default(CancellationToken))
+        public async Task<NotificationLog> GetNotificationLog(string avatarUrl, string notificationLogId, string bearerToken, CancellationToken token = default(CancellationToken))
         {
-            return await this.notificationClient.GetNotificationLog(avatarUrl, notificationLogId, token);            
+            return await this.notificationClient.GetNotificationLog(avatarUrl, notificationLogId, bearerToken, token);            
         }
     }
 }

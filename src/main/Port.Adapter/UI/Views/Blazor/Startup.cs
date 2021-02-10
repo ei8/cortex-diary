@@ -23,6 +23,7 @@ using System.ComponentModel.Design;
 using Blazorise;
 using Blazorise.Icons.FontAwesome;
 using Blazorise.Bootstrap;
+using ei8.Cortex.Diary.Domain.Model;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
@@ -54,16 +55,20 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             var ssi = new SettingsServiceImplementation();
             var dp = new Services.DependencyService(ssi);
             var ss = new SettingsService(dp);
-            var ts = new TokenService(ss);
             var rp = new RequestProvider();
-            var nec = new HttpNeuronClient(rp, ts);
-            var tec = new HttpTerminalClient(rp, ts);
-            var nc = new HttpNotificationClient(rp, ts);
+            var nec = new HttpNeuronClient(rp);
+            var tec = new HttpTerminalClient(rp);
+            var nc = new HttpNotificationClient(rp);
             var nas = new NotificationApplicationService(nc);
             var neas = new NeuronApplicationService(nec);
             var tas = new TerminalApplicationService(tec);
-            var nqc = new HttpNeuronQueryClient(rp, ts);
+            var nqc = new HttpNeuronQueryClient(rp);
             var nqs = new NeuronQueryService(nqc);
+            var siis = new SignInInfoService();
+            var anonymousSignIn = new SignInInfo();
+            anonymousSignIn.GivenName = "Anonymous";
+            anonymousSignIn.FamilyName = "User";
+            siis.Add(anonymousSignIn);
 
             services.AddSingleton<IDependencyService>(dp);            
             services.AddSingleton<ISettingsService>(ss);            
@@ -73,9 +78,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<INeuronClient>(nec);
             services.AddSingleton<INeuronApplicationService>(neas);
             services.AddSingleton<ITerminalApplicationService>(tas);
-            services.AddSingleton<ITokenService>(ts);
             services.AddSingleton<INeuronQueryClient>(nqc);
             services.AddSingleton<INeuronQueryService>(nqs);
+            services.AddSingleton<ISignInInfoService>(siis);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

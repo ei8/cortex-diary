@@ -106,12 +106,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
             ids.RemoveAll(i => cache.ContainsKey(i));
             ids = new List<string>(ids.Distinct());
 
-            if (ids.Count() > 0)
-                (await neuronGraphQueryClient.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { Id = ids.ToArray() }))
-                    .Neurons
-                    .ToList()
-                    .ForEach(n => cache.Add(n.Id, new UINeuron(n))
-                );
+            // TODO: if (ids.Count() > 0)
+            //    (await neuronGraphQueryClient.GetNeurons(avatarUrl, neuronQuery: new NeuronQuery() { Id = ids.ToArray() }))
+            //        .Neurons
+            //        .ToList()
+            //        .ForEach(n => cache.Add(n.Id, new UINeuron(n))
+            //    );
 
             return notificationLog.NotificationList.ToArray().Select(n => Common.Helper.CreateNotificationData(n, cache));
         }

@@ -38,25 +38,26 @@ using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Settings;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Helpers;
 using static PCLCrypto.WinRTCrypto;
+using ei8.Cortex.Diary.Domain.Model;
 
 namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {
     public class IdentityService : IIdentityService
     {
         private readonly ISettingsService settingsService;
-        private readonly IRequestProvider _requestProvider;
+        private readonly IRequestProvider requestProvider;
         private string _codeVerifier;
 
         public IdentityService(ISettingsService settingsService = null, IRequestProvider requestProvider = null)
         {
-            this._requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
+            this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
             this.settingsService = settingsService ?? Locator.Current.GetService<ISettingsService>();
         }
 
-        public string CreateAuthorizationRequest()
+        public string CreateAuthorizationRequest(string authorizeEndpoint)
         {
             // Create URI to authorization endpoint
-            var authorizeRequest = new AuthorizeRequest(this.settingsService.IdentityEndpoint);
+            var authorizeRequest = new AuthorizeRequest(authorizeEndpoint);
 
             // Dictionary with values for the authorize request
             var dic = new Dictionary<string, string>();
@@ -64,7 +65,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             dic.Add("client_secret", this.settingsService.ClientSecret);
             dic.Add("response_type", "code id_token");
             dic.Add("scope", "openid profile offline_access avatar"); 
-            dic.Add("redirect_uri", this.settingsService.IdentityCallback);
+            dic.Add("redirect_uri", this.settingsService.LoginCallback);
             dic.Add("nonce", Guid.NewGuid().ToString("N"));
             //TODO: required if PKCE in server is true
             //dic.Add("code_challenge", CreateCodeChallenge());
@@ -78,33 +79,54 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             return authorizeUri;
         }
 
-        public string CreateLogoutRequest(string token)
+        // TODO: Navigate here to initiate sign-out
+        public string CreateLogoutRequest(string idToken, string identityServerUrl)
         {
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(idToken))
             {
                 return string.Empty;
             }
 
-            return $"{this.settingsService.LogoutEndpoint}?id_token_hint={token}&post_logout_redirect_uri={WebUtility.UrlEncode(this.settingsService.LogoutCallback)}";
+            var ru = new RequestUrl(identityServerUrl);
+            var es = ru.CreateEndSessionUrl(
+                idToken,
+                this.settingsService.LogoutCallback,
+                idToken
+                );
+            return es;
+            // TODO: use something other than bearerToken
+            // DEL:return $"{identityServerInfo.LogoutEndpoint}?id_token_hint={bearerToken}&post_logout_redirect_uri={WebUtility.UrlEncode(identityServerInfo.LogoutCallback)}&state={bearerToken}";
         }
 
-        public async Task<UserToken> GetTokenAsync(string code)
+        public async Task<UserInfoResponse> GetUserInfoAsync(string bearerToken, string userInfoEndpoint)
         {
-            string data = string.Format("grant_type=authorization_code&code={0}&redirect_uri={1}&code_verifier={2}", code, WebUtility.UrlEncode(this.settingsService.IdentityCallback), _codeVerifier);
-            var token = await _requestProvider.PostAsync<UserToken>(this.settingsService.TokenEndpoint, data, this.settingsService.ClientId, this.settingsService.ClientSecret);
-
-            return token;
+            return await this.requestProvider.HttpClient.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = userInfoEndpoint,
+                Token = bearerToken
+            });
         }
 
-        public async Task RevokeAccessTokenAsync(string token)
+        public async Task<TokenResponse> GetTokenAsync(string code, string tokenEndpoint)
         {
-            var revocationClient = new TokenRevocationClient(
-                    this.settingsService.RevocationEndpoint,
-                    this.settingsService.ClientId,
-                    this.settingsService.ClientSecret);
+            return await this.requestProvider.HttpClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+            {
+                Address = tokenEndpoint,
+                ClientId = this.settingsService.ClientId,
+                ClientSecret = this.settingsService.ClientSecret,
+                Code = code,
+                RedirectUri = this.settingsService.LoginCallback,
+                CodeVerifier = _codeVerifier
+            });
+        }
 
-            // TODO: report revocation result
-            await revocationClient.RevokeAccessTokenAsync(this.settingsService.AuthAccessToken);
+        public async Task<TokenRevocationResponse> RevokeAccessTokenAsync(string bearerToken, string revocationEndpoint)
+        {
+            return await this.requestProvider.HttpClient.RevokeTokenAsync(new TokenRevocationRequest {
+                Address = revocationEndpoint,
+                ClientId = this.settingsService.ClientId,
+                ClientSecret = this.settingsService.ClientSecret
+            });
         }
 
         private string CreateCodeChallenge()

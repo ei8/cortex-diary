@@ -1,4 +1,5 @@
 ﻿@page "/tree"
+@using ei8.Cortex.Diary.Domain.Model
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 @using ei8.Cortex.Diary.Application.Neurons
@@ -19,6 +20,7 @@
 @inject IJSRuntime JSRuntime
 @inject ISettingsService SettingsService
 @inject IIdentityService IdentityService
+@inject ISignInInfoService signInInfoService
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -30,11 +32,38 @@
         </button>
         <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
         <Dropdown RightAligned="true" @ref="this.userDropdown">
-            <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowUserMenu" title="Options">
-                <Blazorise.Icon Name="FontAwesomeIcons.UserSecret" />
+            <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowUserMenu" title="Identities">
+                @if (this.SelectedSignInInfo.GivenName == SignInInfo.AnonymousGivenName)
+                {
+                    <Blazorise.Icon Name="FontAwesomeIcons.UserSecret" />
+                }
+                else
+                {
+                    <Blazorise.Icon Name="FontAwesomeIcons.UserCircle" />
+                }
             </button>
             <Blazorise.DropdownMenu style="width:250px">
-                <input class="form-control form-control-xs ml-2 rounded" placeholder="ID Server URL" @bind="this.IdServerUrl" style="width:232px"/>
+                @foreach (SignInInfo si in this.signInInfoService.SignIns)
+                {
+                    <DropdownItem @onclick="() => this.SelectedSignInInfo = si" Class="@(si == this.SelectedSignInInfo ? "bg-secondary text-white" : string.Empty)">
+                        @if (si.GivenName == SignInInfo.AnonymousGivenName)
+                        {
+                            <Blazorise.Icon Name="FontAwesomeIcons.UserSecret" Class="px-2" />
+                        }
+                        else
+                        {
+                            <Blazorise.Icon Name="FontAwesomeIcons.UserCircle" Class="px-2" />
+                        }
+                        <small>@si.IdentityServer.Url</small> <br />
+                        @si.GivenName&nbsp;@si.FamilyName <br />
+                        @si.Email <br />
+                        <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="() => this.SignOutUser(si)" title="Identities">
+                            <Blazorise.Icon Name="FontAwesomeIcons.SignOutAlt" />
+                        </button>
+                    </DropdownItem>
+                }
+                <DropdownDivider/>
+                <input class="form-control form-control-xs ml-2 rounded" placeholder="ID Server URL" @bind="this.IdServerUrl" style="width:232px" />
                 <DropdownItem @onclick="this.LoadIdServer">
                     <Blazorise.Icon Name="FontAwesomeIcons.SignInAlt" Class="px-2" />
                     Sign-In
@@ -65,7 +94,7 @@
     <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-CanShowControls="@this.CanShowControls" @bind-RenderDirection="@this.RenderDirection" />
 </div>
 <div class="footer px-4 h-auto">
-    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
+    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" SelectedSignInInfo="@this.SelectedSignInInfo"/>
 </div>
 
 @code
@@ -75,12 +104,26 @@
     private Dropdown userDropdown;
     private Dropdown optionsDropdown;
 
+    private void SignOutUser(SignInInfo value)
+    {
+        this.navigationManager.NavigateTo(this.IdentityService.CreateLogoutRequest(value.AuthIdToken, value.IdentityServer.Url));
+    }
+
     private async Task LoadIdServer()
     {
-        this.SettingsService.IdentityServerUrl = this.IdServerUrl;
-        this.SettingsService.ApplicationUrl = this.navigationManager.BaseUri.TrimEnd('/');
-        ((SettingsService)this.SettingsService).ClientId = "xamarin";
-        this.navigationManager.NavigateTo(IdentityService.CreateAuthorizationRequest()); // works if not using frames and is navigated to as another page
+        if (Uri.IsWellFormedUriString(this.IdServerUrl, UriKind.Absolute))
+        {
+            var sii = new SignInInfo();
+            sii.IdentityServer.Url = this.IdServerUrl;
+            this.signInInfoService.Add(sii);
+            this.SettingsService.ApplicationUrl = this.navigationManager.BaseUri.TrimEnd('/');
+            ((SettingsService)this.SettingsService).ClientId = "xamarin";
+            this.navigationManager.NavigateTo(IdentityService.CreateAuthorizationRequest(sii.IdentityServer.AuthorizeEndpoint)); // works if not using frames and is navigated to as another page
+        }
+        else
+        {
+            this.toastService.ShowError("Specified ID Server URL is invalid.");
+        }
     }
 
     private void ShowUserMenu()
@@ -115,6 +158,7 @@
     protected override void OnInitialized()
     {
         this.Children = new NeuronViewModel[0];
+        this.SelectedSignInInfo = this.signInInfoService.SignIns.Single(si => si.IdentityServer.Url == string.Empty);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -188,6 +232,24 @@
         }
     }
 
+    private SignInInfo selectedSignInInfo;
+
+    public SignInInfo SelectedSignInInfo
+    {
+        get { return selectedSignInInfo; }
+        set
+        {
+            if (this.selectedSignInInfo != value)
+            {
+                this.selectedSignInInfo = value;
+
+                if (this.userDropdown != null)
+                    this.userDropdown.Hide();
+            }
+        }
+    }
+
+
     private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
             string.Format(format, this.SelectedNeuron.Tag) :
             "[Error: Not a valid Neuron]";
@@ -198,8 +260,11 @@
         {
             this.reloading = true;
             var children = new List<NeuronViewModel>();
-            var ns = (await this.neuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
-            ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
+            var ns = (await this.neuronQueryService.SendQuery(
+                this.AvatarUrl,
+                this.SelectedSignInInfo.AuthAccessToken
+                )).Neurons;
+            ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.SelectedSignInInfo.AuthAccessToken, this.neuronQueryService)));
             this.Children = children.ToArray();
         }
         catch (Exception ex)
@@ -234,7 +299,8 @@
                     await this.neuronApplicationService.DeactivateNeuron(
                         result.AvatarUrl,
                         this.SelectedNeuron.Neuron.Id,
-                        this.SelectedNeuron.Neuron.Version
+                        this.SelectedNeuron.Neuron.Version,
+                        this.SelectedSignInInfo.AuthAccessToken
                         );
                     description = "Neuron removed";
                 }
@@ -243,7 +309,8 @@
                     await this.terminalApplicationService.DeactivateTerminal(
                         result.AvatarUrl,
                         this.SelectedNeuron.Neuron.Terminal.Id,
-                        this.SelectedNeuron.Neuron.Terminal.Version
+                        this.SelectedNeuron.Neuron.Terminal.Version,
+                        this.SelectedSignInInfo.AuthAccessToken
                         );
                     description = "Terminal removed";
                 }

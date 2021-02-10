@@ -48,30 +48,17 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
 
         #region Setting Constants
 
-        private const string IdAccessToken = "access_token";
-        private const string IdToken = "id_token";
         private const string IdUseMocks = "use_mocks";
         private const string IdUseFakeLocation = "use_fake_location";
         private const string IdLatitude = "latitude";
         private const string IdLongitude = "longitude";
         private const string IdAllowGpsLocation = "allow_gps_location";
-        private const string IdBaseEndpoint = "base_endpoint";
         private const string IdClientId = "client_id";
         private const string IdClientSecret = "client_secret";
-        private const string IdAuthToken = "auth_token";
-        private const string IdRegisterWebsite = "register_website";
-        private const string IdIdentityEndpoint = "identity_endpoint";
-        private const string IdLocationEndpoint = "location_endpoint";
-        private const string IdTokenEndpoint = "token_endpoint";
-        private const string IdLogoutEndpoint = "logout_endpoint";
-        private const string IdIdentityCallback = "identity_callback";
+        private const string IdLoginCallback = "login_callback";
         private const string IdLogoutCallback = "logout_callback";
-        private const string IdRevocationEndpoint = "revocation_endpoint";
-        private const string IdIdentityServerUrl = "identity_server_url";
         private const string IdApplicationUrl = "application_url";
 
-        private readonly string AccessTokenDefault = string.Empty;
-        private readonly string IdTokenDefault = string.Empty;
         private readonly bool UseMocksDefault = true;
         private readonly bool UseFakeLocationDefault = false;
         private readonly double FakeLatitudeDefault = 47.604610d;
@@ -79,90 +66,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly bool AllowGpsLocationDefault = false;
         private readonly string ClientIdDefault = "xamarin";
         private readonly string ClientSecretDefault = "secret";
-        private readonly string AuthTokenDefault = "INSERT AUTHENTICATION TOKEN";
-        private readonly string RegisterWebsiteDefault = string.Empty;
-        private readonly string IdentityEndpointDefault = string.Empty;
-        private readonly string LocationEndpointDefault = string.Empty;
-        private readonly string TokenEndpointDefault = string.Empty;
-        private readonly string LogoutEndpointDefault = string.Empty;
-        private readonly string IdentityCallbackDefault = string.Empty;
+        private readonly string LoginCallbackDefault = string.Empty;
         private readonly string LogoutCallbackDefault = string.Empty;
-        private readonly string RevocationEndpointDefault = string.Empty;
-        private readonly string IdentityServerUrlDefault = string.Empty;
         private readonly string ApplicationUrlDefault = string.Empty;
-
-        #endregion
-
-        #region User-specific
-        public string AuthAccessToken
-        {
-            get => AppSettings.GetValueOrDefault(IdAccessToken, AccessTokenDefault);
-            set => AppSettings.AddOrUpdateValue(IdAccessToken, value);
-        }
-
-        public string AuthIdToken
-        {
-            get => AppSettings.GetValueOrDefault(IdToken, IdTokenDefault);
-            set => AppSettings.AddOrUpdateValue(IdToken, value);
-        }
-        #endregion
-
-        #region IdentityServer
-        public string RegisterWebsite
-        {
-            get => AppSettings.GetValueOrDefault(IdRegisterWebsite, RegisterWebsiteDefault);
-            set => AppSettings.AddOrUpdateValue(IdRegisterWebsite, value);
-        }
-
-        public string IdentityEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdIdentityEndpoint, IdentityEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdIdentityEndpoint, value);
-        }
-
-        public string TokenEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdTokenEndpoint, TokenEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdTokenEndpoint, value);
-        }
-
-        public string LogoutEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdLogoutEndpoint, LogoutEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdLogoutEndpoint, value);
-        }
-
-        public string LogoutCallback
-        {
-            get => AppSettings.GetValueOrDefault(IdLogoutCallback, LogoutCallbackDefault);
-            set => AppSettings.AddOrUpdateValue(IdLogoutCallback, value);
-        }
-
-        public string RevocationEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdRevocationEndpoint, RevocationEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdRevocationEndpoint, value);
-        }
         #endregion
 
         #region Application
-        public string IdentityCallback
-        {
-            get => AppSettings.GetValueOrDefault(IdIdentityCallback, IdentityCallbackDefault);
-            set => AppSettings.AddOrUpdateValue(IdIdentityCallback, value);
-        }
-        #endregion
-
-        #region BaseUrls
-        public string IdentityServerUrl
-        {
-            get => AppSettings.GetValueOrDefault(IdIdentityServerUrl, IdentityServerUrlDefault);
-            set
-            {
-                AppSettings.AddOrUpdateValue(IdIdentityServerUrl, value);
-                this.UpdateEndpoint(this.IdentityServerUrl);
-            }
-        }
         public string ApplicationUrl
         {
             get => AppSettings.GetValueOrDefault(IdApplicationUrl, ApplicationUrlDefault);
@@ -172,8 +81,33 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
                 this.UpdateAppEndpoint(this.ApplicationUrl);
             }
         }
+
+        public string LoginCallback
+        {
+            get => AppSettings.GetValueOrDefault(IdLoginCallback, LoginCallbackDefault);
+            set => AppSettings.AddOrUpdateValue(IdLoginCallback, value);
+        }
+
+        public string LogoutCallback
+        {
+            get => AppSettings.GetValueOrDefault(IdLogoutCallback, LogoutCallbackDefault);
+            set => AppSettings.AddOrUpdateValue(IdLogoutCallback, value);
+        }
+
+        public string ClientId
+        {
+            get => AppSettings.GetValueOrDefault(IdClientId, ClientIdDefault);
+            set => AppSettings.AddOrUpdateValue(IdClientId, value);
+        }
+
+        public string ClientSecret
+        {
+            get => AppSettings.GetValueOrDefault(IdClientSecret, ClientSecretDefault);
+            set => AppSettings.AddOrUpdateValue(IdClientSecret, value);
+        }
         #endregion
 
+        #region [Unused]
         public bool UseMocks
         {
             get => AppSettings.GetValueOrDefault(IdUseMocks, UseMocksDefault);
@@ -203,67 +137,26 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             get => AppSettings.GetValueOrDefault(IdAllowGpsLocation, AllowGpsLocationDefault);
             set => AppSettings.AddOrUpdateValue(IdAllowGpsLocation, value);
         }
-
-        public string ClientId
-        {
-            get => AppSettings.GetValueOrDefault(IdClientId, ClientIdDefault);
-            set => AppSettings.AddOrUpdateValue(IdClientId, value);
-        }
-
-        public string ClientSecret
-        {
-            get => AppSettings.GetValueOrDefault(IdClientSecret, ClientSecretDefault);
-            set => AppSettings.AddOrUpdateValue(IdClientSecret, value);
-        }
-
-        public string AuthToken
-        {
-            get => AppSettings.GetValueOrDefault(IdAuthToken, AuthTokenDefault);
-            set => AppSettings.AddOrUpdateValue(IdAuthToken, value);
-        }        
-
-        public string LocationEndpoint
-        {
-            get => AppSettings.GetValueOrDefault(IdLocationEndpoint, LocationEndpointDefault);
-            set => AppSettings.AddOrUpdateValue(IdLocationEndpoint, value);
-        }
-
-        private void UpdateEndpoint(string identityServerUrl)
-        {
-            RegisterWebsite = $"{identityServerUrl}/Account/Register";
-            IdentityEndpoint = $"{identityServerUrl}/connect/authorize";
-            TokenEndpoint = $"{identityServerUrl}/connect/token";
-            LogoutEndpoint = $"{identityServerUrl}/connect/endsession";            
-            LogoutCallback = $"{identityServerUrl}/Account/Redirecting";
-            RevocationEndpoint = $"{identityServerUrl}/connect/revocation";
-        }
-
+        #endregion
+        
         private void UpdateAppEndpoint(string appUrl)
         {
-            IdentityCallback = $"{appUrl}/Account/LoginCallback";
+            LoginCallback = $"{appUrl}/Account/LoginCallback";
+            LogoutCallback = $"{appUrl}/Account/LogoutCallback";
         }
 
         public void Clear()
         {
-            this.AppSettings.Remove(IdAccessToken);
-            this.AppSettings.Remove(IdToken);
             this.AppSettings.Remove(IdUseMocks);
             this.AppSettings.Remove(IdUseFakeLocation);
             this.AppSettings.Remove(IdLatitude);
             this.AppSettings.Remove(IdLongitude);
             this.AppSettings.Remove(IdAllowGpsLocation);
-            this.AppSettings.Remove(IdBaseEndpoint);
             this.AppSettings.Remove(IdClientId);
             this.AppSettings.Remove(IdClientSecret);
-            this.AppSettings.Remove(IdAuthToken);
-            this.AppSettings.Remove(IdRegisterWebsite);
-            this.AppSettings.Remove(IdentityEndpoint);
-            this.AppSettings.Remove(IdLocationEndpoint);
-            this.AppSettings.Remove(IdTokenEndpoint);
-            this.AppSettings.Remove(IdLogoutEndpoint);
-            this.AppSettings.Remove(IdentityCallback);
+            this.AppSettings.Remove(IdLoginCallback);
+            this.AppSettings.Remove(IdApplicationUrl);
             this.AppSettings.Remove(IdLogoutCallback);
-            this.AppSettings.Remove(IdIdentityServerUrl);
         }
     }
 }

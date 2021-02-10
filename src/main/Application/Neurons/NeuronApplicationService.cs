@@ -44,19 +44,19 @@ namespace ei8.Cortex.Diary.Application.Neurons
             this.neuronClient = neuronClient ?? Locator.Current.GetService<INeuronClient>();
         }
 
-        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, CancellationToken token = default(CancellationToken))
+        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string bearerToken, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.CreateNeuron(avatarUrl, id, tag, regionId, token);
+            await this.neuronClient.CreateNeuron(avatarUrl, id, tag, regionId, bearerToken, token);
         }
 
-        public async Task ChangeNeuronTag(string avatarUrl, string id, string tag, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task ChangeNeuronTag(string avatarUrl, string id, string tag, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.ChangeNeuronTag(avatarUrl, id, tag, expectedVersion, token);
+            await this.neuronClient.ChangeNeuronTag(avatarUrl, id, tag, expectedVersion, bearerToken, token);
         }
         
-        public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
+        public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.DeactivateNeuron(avatarUrl, id, expectedVersion, token);
+            await this.neuronClient.DeactivateNeuron(avatarUrl, id, expectedVersion, bearerToken, token);
         }
     }
 }

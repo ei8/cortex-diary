@@ -22,14 +22,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             });
         }
 
-        internal async static Task<UINeuron> CreateNeuron(Func<Task<string>> tagRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, INotificationApplicationService notificationApplicationService, IStatusService statusService, string avatarUrl, string regionId)
+        internal async static Task<UINeuron> CreateNeuron(Func<Task<string>> tagRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, INotificationApplicationService notificationApplicationService, IStatusService statusService, string avatarUrl, string regionId, string bearerToken)
         {
             UINeuron result = null;
             await Neurons.Helper.SetStatusOnComplete(async () =>
             {
                 bool stat = false;
                 bool addingOwner = false;
-                var shouldAddOwner = (await notificationApplicationService.GetNotificationLog(avatarUrl, string.Empty)).NotificationList.Count == 0;
+                var shouldAddOwner = (await notificationApplicationService.GetNotificationLog(avatarUrl, string.Empty, bearerToken)).NotificationList.Count == 0;
                 if (shouldAddOwner && (await dialogService.ShowDialogYesNo("This Avatar needs to be initialized with an Owner Neuron. Do you wish to continue by creating one?", owner, out DialogResult yesno)).GetValueOrDefault())
                     addingOwner = true;
 
@@ -52,7 +52,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                             avatarUrl,
                             n.Id,
                             n.Tag,
-                            regionId
+                            regionId,
+                            bearerToken
                             );
                         result = n;
                         stat = true;
@@ -67,7 +68,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             return result;
         }
 
-        internal async static Task<bool> CreateRelative(Func<Task<string>> tagRetriever, Func<object, Task<string[]>> terminalParametersRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, IStatusService statusService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType)
+        internal async static Task<bool> CreateRelative(Func<Task<string>> tagRetriever, Func<object, Task<string[]>> terminalParametersRetriever, object owner, IDialogService dialogService, INeuronQueryService neuronQueryService, INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, IStatusService statusService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType, string bearerToken)
         {
             bool result = false;
             await Neurons.Helper.SetStatusOnComplete(async () =>
@@ -79,7 +80,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                     await Neurons.Helper.PromptSimilarExists(neuronQueryService, dialogService, avatarUrl, owner, tag))
                 {
                     string[] tps = await terminalParametersRetriever(owner);
-                    await Helper.CreateRelativeCore(neuronApplicationService, terminalApplicationService, avatarUrl, regionId, targetNeuronId, relativeType, tag, (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]), float.Parse(tps[1]));
+                    await Helper.CreateRelativeCore(neuronApplicationService, terminalApplicationService, avatarUrl, regionId, targetNeuronId, relativeType, tag, (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]), float.Parse(tps[1]), bearerToken);
                     result = true;
                     stat = true;
                 }
@@ -92,7 +93,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             return result;
         }
 
-        public static async Task CreateRelativeCore(INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType, string tag, NeurotransmitterEffect effect, float strength)
+        public static async Task CreateRelativeCore(INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType, string tag, NeurotransmitterEffect effect, float strength, string bearerToken)
         {
             var presynapticNeuronId = string.Empty;
             var postsynapticNeuronId = string.Empty;
@@ -113,7 +114,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 avatarUrl,
                 newNeuronId,
                 tag,
-                regionId
+                regionId,
+                bearerToken
             );
             await terminalApplicationService.CreateTerminal(
                 avatarUrl,
@@ -121,11 +123,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 presynapticNeuronId,
                 postsynapticNeuronId,
                 effect,
-                strength
+                strength,
+                bearerToken
                 );
         }
 
-        internal async static Task<bool> LinkRelative(Func<Task<IEnumerable<UINeuron>>> linkCandidatesRetriever, Func<object, Task<string[]>> terminalParametersRetriever, object owner, ITerminalApplicationService terminalApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, RelativeType relativeType)
+        internal async static Task<bool> LinkRelative(Func<Task<IEnumerable<UINeuron>>> linkCandidatesRetriever, Func<object, Task<string[]>> terminalParametersRetriever, object owner, ITerminalApplicationService terminalApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, RelativeType relativeType, string bearerToken)
         {
             bool result = false;
             await Neurons.Helper.SetStatusOnComplete(async () =>
@@ -137,7 +140,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 {
                     string[] tps = await terminalParametersRetriever(owner);
 
-                    await Helper.LinkRelativeCore(terminalApplicationService, avatarUrl, targetNeuronId, relativeType, candidates, (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]), float.Parse(tps[1]));
+                    await Helper.LinkRelativeCore(terminalApplicationService, avatarUrl, targetNeuronId, relativeType, candidates, (neurUL.Cortex.Common.NeurotransmitterEffect)int.Parse(tps[0]), float.Parse(tps[1]), bearerToken);
                     result = true;
                     stat = true;
                 }
@@ -151,7 +154,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             return result;
         }
 
-        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<UINeuron> candidates, NeurotransmitterEffect effect, float strength)
+        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<UINeuron> candidates, NeurotransmitterEffect effect, float strength, string bearerToken)
         {
             foreach (var n in candidates)
             {
@@ -161,12 +164,13 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                     relativeType == RelativeType.Presynaptic ? n.Id : targetNeuronId,
                     relativeType == RelativeType.Presynaptic ? targetNeuronId : n.Id,
                     effect,
-                    strength
+                    strength,
+                    bearerToken
                     );
             }
         }
 
-        internal async static Task<bool> ChangeNeuronTag(string tag, INeuronApplicationService neuronApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, int expectedVersion)
+        internal async static Task<bool> ChangeNeuronTag(string tag, INeuronApplicationService neuronApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, int expectedVersion, string bearerToken)
         {
             bool result = false;
 
@@ -176,7 +180,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                             avatarUrl,
                             targetNeuronId,
                             tag,
-                            expectedVersion
+                            expectedVersion,
+                            bearerToken
                         );
 
                     return result = true;
