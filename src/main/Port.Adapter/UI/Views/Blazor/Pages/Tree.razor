@@ -12,6 +12,7 @@
 @using ei8.Cortex.Diary.Application.Settings
 @using ei8.Cortex.Diary.Application.Identity
 @using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
+@using Microsoft.AspNetCore.Http 
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
 @inject ITerminalApplicationService terminalApplicationService
@@ -21,6 +22,7 @@
 @inject ISettingsService SettingsService
 @inject IIdentityService IdentityService
 @inject ISignInInfoService signInInfoService
+@inject IHttpContextAccessor httpContextAccesssor
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -106,7 +108,7 @@
 
     private void SignOutUser(SignInInfo value)
     {
-        this.navigationManager.NavigateTo(this.IdentityService.CreateLogoutRequest(value.AuthIdToken, value.IdentityServer.Url));
+        this.navigationManager.NavigateTo(this.IdentityService.CreateLogoutRequest(value.AuthIdToken, value.IdentityServer.LogoutEndpoint));
     }
 
     private async Task LoadIdServer()

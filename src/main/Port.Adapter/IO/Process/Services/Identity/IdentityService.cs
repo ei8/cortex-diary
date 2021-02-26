@@ -80,14 +80,15 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
         }
 
         // TODO: Navigate here to initiate sign-out
-        public string CreateLogoutRequest(string idToken, string identityServerUrl)
+        public string CreateLogoutRequest(string idToken, string endSessionEndpoint)
         {
             if (string.IsNullOrEmpty(idToken))
             {
                 return string.Empty;
             }
 
-            var ru = new RequestUrl(identityServerUrl);
+            var ru = new RequestUrl(endSessionEndpoint);
+            // TODO: use discoveryclient as in - https://stackoverflow.com/questions/50205380/get-identity-token-on-manual-implicit-flow-login-identityserver4
             var es = ru.CreateEndSessionUrl(
                 idToken,
                 this.settingsService.LogoutCallback,

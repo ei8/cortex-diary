@@ -2,9 +2,11 @@
 @using ei8.Cortex.Diary.Application.Settings
 @using ei8.Cortex.Diary.Application.Identity
 @using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
+@using ei8.Cortex.Diary.Domain.Model 
 @inject ISettingsService SettingsService
 @inject IIdentityService IdentityService
 @inject NavigationManager NavManager
+@inject ISignInInfoService signInInfoService
 
 <h3>@successMessage</h3>
 @code {
@@ -20,7 +22,8 @@
             if ((result = await IO.Process.Services.Identity.Helper.TryProcessLogoutUrl(
                 url,
                 SettingsService.LogoutCallback,
-                IdentityService
+                IdentityService,
+                signInInfoService
                 )).Success)
             {
                 // TODO: remove corresponding signInInfo based on state (currently set as bearerToken, should ideally be Id)

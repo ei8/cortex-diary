@@ -43,6 +43,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddBlazoredToast();
+            services.AddHttpContextAccessor();
 
             services
                 .AddBlazorise(o =>

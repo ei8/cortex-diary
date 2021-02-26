@@ -33,7 +33,7 @@ namespace ei8.Cortex.Diary.Application.Identity
     public interface IIdentityService
     {
         string CreateAuthorizationRequest(string authorizeEndpoint);
-        string CreateLogoutRequest(string bearerToken, string identityServerUrl);
+        string CreateLogoutRequest(string bearerToken, string endSessionEndpoint);
         Task<TokenResponse> GetTokenAsync(string code, string tokenEndpoint);
         Task<TokenRevocationResponse> RevokeAccessTokenAsync(string bearerToken, string revocationEndpoint);
         Task<UserInfoResponse> GetUserInfoAsync(string bearerToken, string userInfoEndpoint);
