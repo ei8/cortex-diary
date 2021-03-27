@@ -13,6 +13,8 @@
 @using ei8.Cortex.Diary.Application.Identity
 @using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
 @using Microsoft.AspNetCore.Http 
+@using Microsoft.AspNetCore.Authentication 
+@using IdentityServer4
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
 @inject ITerminalApplicationService terminalApplicationService
@@ -106,9 +108,11 @@
     private Dropdown userDropdown;
     private Dropdown optionsDropdown;
 
-    private void SignOutUser(SignInInfo value)
+    private async Task SignOutUser(SignInInfo value)
     {
-        this.navigationManager.NavigateTo(this.IdentityService.CreateLogoutRequest(value.AuthIdToken, value.IdentityServer.LogoutEndpoint));
+        var request = this.IdentityService.CreateLogoutRequest(value.AuthIdToken, value.IdentityServer.LogoutEndpoint);
+        await this.httpContextAccesssor.HttpContext.SignOutAsync(IdentityServerConstants.DefaultCookieAuthenticationScheme);
+        this.navigationManager.NavigateTo(request);
     }
 
     private async Task LoadIdServer()

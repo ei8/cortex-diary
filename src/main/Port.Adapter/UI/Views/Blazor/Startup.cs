@@ -82,6 +82,32 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<INeuronQueryClient>(nqc);
             services.AddSingleton<INeuronQueryService>(nqs);
             services.AddSingleton<ISignInInfoService>(siis);
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "cookie";
+                })
+                .AddCookie("cookie")
+                .AddOpenIdConnect("oidc", options =>
+                {
+                    options.Authority = "http://192.168.1.110:61700";
+                    options.ClientId = ss.ClientId;
+                    options.ClientSecret = ss.ClientSecret;
+
+                    options.ResponseType = "code id_token";
+                    options.UsePkce = true;
+                    options.ResponseMode = "query";
+
+                    // options.CallbackPath = "/signin-oidc"; // default redirect URI
+
+                    // options.Scope.Add("oidc"); // default scope
+                    // options.Scope.Add("profile"); // default scope
+                    options.Scope.Add("openid");
+                    options.Scope.Add("profile");
+                    options.Scope.Add("offline_access");
+                    options.Scope.Add("avatar");
+                    options.SaveTokens = true;
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

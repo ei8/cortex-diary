@@ -22,6 +22,8 @@
     <PackageReference Include="ei8.Cortex.Library.Client" Version="0.2.1" />
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.2.0" />
     <PackageReference Include="FluentValidation" Version="9.3.0" />
+    <PackageReference Include="IdentityServer4" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />

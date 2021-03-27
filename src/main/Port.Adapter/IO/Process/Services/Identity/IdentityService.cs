@@ -79,7 +79,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             return authorizeUri;
         }
 
-        // TODO: Navigate here to initiate sign-out
         public string CreateLogoutRequest(string idToken, string endSessionEndpoint)
         {
             if (string.IsNullOrEmpty(idToken))
@@ -126,7 +125,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             return await this.requestProvider.HttpClient.RevokeTokenAsync(new TokenRevocationRequest {
                 Address = revocationEndpoint,
                 ClientId = this.settingsService.ClientId,
-                ClientSecret = this.settingsService.ClientSecret
+                ClientSecret = this.settingsService.ClientSecret,
+                Token = bearerToken
             });
         }
 

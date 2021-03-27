@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Domain.Model;
 using System.Linq;
+using neurUL.Common.Http;
 
 namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {
@@ -29,7 +30,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             return result;
         }
 
-        public static async Task<ProcessUrlResult> TryProcessLogoutUrl(string url, string logoutCallbackPath, IIdentityService identityService, ISignInInfoService signInInfoService)
+        public static async Task<ProcessUrlResult> TryProcessLogoutUrl(string url, string logoutCallbackPath, IIdentityService identityService, ISignInInfoService signInInfoService) //TODO: , IRequestProvider requestProvider)
         {
             var result = ProcessUrlResult.Empty;
             var unescapedUrl = System.Net.WebUtility.UrlDecode(url);
@@ -38,9 +39,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
             {
                 // TODO: get accessToken from state which should be equal to signininfo.id (currently equal to accesstoken), 
                 // TODO: get identityServerInfo from service using state (signininfo.id)
-                var accessToken = signInInfoService.SignIns.Single(sii => url.Contains(sii.AuthIdToken)).AuthAccessToken;
+                var signInInfo = signInInfoService.SignIns.Single(sii => sii.GivenName != "Anonymous");
                 var identityServerInfo = new IdentityServerInfo();
-                var response = await identityService.RevokeAccessTokenAsync(accessToken, identityServerInfo.RevocationEndpoint);
+                // TODO: requestProvider.HttpClient.GetDiscoveryDocumentAsync()
+                var response = await identityService.RevokeAccessTokenAsync(signInInfo.AuthAccessToken, signInInfo.IdentityServer.RevocationEndpoint);
                 result = new ProcessUrlResult(true, string.Empty, string.Empty, ProcessUrlType.Logout);
             }
             
