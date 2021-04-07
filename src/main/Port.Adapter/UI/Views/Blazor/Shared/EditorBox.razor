@@ -2,7 +2,6 @@
 @using ei8.Cortex.Library.Client;
 @using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using ei8.Cortex.Diary.Domain.Model;
@@ -286,7 +285,7 @@
                         description = "Neuron saved";
                         break;
                     case ContextMenuOption.AddRelative:
-                        await ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Helper.CreateRelativeCore(
+                        await Blazor.Helper.CreateRelativeCore(
                             this.neuronApplicationService,
                             this.terminalApplicationService,
                             result.AvatarUrl,
@@ -301,7 +300,7 @@
                         description = "Relative added";
                         break;
                     case ContextMenuOption.LinkRelative:
-                        await ei8.Cortex.Diary.Port.Adapter.UI.ViewModels.Helper.LinkRelativeCore(
+                        await Blazor.Helper.LinkRelativeCore(
                             this.terminalApplicationService,
                             result.AvatarUrl,
                             this.SelectedNeuron.Neuron.Id,

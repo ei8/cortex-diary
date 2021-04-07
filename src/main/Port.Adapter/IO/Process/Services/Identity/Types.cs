@@ -27,6 +27,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
         };
     }
 
+    public struct Constants
+    {
+        public const string ClientId = "d23";
+    }
+
     public enum ProcessUrlType
     {
         NotSet,

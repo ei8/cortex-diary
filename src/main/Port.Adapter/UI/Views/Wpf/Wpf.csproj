@@ -448,10 +448,6 @@
       <Project>{5AD374E6-F50F-4026-BD1A-FE75DD7F7769}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ViewModels\ViewModels.csproj">
-      <Project>{8A593F0A-9C94-4353-B317-7A4E599C122F}</Project>
-      <Name>ViewModels</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\graph.ico" />

@@ -1,5 +1,4 @@
 ﻿using ei8.Cortex.Diary.Port.Adapter.UI.Common;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 using ei8.Cortex.Library.Common;
 using neurUL.Cortex.Common;
 using System.Collections.Generic;

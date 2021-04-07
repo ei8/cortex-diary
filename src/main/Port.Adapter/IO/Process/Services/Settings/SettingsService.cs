@@ -29,13 +29,14 @@ using System;
 using System.Collections.Generic;
 using ei8.Cortex.Diary.Application.Dependency;
 using ei8.Cortex.Diary.Application.Settings;
+using IdentityServer4.Models;
 
 namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
 {
     public class SettingsService : ISettingsService
     {
         private readonly ISettingsServiceImplementation _settingsServiceImpl;
-        
+
         ISettingsServiceImplementation AppSettings
         {
             get { return _settingsServiceImpl; }
@@ -64,8 +65,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly double FakeLatitudeDefault = 47.604610d;
         private readonly double FakeLongitudeDefault = -122.315752d;
         private readonly bool AllowGpsLocationDefault = false;
-        private readonly string ClientIdDefault = "xamarin";
-        private readonly string ClientSecretDefault = "secret";
+        private readonly string ClientIdDefault = Identity.Constants.ClientId;
+        private readonly string ClientSecretDefault = "978c1052-1184-48f7-89f4-4fd034847a06".Sha256();
         private readonly string LoginCallbackDefault = string.Empty;
         private readonly string LogoutCallbackDefault = string.Empty;
         private readonly string ApplicationUrlDefault = string.Empty;

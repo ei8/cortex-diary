@@ -9,7 +9,6 @@ using ei8.Cortex.Diary.Nucleus.Client.Out;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Services;
 using ei8.Cortex.Library.Client.Out;
@@ -24,6 +23,10 @@ using Blazorise;
 using Blazorise.Icons.FontAwesome;
 using Blazorise.Bootstrap;
 using ei8.Cortex.Diary.Domain.Model;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Logging;
+using System.Net.Http;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
@@ -40,11 +43,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            IdentityModelEventSource.ShowPII = true; 
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddBlazoredToast();
-            services.AddHttpContextAccessor();
-
             services
                 .AddBlazorise(o =>
                 {
@@ -82,32 +85,36 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<INeuronQueryClient>(nqc);
             services.AddSingleton<INeuronQueryService>(nqs);
             services.AddSingleton<ISignInInfoService>(siis);
+            
+            services.AddScoped<TokenProvider>();
 
             services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = "cookie";
-                })
-                .AddCookie("cookie")
-                .AddOpenIdConnect("oidc", options =>
-                {
-                    options.Authority = "http://192.168.1.110:61700";
-                    options.ClientId = ss.ClientId;
-                    options.ClientSecret = ss.ClientSecret;
-
-                    options.ResponseType = "code id_token";
-                    options.UsePkce = true;
-                    options.ResponseMode = "query";
-
-                    // options.CallbackPath = "/signin-oidc"; // default redirect URI
-
-                    // options.Scope.Add("oidc"); // default scope
-                    // options.Scope.Add("profile"); // default scope
-                    options.Scope.Add("openid");
-                    options.Scope.Add("profile");
-                    options.Scope.Add("offline_access");
-                    options.Scope.Add("avatar");
-                    options.SaveTokens = true;
-                });
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                // TODO: make configurable
+                options.Authority = "https://192.168.1.110";
+                options.ClientId = ss.ClientId;
+                options.ClientSecret = ss.ClientSecret;
+                options.ResponseType = Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectResponseType.Code;
+                // TODO: options.ResponseMode = "query";
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");       
+                options.Scope.Add("email");
+                // TODO: options.Scope.Add("avatar");
+                options.CallbackPath = "/Account/LoginCallback";
+                options.SignedOutCallbackPath = "/Account/LogoutCallback";
+                options.SaveTokens = true;
+                // TODO: REMOVE ONCE CERTIFICATE SORTED
+                HttpClientHandler handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                options.BackchannelHttpHandler = handler;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -131,6 +138,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             app.ApplicationServices
                 .UseBootstrapProviders()
                 .UseFontAwesomeIcons();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

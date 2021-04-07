@@ -1,6 +1,5 @@
 ﻿using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Port.Adapter.UI.Common;
-using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels;
 using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
 using IdentityModel.Client;

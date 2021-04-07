@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>ei8.Cortex.Diary.Port.Adapter.IO.Process.Services</AssemblyName>
     <RootNamespace>ei8.Cortex.Diary.Port.Adapter.IO.Process.Services</RootNamespace>
   </PropertyGroup>
@@ -13,11 +13,13 @@
 
   <ItemGroup>
     <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.15" />
-    <PackageReference Include="IdentityModel" Version="3.10.10" />
+    <PackageReference Include="IdentityModel" Version="5.1.0" />
+    <PackageReference Include="IdentityServer4" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Neurul.Common" Version="0.1.19" />
     <PackageReference Include="neurUL.Common.Http" Version="0.1.14" />
     <PackageReference Include="Neurul.Cortex.Common" Version="0.1.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog" Version="4.5.0" />
     <PackageReference Include="PCLCrypto" Version="2.1.32-alpha" />
     <PackageReference Include="Polly" Version="5.6.1" />
