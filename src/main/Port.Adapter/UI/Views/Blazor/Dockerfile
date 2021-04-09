@@ -3,11 +3,12 @@
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 80 64000
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /src
 COPY *.sln ./
+RUN dotnet restore "main/Port.Adapter/UI/Views/Blazor/Blazor.csproj"
 COPY . .
 WORKDIR /src/main/Port.Adapter/UI/Views/Blazor
 RUN dotnet build -c Release -o /app

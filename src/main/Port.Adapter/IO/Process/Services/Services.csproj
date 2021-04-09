@@ -29,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Application\Application.csproj" />
     <ProjectReference Include="..\..\..\..\Domain.Model\Domain.Model.csproj" />
+    <ProjectReference Include="..\..\..\UI\Common\Common.csproj" />
   </ItemGroup>
 
 </Project>

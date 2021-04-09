@@ -2,12 +2,18 @@ version: '3.4'
 
 services:
   blazor:
+    env_file:
+      - ./var1.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:64000;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=eB245ebK28ubsQJR
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
     ports:
-      - "80"
-
+      - 192.168.1.110:64000:64000
 networks:
-  default:
-    external:
-      name: nat
+    default:
+        external:
+            name: sample_default

@@ -11,4 +11,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
         TerminalCreated,
         TerminalDeactivated
     }
+
+    public struct EnvironmentVariableKeys
+    {
+        public const string OidcAuthority = "OIDC_AUTHORITY";
+        public const string ClientSecret = "CLIENT_SECRET";
+    }
 }

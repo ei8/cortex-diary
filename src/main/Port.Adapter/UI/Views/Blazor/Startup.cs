@@ -27,6 +27,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Logging;
 using System.Net.Http;
+using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using System;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
@@ -97,8 +99,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                // TODO: make configurable
-                options.Authority = "https://192.168.1.110";
+                options.Authority = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.OidcAuthority);
                 options.ClientId = ss.ClientId;
                 options.ClientSecret = ss.ClientSecret;
                 options.ResponseType = Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectResponseType.Code;
@@ -131,6 +132,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 app.UseExceptionHandler("/Error");
             }
 
+            // TODO: necessary?
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
