@@ -1,6 +1,11 @@
 ﻿@page "/"
+@using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
+@using Microsoft.AspNetCore.Authentication
+@using System.Globalization
+
 @namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,8 +41,31 @@
     <link href="_content/Blazored.Toast/blazored-toast.css" rel="stylesheet" />
 </head>
 <body>
+    @{
+        var initialTokenState = new InitialApplicationState
+        {
+            XsrfToken = Xsrf.GetAndStoreTokens(HttpContext).RequestToken,
+            AccessToken = await HttpContext.GetTokenAsync("access_token"),
+            RefreshToken = await HttpContext.GetTokenAsync("refresh_token")
+
+        };
+
+        var expiresAt = await HttpContext.GetTokenAsync("expires_at");
+        if (DateTimeOffset.TryParse(expiresAt,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var expiration))
+        {
+            initialTokenState.ExpiresAt = expiration;
+        }
+        else
+        {
+            initialTokenState.ExpiresAt = DateTimeOffset.UtcNow;
+        }
+    }
+
     <app>
-        @(await Html.RenderComponentAsync<App>(RenderMode.ServerPrerendered))
+        <component type="typeof(App)" render-mode="ServerPrerendered" param-InitialState="initialTokenState" />
     </app>
 
     <script src="_framework/blazor.server.js"></script>

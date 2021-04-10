@@ -87,8 +87,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddSingleton<INeuronQueryClient>(nqc);
             services.AddSingleton<INeuronQueryService>(nqs);
             services.AddSingleton<ISignInInfoService>(siis);
-            
+
+            services.AddHttpClient();
             services.AddScoped<TokenProvider>();
+            services.AddScoped<TokenManager>();
 
             services.AddAuthentication(options =>
             {
@@ -111,6 +113,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 options.CallbackPath = "/Account/LoginCallback";
                 options.SignedOutCallbackPath = "/Account/LogoutCallback";
                 options.SaveTokens = true;
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.TokenValidationParameters.NameClaimType = "given_name";
                 // TODO: REMOVE ONCE CERTIFICATE SORTED
                 HttpClientHandler handler = new HttpClientHandler();
                 handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;

@@ -11,6 +11,7 @@
 @using ei8.Cortex.Diary.Application.Settings
 @using ei8.Cortex.Diary.Application.Identity
 @using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
+@using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity 
 @using Microsoft.AspNetCore.Http 
 @using Microsoft.AspNetCore.Authentication 
 @using IdentityServer4
@@ -23,6 +24,7 @@
 @inject ISettingsService SettingsService
 @inject IIdentityService IdentityService
 @inject ISignInInfoService signInInfoService
+@inject TokenProvider TokenProvider
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -64,12 +66,28 @@
                         </button>
                     </DropdownItem>
                 }
-                <DropdownDivider/>
+                <DropdownDivider />
                 <input class="form-control form-control-xs ml-2 rounded" placeholder="ID Server URL" @bind="this.IdServerUrl" style="width:232px" />
-                <DropdownItem> @*TODO: @onclick="this.LoadIdServer">*@
-                    <Blazorise.Icon Name="FontAwesomeIcons.SignInAlt" Class="px-2" />
-                    <a href="/loginidp">Sign-In</a>
-                </DropdownItem>
+                <AuthorizeView>
+                    <NotAuthorized>
+                        <DropdownItem>
+                            <Blazorise.Icon Name="FontAwesomeIcons.SignInAlt" Class="px-2" />
+                            <a href="/loginidp">Sign-In</a>
+                        </DropdownItem>
+                    </NotAuthorized>
+                    <Authorized>
+                        <DropdownItem>
+                            <Blazorise.Icon Name="FontAwesomeIcons.SignOutAlt" Class="px-2" />
+                            <form action="/logoutidp" method="post">
+                                <button class="nav-link btn btn-link" type="submit">
+                                    <span class="oi oi-list-rich" aria-hidden="true"></span> Log out (@context.User.Identity.Name)
+                                </button>
+                                <input name="__RequestVerificationToken" type="hidden"
+                                       value="@TokenProvider.XsrfToken">
+                            </form>
+                        </DropdownItem>
+                    </Authorized>
+                </AuthorizeView>
             </Blazorise.DropdownMenu>
         </Dropdown>
         <Dropdown RightAligned="true" @ref="this.optionsDropdown">
