@@ -47,7 +47,6 @@
             XsrfToken = Xsrf.GetAndStoreTokens(HttpContext).RequestToken,
             AccessToken = await HttpContext.GetTokenAsync("access_token"),
             RefreshToken = await HttpContext.GetTokenAsync("refresh_token")
-
         };
 
         var expiresAt = await HttpContext.GetTokenAsync("expires_at");

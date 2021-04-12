@@ -105,11 +105,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 options.ClientId = ss.ClientId;
                 options.ClientSecret = ss.ClientSecret;
                 options.ResponseType = Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectResponseType.Code;
-                // TODO: options.ResponseMode = "query";
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");       
                 options.Scope.Add("email");
-                // TODO: options.Scope.Add("avatar");
+                options.Scope.Add("avatarapi");
                 options.CallbackPath = "/Account/LoginCallback";
                 options.SignedOutCallbackPath = "/Account/LogoutCallback";
                 options.SaveTokens = true;
