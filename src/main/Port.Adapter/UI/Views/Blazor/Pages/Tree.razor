@@ -24,7 +24,7 @@
 @inject ISettingsService SettingsService
 @inject IIdentityService IdentityService
 @inject ISignInInfoService signInInfoService
-@inject TokenProvider TokenProvider
+@inject ITokenProvider TokenProvider
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -282,8 +282,7 @@
             this.reloading = true;
             var children = new List<NeuronViewModel>();
             var ns = (await this.neuronQueryService.SendQuery(
-                this.AvatarUrl,
-                this.SelectedSignInInfo.AuthAccessToken
+                this.AvatarUrl
                 )).Neurons;
             ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.SelectedSignInInfo.AuthAccessToken, this.neuronQueryService)));
             this.Children = children.ToArray();

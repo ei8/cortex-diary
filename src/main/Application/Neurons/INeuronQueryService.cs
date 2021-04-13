@@ -37,14 +37,14 @@ namespace ei8.Cortex.Diary.Application.Neurons
 {
     public interface INeuronQueryService
     {
-        Task<QueryResult> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
+        Task<QueryResult> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken));
 
-        Task<QueryResult> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
+        Task<QueryResult> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken));
 
-        Task<QueryResult> GetNeuronById(string avatarUrl, string id, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
+        Task<QueryResult> GetNeuronById(string avatarUrl, string id, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken));
 
-        Task<QueryResult> GetNeuronById(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
+        Task<QueryResult> GetNeuronById(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken));
 
-        Task<QueryResult> SendQuery(string queryUrl, string bearerToken, CancellationToken token = default(CancellationToken));
+        Task<QueryResult> SendQuery(string queryUrl, CancellationToken token = default(CancellationToken));
     }
 }

@@ -29,6 +29,8 @@ using Microsoft.IdentityModel.Logging;
 using System.Net.Http;
 using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using System;
+using ei8.Cortex.Diary.Common;
+using ei8.Cortex.Library.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
@@ -58,39 +60,35 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
 
-            var ssi = new SettingsServiceImplementation();
-            var dp = new Services.DependencyService(ssi);
-            var ss = new SettingsService(dp);
-            var rp = new RequestProvider();
-            var nec = new HttpNeuronClient(rp);
-            var tec = new HttpTerminalClient(rp);
-            var nc = new HttpNotificationClient(rp);
-            var nas = new NotificationApplicationService(nc);
-            var neas = new NeuronApplicationService(nec);
-            var tas = new TerminalApplicationService(tec);
-            var nqc = new HttpNeuronQueryClient(rp);
-            var nqs = new NeuronQueryService(nqc);
-            var siis = new SignInInfoService();
-            var anonymousSignIn = new SignInInfo();
-            anonymousSignIn.GivenName = "Anonymous";
-            anonymousSignIn.FamilyName = "User";
-            siis.Add(anonymousSignIn);
-
-            services.AddSingleton<IDependencyService>(dp);            
-            services.AddSingleton<ISettingsService>(ss);            
-            services.AddSingleton<IRequestProvider>(rp);
-            services.AddSingleton<IIdentityService>(new IdentityService(ss, rp));
-            services.AddSingleton<INotificationApplicationService>(nas);
-            services.AddSingleton<INeuronClient>(nec);
-            services.AddSingleton<INeuronApplicationService>(neas);
-            services.AddSingleton<ITerminalApplicationService>(tas);
-            services.AddSingleton<INeuronQueryClient>(nqc);
-            services.AddSingleton<INeuronQueryService>(nqs);
-            services.AddSingleton<ISignInInfoService>(siis);
-
             services.AddHttpClient();
-            services.AddScoped<TokenProvider>();
+            services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<TokenManager>();
+
+            services.AddScoped<ISettingsServiceImplementation, SettingsServiceImplementation>();
+            services.AddScoped<IDependencyService, DependencyService>();
+            services.AddScoped<ISettingsService, SettingsService>();
+            services.AddScoped<IRequestProvider, RequestProvider>();
+            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<INeuronClient, HttpNeuronClient>();
+            services.AddScoped<ITerminalClient, HttpTerminalClient>();
+            services.AddScoped<INotificationClient, HttpNotificationClient>();
+            services.AddScoped<INotificationApplicationService, NotificationApplicationService>();
+            services.AddScoped<INeuronApplicationService, NeuronApplicationService>();
+            services.AddScoped<ITerminalApplicationService, TerminalApplicationService>();
+            services.AddScoped<INeuronQueryClient, HttpNeuronQueryClient>();
+            services.AddScoped<INeuronQueryService, NeuronQueryService>();
+            
+            services.AddScoped<ISignInInfoService, SignInInfoService>((sp) =>
+            {
+                var siis = new SignInInfoService();
+                var anonymousSignIn = new SignInInfo();
+                anonymousSignIn.GivenName = "Anonymous";
+                anonymousSignIn.FamilyName = "User";
+                siis.Add(anonymousSignIn);
+                return siis;
+            });
+
+            var sp = services.BuildServiceProvider();
 
             services.AddAuthentication(options =>
             {
@@ -101,7 +99,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.Authority = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.OidcAuthority);
+                var ss = sp.GetService<ISettingsService>();
+                options.Authority = ss.OidcAuthority;                
                 options.ClientId = ss.ClientId;
                 options.ClientSecret = ss.ClientSecret;
                 options.ResponseType = Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectResponseType.Code;

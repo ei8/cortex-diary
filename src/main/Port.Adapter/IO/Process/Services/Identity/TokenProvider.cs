@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ei8.Cortex.Diary.Domain.Model;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {
-    public class TokenProvider
+    public class TokenProvider : ITokenProvider
     {
         public string XsrfToken { get; set; }
         public string AccessToken { get; set; }

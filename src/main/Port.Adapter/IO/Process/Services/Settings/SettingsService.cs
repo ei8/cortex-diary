@@ -55,6 +55,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdLatitude = "latitude";
         private const string IdLongitude = "longitude";
         private const string IdAllowGpsLocation = "allow_gps_location";
+        private const string IdOidcAuthority = "oidc_authority";
         private const string IdClientId = "client_id";
         private const string IdClientSecret = "client_secret";
         private const string IdLoginCallback = "login_callback";
@@ -66,6 +67,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly double FakeLatitudeDefault = 47.604610d;
         private readonly double FakeLongitudeDefault = -122.315752d;
         private readonly bool AllowGpsLocationDefault = false;
+        private readonly string OidcAuthorityDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.OidcAuthority);
         private readonly string ClientIdDefault = Identity.Constants.ClientId;
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
         private readonly string LoginCallbackDefault = string.Empty;
@@ -94,6 +96,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         {
             get => AppSettings.GetValueOrDefault(IdLogoutCallback, LogoutCallbackDefault);
             set => AppSettings.AddOrUpdateValue(IdLogoutCallback, value);
+        }
+
+        public string OidcAuthority
+        {
+            get => AppSettings.GetValueOrDefault(IdOidcAuthority, OidcAuthorityDefault);
+            set => AppSettings.AddOrUpdateValue(IdOidcAuthority, value);
         }
 
         public string ClientId
@@ -140,7 +148,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             set => AppSettings.AddOrUpdateValue(IdAllowGpsLocation, value);
         }
         #endregion
-        
+
         private void UpdateAppEndpoint(string appUrl)
         {
             LoginCallback = $"{appUrl}/Account/LoginCallback";
@@ -154,6 +162,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             this.AppSettings.Remove(IdLatitude);
             this.AppSettings.Remove(IdLongitude);
             this.AppSettings.Remove(IdAllowGpsLocation);
+            this.AppSettings.Remove(IdOidcAuthority);
             this.AppSettings.Remove(IdClientId);
             this.AppSettings.Remove(IdClientSecret);
             this.AppSettings.Remove(IdLoginCallback);

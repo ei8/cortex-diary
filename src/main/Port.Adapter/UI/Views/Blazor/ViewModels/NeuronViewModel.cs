@@ -63,7 +63,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
             var children = new List<NeuronViewModel>();
             if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
             {
-                (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery(), this.bearerToken))
+                (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
                     .Neurons
                     .ToList().ForEach(n =>
                     children.Add(new NeuronViewModel(new UINeuron(n), this.avatarUrl, this.bearerToken, this.neuronQueryService))
