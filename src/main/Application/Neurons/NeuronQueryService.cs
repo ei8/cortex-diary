@@ -42,32 +42,32 @@ namespace ei8.Cortex.Diary.Application.Neurons
     public class NeuronQueryService : INeuronQueryService
     {
         private INeuronQueryClient neuronQueryClient;
-        private ITokenProvider tokenProvider;
+        private ITokenManager tokenManager;
 
-        public NeuronQueryService(INeuronQueryClient neuronQueryClient = null, ITokenProvider tokenProvider = null)
+        public NeuronQueryService(INeuronQueryClient neuronQueryClient = null, ITokenManager tokenManager = null)
         {
             this.neuronQueryClient = neuronQueryClient ?? Locator.Current.GetService<INeuronQueryClient>();
-            this.tokenProvider = tokenProvider ?? Locator.Current.GetService<ITokenProvider>();
+            this.tokenManager = tokenManager ?? Locator.Current.GetService<ITokenManager>();
         }
 
         public async Task<QueryResult> GetNeuronById(string avatarUrl, string id, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
-            return await this.neuronQueryClient.GetNeuronById(avatarUrl, id, neuronQuery, this.tokenProvider.AccessToken, token);
+            return await this.neuronQueryClient.GetNeuronById(avatarUrl, id, neuronQuery, await this.tokenManager.RetrieveAccessTokenAsync(), token);
         }
 
         public async Task<QueryResult> GetNeuronById(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
-            return await this.neuronQueryClient.GetNeuronById(avatarUrl, id, centralId, neuronQuery, this.tokenProvider.AccessToken, token);
+            return await this.neuronQueryClient.GetNeuronById(avatarUrl, id, centralId, neuronQuery, await this.tokenManager.RetrieveAccessTokenAsync(), token);
         }
 
         public async Task<QueryResult> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
-            return await this.neuronQueryClient.GetNeurons(avatarUrl, neuronQuery, this.tokenProvider.AccessToken, token);
+            return await this.neuronQueryClient.GetNeurons(avatarUrl, neuronQuery, await this.tokenManager.RetrieveAccessTokenAsync(), token);
         }
 
         public async Task<QueryResult> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
-            var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, centralId, neuronQuery, this.tokenProvider.AccessToken, token);
+            var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, centralId, neuronQuery, await this.tokenManager.RetrieveAccessTokenAsync(), token);
 
             var posts = relatives.Neurons.Where(n => n.Type == RelativeType.Postsynaptic);
             var pres = relatives.Neurons.Where(n => n.Type == RelativeType.Presynaptic);
@@ -80,7 +80,7 @@ namespace ei8.Cortex.Diary.Application.Neurons
 
         public async Task<QueryResult> SendQuery(string queryUrl, CancellationToken token = default)
         {
-            return await this.neuronQueryClient.SendQuery(queryUrl, this.tokenProvider.AccessToken, token);
+            return await this.neuronQueryClient.SendQuery(queryUrl, await this.tokenManager.RetrieveAccessTokenAsync(), token);
         }
     }
 }

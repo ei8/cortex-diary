@@ -1,36 +1,31 @@
 using Blazored.Toast;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 using ei8.Cortex.Diary.Application.Dependency;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Application.Notifications;
 using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Domain.Model;
 using ei8.Cortex.Diary.Nucleus.Client.In;
 using ei8.Cortex.Diary.Nucleus.Client.Out;
-using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
-using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Services;
 using ei8.Cortex.Library.Client.Out;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using neurUL.Common.Http;
-using System.ComponentModel.Design;
-using Blazorise;
-using Blazorise.Icons.FontAwesome;
-using Blazorise.Bootstrap;
-using ei8.Cortex.Diary.Domain.Model;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using neurUL.Common.Http;
 using System.Net.Http;
-using ei8.Cortex.Diary.Port.Adapter.UI.Common;
-using System;
-using ei8.Cortex.Diary.Common;
-using ei8.Cortex.Library.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
@@ -60,10 +55,13 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
 
-            services.AddHttpClient();
+            services.AddHttpClient(Options.DefaultName)
+                .ConfigurePrimaryHttpMessageHandler(
+                // TODO: REMOVE ONCE CERTIFICATE SORTED
+                () => new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator }
+                );
             services.AddScoped<ITokenProvider, TokenProvider>();
-            services.AddScoped<TokenManager>();
-
+            services.AddScoped<ITokenManager, TokenManager>();
             services.AddScoped<ISettingsServiceImplementation, SettingsServiceImplementation>();
             services.AddScoped<IDependencyService, DependencyService>();
             services.AddScoped<ISettingsService, SettingsService>();
@@ -103,11 +101,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 options.Authority = ss.OidcAuthority;                
                 options.ClientId = ss.ClientId;
                 options.ClientSecret = ss.ClientSecret;
-                options.ResponseType = Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectResponseType.Code;
+                options.ResponseType = OpenIdConnectResponseType.Code;
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");       
                 options.Scope.Add("email");
                 options.Scope.Add("avatarapi");
+                options.Scope.Add("offline_access");
                 options.CallbackPath = "/Account/LoginCallback";
                 options.SignedOutCallbackPath = "/Account/LogoutCallback";
                 options.SaveTokens = true;

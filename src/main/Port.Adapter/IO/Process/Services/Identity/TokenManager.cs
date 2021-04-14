@@ -10,14 +10,13 @@ using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 {
-    public class TokenManager
+    public class TokenManager : ITokenManager
     {
         private readonly ITokenProvider _tokenProvider;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ISettingsService settingsService;
 
-        public TokenManager(ITokenProvider tokenProvider,
-            IHttpClientFactory httpClientFactory, ISettingsService settingsService)
+        public TokenManager(ITokenProvider tokenProvider, IHttpClientFactory httpClientFactory, ISettingsService settingsService)
         {
             _tokenProvider = tokenProvider ??
                 throw new ArgumentNullException(nameof(tokenProvider));
@@ -29,7 +28,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
         public async Task<string> RetrieveAccessTokenAsync()
         {
             // should we refresh? 
-
             if ((_tokenProvider.ExpiresAt.AddSeconds(-60)).ToUniversalTime()
                     > DateTime.UtcNow)
             {
@@ -47,7 +45,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
                {
                    Address = discoveryReponse.TokenEndpoint,
                    ClientId = this.settingsService.ClientId,
-                   ClientSecret = this.settingsService.ClientSecret.Sha256(),
+                   ClientSecret = this.settingsService.ClientSecret,
                    RefreshToken = _tokenProvider.RefreshToken
                });
 
