@@ -24,6 +24,7 @@ namespace ei8.Cortex.Diary.Domain.Model
             set;
         }
 
+        // DEL:
         public string AuthAccessToken
         {
             get;

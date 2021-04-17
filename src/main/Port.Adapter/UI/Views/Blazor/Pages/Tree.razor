@@ -319,8 +319,7 @@
                     await this.neuronApplicationService.DeactivateNeuron(
                         result.AvatarUrl,
                         this.SelectedNeuron.Neuron.Id,
-                        this.SelectedNeuron.Neuron.Version,
-                        this.SelectedSignInInfo.AuthAccessToken
+                        this.SelectedNeuron.Neuron.Version
                         );
                     description = "Neuron removed";
                 }
@@ -329,8 +328,7 @@
                     await this.terminalApplicationService.DeactivateTerminal(
                         result.AvatarUrl,
                         this.SelectedNeuron.Neuron.Terminal.Id,
-                        this.SelectedNeuron.Neuron.Terminal.Version,
-                        this.SelectedSignInInfo.AuthAccessToken
+                        this.SelectedNeuron.Neuron.Terminal.Version
                         );
                     description = "Terminal removed";
                 }

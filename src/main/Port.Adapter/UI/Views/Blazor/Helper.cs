@@ -27,7 +27,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             });
         }
 
-        internal static async Task CreateRelativeCore(INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType, string tag, NeurotransmitterEffect effect, float strength, string bearerToken)
+        internal static async Task CreateRelativeCore(INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType, string tag, NeurotransmitterEffect effect, float strength)
         {
             var presynapticNeuronId = string.Empty;
             var postsynapticNeuronId = string.Empty;
@@ -48,8 +48,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 avatarUrl,
                 newNeuronId,
                 tag,
-                regionId,
-                bearerToken
+                regionId
             );
             await terminalApplicationService.CreateTerminal(
                 avatarUrl,
@@ -57,12 +56,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 presynapticNeuronId,
                 postsynapticNeuronId,
                 effect,
-                strength,
-                bearerToken
+                strength
                 );
         }
 
-        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<UINeuron> candidates, NeurotransmitterEffect effect, float strength, string bearerToken)
+        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<UINeuron> candidates, NeurotransmitterEffect effect, float strength)
         {
             foreach (var n in candidates)
             {
@@ -72,8 +70,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                     relativeType == RelativeType.Presynaptic ? n.Id : targetNeuronId,
                     relativeType == RelativeType.Presynaptic ? targetNeuronId : n.Id,
                     effect,
-                    strength,
-                    bearerToken
+                    strength
                     );
             }
         }
