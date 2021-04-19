@@ -35,23 +35,26 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
                 return _tokenProvider.AccessToken;
             }
 
-            // refresh
-            var idpClient = _httpClientFactory.CreateClient();
+            if (this._tokenProvider.AccessToken != null)
+            {
+                // refresh
+                var idpClient = _httpClientFactory.CreateClient();
 
-            var discoveryReponse = await idpClient.GetDiscoveryDocumentAsync(this.settingsService.OidcAuthority);
+                var discoveryReponse = await idpClient.GetDiscoveryDocumentAsync(this.settingsService.OidcAuthority);
 
-            var refreshResponse = await idpClient.RequestRefreshTokenAsync(
-               new RefreshTokenRequest
-               {
-                   Address = discoveryReponse.TokenEndpoint,
-                   ClientId = this.settingsService.ClientId,
-                   ClientSecret = this.settingsService.ClientSecret,
-                   RefreshToken = _tokenProvider.RefreshToken
-               });
+                var refreshResponse = await idpClient.RequestRefreshTokenAsync(
+                   new RefreshTokenRequest
+                   {
+                       Address = discoveryReponse.TokenEndpoint,
+                       ClientId = this.settingsService.ClientId,
+                       ClientSecret = this.settingsService.ClientSecret,
+                       RefreshToken = _tokenProvider.RefreshToken
+                   });
 
-            _tokenProvider.AccessToken = refreshResponse.AccessToken;
-            _tokenProvider.RefreshToken = refreshResponse.RefreshToken;
-            _tokenProvider.ExpiresAt = DateTime.UtcNow.AddSeconds(refreshResponse.ExpiresIn);
+                _tokenProvider.AccessToken = refreshResponse.AccessToken;
+                _tokenProvider.RefreshToken = refreshResponse.RefreshToken;
+                _tokenProvider.ExpiresAt = DateTime.UtcNow.AddSeconds(refreshResponse.ExpiresIn);
+            }
 
             return _tokenProvider.AccessToken;
         }
