@@ -65,7 +65,15 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<ISettingsServiceImplementation, SettingsServiceImplementation>();
             services.AddScoped<IDependencyService, DependencyService>();
             services.AddScoped<ISettingsService, SettingsService>();
-            services.AddScoped<IRequestProvider, RequestProvider>();
+            services.AddScoped<IRequestProvider, RequestProvider>(sp =>
+            {
+                var result = new RequestProvider();
+                result.SetHttpClientHandler(
+                    // TODO: REMOVE ONCE CERTIFICATE SORTED
+                    new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator }
+                    );
+                return result;
+            });
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<INeuronClient, HttpNeuronClient>();
             services.AddScoped<ITerminalClient, HttpTerminalClient>();
