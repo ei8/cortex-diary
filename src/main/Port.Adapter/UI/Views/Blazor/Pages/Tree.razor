@@ -14,6 +14,7 @@
 @using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity 
 @using Microsoft.AspNetCore.Http 
 @using Microsoft.AspNetCore.Authentication 
+@using Microsoft.AspNetCore.WebUtilities 
 @using IdentityServer4
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
@@ -184,6 +185,31 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            var uri = this.navigationManager.ToAbsoluteUri(this.navigationManager.Uri);
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("direction", out var directionValue) &&
+                Enum.TryParse<RenderDirectionValue>(directionValue, out RenderDirectionValue directionEnum)
+                )
+            {
+                this.RenderDirection = directionEnum;
+                this.StateHasChanged();
+            }
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("avatarUrl", out var encodedAvatarUrl))
+            {
+                Uri uriResult;
+                string decodedUrl = Nancy.Helpers.HttpUtility.UrlDecode(encodedAvatarUrl);
+                bool validUrl = Uri.TryCreate(decodedUrl, UriKind.Absolute, out uriResult)
+                    && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                if (validUrl)
+                {
+                    this.AvatarUrl = decodedUrl;
+                    await this.Reload();
+                    this.StateHasChanged();
+                }
+            }
+        }
+
         if (this.RenderDirection == RenderDirectionValue.BottomToTop && this.reloading)
         {
             await this.ScrollToFragment("bottom");
