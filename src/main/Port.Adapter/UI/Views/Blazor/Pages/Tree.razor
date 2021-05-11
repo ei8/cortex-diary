@@ -6,15 +6,16 @@
 @using ei8.Cortex.Library.Client
 @using ei8.Cortex.Library.Common
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Graph
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
 @using Blazorise.Icons.FontAwesome;
 @using ei8.Cortex.Diary.Application.Settings
 @using ei8.Cortex.Diary.Application.Identity
 @using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
-@using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity 
-@using Microsoft.AspNetCore.Http 
-@using Microsoft.AspNetCore.Authentication 
-@using Microsoft.AspNetCore.WebUtilities 
+@using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.WebUtilities
 @using IdentityServer4
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
@@ -26,6 +27,7 @@
 @inject IIdentityService IdentityService
 @inject ISignInInfoService signInInfoService
 @inject ITokenProvider TokenProvider
+@inject IJSRuntime js
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -112,10 +114,20 @@
     </div>
 </div>
 <div class="content px-4">
-    <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-CanShowControls="@this.CanShowControls" @bind-RenderDirection="@this.RenderDirection" />
+    <div class="container-fluid">
+        <div class="treecontent">
+            <div class="treecontent-item">
+                <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-CanShowControls="@this.CanShowControls" @bind-RenderDirection="@this.RenderDirection" />
+            </div>
+            <div class="treecontent-item">
+                <svg width="200" height="200" />
+            </div>
+        </div>
+        <button @onclick="@onTestClick">Load Graph</button>
+    </div>
 </div>
 <div class="footer px-4 h-auto">
-    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" SelectedSignInInfo="@this.SelectedSignInInfo"/>
+    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" SelectedSignInInfo="@this.SelectedSignInInfo" />
 </div>
 
 @code
@@ -368,4 +380,54 @@
     }
 
     private async void CloseConfirmation() => Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
+
+    private async Task onTestClick()
+    {
+        var allNodes = new List<Node>();
+        Tree.ExtractNodes(this.Children, allNodes);
+
+        var distinctNodes = new List<Node>();
+        // get distinct nodes
+        allNodes.ForEach(n =>
+        {
+            if (!distinctNodes.Any(dn => dn.id == n.id))
+                distinctNodes.Add(new Node() { id = n.id, tag = n.tag });
+        });
+
+        // get links
+        var links = new List<Graph.Link>();
+        Tree.ExtractLinks(this.Children, distinctNodes, links);
+
+        //var links = new Graph.Link[] {
+        //        new Graph.Link { source = 1, target = 0, type = "licensing" },
+        //        new Graph.Link { source = 2, target = 1, type = "resolved" },
+        //        new Graph.Link { source = 3, target = 1, type = "suit" }
+        //    };
+
+        await js.InvokeVoidAsync("displayGraph", distinctNodes, links);
+    }
+
+    private static void ExtractNodes(NeuronViewModel[] children, List<Node> allNodes)
+    {
+        allNodes.AddRange(children.Select(c => new Node { id = c.Neuron.Id, tag = c.Tag }).ToArray());
+
+        children.ToList().ForEach(c => Tree.ExtractNodes(c.Children, allNodes));
+    }
+
+    private static void ExtractLinks(NeuronViewModel[] children, List<Node> distinctNodes, List<Graph.Link> links)
+    {
+        children.ToList().ForEach(c =>
+        {
+            if (c.Neuron.Type != RelativeType.NotSet)
+            {
+                var tsource = distinctNodes.FindIndex(n => n.id == c.Neuron.Terminal.PresynapticNeuronId);
+                var ttarget = distinctNodes.FindIndex(n => n.id == c.Neuron.Terminal.PostsynapticNeuronId);
+
+                if (!links.Any(gl => gl.source == tsource && gl.target == ttarget))
+                    links.Add(new Graph.Link() { source = tsource, target = ttarget, type = "suit" /* licensing, resolved */ });
+            }
+        });
+
+        children.ToList().ForEach(c => Tree.ExtractLinks(c.Children, distinctNodes, links));
+    }
 }
