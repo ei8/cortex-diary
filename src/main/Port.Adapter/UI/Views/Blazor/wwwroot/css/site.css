@@ -166,6 +166,14 @@ app {
     display: flex;
 }
 
+.svgview {
+    border-style: solid;
+    border-width: thin;
+    border-color: lightgray;
+    width: 100% !important;
+    background-color: #f8f9fa !important;
+}
+
 @media (max-width: 767.98px) {
     html, body {
         height: 100vh;
@@ -196,6 +204,10 @@ app {
     .navbar {
         padding: .5rem 0rem;
     }
+
+    .svgview {
+        height: 250px;
+    }
 }
 
 @media (min-width: 768px) {
@@ -225,7 +237,7 @@ app {
 
     .main > div {
         padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
+        /*padding-right: 1.5rem !important;*/
     }
 
     .navbar-toggler {
@@ -235,6 +247,10 @@ app {
     .sidebar .collapse {
         /* Never collapse the sidebar for wide screens */
         display: block;
+    }
+
+    .svgview {
+        height: 100vh !important;
     }
 }
 

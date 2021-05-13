@@ -38,6 +38,9 @@
             <Blazorise.Icon Name="FontAwesomeIcons.Redo" />
         </button>
         <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
+        <button class="btn btn-light btn-sm rounded-circle" @onclick="this.LoadGraph" style="height:32px" title="Load Graph">
+            <Blazorise.Icon Name="FontAwesomeIcons.ProjectDiagram" />
+        </button>
         <Dropdown RightAligned="true" @ref="this.userDropdown">
             <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowUserMenu" title="Identities">
                 @if (this.SelectedSignInInfo.GivenName == SignInInfo.AnonymousGivenName)
@@ -113,19 +116,19 @@
         </Dropdown>
     </div>
 </div>
-<div class="content px-4">
-    <div class="container-fluid">
-        <div class="treecontent">
-            <div class="treecontent-item">
-                <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-CanShowControls="@this.CanShowControls" @bind-RenderDirection="@this.RenderDirection" />
-            </div>
-            <div class="treecontent-item">
-                <svg width="200" height="200" />
+<div class="content px-0">
+    <div class="treecontent">
+        <div class="treecontent-item content px-4">
+            <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-CanShowControls="@this.CanShowControls" @bind-RenderDirection="@this.RenderDirection" />
+        </div>
+        <div class="treecontent-item sticky-top" style="z-index:0">
+            <div class="sticky-top" style="z-index:0">
+                <svg class="svgview"/>
             </div>
         </div>
-        <button @onclick="@onTestClick">Load Graph</button>
     </div>
 </div>
+
 <div class="footer px-4 h-auto">
     <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" SelectedSignInInfo="@this.SelectedSignInInfo" />
 </div>
@@ -381,7 +384,7 @@
 
     private async void CloseConfirmation() => Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
 
-    private async Task onTestClick()
+    private async Task LoadGraph()
     {
         var allNodes = new List<Node>();
         Tree.ExtractNodes(this.Children, allNodes);
@@ -397,12 +400,6 @@
         // get links
         var links = new List<Graph.Link>();
         Tree.ExtractLinks(this.Children, distinctNodes, links);
-
-        //var links = new Graph.Link[] {
-        //        new Graph.Link { source = 1, target = 0, type = "licensing" },
-        //        new Graph.Link { source = 2, target = 1, type = "resolved" },
-        //        new Graph.Link { source = 3, target = 1, type = "suit" }
-        //    };
 
         await js.InvokeVoidAsync("displayGraph", distinctNodes, links);
     }
