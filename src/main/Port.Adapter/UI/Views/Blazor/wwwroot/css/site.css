@@ -260,16 +260,30 @@ app {
     stroke-width: 1.5px;
 }
 
-#licensing {
-    fill: green;
+#fullexcite {
+    fill: black;
 }
 
-.link.licensing {
-    stroke: green;
+.link.fullexcite {
+    stroke: black;
 }
 
-.link.resolved {
+.link.partialexcite {
     stroke-dasharray: 0,2 1;
+    stroke: black;
+}
+
+#fullinhibit {
+    fill: red;
+}
+
+.link.fullinhibit {
+    stroke: red;
+}
+
+.link.partialinhibit {
+    stroke-dasharray: 0,2 1;
+    stroke: red;
 }
 
 circle {

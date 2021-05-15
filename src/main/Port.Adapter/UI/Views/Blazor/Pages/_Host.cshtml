@@ -96,7 +96,7 @@
 
             // Per-type markers, as they don't inherit styles.
             svg.append("defs").selectAll("marker")
-                .data(["suit", "licensing", "resolved"])
+                .data(["fullexcite", "fullinhibit", "partialexcite", "partialinhibit"])
                 .enter().append("marker")
                 .attr("id", function (d) { return d; })
                 .attr("viewBox", "0 -5 10 10")
@@ -106,7 +106,8 @@
                 .attr("markerHeight", 6)
                 .attr("orient", "auto")
                 .append("path")
-                .attr("d", "M0,-5L10,0L0,5");
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("fill", function (d) { if (d.includes("inhibit")) { return "#f00"; } else { return "#000"; }});
 
             var path = svg.append("g").selectAll("path")
                 .data(force.links())
@@ -118,6 +119,7 @@
                 .data(force.nodes())
                 .enter().append("circle")
                 .attr("r", 6)
+                .on("dblclick", dblclick)
                 .call(drag);
 
             var text = svg.append("g").selectAll("text")
@@ -136,17 +138,17 @@
 
             function linkArc(d) {
 
-                var x0 = d.source.x;
-                var y0 = d.source.y;
-                var x1 = d.target.x;
-                var y1 = d.target.y;
-                var xcontrol = x1 * 0.5 + x0 * 0.5;
-                return ["M", x0, y0, "C", xcontrol, y0, xcontrol, y1, x1, y1].join(" ");
+                //var x0 = d.source.x;
+                //var y0 = d.source.y;
+                //var x1 = d.target.x;
+                //var y1 = d.target.y;
+                //var xcontrol = x1 * 0.5 + x0 * 0.5;
+                //return ["M", x0, y0, "C", xcontrol, y0, xcontrol, y1, x1, y1].join(" ");
 
-                //var dx = d.target.x - d.source.x,
-                //    dy = d.target.y - d.source.y,
-                //    dr = Math.sqrt(dx * dx + dy * dy);
-                //return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+                var dx = d.target.x - d.source.x,
+                    dy = d.target.y - d.source.y,
+                    dr = Math.sqrt(dx * dx + dy * dy);
+                return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
             }
 
             function transform(d) {
@@ -155,6 +157,10 @@
 
             function dragstart(d) {
                 d.fixed = true;
+            }
+
+            function dblclick(d) {
+                d.fixed = false;
             }
         }
     </script>

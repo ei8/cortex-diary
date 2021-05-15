@@ -24,10 +24,44 @@
                     }
                     <div class="row">
                         <div class="col-auto p-1" style="font-family:monospace" @onclick="child.Toggle">
-                            @child.GetIcon()
+                            @if (@child.GetIcon() == "+")
+                            {
+                                <span class="small text-secondary">&#x25B7;</span>
+                            }
+                            else
+                            {
+                                <span class="small text-secondary">&#x25E2;</span>
+                            }
+                            <span @attributes="GetAttributes(child)">
+                                @if (child.Neuron.Type != Library.Common.RelativeType.NotSet)
+                                {
+                                    if (child.Neuron.Terminal.Strength == "1")
+                                    {
+                                        @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
+                                        {
+                                            <span>&#x21FE;</span>
+                                        }
+                                        else
+                                        {
+                                            <span>&#x21FD;</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
+                                        {
+                                            <span>&#x290F;</span>
+                                        }
+                                        else
+                                        {
+                                            <span>&#x290E;</span>
+                                        }
+                                    }
+                                }
+                            </span>
                         </div>
                         <div class="col-auto p-1" @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)" style="border-radius:.40rem; background-color: #e6e6e6">
-                            @child.Tag
+                            @child.Tag                            
                             @if (child.AreControlsVisible && this.CanShowControls)
                             {
                                 <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemMenu(child)">...</button>
@@ -166,5 +200,14 @@
         var dict = new Dictionary<string, object>();
         if (this.IsRoot) dict.Add("style", "padding-left:3px");
         return dict;
+    }
+
+    private Dictionary<string, object> GetAttributes(NeuronViewModel child)
+    {
+        var dict = new Dictionary<string, object>();
+        if (child.Neuron.Terminal.Effect == "-1") 
+            dict.Add("style", "color:red");
+        return dict;
+
     }
 }
