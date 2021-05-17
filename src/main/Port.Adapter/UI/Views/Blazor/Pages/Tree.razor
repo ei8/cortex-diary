@@ -1,4 +1,5 @@
 ﻿@page "/tree"
+@implements IDisposable
 @using ei8.Cortex.Diary.Domain.Model
 @using ei8.Cortex.Diary.Port.Adapter.UI.Common
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
@@ -17,25 +18,29 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.WebUtilities
 @using IdentityServer4
+@using System.Timers 
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
 @inject ITerminalApplicationService terminalApplicationService
 @inject IToastService toastService
 @inject NavigationManager navigationManager
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime jsRuntime
 @inject ISettingsService SettingsService
 @inject IIdentityService IdentityService
 @inject ISignInInfoService signInInfoService
 @inject ITokenProvider TokenProvider
-@inject IJSRuntime js
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 <NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
 <div class="top-row px-4" style="padding-top:12px;z-index:1">
     <div class="details align-middle ">
-        <button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px" title="Reload">
+        <button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px;width:32px;" title="Reload">
             <Blazorise.Icon Name="FontAwesomeIcons.Redo" />
+            @if (this.NewItemsCount > 0)
+            {
+                <Badge Pill="true" Color="Color.Danger" style="top:-35px;left:8px;height:14px;font-size:0.6em">@(this.NewItemsCount)</Badge>
+            }
         </button>
         <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
         <button class="btn btn-light btn-sm rounded-circle" @onclick="this.LoadGraph" style="height:32px" title="Load Graph">
@@ -133,12 +138,15 @@
     <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" SelectedSignInInfo="@this.SelectedSignInInfo" />
 </div>
 
+<audio id="sound" src="/media/alert.wav" />
+
 @code
 {
     private bool reloading = false;
     private bool expandSubNavSettings;
     private Dropdown userDropdown;
     private Dropdown optionsDropdown;
+    private Timer refreshTimer;
 
     private async Task SignOutUser(SignInInfo value)
     {
@@ -223,6 +231,13 @@
                     this.StateHasChanged();
                 }
             }
+
+            this.refreshTimer = new Timer();
+            this.refreshTimer.Interval = 10000;
+            this.refreshTimer.Elapsed += OnTimerInterval;
+            this.refreshTimer.AutoReset = true;
+            // Start the timer
+            this.refreshTimer.Enabled = true;
         }
 
         if (this.RenderDirection == RenderDirectionValue.BottomToTop && this.reloading)
@@ -233,6 +248,42 @@
 
         await base.OnAfterRenderAsync(firstRender);
     }
+
+    private async void OnTimerInterval(object sender, ElapsedEventArgs e)
+    {
+        if (this.Children.Count() > 0)
+        {
+            try
+            {
+                // count items in query that are not currently displayed
+                var ns = (await this.neuronQueryService.SendQuery(
+                    this.AvatarUrl
+                    )).Neurons;
+                var tempCount = ns.Count(n => !this.Children.Any(nvm => nvm.Neuron.Id == n.Id));
+                if (tempCount != this.NewItemsCount)
+                {
+                    if (this.NewItemsCount == 0)
+                        await this.jsRuntime.InvokeAsync<string>("PlaySound");
+
+                    this.NewItemsCount = tempCount;
+                    await this.InvokeAsync(() => this.StateHasChanged());
+                }
+            }
+            catch (Exception ex)
+            {
+                this.toastService.ShowError(ex.ToString());
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        // During prerender, this component is rendered without calling OnAfterRender and then immediately disposed
+        // this mean timer will be null so we have to check for null or use the Null-conditional operator ? 
+        this.refreshTimer?.Dispose();
+    }
+
+    private int NewItemsCount { get; set; } = 0;
 
     public string IdServerUrl { get; set; }
 
@@ -311,7 +362,6 @@
         }
     }
 
-
     private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
             string.Format(format, this.SelectedNeuron.Tag) :
             "[Error: Not a valid Neuron]";
@@ -327,6 +377,7 @@
                 )).Neurons;
             ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.SelectedSignInInfo.AuthAccessToken, this.neuronQueryService)));
             this.Children = children.ToArray();
+            this.NewItemsCount = 0;
         }
         catch (Exception ex)
         {
@@ -339,7 +390,7 @@
         // https://github.com/WICG/scroll-to-text-fragment/
         if (!string.IsNullOrEmpty(elementId))
         {
-            await JSRuntime.InvokeVoidAsync("BlazorScrollToId", elementId);
+            await this.jsRuntime.InvokeVoidAsync("BlazorScrollToId", elementId);
         }
     }
 
@@ -401,7 +452,7 @@
         var links = new List<Graph.Link>();
         Tree.ExtractLinks(this.Children, distinctNodes, links);
 
-        await js.InvokeVoidAsync("displayGraph", distinctNodes, links);
+        await this.jsRuntime.InvokeVoidAsync("displayGraph", distinctNodes, links);
     }
 
     private static void ExtractNodes(NeuronViewModel[] children, List<Node> allNodes)
