@@ -229,6 +229,7 @@
                     this.AvatarUrl = decodedUrl;
                     await this.Reload();
                     this.StateHasChanged();
+                    await this.LoadGraph();
                 }
             }
 
