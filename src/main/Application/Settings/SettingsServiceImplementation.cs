@@ -38,6 +38,11 @@ namespace ei8.Cortex.Diary.Application.Settings
     {
         private Dictionary<string, object> dict = new Dictionary<string, object>();
 
+        public bool AddOrUpdateValue(string key, int value)
+        {
+            return this.AddOrUpdate(key, value);
+        }
+
         public bool AddOrUpdateValue(string key, bool value)
         {
             return this.AddOrUpdate(key, value);
@@ -65,6 +70,11 @@ namespace ei8.Cortex.Diary.Application.Settings
                 Debug.WriteLine(ex.ToString());
             }
             return result;
+        }
+
+        public int GetValueOrDefault(string key, int defaultValue)
+        {
+            return this.dict.ContainsKey(key) ? int.Parse(this.dict[key].ToString()) : defaultValue;
         }
 
         public bool GetValueOrDefault(string key, bool defaultValue)

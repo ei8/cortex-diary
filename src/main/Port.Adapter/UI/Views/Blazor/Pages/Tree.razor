@@ -25,10 +25,10 @@
 @inject IToastService toastService
 @inject NavigationManager navigationManager
 @inject IJSRuntime jsRuntime
-@inject ISettingsService SettingsService
-@inject IIdentityService IdentityService
+@inject ISettingsService settingsService
+@inject IIdentityService identityService
 @inject ISignInInfoService signInInfoService
-@inject ITokenProvider TokenProvider
+@inject ITokenProvider tokenProvider
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -94,7 +94,7 @@
                                     <span class="oi oi-list-rich" aria-hidden="true"></span> Log out (@context.User.Identity.Name)
                                 </button>
                                 <input name="__RequestVerificationToken" type="hidden"
-                                       value="@TokenProvider.XsrfToken">
+                                       value="@this.tokenProvider.XsrfToken">
                             </form>
                         </DropdownItem>
                     </Authorized>
@@ -150,7 +150,7 @@
 
     private async Task SignOutUser(SignInInfo value)
     {
-        var request = this.IdentityService.CreateLogoutRequest(value.AuthIdToken, value.IdentityServer.LogoutEndpoint);
+        var request = this.identityService.CreateLogoutRequest(value.AuthIdToken, value.IdentityServer.LogoutEndpoint);
         this.navigationManager.NavigateTo(request);
     }
 
@@ -161,9 +161,9 @@
             var sii = new SignInInfo();
             sii.IdentityServer.Url = this.IdServerUrl;
             this.signInInfoService.Add(sii);
-            this.SettingsService.ApplicationUrl = this.navigationManager.BaseUri.TrimEnd('/');
+            this.settingsService.ApplicationUrl = this.navigationManager.BaseUri.TrimEnd('/');
             // TODO: ((SettingsService)this.SettingsService).ClientId = "xamarin"; <---------------- check if clientid stays as d23 in line below
-            this.navigationManager.NavigateTo(IdentityService.CreateAuthorizationRequest(sii.IdentityServer.AuthorizeEndpoint)); // works if not using frames and is navigated to as another page
+            this.navigationManager.NavigateTo(this.identityService.CreateAuthorizationRequest(sii.IdentityServer.AuthorizeEndpoint)); // works if not using frames and is navigated to as another page
         }
         else
         {
@@ -202,7 +202,7 @@
 
     protected override void OnInitialized()
     {
-        this.Children = new NeuronViewModel[0];
+        this.Children = new List<NeuronViewModel>();
         this.SelectedSignInInfo = this.signInInfoService.SignIns.Single(si => si.IdentityServer.Url == string.Empty);
     }
 
@@ -234,7 +234,7 @@
             }
 
             this.refreshTimer = new Timer();
-            this.refreshTimer.Interval = 10000;
+            this.refreshTimer.Interval = this.settingsService.UpdateCheckInterval;
             this.refreshTimer.Elapsed += OnTimerInterval;
             this.refreshTimer.AutoReset = true;
             // Start the timer
@@ -256,17 +256,16 @@
         {
             try
             {
-                // count items in query that are not currently displayed
-                var ns = (await this.neuronQueryService.SendQuery(
-                    this.AvatarUrl
-                    )).Neurons;
-                var tempCount = ns.Count(n => !this.Children.Any(nvm => nvm.Neuron.Id == n.Id));
-                if (tempCount != this.NewItemsCount)
+                var ns = await Tree.GetOrderedNeurons(this);
+                var currentLastIndex = ns.ToList().FindLastIndex(nr => nr.Id == this.Children.Last().Neuron.Id);
+                var newNeurons = ns.Where((n, i) => i > currentLastIndex && !this.Children.Any(nvm => nvm.Neuron.Id == n.Id));
+                if (newNeurons.Count() > 0)
                 {
                     if (this.NewItemsCount == 0)
                         await this.jsRuntime.InvokeAsync<string>("PlaySound");
 
-                    this.NewItemsCount = tempCount;
+                    this.NewItemsCount += newNeurons.Count();
+                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.SelectedSignInInfo.AuthAccessToken, this.neuronQueryService)));
                     await this.InvokeAsync(() => this.StateHasChanged());
                 }
             }
@@ -284,6 +283,18 @@
         this.refreshTimer?.Dispose();
     }
 
+    private async static Task<IEnumerable<NeuronResult>> GetOrderedNeurons(Tree value)
+    {
+        var ns = (await value.neuronQueryService.SendQuery(
+                    value.AvatarUrl
+                    )).Neurons;
+
+        if (value.RenderDirection == RenderDirectionValue.BottomToTop)
+            ns = ns.Reverse().ToArray();
+
+        return ns;
+    }
+
     private int NewItemsCount { get; set; } = 0;
 
     public string IdServerUrl { get; set; }
@@ -292,7 +303,7 @@
     public string AvatarUrl { get; set; }
 
     [Parameter]
-    public NeuronViewModel[] Children { get; set; } = new NeuronViewModel[0];
+    public IList<NeuronViewModel> Children { get; set; } = new List<NeuronViewModel>();
 
     private bool IsConfirmVisible { get; set; } = false;
 
@@ -372,12 +383,11 @@
         try
         {
             this.reloading = true;
+            this.Children.Clear();
             var children = new List<NeuronViewModel>();
-            var ns = (await this.neuronQueryService.SendQuery(
-                this.AvatarUrl
-                )).Neurons;
+            var ns = await Tree.GetOrderedNeurons(this);
             ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.SelectedSignInInfo.AuthAccessToken, this.neuronQueryService)));
-            this.Children = children.ToArray();
+            ((List<NeuronViewModel>)this.Children).AddRange(children.ToArray());
             this.NewItemsCount = 0;
         }
         catch (Exception ex)
@@ -439,7 +449,7 @@
     private async Task LoadGraph()
     {
         var allNodes = new List<Node>();
-        Tree.ExtractNodes(this.Children, allNodes);
+        Tree.ExtractNodes(this.Children.ToArray(), allNodes);
 
         var distinctNodes = new List<Node>();
         // get distinct nodes
@@ -451,19 +461,19 @@
 
         // get links
         var links = new List<Graph.Link>();
-        Tree.ExtractLinks(this.Children, distinctNodes, links);
+        Tree.ExtractLinks(this.Children.ToArray(), distinctNodes, links);
 
         await this.jsRuntime.InvokeVoidAsync("displayGraph", distinctNodes, links);
     }
 
-    private static void ExtractNodes(NeuronViewModel[] children, List<Node> allNodes)
+    private static void ExtractNodes(IEnumerable<NeuronViewModel> children, List<Node> allNodes)
     {
         allNodes.AddRange(children.Select(c => new Node { id = c.Neuron.Id, tag = c.Tag }).ToArray());
 
         children.ToList().ForEach(c => Tree.ExtractNodes(c.Children, allNodes));
     }
 
-    private static void ExtractLinks(NeuronViewModel[] children, List<Node> distinctNodes, List<Graph.Link> links)
+    private static void ExtractLinks(IEnumerable<NeuronViewModel> children, List<Node> distinctNodes, List<Graph.Link> links)
     {
         children.ToList().ForEach(c =>
         {
@@ -478,6 +488,6 @@
             }
         });
 
-        children.ToList().ForEach(c => Tree.ExtractLinks(c.Children, distinctNodes, links));
+        children.ToList().ForEach(c => Tree.ExtractLinks(c.Children.ToArray(), distinctNodes, links));
     }
 }

@@ -22,10 +22,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
             this.avatarUrl = avatarUrl;
             this.bearerToken = bearerToken;
             this.neuronQueryService = neuronQueryService;
-            this.Children = new NeuronViewModel[0];
+            this.Children = new List<NeuronViewModel>();
         }
 
-        public NeuronViewModel[] Children { get; set; }
+        public IList<NeuronViewModel> Children { get; set; }
 
         public UINeuron Neuron { get; private set; }
 

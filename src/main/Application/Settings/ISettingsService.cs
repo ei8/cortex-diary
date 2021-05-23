@@ -36,6 +36,7 @@ namespace ei8.Cortex.Diary.Application.Settings
         string Longitude { get; set; }
         bool AllowGpsLocation { get; set; }
 
+        int UpdateCheckInterval { get; }
         string OidcAuthority { get; }
         string ClientId { get; }
         string ClientSecret { get; }

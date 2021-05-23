@@ -88,22 +88,8 @@
 </ul>
 
 @code {        
-    private NeuronViewModel[] children = new NeuronViewModel[0];
     [Parameter]
-    public NeuronViewModel[] Children
-    {
-        get => this.children;
-        set
-        {
-            if (this.children != value)
-            {
-                if (this.renderDirection == RenderDirectionValue.BottomToTop && value != null)
-                    this.children = value.Reverse().ToArray();
-                else
-                    this.children = value;
-            }
-        }
-    }
+    public IList<NeuronViewModel> Children { get; set; } = new List<NeuronViewModel>();
 
     [Parameter]
     public bool IsRoot { get; set; } = true;
