@@ -60,7 +60,7 @@
                                 }
                             </span>
                         </div>
-                        <div class="col-auto p-1" @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)" style="border-radius:.40rem; background-color: #e6e6e6">
+                        <div class="col-auto p-1" @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)" style="@this.GetStyleByCreationAuthor(child.Neuron.IsCurrentUserCreationAuthor)">
                             @child.Tag                            
                             @if (child.AreControlsVisible && this.CanShowControls)
                             {
@@ -156,6 +156,15 @@
             }
         }
     }
+    private string GetStyleByCreationAuthor(bool isCurrentUserCreationAuthor)
+    {
+        string result = "border-radius:.40rem; ";
+        if (isCurrentUserCreationAuthor)
+            result += "background-color: #2c87f0; color: #ffffff";
+        else
+            result += "background-color: #e6e6e6; ";
+        return result;
+    }
 
     private async void RequestItemMenu(NeuronViewModel neuronViewModel)
     {
@@ -191,7 +200,7 @@
     private Dictionary<string, object> GetAttributes(NeuronViewModel child)
     {
         var dict = new Dictionary<string, object>();
-        if (child.Neuron.Terminal.Effect == "-1") 
+        if (child.Neuron.Terminal.Effect == "-1")
             dict.Add("style", "color:red");
         return dict;
 
