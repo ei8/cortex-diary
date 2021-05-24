@@ -124,7 +124,7 @@
 <div class="content px-0">
     <div class="treecontent">
         <div class="treecontent-item content px-4">
-            <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-CanShowControls="@this.CanShowControls" @bind-RenderDirection="@this.RenderDirection" />
+            <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" @bind-RenderDirection="@this.RenderDirection" />
         </div>
         <div class="treecontent-item sticky-top" style="z-index:0">
             <div class="sticky-top" style="z-index:0">
@@ -327,7 +327,7 @@
                     case ContextMenuOption.New:
                         this.SelectedNeuron = null;
                         this.EditNeuron = null;
-                        this.CanShowControls = true;
+                        this.ControlsEnabled = true;
                         break;
                     case ContextMenuOption.Delete:
                         this.IsConfirmVisible = true;
@@ -335,7 +335,7 @@
                     case ContextMenuOption.Edit:
                     case ContextMenuOption.AddRelative:
                     case ContextMenuOption.LinkRelative:
-                        this.CanShowControls = false;
+                        this.ControlsEnabled = false;
                         this.EditNeuron = this.SelectedNeuron;
                         break;
                 }
@@ -343,7 +343,7 @@
         }
     }
 
-    private bool CanShowControls { get; set; } = true;
+    private bool ControlsEnabled { get; set; } = true;
 
     private NeuronViewModel SelectedNeuron { get; set; } = null;
 

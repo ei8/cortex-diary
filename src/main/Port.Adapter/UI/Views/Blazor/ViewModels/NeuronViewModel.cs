@@ -33,19 +33,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
         public bool IsExpanded { get; private set; }
 
-        public bool AreControlsVisible { get; private set; }
-
         public async Task Toggle()
         {
             this.IsExpanded = !this.IsExpanded;
 
             if (this.IsExpanded)
                 await this.OnReload();
-        }
-
-        public void ShowControls(bool visible)
-        {
-            this.AreControlsVisible = visible;
         }
 
         public string GetIcon()

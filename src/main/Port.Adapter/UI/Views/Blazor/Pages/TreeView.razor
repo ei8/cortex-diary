@@ -8,7 +8,7 @@
         @foreach (var child in Children)
         {
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
-            <li class="p-0 my-1" @onmouseout="() => child.ShowControls(false)" style="list-style-type: none;">
+            <li class="p-0 my-1" style="list-style-type: none;">
                 <div class="container m-0">
                     @if (currentAuthor != lastAuthor)
                     {
@@ -60,19 +60,16 @@
                                 }
                             </span>
                         </div>
-                        <div class="col-auto p-1" @onmouseover="() => child.ShowControls(true)" @onmouseout="() => child.ShowControls(false)" style="@this.GetStyleByCreationAuthor(child.Neuron.IsCurrentUserCreationAuthor)">
-                            @child.Tag                            
-                            @if (child.AreControlsVisible && this.CanShowControls)
-                            {
-                                <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemMenu(child)">...</button>
-                                <button style="height: 1rem; vertical-align: bottom; font-size:x-small;" @onclick="() => this.RequestItemInfo(child)">info</button>
-                            }
+                        <div class="treeitem col-auto p-1" style="@this.GetStyleByCreationAuthor(child.Neuron.IsCurrentUserCreationAuthor)">
+                            @child.Tag
+                            <button class="treeitembutton" style="height: 1rem; vertical-align: bottom; font-size:x-small;" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemMenu(child)">...</button>
+                            <button class="treeitembutton" style="height: 1rem; vertical-align: bottom; font-size:x-small;" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">info</button>
                         </div>
                     </div>
                     @if (child.IsExpanded)
                     {
                         <div class="row">
-                            <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-CanShowControls="@this.CanShowControls" IsRoot="false" />
+                            <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" IsRoot="false" />
                         </div>
                     }
                     @if (this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
@@ -140,22 +137,23 @@
     }
 
     [Parameter]
-    public EventCallback<bool> CanShowControlsChanged { get; set; }
+    public EventCallback<bool> ControlsEnabledChanged { get; set; }
 
-    private bool canShowControls;
+    private bool controlsEnabled;
     [Parameter]
-    public bool CanShowControls
+    public bool ControlsEnabled
     {
-        get => this.canShowControls;
+        get => this.controlsEnabled;
         set
         {
-            if (this.canShowControls != value)
+            if (this.controlsEnabled != value)
             {
-                this.canShowControls = value;
-                this.CanShowControlsChanged.InvokeAsync(this.canShowControls);
+                this.controlsEnabled = value;
+                this.ControlsEnabledChanged.InvokeAsync(this.controlsEnabled);
             }
         }
     }
+
     private string GetStyleByCreationAuthor(bool isCurrentUserCreationAuthor)
     {
         string result = "border-radius:.40rem; ";
@@ -168,14 +166,12 @@
 
     private async void RequestItemMenu(NeuronViewModel neuronViewModel)
     {
-        neuronViewModel.ShowControls(false);
         this.SelectedNeuron = neuronViewModel;
         this.MenuRequested();
     }
 
     private async void RequestItemInfo(NeuronViewModel neuronViewModel)
     {
-        neuronViewModel.ShowControls(false);
         this.SelectedNeuron = neuronViewModel;
         this.InfoRequested();
     }
