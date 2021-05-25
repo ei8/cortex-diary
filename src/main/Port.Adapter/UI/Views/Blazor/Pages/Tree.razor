@@ -26,7 +26,6 @@
 @inject IJSRuntime jsRuntime
 @inject ISettingsService settingsService
 @inject IIdentityService identityService
-@inject ISignInInfoService signInInfoService
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -78,7 +77,7 @@
 </div>
 
 <div class="footer px-4 h-auto">
-    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" SelectedSignInInfo="@this.SelectedSignInInfo" />
+    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
 </div>
 
 <audio id="sound" src="/media/alert.wav" />
@@ -89,29 +88,6 @@
     private bool expandSubNavSettings;
     private Dropdown optionsDropdown;
     private Timer refreshTimer;
-
-    private async Task SignOutUser(SignInInfo value)
-    {
-        var request = this.identityService.CreateLogoutRequest(value.AuthIdToken, value.IdentityServer.LogoutEndpoint);
-        this.navigationManager.NavigateTo(request);
-    }
-
-    private async Task LoadIdServer()
-    {
-        if (Uri.IsWellFormedUriString(this.IdServerUrl, UriKind.Absolute))
-        {
-            var sii = new SignInInfo();
-            sii.IdentityServer.Url = this.IdServerUrl;
-            this.signInInfoService.Add(sii);
-            this.settingsService.ApplicationUrl = this.navigationManager.BaseUri.TrimEnd('/');
-            // TODO: ((SettingsService)this.SettingsService).ClientId = "xamarin"; <---------------- check if clientid stays as d23 in line below
-            this.navigationManager.NavigateTo(this.identityService.CreateAuthorizationRequest(sii.IdentityServer.AuthorizeEndpoint)); // works if not using frames and is navigated to as another page
-        }
-        else
-        {
-            this.toastService.ShowError("Specified ID Server URL is invalid.");
-        }
-    }
 
     private void ShowOptionsMenu()
     {
@@ -136,7 +112,6 @@
     protected override void OnInitialized()
     {
         this.Children = new List<NeuronViewModel>();
-        this.SelectedSignInInfo = this.signInInfoService.SignIns.Single(si => si.IdentityServer.Url == string.Empty);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -198,7 +173,7 @@
                         await this.jsRuntime.InvokeAsync<string>("PlaySound");
 
                     this.NewItemsCount += newNeurons.Count();
-                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.SelectedSignInInfo.AuthAccessToken, this.neuronQueryService)));
+                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
                     await this.InvokeAsync(() => this.StateHasChanged());
                 }
             }
@@ -290,20 +265,6 @@
         }
     }
 
-    private SignInInfo selectedSignInInfo;
-
-    public SignInInfo SelectedSignInInfo
-    {
-        get { return selectedSignInInfo; }
-        set
-        {
-            if (this.selectedSignInInfo != value)
-            {
-                this.selectedSignInInfo = value;
-            }
-        }
-    }
-
     private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
             string.Format(format, this.SelectedNeuron.Tag) :
             "[Error: Not a valid Neuron]";
@@ -316,7 +277,7 @@
             this.Children.Clear();
             var children = new List<NeuronViewModel>();
             var ns = await Tree.GetOrderedNeurons(this);
-            ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.SelectedSignInInfo.AuthAccessToken, this.neuronQueryService)));
+            ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
             ((List<NeuronViewModel>)this.Children).AddRange(children.ToArray());
             this.NewItemsCount = 0;
         }

@@ -107,16 +107,13 @@
     }
         
     [Parameter]
-    public SignInInfo SelectedSignInInfo { get; set; }
-    
-    [Parameter]
     public EventCallback<NeuronViewModel> SelectedNeuronChanged { get; set; }
 
     private async Task Load()
     {
         var children = new List<NeuronViewModel>();
         var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
-        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.SelectedSignInInfo.AuthAccessToken, this.NeuronQueryService)));
+        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.NeuronQueryService)));
         this.Children = children.ToArray();
     }
 

@@ -84,16 +84,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<INeuronQueryClient, HttpNeuronQueryClient>();
             services.AddScoped<INeuronQueryService, NeuronQueryService>();
             
-            services.AddScoped<ISignInInfoService, SignInInfoService>((sp) =>
-            {
-                var siis = new SignInInfoService();
-                var anonymousSignIn = new SignInInfo();
-                anonymousSignIn.GivenName = "Anonymous";
-                anonymousSignIn.FamilyName = "User";
-                siis.Add(anonymousSignIn);
-                return siis;
-            });
-
             var sp = services.BuildServiceProvider();
 
             services.AddAuthentication(options =>

@@ -124,14 +124,11 @@
         </div>
     </EditForm>
 </div>
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" SelectedSignInInfo="@this.SelectedSignInInfo" />
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" SelectedSignInInfo="@this.SelectedSignInInfo" />
+<NeuronSearchBox @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
+<NeuronSearchBox @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" />
 
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
-
-    [Parameter]
-    public SignInInfo SelectedSignInInfo { get; set; }
 
     [Parameter]
     public string AvatarUrl { get; set; }
@@ -275,9 +272,9 @@
                         break;
                     case ContextMenuOption.Edit:
                         await this.neuronApplicationService.ChangeNeuronTag(
-                            result.AvatarUrl, 
-                            this.editorNeuronViewModel.Id, 
-                            this.editorNeuronViewModel.Tag, 
+                            result.AvatarUrl,
+                            this.editorNeuronViewModel.Id,
+                            this.editorNeuronViewModel.Tag,
                             this.editorNeuronViewModel.Version
                             );
                         description = "Neuron saved";
