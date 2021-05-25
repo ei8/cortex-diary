@@ -1,4 +1,8 @@
-﻿<div class="pl-3 pr-2 navbar navbar-dark" style="background-color:rgba(0,0,0,0.4)">
+﻿@using ei8.Cortex.Diary.Domain.Model
+
+@inject ITokenProvider tokenProvider
+
+<div class="pl-3 pr-2 navbar navbar-dark" style="background-color:rgba(0,0,0,0.4)">
     <a class="navbar-brand" href="">d# neurUL Studio</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -16,6 +20,23 @@
             <NavLink class="nav-link" href="tree">
                 <span class="oi oi-fork" aria-hidden="true"></span> Tree
             </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <AuthorizeView>
+                <NotAuthorized>
+                    <NavLink class="nav-link" href="/loginidp">
+                        <span class="oi oi-person" aria-hidden="true"></span> Sign In (Guest)
+                    </NavLink>
+                </NotAuthorized>
+                <Authorized>
+                    <form action="/logoutidp" method="post" id="ff">
+                        <NavLink class="nav-link" href="#" onclick="frmsubmit('ff');">
+                            <span class="oi oi-person" aria-hidden="true"></span> Sign out (@context.User.Identity.Name.Truncate(5))
+                        </NavLink>
+                        <input name="__RequestVerificationToken" type="hidden" value="@this.tokenProvider.XsrfToken">
+                    </form>
+                </Authorized>
+            </AuthorizeView>
         </li>
     </ul>
 </div>

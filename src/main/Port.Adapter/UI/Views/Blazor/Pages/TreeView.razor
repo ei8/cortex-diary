@@ -9,75 +9,79 @@
         {
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
             <li class="p-0 my-1" style="list-style-type: none;">
-                <div class="container m-0">
-                    @if (currentAuthor != lastAuthor)
-                    {
-                        lastAuthor = currentAuthor;
-                        <div class="row">
-                            <div class="col-auto p-1" />
-                            <div class="col-auto pl-2">                            
-                                <small style="font-size:x-small">
-                                    @lastAuthor
-                                </small>                            
-                            </div>
-                        </div>
-                    }
+                <div class="container m-0" style="@this.GetJustifyStyle(child)">
                     <div class="row">
-                        <div class="col-auto p-1" style="font-family:monospace" @onclick="child.Toggle">
-                            @if (@child.GetIcon() == "+")
+                        <div class="container m-0">
+                            @if (currentAuthor != lastAuthor)
                             {
-                                <span class="small text-secondary">&#x25B7;</span>
+                                lastAuthor = currentAuthor;
+                                <div class="row">
+                                    <div class="col-auto p-1" />
+                                    <div class="col-auto">
+                                        <small style="font-size:x-small">
+                                            @lastAuthor
+                                        </small>
+                                    </div>
+                                </div>
                             }
-                            else
-                            {
-                                <span class="small text-secondary">&#x25E2;</span>
-                            }
-                            <span @attributes="GetAttributes(child)">
-                                @if (child.Neuron.Type != Library.Common.RelativeType.NotSet)
-                                {
-                                    if (child.Neuron.Terminal.Strength == "1")
+                            <div class="row">
+                                <div class="col-auto p-1" style="font-family:monospace" @onclick="child.Toggle">
+                                    @if (@child.GetIcon() == "+")
                                     {
-                                        @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
-                                        {
-                                            <span>&#x21FE;</span>
-                                        }
-                                        else
-                                        {
-                                            <span>&#x21FD;</span>
-                                        }
+                                        <span class="small text-secondary">&#x25B7;</span>
                                     }
                                     else
                                     {
-                                        @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
-                                        {
-                                            <span>&#x290F;</span>
-                                        }
-                                        else
-                                        {
-                                            <span>&#x290E;</span>
-                                        }
+                                        <span class="small text-secondary">&#x25E2;</span>
                                     }
-                                }
-                            </span>
-                        </div>
-                        <div class="treeitem col-auto p-1" style="@this.GetStyleByCreationAuthor(child.Neuron.IsCurrentUserCreationAuthor)">
-                            @child.Tag
-                            <button class="treeitembutton" style="height: 1rem; vertical-align: bottom; font-size:x-small;" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemMenu(child)">...</button>
-                            <button class="treeitembutton" style="height: 1rem; vertical-align: bottom; font-size:x-small;" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">info</button>
+                                    <span @attributes="GetAttributes(child)">
+                                        @if (child.Neuron.Type != Library.Common.RelativeType.NotSet)
+                                        {
+                                            if (child.Neuron.Terminal.Strength == "1")
+                                            {
+                                                @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
+                                                {
+                                                    <span>&#x21FE;</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>&#x21FD;</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
+                                                {
+                                                    <span>&#x290F;</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>&#x290E;</span>
+                                                }
+                                            }
+                                        }
+                                    </span>
+                                </div>
+                                <div class="treeitem col-auto p-1" style="@this.GetStyleByCreationAuthor(child.Neuron.IsCurrentUserCreationAuthor)">
+                                    @child.Tag
+                                    <button class="treeitembutton" style="height: 1rem; vertical-align: bottom; font-size:x-small;" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemMenu(child)">...</button>
+                                    <button class="treeitembutton" style="height: 1rem; vertical-align: bottom; font-size:x-small;" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">info</button>
+                                </div>
+                            </div>
+                            @if (child.IsExpanded)
+                            {
+                                <div class="row">
+                                    <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" IsRoot="false" />
+                                </div>
+                            }
+                            @if (this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
+                            {
+                                <div class="row">
+                                    <h1 id="bottom" />
+                                </div>
+                            }
                         </div>
                     </div>
-                    @if (child.IsExpanded)
-                    {
-                        <div class="row">
-                            <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" IsRoot="false" />
-                        </div>
-                    }
-                    @if (this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
-                    {
-                        <div class="row">
-                            <h1 id="bottom" />
-                        </div>
-                    }
                 </div>
             </li>
         }
@@ -152,6 +156,13 @@
                 this.ControlsEnabledChanged.InvokeAsync(this.controlsEnabled);
             }
         }
+    }
+
+    private string GetJustifyStyle(NeuronViewModel child)
+    {
+        return child.Neuron.IsCurrentUserCreationAuthor && child.Neuron.Type == Library.Common.RelativeType.NotSet ? 
+            "display: flex; justify-content: flex-end;" : 
+            "";
     }
 
     private string GetStyleByCreationAuthor(bool isCurrentUserCreationAuthor)

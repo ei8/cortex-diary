@@ -75,6 +75,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             }
         }
 
+        public static string Truncate(this string value, int maxChars)
+        {
+            return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "...";
+        }
+
         // TODO: internal async static Task<bool> ChangeNeuronTag(string tag, INeuronApplicationService neuronApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, int expectedVersion, string bearerToken)
         //{
         //    bool result = false;

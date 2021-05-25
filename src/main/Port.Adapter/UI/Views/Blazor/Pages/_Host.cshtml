@@ -66,11 +66,15 @@
     <app>
         <component type="typeof(App)" render-mode="ServerPrerendered" param-InitialState="initialTokenState" />
     </app>
-
+           
     <script src="_framework/blazor.server.js"></script>
     <script src="JsInterop.js"></script>
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
+
+        function frmsubmit(form) {
+            document.getElementById(form).submit();
+        }
 
         function displayGraph(nodes, links) {
             var width = 500,

@@ -6,7 +6,7 @@ namespace ei8.Cortex.Diary.Domain.Model
 {
     public class SignInInfo
     {
-        public const string AnonymousGivenName = "Anonymous";
+        public const string AnonymousGivenName = "Guest";
 
         public SignInInfo()
         {
