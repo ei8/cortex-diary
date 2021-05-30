@@ -1,4 +1,5 @@
-﻿@using ei8.Cortex.Diary.Application.Neurons;
+﻿@using Blazorise.Icons.FontAwesome;
+@using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 
 <ul @attributes="SetRootStyle()">
@@ -12,7 +13,7 @@
                 <div class="container m-0" style="@this.GetJustifyStyle(child)">
                     <div class="row">
                         <div class="container m-0">
-                            @if (currentAuthor != lastAuthor)
+                            @if (currentAuthor != lastAuthor && !this.ShouldRightJustifyBasedOnRoot(child))
                             {
                                 lastAuthor = currentAuthor;
                                 <div class="row">
@@ -24,54 +25,73 @@
                                     </div>
                                 </div>
                             }
-                            <div class="row">
-                                <div class="col-auto p-1" style="font-family:monospace" @onclick="child.Toggle">
-                                    @if (@child.GetIcon() == "+")
-                                    {
+                            <div class="treeitem row">
+                                @if (this.ShouldRightJustifyBasedOnRoot(child))
+                                {
+                                    <button class="treeitembutton btn btn-light btn-xs ml-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemMenu(child)">
+                                        <Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" />
+                                    </button>
+                                    <button class="treeitembutton btn btn-light btn-xs ml-1 mr-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
+                                        <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
+                                    </button>
+                                }                                
+                                @if (@child.GetIcon() == "+")
+                                {
+                                    <button class="btn btn-light btn-xs rounded-circle" style="background-color: white; border-color: white" @onclick="child.Toggle">
                                         <span class="small text-secondary">&#x25B7;</span>
-                                    }
-                                    else
-                                    {
+                                    </button>                                        
+                                }
+                                else
+                                {
+                                    <button class="btn btn-light btn-xs rounded-circle" style="background-color: white; border-color: white" @onclick="child.Toggle">
                                         <span class="small text-secondary">&#x25E2;</span>
-                                    }
-                                    <span @attributes="GetAttributes(child)">
-                                        @if (child.Neuron.Type != Library.Common.RelativeType.NotSet)
+                                    </button>
+                                }
+                                <div class="col-auto p-0 align-self-center" @attributes="GetAttributes(child)">
+                                    @if (child.Neuron.Type != Library.Common.RelativeType.NotSet)
+                                    {
+                                        if (child.Neuron.Terminal.Strength == "1")
                                         {
-                                            if (child.Neuron.Terminal.Strength == "1")
+                                            @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
                                             {
-                                                @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
-                                                {
-                                                    <span>&#x21FE;</span>
-                                                }
-                                                else
-                                                {
-                                                    <span>&#x21FD;</span>
-                                                }
+                                                <span>&#x21FE;</span>
                                             }
                                             else
                                             {
-                                                @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
-                                                {
-                                                    <span>&#x290F;</span>
-                                                }
-                                                else
-                                                {
-                                                    <span>&#x290E;</span>
-                                                }
+                                                <span>&#x21FD;</span>
                                             }
                                         }
-                                    </span>
+                                        else
+                                        {
+                                            @if (child.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
+                                            {
+                                                <span>&#x290F;</span>
+                                            }
+                                            else
+                                            {
+                                                <span>&#x290E;</span>
+                                            }
+                                        }
+                                    }
                                 </div>
-                                <div class="treeitem col-auto p-1" style="@this.GetStyleByCreationAuthor(child.Neuron.IsCurrentUserCreationAuthor)">
+                                <div class="col-auto p-1" style="@this.GetStyleByCreationAuthor(child.Neuron.IsCurrentUserCreationAuthor)">
                                     @child.Tag
-                                    <button class="treeitembutton" style="height: 1rem; vertical-align: bottom; font-size:x-small;" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemMenu(child)">...</button>
-                                    <button class="treeitembutton" style="height: 1rem; vertical-align: bottom; font-size:x-small;" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">info</button>
                                 </div>
+                                @if (!this.ShouldRightJustifyBasedOnRoot(child))
+                                {
+                                    <button class="treeitembutton btn btn-light btn-xs ml-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
+                                        <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
+                                    </button>
+                                    <button class="treeitembutton btn btn-light btn-xs ml-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemMenu(child)">
+                                        <Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" />
+                                    </button>
+                                }
                             </div>
                             @if (child.IsExpanded)
                             {
                                 <div class="row">
-                                    <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" IsRoot="false" />
+                                    <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested"
+                                              OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" IsRoot="false" IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" />
                                 </div>
                             }
                             @if (this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
@@ -88,12 +108,15 @@
     }
 </ul>
 
-@code {        
+@code {
     [Parameter]
     public IList<NeuronViewModel> Children { get; set; } = new List<NeuronViewModel>();
 
     [Parameter]
     public bool IsRoot { get; set; } = true;
+
+    [Parameter]
+    public bool IsRootRightJustified { get; set; } = false;
 
     [Parameter]
     public string AvatarUrl { get; set; }
@@ -158,10 +181,20 @@
         }
     }
 
+    private bool ShouldRightJustify(NeuronViewModel child)
+    {
+        return child.Neuron.IsCurrentUserCreationAuthor && child.Neuron.Type == Library.Common.RelativeType.NotSet;
+    }
+
+    private bool ShouldRightJustifyBasedOnRoot(NeuronViewModel child)
+    {
+        return this.ShouldRightJustify(child) || this.IsRootRightJustified;
+    }
+
     private string GetJustifyStyle(NeuronViewModel child)
     {
-        return child.Neuron.IsCurrentUserCreationAuthor && child.Neuron.Type == Library.Common.RelativeType.NotSet ? 
-            "display: flex; justify-content: flex-end;" : 
+        return this.ShouldRightJustify(child) ?
+            "display: flex; justify-content: flex-end;" :
             "";
     }
 

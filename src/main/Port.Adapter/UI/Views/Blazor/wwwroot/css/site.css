@@ -167,7 +167,7 @@ app {
 }
 
 .svgview {
-    border-style: solid;
+    border-style: none;
     border-width: thin;
     border-color: lightgray;
     width: 100% !important;
@@ -206,6 +206,7 @@ app {
     }
 
     .svgview {
+        border-bottom-style: solid;
         height: 250px;
     }
 }
@@ -250,6 +251,7 @@ app {
     }
 
     .svgview {
+        border-left-style: solid;
         height: 100vh !important;
     }
 }
@@ -301,9 +303,16 @@ text {
 .treeitem{}
 
 .treeitembutton{
-    display: none;
+    visibility: hidden;
 }
 
 .treeitem:hover .treeitembutton {
-    display: inline;
+    visibility: visible;
+}
+
+.btn-group-xs > .btn, .btn-xs {
+    padding: .25rem .4rem;
+    font-size: .875rem;
+    line-height: .5;
+    border-radius: .2rem;
 }
