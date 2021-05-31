@@ -17,7 +17,7 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.WebUtilities
 @using IdentityServer4
-@using System.Timers 
+@using System.Timers
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
 @inject ITerminalApplicationService terminalApplicationService
@@ -63,19 +63,29 @@
         </Dropdown>
     </div>
 </div>
-<div class="content px-0">
-    <div class="treecontent">
-        <div class="treecontent-item content px-lg-4 px-3">
-            <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" @bind-RenderDirection="@this.RenderDirection" />
+@if (this.reloading)
+{
+    <div class="d-flex justify-content-center vh-100" style="padding-top: 300px">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
-        <div class="treecontent-item sticky-top" style="z-index:0">
-            <div class="sticky-top" style="z-index:0">
-                <svg class="svgview"/>
+    </div>
+}
+else
+{
+    <div class="content px-0">
+        <div class="treecontent">
+            <div class="treecontent-item content px-lg-4 px-3">
+                <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" @bind-RenderDirection="@this.RenderDirection" />
+            </div>
+            <div class="treecontent-item sticky-top" style="z-index:0">
+                <div class="sticky-top" style="z-index:0">
+                    <svg class="svgview" />
+                </div>
             </div>
         </div>
     </div>
-</div>
-
+}
 <div class="footer px-4 h-auto">
     <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
 </div>
@@ -118,6 +128,7 @@
     {
         if (firstRender)
         {
+
             var uri = this.navigationManager.ToAbsoluteUri(this.navigationManager.Uri);
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("direction", out var directionValue) &&
                 Enum.TryParse<RenderDirectionValue>(directionValue, out RenderDirectionValue directionEnum)
@@ -134,10 +145,11 @@
                     && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
                 if (validUrl)
                 {
-                    this.AvatarUrl = decodedUrl;
-                    await this.Reload();
-                    this.StateHasChanged();
-                    await this.LoadGraph();
+                    await Task.Run(() =>
+                    {
+                        this.AvatarUrl = decodedUrl;
+                        this.Reload();
+                    });
                 }
             }
 
@@ -147,12 +159,6 @@
             this.refreshTimer.AutoReset = true;
             // Start the timer
             this.refreshTimer.Enabled = true;
-        }
-
-        if (this.RenderDirection == RenderDirectionValue.BottomToTop && this.reloading)
-        {
-            await this.ScrollToFragment("bottom");
-            this.reloading = false;
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -187,7 +193,7 @@
     public void Dispose()
     {
         // During prerender, this component is rendered without calling OnAfterRender and then immediately disposed
-        // this mean timer will be null so we have to check for null or use the Null-conditional operator ? 
+        // this mean timer will be null so we have to check for null or use the Null-conditional operator ?
         this.refreshTimer?.Dispose();
     }
 
@@ -273,18 +279,29 @@
     {
         try
         {
-            this.reloading = true;
+            await this.SetReloading(true);
             this.Children.Clear();
             var children = new List<NeuronViewModel>();
             var ns = await Tree.GetOrderedNeurons(this);
             ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
             ((List<NeuronViewModel>)this.Children).AddRange(children.ToArray());
             this.NewItemsCount = 0;
+            await this.SetReloading(false);
+            await this.LoadGraph();
+
+            if (this.RenderDirection == RenderDirectionValue.BottomToTop)
+                await this.ScrollToFragment("bottom");
         }
         catch (Exception ex)
         {
             this.toastService.ShowError(ex.Message);
         }
+    }
+
+    private async Task SetReloading(bool value)
+    {
+        this.reloading = value;
+        await this.InvokeAsync(() => this.StateHasChanged());
     }
 
     private async Task ScrollToFragment(string elementId)
