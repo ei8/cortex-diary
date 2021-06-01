@@ -29,38 +29,25 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
         public string Tag { get; private set; }
 
-        public bool IsExpanded { get; private set; }
+        public ExpansionState ExpansionState { get; private set; }
 
         public async Task Toggle()
         {
-            this.IsExpanded = !this.IsExpanded;
+            this.ExpansionState = this.ExpansionState == ExpansionState.Collapsed ? ExpansionState.Expanding : ExpansionState.Collapsed;
 
-            if (this.IsExpanded)
-                await this.OnReload();
-        }
-
-        public string GetIcon()
-        {
-            if (this.IsExpanded)
+            if (this.ExpansionState == ExpansionState.Expanding)
             {
-                return "-";
-            }
-
-            return "+";
-        }
-
-        public async Task OnReload()
-        {
-            this.IsExpanded = true;
-            var children = new List<NeuronViewModel>();
-            if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
-            {
-                (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
-                    .Neurons
-                    .ToList().ForEach(n =>
-                    children.Add(new NeuronViewModel(new UINeuron(n), this.avatarUrl, this.neuronQueryService))
-                );
-                this.Children = children.ToArray();
+                var children = new List<NeuronViewModel>();
+                if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
+                {
+                    (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
+                        .Neurons
+                        .ToList().ForEach(n =>
+                        children.Add(new NeuronViewModel(new UINeuron(n), this.avatarUrl, this.neuronQueryService))
+                    );
+                    this.Children = children.ToArray();
+                }
+                this.ExpansionState = ExpansionState.Expanded;
             }
         }
     }

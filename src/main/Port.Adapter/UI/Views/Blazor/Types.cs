@@ -20,4 +20,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         TopToBottom,
         BottomToTop
     }
+
+    public enum ExpansionState
+    {
+        Collapsed,
+        Expanding,
+        Expanded
+    }
 }

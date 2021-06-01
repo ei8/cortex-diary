@@ -34,18 +34,24 @@
                                     <button class="treeitembutton btn btn-light btn-xs ml-1 mr-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
                                         <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
                                     </button>
-                                }                                
-                                @if (@child.GetIcon() == "+")
+                                }
+                                @if (@child.ExpansionState == ExpansionState.Collapsed)
                                 {
                                     <button class="btn btn-light btn-xs rounded-circle" style="background-color: white; border-color: white" @onclick="child.Toggle">
                                         <span class="small text-secondary">&#x25B7;</span>
-                                    </button>                                        
+                                    </button>
                                 }
-                                else
+                                else if (@child.ExpansionState == ExpansionState.Expanded)
                                 {
                                     <button class="btn btn-light btn-xs rounded-circle" style="background-color: white; border-color: white" @onclick="child.Toggle">
                                         <span class="small text-secondary">&#x25E2;</span>
                                     </button>
+                                }
+                                else
+                                {
+                                    <div class="spinner-border spinner-border-sm m-1" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
                                 }
                                 <div class="col-auto p-0 align-self-center" @attributes="GetAttributes(child)">
                                     @if (child.Neuron.Type != Library.Common.RelativeType.NotSet)
@@ -87,11 +93,11 @@
                                     </button>
                                 }
                             </div>
-                            @if (child.IsExpanded)
+                            @if (child.ExpansionState == ExpansionState.Expanded)
                             {
                                 <div class="row">
                                     <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested"
-                                              OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" IsRoot="false" IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" />
+                                                OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" IsRoot="false" IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" />
                                 </div>
                             }
                             @if (this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
