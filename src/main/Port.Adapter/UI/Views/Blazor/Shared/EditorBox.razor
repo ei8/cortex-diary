@@ -116,7 +116,16 @@
                     </div>
                     <div class="row h-50 align-items-end justify-content-end">
                         <div class="col p-0">
-                            <input type="submit" class="btn btn-primary btn-sm" style="width:80px" value="Send" />
+                            <button type="submit" class="btn btn-primary btn-sm" style="width:80px" disabled="@(this.sending)">
+                                @if (this.sending)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                }
+                                else
+                                {
+                                    @((MarkupString)"Send")
+                                }
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -129,6 +138,7 @@
 
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
+    private bool sending = false;
 
     [Parameter]
     public string AvatarUrl { get; set; }
@@ -254,11 +264,12 @@
     private async Task FormSubmitted(EditContext editContext)
     {
         bool formValid = editContext.Validate();
-        if (formValid && QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result))
+        if (formValid && QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result) && !this.sending)
         {
             string description = string.Empty;
             try
             {
+                this.sending = true;
                 switch (this.SelectedOption)
                 {
                     case ContextMenuOption.New:
@@ -311,6 +322,10 @@
             catch (Exception ex)
             {
                 this.toastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                this.sending = false;
             }
 
             Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
