@@ -72,6 +72,15 @@
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
 
+        function copyToClipboard(text) {
+            var input = document.body.appendChild(document.createElement("input"));
+            input.value = text;
+            input.focus();
+            input.select();
+            document.execCommand('copy');
+            input.parentNode.removeChild(input);
+        }
+
         function frmsubmit(form) {
             document.getElementById(form).submit();
         }
@@ -142,17 +151,17 @@
 
             function linkArc(d) {
 
-                //var x0 = d.source.x;
-                //var y0 = d.source.y;
-                //var x1 = d.target.x;
-                //var y1 = d.target.y;
-                //var xcontrol = x1 * 0.5 + x0 * 0.5;
-                //return ["M", x0, y0, "C", xcontrol, y0, xcontrol, y1, x1, y1].join(" ");
+                var x0 = d.source.x;
+                var y0 = d.source.y;
+                var x1 = d.target.x;
+                var y1 = d.target.y;
+                var xcontrol = x1 * 0.5 + x0 * 0.5;
+                return ["M", x0, y0, "C", xcontrol, y0, xcontrol, y1, x1, y1].join(" ");
 
-                var dx = d.target.x - d.source.x,
-                    dy = d.target.y - d.source.y,
-                    dr = Math.sqrt(dx * dx + dy * dy);
-                return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+                //var dx = d.target.x - d.source.x,
+                //    dy = d.target.y - d.source.y,
+                //    dr = Math.sqrt(dx * dx + dy * dy);
+                //return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
             }
 
             function transform(d) {

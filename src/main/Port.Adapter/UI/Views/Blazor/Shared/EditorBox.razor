@@ -6,6 +6,7 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using ei8.Cortex.Diary.Domain.Model;
 @using neurUL.Cortex.Common;
+@using neurUL.Common.Http;
 @using Blazored.FluentValidation;
 @inject INeuronApplicationService neuronApplicationService;
 @inject ITerminalApplicationService terminalApplicationService;
@@ -318,6 +319,37 @@
                         break;
                 }
                 this.toastService.ShowSuccess($"{description} successfully.");
+            }
+            catch (HttpRequestExceptionEx hex)
+            {
+                this.toastService.ShowError(
+                    new RenderFragment(builder => {
+                        builder.AddContent(1, $"An error occurred while processing the '{this.selectedOption.ToString()}' request:");
+                        builder.OpenElement(2, "br");
+                        builder.CloseElement();
+                        builder.OpenElement(3, "br");
+                        builder.CloseElement();
+
+                        var m = System.Text.RegularExpressions.Regex.Match(hex.Message, @"Description\"":\""(?<Description>(?!\"",\""Type\"").*)\"",\""Type\""");
+                        int x = 4;
+                        if (m.Success)
+                        {
+                            builder.OpenElement(x++, "i");
+                            builder.AddContent(x++, m.Groups["Description"].Value);
+                            builder.CloseElement();
+                            builder.OpenElement(x++, "br");
+                            builder.CloseElement();
+                            builder.OpenElement(x++, "br");
+                            builder.CloseElement();
+                        }
+
+                        builder.OpenElement(x++, "button");
+                        builder.AddAttribute(x++, "onclick", $"copyToClipboard('{System.Text.Json.JsonEncodedText.Encode(hex.Message)}');");
+                        builder.AddContent(x++, "Copy to clipboard");
+                        builder.CloseElement();
+                    }
+                    )
+                    );
             }
             catch (Exception ex)
             {
