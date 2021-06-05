@@ -21,17 +21,18 @@
                 <span class="oi oi-fork" aria-hidden="true"></span> Tree
             </NavLink>
         </li>
-        <li class="nav-item px-3">
+        <li class="nav-item nav-item-bottom px-3">
             <AuthorizeView>
                 <NotAuthorized>
                     <NavLink class="nav-link" href="/loginidp">
-                        <span class="oi oi-person" aria-hidden="true"></span> Sign In (Guest)
+                        <span class="oi oi-account-login" aria-hidden="true"></span> Sign in
                     </NavLink>
                 </NotAuthorized>
                 <Authorized>
                     <form action="/logoutidp" method="post" id="ff">
                         <NavLink class="nav-link" href="#" onclick="frmsubmit('ff');">
-                            <span class="oi oi-person" aria-hidden="true"></span> Sign out (@context.User.Identity.Name.Truncate(5))
+                            <span class="oi oi-account-logout" aria-hidden="true"></span> @context.User.Identity.Name.Truncate(15)
+                            <span style="padding-left: 5px; font-size: smaller; font-style: italic">(Sign out)</span>
                         </NavLink>
                         <input name="__RequestVerificationToken" type="hidden" value="@this.tokenProvider.XsrfToken">
                     </form>
