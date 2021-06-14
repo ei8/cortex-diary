@@ -109,7 +109,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 options.SignedOutCallbackPath = "/Account/LogoutCallback";
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
-                options.TokenValidationParameters.NameClaimType = "given_name";
+                options.TokenValidationParameters.NameClaimType = "name";
                 // TODO: REMOVE ONCE CERTIFICATE SORTED
                 HttpClientHandler handler = new HttpClientHandler();
                 handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;

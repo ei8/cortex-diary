@@ -10,7 +10,7 @@ WORKDIR /src
 COPY *.sln ./
 COPY . .
 WORKDIR /src/main/Port.Adapter/UI/Views/Blazor
-RUN dotnet build -c Release -o /app
+RUN dotnet build -c Release -o /app --disable-parallel
 
 FROM build AS publish
 RUN dotnet publish -c Release -o /app/publish /property:PublishWithAspNetCoreTargetManifest=false

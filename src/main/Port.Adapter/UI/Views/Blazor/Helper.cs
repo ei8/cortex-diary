@@ -1,7 +1,10 @@
-﻿using ei8.Cortex.Diary.Application.Neurons;
+﻿using Blazored.Toast.Services;
+using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Application.Notifications;
 using ei8.Cortex.Diary.Port.Adapter.UI.Common;
 using ei8.Cortex.Library.Common;
+using Microsoft.AspNetCore.Components;
+using neurUL.Common.Http;
 using neurUL.Cortex.Common;
 using System;
 using System.Collections.Generic;
@@ -77,9 +80,46 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 
         public static string Truncate(this string value, int maxChars)
         {
-            return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "...";
+            return !string.IsNullOrEmpty(value) ?
+                (
+                    value.Length <= maxChars ? 
+                        value : 
+                        value.Substring(0, maxChars) + "..."
+                        )
+                    : string.Empty;
         }
 
+        public static void ShowFriendlyHttpRequestExceptionEx(IToastService toastService, HttpRequestExceptionEx hex, string message)
+        {
+            toastService.ShowError(
+                    new RenderFragment(builder => {
+                        builder.AddContent(1, message);
+                        builder.OpenElement(2, "br");
+                        builder.CloseElement();
+                        builder.OpenElement(3, "br");
+                        builder.CloseElement();
+
+                        var m = System.Text.RegularExpressions.Regex.Match(hex.Message, @"Description\"":\""(?<Description>(?!\"",\""Type\"").*)\"",\""Type\""");
+                        int x = 4;
+                        if (m.Success)
+                        {
+                            builder.OpenElement(x++, "i");
+                            builder.AddContent(x++, m.Groups["Description"].Value);
+                            builder.CloseElement();
+                            builder.OpenElement(x++, "br");
+                            builder.CloseElement();
+                            builder.OpenElement(x++, "br");
+                            builder.CloseElement();
+                        }
+
+                        builder.OpenElement(x++, "button");
+                        builder.AddAttribute(x++, "onclick", $"copyToClipboard('{System.Text.Json.JsonEncodedText.Encode(hex.Message)}');");
+                        builder.AddContent(x++, "Copy to clipboard");
+                        builder.CloseElement();
+                    }
+                    )
+                    );
+        }
         // TODO: internal async static Task<bool> ChangeNeuronTag(string tag, INeuronApplicationService neuronApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, int expectedVersion, string bearerToken)
         //{
         //    bool result = false;

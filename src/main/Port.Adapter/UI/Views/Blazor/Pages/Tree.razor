@@ -18,6 +18,7 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using IdentityServer4
 @using System.Timers
+@using neurUL.Common.Http
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
 @inject ITerminalApplicationService terminalApplicationService
@@ -291,6 +292,14 @@ else
 
             if (this.RenderDirection == RenderDirectionValue.BottomToTop)
                 await this.ScrollToFragment("bottom");
+        }
+        catch (HttpRequestExceptionEx hex)
+        {
+            Blazor.Helper.ShowFriendlyHttpRequestExceptionEx(
+                this.toastService,
+                hex,
+                $"An error occurred while reloading the Tree."
+                );
         }
         catch (Exception ex)
         {

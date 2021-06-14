@@ -322,33 +322,10 @@
             }
             catch (HttpRequestExceptionEx hex)
             {
-                this.toastService.ShowError(
-                    new RenderFragment(builder => {
-                        builder.AddContent(1, $"An error occurred while processing the '{this.selectedOption.ToString()}' request:");
-                        builder.OpenElement(2, "br");
-                        builder.CloseElement();
-                        builder.OpenElement(3, "br");
-                        builder.CloseElement();
-
-                        var m = System.Text.RegularExpressions.Regex.Match(hex.Message, @"Description\"":\""(?<Description>(?!\"",\""Type\"").*)\"",\""Type\""");
-                        int x = 4;
-                        if (m.Success)
-                        {
-                            builder.OpenElement(x++, "i");
-                            builder.AddContent(x++, m.Groups["Description"].Value);
-                            builder.CloseElement();
-                            builder.OpenElement(x++, "br");
-                            builder.CloseElement();
-                            builder.OpenElement(x++, "br");
-                            builder.CloseElement();
-                        }
-
-                        builder.OpenElement(x++, "button");
-                        builder.AddAttribute(x++, "onclick", $"copyToClipboard('{System.Text.Json.JsonEncodedText.Encode(hex.Message)}');");
-                        builder.AddContent(x++, "Copy to clipboard");
-                        builder.CloseElement();
-                    }
-                    )
+                Blazor.Helper.ShowFriendlyHttpRequestExceptionEx(
+                    this.toastService, 
+                    hex, 
+                    $"An error occurred while processing the '{this.selectedOption.ToString()}' request:"
                     );
             }
             catch (Exception ex)
