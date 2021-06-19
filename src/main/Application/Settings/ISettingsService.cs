@@ -40,9 +40,10 @@ namespace ei8.Cortex.Diary.Application.Settings
         string OidcAuthority { get; }
         string ClientId { get; }
         string ClientSecret { get; }
+        string DatabasePath { get; set; }
         string LoginCallback { get; set; }
         string LogoutCallback { get; set; }
-        string ApplicationUrl { get; set; }
+        string ApplicationUrl { get; set; }       
 
         void Clear();
     }

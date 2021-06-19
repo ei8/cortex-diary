@@ -2,6 +2,7 @@ using Blazored.Toast;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using ei8.Cortex.Diary.Application;
 using ei8.Cortex.Diary.Application.Dependency;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Neurons;
@@ -10,6 +11,7 @@ using ei8.Cortex.Diary.Application.Settings;
 using ei8.Cortex.Diary.Domain.Model;
 using ei8.Cortex.Diary.Nucleus.Client.In;
 using ei8.Cortex.Diary.Nucleus.Client.Out;
+using ei8.Cortex.Diary.Port.Adapter.IO.Persistence.SQLite;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Services;
@@ -65,6 +67,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<ISettingsServiceImplementation, SettingsServiceImplementation>();
             services.AddScoped<IDependencyService, DependencyService>();
             services.AddScoped<ISettingsService, SettingsService>();
+            services.AddScoped<IViewRepository, ViewRepository>();
             services.AddScoped<IRequestProvider, RequestProvider>(sp =>
             {
                 var result = new RequestProvider();
@@ -83,6 +86,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<ITerminalApplicationService, TerminalApplicationService>();
             services.AddScoped<INeuronQueryClient, HttpNeuronQueryClient>();
             services.AddScoped<INeuronQueryService, NeuronQueryService>();
+            services.AddScoped<IViewApplicationService, ViewApplicationService>();
             
             var sp = services.BuildServiceProvider();
 

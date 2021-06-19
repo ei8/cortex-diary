@@ -1,5 +1,5 @@
 ﻿using ei8.Cortex.Diary.Application.Neurons;
-using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Diary.Port.Adapter.Common;
 using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
 using IdentityModel.Client;
@@ -14,7 +14,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
 
-        public NeuronViewModel(UINeuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
+        public NeuronViewModel(NeuronResult neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
             this.Neuron = neuron;
             this.Tag = neuron.Tag;
@@ -25,7 +25,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
         public IList<NeuronViewModel> Children { get; set; }
 
-        public UINeuron Neuron { get; private set; }
+        public NeuronResult Neuron { get; private set; }
 
         public string Tag { get; private set; }
 
@@ -43,7 +43,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
                     (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
                         .Neurons
                         .ToList().ForEach(n =>
-                        children.Add(new NeuronViewModel(new UINeuron(n), this.avatarUrl, this.neuronQueryService))
+                        children.Add(new NeuronViewModel(new NeuronResult(n), this.avatarUrl, this.neuronQueryService))
                     );
                     this.Children = children.ToArray();
                 }

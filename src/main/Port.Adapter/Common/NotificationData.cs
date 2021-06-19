@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
+namespace ei8.Cortex.Diary.Port.Adapter.Common
 {
     // TODO: transfer to (cortex diary nucleus client) / (cortex diary nucleus common - if populated in nucleus itself, to prevent diary from referencing nucleus)?
     public struct NotificationData

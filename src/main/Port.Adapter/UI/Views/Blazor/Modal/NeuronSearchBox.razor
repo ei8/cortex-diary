@@ -1,7 +1,8 @@
 ﻿@using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Diary.Domain.Model;
+@using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+@using ei8.Cortex.Diary.Port.Adapter.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @inject INeuronQueryService NeuronQueryService;
 
@@ -113,7 +114,7 @@
     {
         var children = new List<NeuronViewModel>();
         var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
-        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.NeuronQueryService)));
+        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new NeuronResult(n), this.AvatarUrl, this.NeuronQueryService)));
         this.Children = children.ToArray();
     }
 

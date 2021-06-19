@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>ei8.Cortex.Diary.Port.Adapter.UI.Common</RootNamespace>
-    <AssemblyName>ei8.Cortex.Diary.Port.Adapter.UI.Common</AssemblyName>
+    <RootNamespace>ei8.Cortex.Diary.Port.Adapter.Common</RootNamespace>
+    <AssemblyName>ei8.Cortex.Diary.Port.Adapter.Common</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,10 +12,6 @@
     <PackageReference Include="ei8.Cortex.Library.Client" Version="0.2.2" />
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.2.1" />
     <PackageReference Include="Neurul.Common" Version="0.1.19" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Domain.Model\Domain.Model.csproj" />
   </ItemGroup>
 
 </Project>

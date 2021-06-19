@@ -1,7 +1,7 @@
 ﻿@page "/tree"
 @implements IDisposable
 @using ei8.Cortex.Diary.Domain.Model
-@using ei8.Cortex.Diary.Port.Adapter.UI.Common
+@using ei8.Cortex.Diary.Port.Adapter.Common
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 @using ei8.Cortex.Diary.Application.Neurons
 @using ei8.Cortex.Library.Client
@@ -129,7 +129,6 @@ else
     {
         if (firstRender)
         {
-
             var uri = this.navigationManager.ToAbsoluteUri(this.navigationManager.Uri);
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("direction", out var directionValue) &&
                 Enum.TryParse<RenderDirectionValue>(directionValue, out RenderDirectionValue directionEnum)
@@ -180,7 +179,7 @@ else
                         await this.jsRuntime.InvokeAsync<string>("PlaySound");
 
                     this.NewItemsCount += newNeurons.Count();
-                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
+                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new NeuronResult(n), this.AvatarUrl, this.neuronQueryService)));
                     await this.InvokeAsync(() => this.StateHasChanged());
                 }
             }
@@ -282,10 +281,9 @@ else
         {
             await this.SetReloading(true);
             this.Children.Clear();
-            var children = new List<NeuronViewModel>();
             var ns = await Tree.GetOrderedNeurons(this);
-            ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new UINeuron(n), this.AvatarUrl, this.neuronQueryService)));
-            ((List<NeuronViewModel>)this.Children).AddRange(children.ToArray());
+            var children = ns.Select(nr => new NeuronViewModel(new NeuronResult(nr), this.AvatarUrl, this.neuronQueryService));
+            ((List<NeuronViewModel>)this.Children).AddRange(children);
             this.NewItemsCount = 0;
             await this.SetReloading(false);
             await this.LoadGraph();

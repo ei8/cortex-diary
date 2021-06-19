@@ -1,7 +1,7 @@
 ﻿@using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Library.Client;
 @using ei8.Cortex.Library.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+@using ei8.Cortex.Diary.Port.Adapter.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Modal;
 @using ei8.Cortex.Diary.Domain.Model;
@@ -144,7 +144,7 @@
     [Parameter]
     public string AvatarUrl { get; set; }
 
-    private UINeuron RemovingLinkNeuron { get; set; }
+    private NeuronResult RemovingLinkNeuron { get; set; }
 
     private ContextMenuOption selectedOption;
     [Parameter]

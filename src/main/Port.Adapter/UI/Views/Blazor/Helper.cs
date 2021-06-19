@@ -1,7 +1,7 @@
 ﻿using Blazored.Toast.Services;
 using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Application.Notifications;
-using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Diary.Port.Adapter.Common;
 using ei8.Cortex.Library.Common;
 using Microsoft.AspNetCore.Components;
 using neurUL.Common.Http;
@@ -19,15 +19,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         {
             optionSetter(ContextMenuOption.NotSet);
             optionSetter(ContextMenuOption.New);
-        }
-
-        internal static void FillUIIds(this IEnumerable<UINeuron> neurons, UINeuron central)
-        {
-            neurons.ToList().ForEach(un =>
-            {
-                un.UIId = Guid.NewGuid().GetHashCode();
-                un.CentralUIId = central != null ? central.UIId : int.MinValue;
-            });
         }
 
         internal static async Task CreateRelativeCore(INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType, string tag, NeurotransmitterEffect effect, float strength)
@@ -63,7 +54,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 );
         }
 
-        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<UINeuron> candidates, NeurotransmitterEffect effect, float strength)
+        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<NeuronResult> candidates, NeurotransmitterEffect effect, float strength)
         {
             foreach (var n in candidates)
             {

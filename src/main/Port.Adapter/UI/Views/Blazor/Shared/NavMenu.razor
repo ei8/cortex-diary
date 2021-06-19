@@ -1,6 +1,11 @@
 ﻿@using ei8.Cortex.Diary.Domain.Model
+@using ei8.Cortex.Diary.Application
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
 @inject ITokenProvider tokenProvider
+@inject IViewApplicationService viewApplicationService
+@inject NavigationManager navigationManager
+@inject IToastService toastService
 
 <div class="pl-3 pr-2 navbar navbar-dark" style="background-color:rgba(0,0,0,0.4)">
     <img src="dasz.ico" alt="Home" style="width:30px; height:30px">
@@ -12,7 +17,7 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
-        <li class="nav-item px-3">
+        @*<li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-globe" aria-hidden="true"></span> Welcome
             </NavLink>
@@ -21,7 +26,24 @@
             <NavLink class="nav-link" href="tree">
                 <span class="oi oi-fork" aria-hidden="true"></span> Tree
             </NavLink>
-        </li>
+        </li>*@
+        @if (this.reloading)
+        {
+            <li class="spinner-border text-light m-3 p-0" role="status">
+                <span class="sr-only">Loading...</span>
+            </li>
+        }
+        else
+        {
+            @foreach (var v in this.views)
+            {
+                <li class="nav-item @v.Padding">
+                    <NavLink class="nav-link" @onclick="() => this.Navigate(v.Url)" href="@v.Url">
+                        <span class="oi @v.Icon" aria-hidden="true"></span> @v.Name
+                    </NavLink>
+                </li>
+            }
+        }
         <li class="nav-item nav-item-bottom px-3">
             <AuthorizeView>
                 <NotAuthorized>
@@ -44,12 +66,51 @@
 </div>
 
 @code {
-    bool collapseNavMenu = true;
+    private bool reloading = false;
+    private bool collapseNavMenu = true;
+    private IList<ViewViewModel> views = new List<ViewViewModel>();
 
     string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    void ToggleNavMenu()
+    private void Navigate(string url)
+    {
+        this.navigationManager.NavigateTo(url, true);
+    }
+
+    private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Run(() =>
+            {
+                this.Reload();
+            }
+            );
+        }
+    }
+
+    private async Task Reload()
+    {
+        try
+        {
+            await this.SetReloading(true);
+            ((List<ViewViewModel>)this.views).AddRange((await this.viewApplicationService.GetAll()).Select(v => new ViewViewModel(v)));
+            await this.SetReloading(false);
+        }
+        catch (Exception ex)
+        {
+            this.toastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task SetReloading(bool value)
+    {
+        this.reloading = value;
+        await this.InvokeAsync(() => this.StateHasChanged());
     }
 }

@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
+namespace ei8.Cortex.Diary.Port.Adapter.Common
 {
     public class Helper
     {
         private const string TypeNamePrefix = "neurUL.Cortex.Domain.Model.Neurons.";
 
-        public static NotificationData CreateNotificationData(Diary.Common.Notification notification, IDictionary<string, UINeuron> cache)
+        public static NotificationData CreateNotificationData(Diary.Common.Notification notification, IDictionary<string, NeuronResult> cache)
         {
             var d = DateTime.Parse(notification.Timestamp);
             var timestamp = $"{d.ToShortDateString()} {d.ToShortTimeString()}";
@@ -77,7 +77,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
                 );
         }
 
-        public static async Task<IEnumerable<NotificationData>> UpdateCacheGetNotifications(NotificationLog notificationLog, INeuronQueryClient neuronGraphQueryClient, string avatarUrl, IDictionary<string, UINeuron> cache)
+        public static async Task<IEnumerable<NotificationData>> UpdateCacheGetNotifications(NotificationLog notificationLog, INeuronQueryClient neuronGraphQueryClient, string avatarUrl, IDictionary<string, NeuronResult> cache)
         {
             var ids = new List<string>();
             var ns = notificationLog.NotificationList.ToList();
@@ -116,7 +116,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Common
             return notificationLog.NotificationList.ToArray().Select(n => Common.Helper.CreateNotificationData(n, cache));
         }
 
-        private static string SafeGetTag(string id, IDictionary<string, UINeuron> cache)
+        private static string SafeGetTag(string id, IDictionary<string, NeuronResult> cache)
         {
             return cache.ContainsKey(id) ?
                                     cache[id].Tag :

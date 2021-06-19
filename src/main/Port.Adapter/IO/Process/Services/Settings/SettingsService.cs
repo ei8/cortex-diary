@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using ei8.Cortex.Diary.Application.Dependency;
 using ei8.Cortex.Diary.Application.Settings;
 using IdentityServer4.Models;
-using ei8.Cortex.Diary.Port.Adapter.UI.Common;
+using ei8.Cortex.Diary.Port.Adapter.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
 {
@@ -59,6 +59,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdOidcAuthority = "oidc_authority";
         private const string IdClientId = "client_id";
         private const string IdClientSecret = "client_secret";
+        private const string IdDatabasePath = "database_path";
         private const string IdLoginCallback = "login_callback";
         private const string IdLogoutCallback = "logout_callback";
         private const string IdApplicationUrl = "application_url";
@@ -72,6 +73,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string OidcAuthorityDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.OidcAuthority);
         private readonly string ClientIdDefault = Identity.Constants.ClientId;
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
+        private readonly string DatabasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.DatabasePath);
         private readonly string LoginCallbackDefault = string.Empty;
         private readonly string LogoutCallbackDefault = string.Empty;
         private readonly string ApplicationUrlDefault = string.Empty;
@@ -122,6 +124,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         {
             get => AppSettings.GetValueOrDefault(IdClientSecret, ClientSecretDefault);
             set => AppSettings.AddOrUpdateValue(IdClientSecret, value);
+        }
+
+        public string DatabasePath
+        {
+            get => AppSettings.GetValueOrDefault(IdDatabasePath, DatabasePathDefault);
+            set => AppSettings.AddOrUpdateValue(IdDatabasePath, value);
         }
         #endregion
 
