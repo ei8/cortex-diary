@@ -95,7 +95,7 @@ else
 
 @code
 {
-    private bool reloading = false;
+    private bool reloading = true;
     private bool expandSubNavSettings;
     private Dropdown optionsDropdown;
     private Timer refreshTimer;
@@ -285,7 +285,6 @@ else
             var children = ns.Select(nr => new NeuronViewModel(new NeuronResult(nr), this.AvatarUrl, this.neuronQueryService));
             ((List<NeuronViewModel>)this.Children).AddRange(children);
             this.NewItemsCount = 0;
-            await this.SetReloading(false);
             await this.LoadGraph();
 
             if (this.RenderDirection == RenderDirectionValue.BottomToTop)
@@ -302,6 +301,10 @@ else
         catch (Exception ex)
         {
             this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            await this.SetReloading(false);
         }
     }
 

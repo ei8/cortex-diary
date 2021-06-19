@@ -66,7 +66,7 @@
 </div>
 
 @code {
-    private bool reloading = false;
+    private bool reloading = true;
     private bool collapseNavMenu = true;
     private IList<ViewViewModel> views = new List<ViewViewModel>();
 
@@ -100,11 +100,14 @@
         {
             await this.SetReloading(true);
             ((List<ViewViewModel>)this.views).AddRange((await this.viewApplicationService.GetAll()).Select(v => new ViewViewModel(v)));
-            await this.SetReloading(false);
         }
         catch (Exception ex)
         {
             this.toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            await this.SetReloading(false);
         }
     }
 
