@@ -3,7 +3,7 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
 @inject ITokenProvider tokenProvider
-@inject IViewApplicationService viewApplicationService
+@inject IEnumerable<View> views
 @inject NavigationManager navigationManager
 @inject IToastService toastService
 
@@ -27,22 +27,13 @@
                 <span class="oi oi-fork" aria-hidden="true"></span> Tree
             </NavLink>
         </li>*@
-        @if (this.reloading)
+        @foreach (var v in this.views)
         {
-            <li class="spinner-border text-light m-3 p-0" role="status">
-                <span class="sr-only">Loading...</span>
+            <li class="nav-item @v.Padding">
+                <NavLink class="nav-link" @onclick="() => this.Navigate(v.Url)" href="@v.Url">
+                    <span class="oi @v.Icon" aria-hidden="true"></span> @v.Name
+                </NavLink>
             </li>
-        }
-        else
-        {
-            @foreach (var v in this.views)
-            {
-                <li class="nav-item @v.Padding">
-                    <NavLink class="nav-link" @onclick="() => this.Navigate(v.Url)" href="@v.Url">
-                        <span class="oi @v.Icon" aria-hidden="true"></span> @v.Name
-                    </NavLink>
-                </li>
-            }
         }
         <li class="nav-item nav-item-bottom px-3">
             <AuthorizeView>
@@ -66,9 +57,7 @@
 </div>
 
 @code {
-    private bool reloading = true;
     private bool collapseNavMenu = true;
-    private IList<ViewViewModel> views = new List<ViewViewModel>();
 
     string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -80,40 +69,5 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await Task.Run(() =>
-            {
-                this.Reload();
-            }
-            );
-        }
-    }
-
-    private async Task Reload()
-    {
-        try
-        {
-            await this.SetReloading(true);
-            ((List<ViewViewModel>)this.views).AddRange((await this.viewApplicationService.GetAll()).Select(v => new ViewViewModel(v)));
-        }
-        catch (Exception ex)
-        {
-            this.toastService.ShowError(ex.Message);
-        }
-        finally
-        {
-            await this.SetReloading(false);
-        }
-    }
-
-    private async Task SetReloading(bool value)
-    {
-        this.reloading = value;
-        await this.InvokeAsync(() => this.StateHasChanged());
     }
 }

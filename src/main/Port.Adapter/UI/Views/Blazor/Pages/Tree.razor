@@ -42,7 +42,7 @@
         </button>
         <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
         <button class="btn btn-light btn-sm rounded-circle" @onclick="this.LoadGraph" style="height:32px" title="Load Graph">
-            <Blazorise.Icon Name="FontAwesomeIcons.ProjectDiagram" />
+            <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
         </button>
         <Dropdown RightAligned="true" @ref="this.optionsDropdown">
             <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowOptionsMenu" title="Options">
@@ -285,7 +285,6 @@ else
             var children = ns.Select(nr => new NeuronViewModel(new NeuronResult(nr), this.AvatarUrl, this.neuronQueryService));
             ((List<NeuronViewModel>)this.Children).AddRange(children);
             this.NewItemsCount = 0;
-            await this.LoadGraph();
 
             if (this.RenderDirection == RenderDirectionValue.BottomToTop)
                 await this.ScrollToFragment("bottom");
@@ -305,6 +304,7 @@ else
         finally
         {
             await this.SetReloading(false);
+            await this.LoadGraph();
         }
     }
 

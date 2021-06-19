@@ -27,6 +27,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using neurUL.Common.Http;
+using System.Collections.Generic;
 using System.Net.Http;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
@@ -67,7 +68,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<ISettingsServiceImplementation, SettingsServiceImplementation>();
             services.AddScoped<IDependencyService, DependencyService>();
             services.AddScoped<ISettingsService, SettingsService>();
-            services.AddScoped<IViewRepository, ViewRepository>();
             services.AddScoped<IRequestProvider, RequestProvider>(sp =>
             {
                 var result = new RequestProvider();
@@ -82,11 +82,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<ITerminalClient, HttpTerminalClient>();
             services.AddScoped<INotificationClient, HttpNotificationClient>();
             services.AddScoped<INotificationApplicationService, NotificationApplicationService>();
+            services.AddScoped<INeuronQueryService, NeuronQueryService>();
             services.AddScoped<INeuronApplicationService, NeuronApplicationService>();
             services.AddScoped<ITerminalApplicationService, TerminalApplicationService>();
             services.AddScoped<INeuronQueryClient, HttpNeuronQueryClient>();
-            services.AddScoped<INeuronQueryService, NeuronQueryService>();
-            services.AddScoped<IViewApplicationService, ViewApplicationService>();
+            var vas = new ViewApplicationService(new ViewRepository());
+            services.AddSingleton<IEnumerable<View>>(vas.GetAll().Result);
             
             var sp = services.BuildServiceProvider();
 
