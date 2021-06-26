@@ -41,7 +41,7 @@
             }
         </button>
         <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
-        <button class="btn btn-light btn-sm rounded-circle" @onclick="this.LoadGraph" style="height:32px" title="Load Graph">
+        <button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
             <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
         </button>
         <Dropdown RightAligned="true" @ref="this.optionsDropdown">
@@ -137,6 +137,7 @@ else
                 this.RenderDirection = directionEnum;
                 this.StateHasChanged();
             }
+            bool urlSet = false;
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("avatarUrl", out var encodedAvatarUrl))
             {
                 Uri uriResult;
@@ -145,6 +146,7 @@ else
                     && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
                 if (validUrl)
                 {
+                    urlSet = true;
                     await Task.Run(() =>
                     {
                         this.AvatarUrl = decodedUrl;
@@ -152,6 +154,8 @@ else
                     });
                 }
             }
+            if (!urlSet)
+                await this.SetReloading(false);
 
             this.refreshTimer = new Timer();
             this.refreshTimer.Interval = this.settingsService.UpdateCheckInterval;

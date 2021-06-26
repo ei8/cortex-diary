@@ -81,6 +81,13 @@
                                     }
                                 </div>
                                 <div class="col-auto p-1" style="@this.GetStyleByCreationAuthor(child.Neuron.IsCurrentUserCreationAuthor)">
+                                    @if (child.Neuron.RestrictionReasons.Count() > 0)
+                                    {
+                                        <div class="tooltip-wrapper">
+                                            <span class="tooltip-wrapper-text">@((MarkupString) string.Join(Environment.NewLine, child.Neuron.RestrictionReasons.ToArray()))</span>
+                                            <Blazorise.Icon Name="FontAwesomeIcons.Lock" IconStyle="IconStyle.Light" />
+                                        </div>
+                                    }
                                     @child.Tag
                                 </div>
                                 @if (!this.ShouldRightJustifyBasedOnRoot(child))
