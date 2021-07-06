@@ -13,7 +13,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.Common
     {
         private const string TypeNamePrefix = "neurUL.Cortex.Domain.Model.Neurons.";
 
-        public static NotificationData CreateNotificationData(Diary.Common.Notification notification, IDictionary<string, NeuronResult> cache)
+        public static NotificationData CreateNotificationData(Diary.Common.Notification notification, IDictionary<string, Neuron> cache)
         {
             var d = DateTime.Parse(notification.Timestamp);
             var timestamp = $"{d.ToShortDateString()} {d.ToShortTimeString()}";
@@ -77,7 +77,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.Common
                 );
         }
 
-        public static async Task<IEnumerable<NotificationData>> UpdateCacheGetNotifications(NotificationLog notificationLog, INeuronQueryClient neuronGraphQueryClient, string avatarUrl, IDictionary<string, NeuronResult> cache)
+        public static async Task<IEnumerable<NotificationData>> UpdateCacheGetNotifications(NotificationLog notificationLog, INeuronQueryClient neuronGraphQueryClient, string avatarUrl, IDictionary<string, Neuron> cache)
         {
             var ids = new List<string>();
             var ns = notificationLog.NotificationList.ToList();
@@ -116,7 +116,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.Common
             return notificationLog.NotificationList.ToArray().Select(n => Common.Helper.CreateNotificationData(n, cache));
         }
 
-        private static string SafeGetTag(string id, IDictionary<string, NeuronResult> cache)
+        private static string SafeGetTag(string id, IDictionary<string, Neuron> cache)
         {
             return cache.ContainsKey(id) ?
                                     cache[id].Tag :

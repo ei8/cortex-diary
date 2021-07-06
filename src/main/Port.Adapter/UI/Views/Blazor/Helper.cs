@@ -54,7 +54,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 );
         }
 
-        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<NeuronResult> candidates, NeurotransmitterEffect effect, float strength)
+        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<Neuron> candidates, NeurotransmitterEffect effect, float strength)
         {
             foreach (var n in candidates)
             {

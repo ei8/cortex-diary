@@ -113,8 +113,8 @@
     private async Task Load()
     {
         var children = new List<NeuronViewModel>();
-        var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
-        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new NeuronResult(n), this.AvatarUrl, this.NeuronQueryService)));
+        var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Items;
+        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.NeuronQueryService)));
         this.Children = children.ToArray();
     }
 

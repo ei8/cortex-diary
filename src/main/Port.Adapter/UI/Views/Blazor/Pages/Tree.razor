@@ -183,7 +183,7 @@ else
                         await this.jsRuntime.InvokeAsync<string>("PlaySound");
 
                     this.NewItemsCount += newNeurons.Count();
-                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new NeuronResult(n), this.AvatarUrl, this.neuronQueryService)));
+                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService)));
                     await this.InvokeAsync(() => this.StateHasChanged());
                 }
             }
@@ -201,11 +201,11 @@ else
         this.refreshTimer?.Dispose();
     }
 
-    private async static Task<IEnumerable<NeuronResult>> GetOrderedNeurons(Tree value)
+    private async static Task<IEnumerable<Neuron>> GetOrderedNeurons(Tree value)
     {
         var ns = (await value.neuronQueryService.SendQuery(
                     value.AvatarUrl
-                    )).Neurons;
+                    )).Items;
 
         if (value.RenderDirection == RenderDirectionValue.BottomToTop)
             ns = ns.Reverse().ToArray();
@@ -286,7 +286,7 @@ else
             await this.SetReloading(true);
             this.Children.Clear();
             var ns = await Tree.GetOrderedNeurons(this);
-            var children = ns.Select(nr => new NeuronViewModel(new NeuronResult(nr), this.AvatarUrl, this.neuronQueryService));
+            var children = ns.Select(nr => new NeuronViewModel(new Neuron(nr), this.AvatarUrl, this.neuronQueryService));
             ((List<NeuronViewModel>)this.Children).AddRange(children);
             this.NewItemsCount = 0;
 
