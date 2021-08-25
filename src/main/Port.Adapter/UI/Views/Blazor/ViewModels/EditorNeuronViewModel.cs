@@ -17,6 +17,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
         public float? Strength { get; set; }
         public string RegionId { get; set; }
         public string RegionTag { get; set; }
+        public string NeuronExternalReferenceUrl { get; set; }
+        public string TerminalExternalReferenceUrl { get; set; }
         public IReadOnlyList<Neuron> LinkCandidates { get; set; }
         public bool IsRoot { get; set; }
         public ContextMenuOption SelectedOption { get; set; }        

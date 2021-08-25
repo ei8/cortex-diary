@@ -293,17 +293,21 @@ else
             if (this.RenderDirection == RenderDirectionValue.BottomToTop)
                 await this.ScrollToFragment("bottom");
         }
-        catch (HttpRequestExceptionEx hex)
-        {
-            Blazor.Helper.ShowFriendlyHttpRequestExceptionEx(
-                this.toastService,
-                hex,
-                $"An error occurred while reloading the Tree."
-                );
-        }
         catch (Exception ex)
         {
-            this.toastService.ShowError(ex.Message);
+            string description, clipboardData;
+            if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out description, out clipboardData))
+            {
+                description = ex.Message;
+                clipboardData = ex.ToString();
+            }
+
+            Blazor.Helper.ShowFriendlyException(
+                this.toastService,
+                "An error occurred while reloading the Tree.",
+                description,
+                clipboardData
+            );
         }
         finally
         {

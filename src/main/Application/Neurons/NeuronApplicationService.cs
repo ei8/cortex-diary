@@ -47,14 +47,19 @@ namespace ei8.Cortex.Diary.Application.Neurons
             this.tokenManager = tokenManager ?? Locator.Current.GetService<ITokenManager>();
         }
 
-        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, CancellationToken token = default(CancellationToken))
+        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string url, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.CreateNeuron(avatarUrl, id, tag, regionId, await this.tokenManager.RetrieveAccessTokenAsync(), token);
+            await this.neuronClient.CreateNeuron(avatarUrl, id, tag, regionId, url, await this.tokenManager.RetrieveAccessTokenAsync(), token);
         }
 
         public async Task ChangeNeuronTag(string avatarUrl, string id, string tag, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             await this.neuronClient.ChangeNeuronTag(avatarUrl, id, tag, expectedVersion, await this.tokenManager.RetrieveAccessTokenAsync(), token);
+        }
+
+        public async Task ChangeNeuronUrl(string avatarUrl, string id, string url, int expectedVersion, CancellationToken token = default(CancellationToken))
+        {
+            await this.neuronClient.ChangeNeuronUrl(avatarUrl, id, url, expectedVersion, await this.tokenManager.RetrieveAccessTokenAsync(), token);
         }
         
         public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
