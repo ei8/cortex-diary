@@ -119,9 +119,18 @@
                             <input class="form-control-sm" style="width:150px" readonly value="@this.editorNeuronViewModel.RegionTag" />
                         </div>
                         <div class="col-auto pb-1 p-0">
-                            <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.OnSearchExternalReferenceNeuron" title="Set Neuron External Reference URL">
-                                <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="px-1" />
-                            </button>
+                            @if (string.IsNullOrWhiteSpace(this.editorNeuronViewModel.NeuronExternalReferenceUrl))
+                            {
+                                <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.OnSearchExternalReferenceNeuron" title="Internal Neuron (Click to edit)">
+                                    <Blazorise.Icon Name="FontAwesomeIcons.Brain" Class="px-1" />                                        
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.OnSearchExternalReferenceNeuron" title="@(this.editorNeuronViewModel.NeuronExternalReferenceUrl + " (Click to edit)")">
+                                    <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="px-1" />
+                                </button>                                
+                            }                            
                         </div>
                     </div>
                 </div>
@@ -152,9 +161,9 @@
         </div>
     </EditForm>
 </div>
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" />
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchExternalReferenceNeuronVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceNeuron" />
+<NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
+<NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" />
+<NeuronSearchBox AvatarUrl="@this.editorNeuronViewModel.NeuronExternalReferenceUrl" @bind-IsVisible="@this.IsSearchExternalReferenceNeuronVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceNeuron" />
 @* <NeuronSearchBox @bind-IsVisible="@this.IsSearchExternalReferenceTerminalVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceTerminal" /> *@
 
 @code {
@@ -293,8 +302,7 @@
                 this.selectedExternalReferenceNeuron = value;
 
                 this.editorNeuronViewModel.NeuronExternalReferenceUrl = this.selectedExternalReferenceNeuron != null ?
-                    // TODO: should use new url property
-                    this.selectedExternalReferenceNeuron.Neuron.Id :
+                    this.selectedExternalReferenceNeuron.Neuron.Url :
                     string.Empty;
             }
         }
@@ -302,19 +310,19 @@
 
     private bool IsSearchExternalReferenceNeuronVisible { get; set; } = false;
 
-    @* TODO >>>>>>>>>>>>>>>>>
-     private NeuronViewModel selectedExternalReferenceTerminal;
-    private NeuronViewModel SelectedExternalReferenceTerminal
+    @* TODO >>>>>>>>>>>>>>>>> 
+     private NeuronViewModel selectedExternalReferenceTerminalRelative;
+    private NeuronViewModel SelectedExternalReferenceTerminalRelative
     {
-        get => this.selectedExternalReferenceTerminal;
+        get => this.selectedExternalReferenceTerminalRelative;
         set
         {
-            if (this.selectedExternalReferenceTerminal != value)
+            if (this.selectedExternalReferenceTerminalRelative != value)
             {
-                this.selectedExternalReferenceTerminal = value;
+                this.selectedExternalReferenceTerminalRelative = value;
 
-                this.editorNeuronViewModel.TerminalExternalReferenceUrl = this.selectedExternalReferenceTerminal != null ?
-                    this.selectedExternalReferenceTerminal.
+                this.editorNeuronViewModel.TerminalExternalReferenceUrl = this.selectedExternalReferenceTerminalRelative != null ?
+                    this.selectedExternalReferenceTerminalRelative.Terminal.Url
                     string.Empty;
             }
         }

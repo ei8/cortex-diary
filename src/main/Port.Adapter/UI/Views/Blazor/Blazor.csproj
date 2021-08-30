@@ -9,6 +9,9 @@
     <AssemblyName>d23-blazor</AssemblyName>
     <UserSecretsId>81989359-6e69-49cb-ba96-7e5a764de278</UserSecretsId>
   </PropertyGroup>
+  <PropertyGroup>
+    <BlazorLinkOnBuild  Condition="'$(Configuration)'!='Release'">false</BlazorLinkOnBuild>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Shared\NullableNeurotransmitterEffectSelect.cs" />
     <Compile Remove="Shared\NullableRelativeTypeSelect.cs" />
@@ -18,8 +21,8 @@
     <PackageReference Include="Blazored.Toast" Version="3.1.2" />
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.2.4" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.2.4" />
-    <PackageReference Include="ei8.Cortex.Library.Client" Version="0.2.6" />
-    <PackageReference Include="ei8.Cortex.Library.Common" Version="0.2.5" />
+    <PackageReference Include="ei8.Cortex.Library.Client" Version="0.2.7" /> 
+    <PackageReference Include="ei8.Cortex.Library.Common" Version="0.2.8" />
     <PackageReference Include="FluentValidation" Version="9.3.0" />
     <PackageReference Include="IdentityServer4" Version="3.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.13" />

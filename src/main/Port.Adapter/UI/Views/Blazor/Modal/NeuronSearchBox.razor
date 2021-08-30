@@ -62,7 +62,8 @@
         this.Children = new NeuronViewModel[0];
     }
 
-    private string AvatarUrl { get; set; }
+    [Parameter]
+    public string AvatarUrl { get; set; }
 
     private NeuronViewModel[] Children { get; set; } = new NeuronViewModel[0];
 
