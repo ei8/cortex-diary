@@ -50,7 +50,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary btn-sm" @onclick="this.Select">Select</button>
+                    <button class="btn btn-primary btn-sm" @onclick="() => this.SelectNeuron(this.TempSelectedNeuron)">Select</button>
                 </div>
             </div>
         </div>
@@ -87,8 +87,8 @@
 
     private void SelectNeuron(NeuronViewModel value)
     {
-        this.IsVisible = false;
         this.SelectedNeuron = value;
+        this.IsVisible = false;        
     }
 
     private NeuronViewModel TempSelectedNeuron { get; set; }
@@ -117,11 +117,5 @@
         var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Items;
         ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.NeuronQueryService)));
         this.Children = children.ToArray();
-    }
-
-    private async Task Select()
-    {
-        this.IsVisible = false;
-        this.SelectedNeuron = this.TempSelectedNeuron;
     }
 }

@@ -32,6 +32,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
             this.Effect = null;
             this.Strength = null;
             this.InitializeRegion();
+            this.NeuronExternalReferenceUrl = string.Empty;
+            this.TerminalExternalReferenceUrl = string.Empty;
             this.LinkCandidates = new Neuron[0];
             this.IsRoot = true;
         }
