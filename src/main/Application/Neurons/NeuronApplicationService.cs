@@ -59,7 +59,7 @@ namespace ei8.Cortex.Diary.Application.Neurons
 
         public async Task ChangeNeuronUrl(string avatarUrl, string id, string url, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
-            await this.neuronClient.ChangeNeuronUrl(avatarUrl, id, url, expectedVersion, await this.tokenManager.RetrieveAccessTokenAsync(), token);
+            await this.neuronClient.ChangeNeuronExternalReferenceUrl(avatarUrl, id, url, expectedVersion, await this.tokenManager.RetrieveAccessTokenAsync(), token);
         }
         
         public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))

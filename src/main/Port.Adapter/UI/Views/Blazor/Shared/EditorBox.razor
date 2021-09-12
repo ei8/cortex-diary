@@ -206,6 +206,7 @@
                         this.editorNeuronViewModel.RegionTag = this.selectedNeuron.Neuron.Region.Tag;
                         this.editorNeuronViewModel.Version = this.selectedNeuron.Neuron.Version;
                         this.editorNeuronViewModel.Type = this.selectedNeuron.Neuron.Type;
+                        this.editorNeuronViewModel.NeuronExternalReferenceUrl = this.selectedNeuron.Neuron.ExternalReferenceUrl;
 
                         if (this.selectedNeuron.Neuron.Type != RelativeType.NotSet)
                         {
@@ -215,6 +216,8 @@
                                 this.editorNeuronViewModel.Effect = (NeurotransmitterEffect)ie;
                             if (float.TryParse(this.selectedNeuron.Neuron.Terminal.Strength, out float fs))
                                 this.editorNeuronViewModel.Strength = fs;
+
+                            this.editorNeuronViewModel.TerminalExternalReferenceUrl = this.selectedNeuron.Neuron.Terminal.ExternalReferenceUrl;
 
                             // TODO: this.TerminalCreation = new AuthorEventInfo(neuron.Terminal.Creation);
                             //this.TerminalLastModification = new AuthorEventInfo(neuron.Terminal.LastModification);
