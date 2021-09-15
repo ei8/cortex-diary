@@ -276,7 +276,7 @@ else
     }
 
     private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
-            string.Format(format, this.SelectedNeuron.Tag) :
+            string.Format(format, this.SelectedNeuron.Neuron.Tag) :
             "[Error: Not a valid Neuron]";
 
     private async Task Reload()
@@ -394,7 +394,7 @@ else
 
     private static void ExtractNodes(IEnumerable<NeuronViewModel> children, List<Node> allNodes)
     {
-        allNodes.AddRange(children.Select(c => new Node { id = c.Neuron.Id, tag = c.Tag }).ToArray());
+        allNodes.AddRange(children.Select(c => new Node { id = c.Neuron.Id, tag = c.Neuron.Tag }).ToArray());
 
         children.ToList().ForEach(c => Tree.ExtractNodes(c.Children, allNodes));
     }

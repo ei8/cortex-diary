@@ -177,6 +177,8 @@
 
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
+    private Neuron preEditCopy = null;
+
     private bool sending = false;
 
     [Parameter]
@@ -199,9 +201,11 @@
                 {
                     if (this.selectedNeuron != null)
                     {
+                        this.preEditCopy = new Neuron(this.selectedNeuron.Neuron);
+                        
                         // similar to NeuronViewModelBase.SetNeuron
                         this.editorNeuronViewModel.Id = this.selectedNeuron.Neuron.Id;
-                        this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
+                        this.editorNeuronViewModel.Tag = this.selectedNeuron.Neuron.Tag;
                         this.editorNeuronViewModel.RegionId = this.selectedNeuron.Neuron.Region.Id;
                         this.editorNeuronViewModel.RegionTag = this.selectedNeuron.Neuron.Region.Tag;
                         this.editorNeuronViewModel.Version = this.selectedNeuron.Neuron.Version;
@@ -400,12 +404,25 @@ private bool isSearchExternalReferenceTerminalVisible = false;
                         description = "Neuron created";
                         break;
                     case ContextMenuOption.Edit:
-                        await this.neuronApplicationService.ChangeNeuronTag(
-                            result.AvatarUrl,
-                            this.editorNeuronViewModel.Id,
-                            this.editorNeuronViewModel.Tag,
-                            this.editorNeuronViewModel.Version
-                            );
+                        // TODO: indicate how many and which changes succeeded/failed
+                        if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
+                        {
+                            await this.neuronApplicationService.ChangeNeuronTag(
+                                result.AvatarUrl,
+                                this.editorNeuronViewModel.Id,
+                                this.editorNeuronViewModel.Tag,
+                                this.editorNeuronViewModel.Version
+                                );
+                        }
+                        if (this.editorNeuronViewModel.NeuronExternalReferenceUrl != this.preEditCopy.ExternalReferenceUrl)
+                        {
+                            await this.neuronApplicationService.ChangeNeuronExternalReferenceUrl(
+                                result.AvatarUrl,
+                                this.editorNeuronViewModel.Id,
+                                this.editorNeuronViewModel.NeuronExternalReferenceUrl,
+                                this.editorNeuronViewModel.Version
+                                );
+                        }
                         description = "Neuron saved";
                         break;
                     case ContextMenuOption.AddRelative:
@@ -519,6 +536,6 @@ private bool isSearchExternalReferenceTerminalVisible = false;
                 result = "Editing '{0}'";
                 break;
         }
-        return string.Format(result, (this.SelectedNeuron != null ? this.SelectedNeuron.Tag : string.Empty));
+        return string.Format(result, (this.SelectedNeuron != null ? this.SelectedNeuron.Neuron.Tag : string.Empty));
     }
 }

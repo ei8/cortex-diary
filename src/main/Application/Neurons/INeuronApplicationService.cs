@@ -37,7 +37,7 @@ namespace ei8.Cortex.Diary.Application.Neurons
     {
         Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string url, CancellationToken token = default(CancellationToken));
         Task ChangeNeuronTag(string avatarUrl, string id, string tag, int expectedVersion, CancellationToken token = default(CancellationToken));
-        Task ChangeNeuronUrl(string avatarUrl, string id, string url, int expectedVersion, CancellationToken token = default(CancellationToken));        
+        Task ChangeNeuronExternalReferenceUrl(string avatarUrl, string id, string url, int expectedVersion, CancellationToken token = default(CancellationToken));        
         Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken));
     }
 }

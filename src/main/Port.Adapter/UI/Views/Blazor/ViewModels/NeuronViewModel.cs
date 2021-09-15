@@ -17,7 +17,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
         public NeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
             this.Neuron = neuron;
-            this.Tag = neuron.Tag;
             this.avatarUrl = avatarUrl;
             this.neuronQueryService = neuronQueryService;
             this.Children = new List<NeuronViewModel>();
@@ -26,8 +25,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
         public IList<NeuronViewModel> Children { get; set; }
 
         public Neuron Neuron { get; private set; }
-
-        public string Tag { get; private set; }
 
         public ExpansionState ExpansionState { get; private set; }
 
