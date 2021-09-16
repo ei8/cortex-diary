@@ -34,6 +34,13 @@
                                     <button class="treeitembutton btn btn-light btn-xs ml-1 mr-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
                                         <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
                                     </button>
+                                    @if (
+                                        !string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||
+                                        (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl))
+                                    )
+                                    {
+                                        <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
+                                    }
                                 }
                                 @if (@child.ExpansionState == ExpansionState.Collapsed)
                                 {
@@ -92,6 +99,13 @@
                                 </div>
                                 @if (!this.ShouldRightJustifyBasedOnRoot(child))
                                 {
+                                    @if (
+                                        !string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||
+                                        (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl))
+                                    )
+                                    {
+                                        <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
+                                    }
                                     <button class="treeitembutton btn btn-light btn-xs ml-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
                                         <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
                                     </button>
