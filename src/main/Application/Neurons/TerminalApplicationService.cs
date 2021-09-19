@@ -18,9 +18,9 @@ namespace ei8.Cortex.Diary.Application.Neurons
             this.tokenManager = tokenManager ?? Locator.Current.GetService<ITokenManager>();
         }
 
-        public async Task CreateTerminal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, CancellationToken token = default(CancellationToken))
+        public async Task CreateTerminal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string url, CancellationToken token = default(CancellationToken))
         {
-            await this.terminalClient.CreateTerminal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, await this.tokenManager.RetrieveAccessTokenAsync(), token);
+            await this.terminalClient.CreateTerminal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, url, await this.tokenManager.RetrieveAccessTokenAsync(), token);
         }
 
         public async Task DeactivateTerminal(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))

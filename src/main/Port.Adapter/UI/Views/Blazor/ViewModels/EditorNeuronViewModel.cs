@@ -17,7 +17,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
         public float? Strength { get; set; }
         public string RegionId { get; set; }
         public string RegionTag { get; set; }
-        public IReadOnlyList<NeuronResult> LinkCandidates { get; set; }
+        public string NeuronExternalReferenceUrl { get; set; }
+        public string TerminalExternalReferenceUrl { get; set; }
+        public IReadOnlyList<Neuron> LinkCandidates { get; set; }
         public bool IsRoot { get; set; }
         public ContextMenuOption SelectedOption { get; set; }        
 
@@ -30,7 +32,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
             this.Effect = null;
             this.Strength = null;
             this.InitializeRegion();
-            this.LinkCandidates = new NeuronResult[0];
+            this.NeuronExternalReferenceUrl = string.Empty;
+            this.TerminalExternalReferenceUrl = string.Empty;
+            this.LinkCandidates = new Neuron[0];
             this.IsRoot = true;
         }
 

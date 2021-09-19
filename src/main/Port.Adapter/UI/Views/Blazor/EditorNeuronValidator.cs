@@ -20,6 +20,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             this.RuleFor(x => x.Strength).NotEmpty().When(x => !x.IsRoot).WithMessage("Strength is required.");
             this.RuleFor(x => x.Strength).Must(s => s >= 0 && s <= 1).When(x => !x.IsRoot).WithMessage("Strength must be between 0 and 1 (inclusive).");
             this.RuleFor(x => x.LinkCandidates).Must(x => x.Count > 0).When(x => !x.IsRoot && x.SelectedOption == ContextMenuOption.LinkRelative).WithMessage("Link candidates required.");
+
+            this.RuleFor(x => x.TerminalExternalReferenceUrl).Must(x => string.IsNullOrEmpty(x)).When(x => x.LinkCandidates.Count() > 1).WithMessage("Cannot set Ext Ref URL of multiple Link candidates.");
         }
     }
 }

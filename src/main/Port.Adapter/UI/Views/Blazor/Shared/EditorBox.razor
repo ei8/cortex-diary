@@ -1,4 +1,5 @@
-﻿@using ei8.Cortex.Diary.Application.Neurons;
+﻿@using Blazorise.Icons.FontAwesome
+@using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Library.Client;
 @using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.Common;
@@ -19,7 +20,9 @@
             <div class="col p-0">
                 <div class="container-fluid">
                     @if (!(this.SelectedOption == ContextMenuOption.New || this.SelectedOption == ContextMenuOption.Delete))
+                    // if editing
                     {
+                        // show option description
                         <div class="row">
                             <div class="col p-0 pt-1">
                                 <p class="p-0 m-0 font-weight-bold">
@@ -27,9 +30,10 @@
                                 </p>
                             </div>
                         </div>
-                        // if not editing or, if editing non root
+                        // if editing non root
                         @if (!this.editorNeuronViewModel.IsRoot)
                         {
+                            // show terminal properties
                             <div class="row">
                                 <div class="col p-0 pr-1 pt-1 col-auto">
                                     <NullableInputSelect class="btn btn-secondary btn-sm dropdown-toggle" T="RelativeType" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @bind-Value="this.editorNeuronViewModel.Type">
@@ -51,14 +55,31 @@
                                     <InputNumber class="form-control-xs" placeholder="Strength" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" style="width:80px" @bind-Value="this.editorNeuronViewModel.Strength" />
                                     <ValidationMessage For=@(() => this.editorNeuronViewModel.Strength) />
                                 </div>
-                                <div class="col p-0 pt-1">
+                                <div class="col p-0 pt-1 col-auto">
                                     <button type="button" class="btn btn-secondary btn-sm" style="width:100px" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @onclick="OnUseDefaults">Use Defaults</button>
+                                </div>
+                                <div class="col p-0 pt-1">
+                                    @if (string.IsNullOrWhiteSpace(this.editorNeuronViewModel.TerminalExternalReferenceUrl))
+                                    {
+                                        <button type="button" class="btn btn-light btn-sm ml-1 p-1 rounded-square" @onclick="this.OnSearchExternalReferenceTerminal" title="Internal Terminal (Click to edit)">
+                                            <Blazorise.Icon Name="FontAwesomeIcons.Brain" Class="px-1" />                                        
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-light btn-sm ml-1 p-1 rounded-square" @onclick="this.OnSearchExternalReferenceTerminal" title="@(this.editorNeuronViewModel.TerminalExternalReferenceUrl + " (Click to edit)")">
+                                            <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="px-1" />
+                                        </button>                                
+                                    }
+                                    <ValidationMessage For=@(() => this.editorNeuronViewModel.TerminalExternalReferenceUrl) />
                                 </div>
                             </div>
                         }
                     }
                     @if (this.SelectedOption != ContextMenuOption.LinkRelative)
+                    // if not just linking a relative
                     {
+                        // show tag text area
                         <div class="row">
                             <div class="col py-1 px-0">
                                 <InputTextArea class="form-control w-100" placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" rows="4" />
@@ -67,7 +88,9 @@
                         </div>
                     }
                     else
+                    // if linking relative
                     {
+                        // show item list view and search buttons
                         <div class="row">
                             <div class="col py-1 px-0">
                                 <ListView Items="@this.editorNeuronViewModel.LinkCandidates" Render="@true">
@@ -105,6 +128,20 @@
                         <div class="col-auto pb-1 p-0">
                             <input class="form-control-sm" style="width:150px" readonly value="@this.editorNeuronViewModel.RegionTag" />
                         </div>
+                        <div class="col-auto pb-1 p-0">
+                            @if (string.IsNullOrWhiteSpace(this.editorNeuronViewModel.NeuronExternalReferenceUrl))
+                            {
+                                <button type="button" class="btn btn-light btn-sm ml-1 p-1 rounded-square" @onclick="this.OnSearchExternalReferenceNeuron" title="Internal Neuron (Click to edit)">
+                                    <Blazorise.Icon Name="FontAwesomeIcons.Brain" Class="px-1" />                                        
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-light btn-sm ml-1 p-1 rounded-square" @onclick="this.OnSearchExternalReferenceNeuron" title="@(this.editorNeuronViewModel.NeuronExternalReferenceUrl + " (Click to edit)")">
+                                    <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="px-1" />
+                                </button>                                
+                            }                            
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,17 +171,21 @@
         </div>
     </EditForm>
 </div>
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
-<NeuronSearchBox @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" />
+<NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
+<NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" />
+<NeuronSearchBox AvatarUrl="@this.editorNeuronViewModel.NeuronExternalReferenceUrl" @bind-IsVisible="@this.IsSearchExternalReferenceNeuronVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceNeuron" />
+<NeuronSearchBox AvatarUrl="@this.editorNeuronViewModel.TerminalExternalReferenceUrl" @bind-IsVisible="@this.IsSearchExternalReferenceTerminalVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceTerminalRelative" />
 
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
+    private Neuron preEditCopy = null;
+
     private bool sending = false;
 
     [Parameter]
     public string AvatarUrl { get; set; }
 
-    private NeuronResult RemovingLinkNeuron { get; set; }
+    private Neuron RemovingLinkNeuron { get; set; }
 
     private ContextMenuOption selectedOption;
     [Parameter]
@@ -161,13 +202,16 @@
                 {
                     if (this.selectedNeuron != null)
                     {
+                        this.preEditCopy = new Neuron(this.selectedNeuron.Neuron);
+                        
                         // similar to NeuronViewModelBase.SetNeuron
                         this.editorNeuronViewModel.Id = this.selectedNeuron.Neuron.Id;
-                        this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
+                        this.editorNeuronViewModel.Tag = this.selectedNeuron.Neuron.Tag;
                         this.editorNeuronViewModel.RegionId = this.selectedNeuron.Neuron.Region.Id;
                         this.editorNeuronViewModel.RegionTag = this.selectedNeuron.Neuron.Region.Tag;
                         this.editorNeuronViewModel.Version = this.selectedNeuron.Neuron.Version;
                         this.editorNeuronViewModel.Type = this.selectedNeuron.Neuron.Type;
+                        this.editorNeuronViewModel.NeuronExternalReferenceUrl = this.selectedNeuron.Neuron.ExternalReferenceUrl;
 
                         if (this.selectedNeuron.Neuron.Type != RelativeType.NotSet)
                         {
@@ -177,6 +221,8 @@
                                 this.editorNeuronViewModel.Effect = (NeurotransmitterEffect)ie;
                             if (float.TryParse(this.selectedNeuron.Neuron.Terminal.Strength, out float fs))
                                 this.editorNeuronViewModel.Strength = fs;
+
+                            this.editorNeuronViewModel.TerminalExternalReferenceUrl = this.selectedNeuron.Neuron.Terminal.ExternalReferenceUrl;
 
                             // TODO: this.TerminalCreation = new AuthorEventInfo(neuron.Terminal.Creation);
                             //this.TerminalLastModification = new AuthorEventInfo(neuron.Terminal.LastModification);
@@ -262,6 +308,81 @@
 
     private bool IsSearchLinkNeuronVisible { get; set; } = false;
 
+    private NeuronViewModel selectedExternalReferenceNeuron;
+    private NeuronViewModel SelectedExternalReferenceNeuron
+    {
+        get => this.selectedExternalReferenceNeuron;
+        set
+        {
+            if (this.selectedExternalReferenceNeuron != value)
+            {
+                this.selectedExternalReferenceNeuron = value;                
+            }
+        }
+    }
+
+    private bool isSearchExternalReferenceNeuronVisible = false;
+    private bool IsSearchExternalReferenceNeuronVisible 
+    { 
+        get => this.isSearchExternalReferenceNeuronVisible;
+        set
+        {
+            if (this.isSearchExternalReferenceNeuronVisible != value)
+            {
+                this.isSearchExternalReferenceNeuronVisible = value;
+                
+                if (!this.isSearchExternalReferenceNeuronVisible)
+                {
+                    if (this.selectedExternalReferenceNeuron != null)
+                    {
+                        this.editorNeuronViewModel.NeuronExternalReferenceUrl = this.selectedExternalReferenceNeuron.Neuron.Url;
+                        this.selectedExternalReferenceNeuron = null;
+                    }
+                    else
+                        this.editorNeuronViewModel.NeuronExternalReferenceUrl = string.Empty;
+                }
+            }
+        } 
+    }
+
+    private NeuronViewModel selectedExternalReferenceTerminalRelative;
+    private NeuronViewModel SelectedExternalReferenceTerminalRelative
+    {
+        get => this.selectedExternalReferenceTerminalRelative;
+        set
+        {
+            if (this.selectedExternalReferenceTerminalRelative != value)
+            {
+                this.selectedExternalReferenceTerminalRelative = value;
+            }
+        }
+    }
+
+private bool isSearchExternalReferenceTerminalVisible = false;
+    private bool IsSearchExternalReferenceTerminalVisible 
+    { 
+        get => this.isSearchExternalReferenceTerminalVisible;
+        set
+        {
+            if (this.isSearchExternalReferenceTerminalVisible != value)
+            {
+                this.isSearchExternalReferenceTerminalVisible = value;
+
+                if (!this.isSearchExternalReferenceTerminalVisible)
+                {
+                    if (this.selectedExternalReferenceTerminalRelative != null)
+                    {
+                        this.editorNeuronViewModel.TerminalExternalReferenceUrl = this.selectedExternalReferenceTerminalRelative.Neuron.Terminal.Url;
+                        this.selectedExternalReferenceTerminalRelative = null;
+                    }
+                    else
+                        this.editorNeuronViewModel.TerminalExternalReferenceUrl = string.Empty;
+                }
+            }
+        }
+    }
+
+
     private async Task FormSubmitted(EditContext editContext)
     {
         bool formValid = editContext.Validate();
@@ -278,17 +399,31 @@
                             result.AvatarUrl,
                             Guid.NewGuid().ToString(),
                             this.editorNeuronViewModel.Tag,
-                            this.editorNeuronViewModel.RegionId
+                            this.editorNeuronViewModel.RegionId,
+                            this.editorNeuronViewModel.NeuronExternalReferenceUrl
                             );
                         description = "Neuron created";
                         break;
                     case ContextMenuOption.Edit:
-                        await this.neuronApplicationService.ChangeNeuronTag(
-                            result.AvatarUrl,
-                            this.editorNeuronViewModel.Id,
-                            this.editorNeuronViewModel.Tag,
-                            this.editorNeuronViewModel.Version
-                            );
+                        // TODO: indicate how many and which changes succeeded/failed
+                        if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
+                        {
+                            await this.neuronApplicationService.ChangeNeuronTag(
+                                result.AvatarUrl,
+                                this.editorNeuronViewModel.Id,
+                                this.editorNeuronViewModel.Tag,
+                                this.editorNeuronViewModel.Version
+                                );
+                        }
+                        if (this.editorNeuronViewModel.NeuronExternalReferenceUrl != this.preEditCopy.ExternalReferenceUrl)
+                        {
+                            await this.neuronApplicationService.ChangeNeuronExternalReferenceUrl(
+                                result.AvatarUrl,
+                                this.editorNeuronViewModel.Id,
+                                this.editorNeuronViewModel.NeuronExternalReferenceUrl,
+                                this.editorNeuronViewModel.Version
+                                );
+                        }
                         description = "Neuron saved";
                         break;
                     case ContextMenuOption.AddRelative:
@@ -301,7 +436,9 @@
                             this.editorNeuronViewModel.Type.Value,
                             this.editorNeuronViewModel.Tag,
                             this.editorNeuronViewModel.Effect.Value,
-                            this.editorNeuronViewModel.Strength.Value
+                            this.editorNeuronViewModel.Strength.Value,
+                            this.editorNeuronViewModel.NeuronExternalReferenceUrl,
+                            this.editorNeuronViewModel.TerminalExternalReferenceUrl
                             );
                         description = "Relative added";
                         break;
@@ -313,24 +450,29 @@
                             this.editorNeuronViewModel.Type.Value,
                             this.editorNeuronViewModel.LinkCandidates,
                             this.editorNeuronViewModel.Effect.Value,
-                            this.editorNeuronViewModel.Strength.Value
+                            this.editorNeuronViewModel.Strength.Value,
+                            this.editorNeuronViewModel.TerminalExternalReferenceUrl
                             );
                         description = "Relative linked";
                         break;
                 }
                 this.toastService.ShowSuccess($"{description} successfully.");
             }
-            catch (HttpRequestExceptionEx hex)
-            {
-                Blazor.Helper.ShowFriendlyHttpRequestExceptionEx(
-                    this.toastService, 
-                    hex, 
-                    $"An error occurred while processing the '{this.selectedOption.ToString()}' request:"
-                    );
-            }
             catch (Exception ex)
             {
-                this.toastService.ShowError(ex.Message);
+                string errorDescription, clipboardData;
+                if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out errorDescription, out clipboardData))
+                {
+                    errorDescription = ex.Message;
+                    clipboardData = ex.ToString();
+                }
+
+                Blazor.Helper.ShowFriendlyException(
+                    this.toastService,
+                    $"An error occurred while processing the '{this.selectedOption.ToString()}' request:",
+                    errorDescription,
+                    clipboardData
+                );
             }
             finally
             {
@@ -371,6 +513,15 @@
         this.IsSearchRegionNeuronVisible = true;
     }
 
+    private void OnSearchExternalReferenceNeuron()
+    {
+        this.IsSearchExternalReferenceNeuronVisible = true;
+    }
+
+    private void OnSearchExternalReferenceTerminal()
+    {
+        this.IsSearchExternalReferenceTerminalVisible = true;
+    }
     private string GetOptionDescription()
     {
         string result = string.Empty;
@@ -386,6 +537,6 @@
                 result = "Editing '{0}'";
                 break;
         }
-        return string.Format(result, (this.SelectedNeuron != null ? this.SelectedNeuron.Tag : string.Empty));
+        return string.Format(result, (this.SelectedNeuron != null ? this.SelectedNeuron.Neuron.Tag : string.Empty));
     }
 }

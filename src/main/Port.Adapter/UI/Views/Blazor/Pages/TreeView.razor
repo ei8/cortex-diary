@@ -34,6 +34,13 @@
                                     <button class="treeitembutton btn btn-light btn-xs ml-1 mr-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
                                         <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
                                     </button>
+                                    @if (
+                                        !string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||
+                                        (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl))
+                                    )
+                                    {
+                                        <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
+                                    }
                                 }
                                 @if (@child.ExpansionState == ExpansionState.Collapsed)
                                 {
@@ -80,18 +87,25 @@
                                         }
                                     }
                                 </div>
-                                <div class="col-auto p-1" style="@this.GetStyleByCreationAuthor(child.Neuron.IsCurrentUserCreationAuthor)">
-                                    @if (child.Neuron.RestrictionReasons.Count() > 0)
+                                <div class="col-auto p-1" style="@this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor)">
+                                    @if (child.Neuron.Validation.RestrictionReasons.Count() > 0)
                                     {
                                         <div class="tooltip-wrapper">
-                                            <span class="tooltip-wrapper-text">@((MarkupString) string.Join(Environment.NewLine, child.Neuron.RestrictionReasons.ToArray()))</span>
+                                            <span class="tooltip-wrapper-text">@((MarkupString) string.Join(Environment.NewLine, child.Neuron.Validation.RestrictionReasons.ToArray()))</span>
                                             <Blazorise.Icon Name="FontAwesomeIcons.Lock" IconStyle="IconStyle.Light" />
                                         </div>
                                     }
-                                    @child.Tag
+                                    @child.Neuron.Tag
                                 </div>
                                 @if (!this.ShouldRightJustifyBasedOnRoot(child))
                                 {
+                                    @if (
+                                        !string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||
+                                        (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl))
+                                    )
+                                    {
+                                        <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
+                                    }
                                     <button class="treeitembutton btn btn-light btn-xs ml-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
                                         <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
                                     </button>
@@ -196,7 +210,7 @@
 
     private bool ShouldRightJustify(NeuronViewModel child)
     {
-        return child.Neuron.IsCurrentUserCreationAuthor && child.Neuron.Type == Library.Common.RelativeType.NotSet;
+        return child.Neuron.Validation.IsCurrentUserCreationAuthor && child.Neuron.Type == Library.Common.RelativeType.NotSet;
     }
 
     private bool ShouldRightJustifyBasedOnRoot(NeuronViewModel child)

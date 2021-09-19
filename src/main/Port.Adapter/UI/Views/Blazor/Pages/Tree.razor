@@ -183,7 +183,7 @@ else
                         await this.jsRuntime.InvokeAsync<string>("PlaySound");
 
                     this.NewItemsCount += newNeurons.Count();
-                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new NeuronResult(n), this.AvatarUrl, this.neuronQueryService)));
+                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService)));
                     await this.InvokeAsync(() => this.StateHasChanged());
                 }
             }
@@ -201,11 +201,11 @@ else
         this.refreshTimer?.Dispose();
     }
 
-    private async static Task<IEnumerable<NeuronResult>> GetOrderedNeurons(Tree value)
+    private async static Task<IEnumerable<Neuron>> GetOrderedNeurons(Tree value)
     {
         var ns = (await value.neuronQueryService.SendQuery(
                     value.AvatarUrl
-                    )).Neurons;
+                    )).Items;
 
         if (value.RenderDirection == RenderDirectionValue.BottomToTop)
             ns = ns.Reverse().ToArray();
@@ -276,7 +276,7 @@ else
     }
 
     private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
-            string.Format(format, this.SelectedNeuron.Tag) :
+            string.Format(format, this.SelectedNeuron.Neuron.Tag) :
             "[Error: Not a valid Neuron]";
 
     private async Task Reload()
@@ -286,24 +286,28 @@ else
             await this.SetReloading(true);
             this.Children.Clear();
             var ns = await Tree.GetOrderedNeurons(this);
-            var children = ns.Select(nr => new NeuronViewModel(new NeuronResult(nr), this.AvatarUrl, this.neuronQueryService));
+            var children = ns.Select(nr => new NeuronViewModel(new Neuron(nr), this.AvatarUrl, this.neuronQueryService));
             ((List<NeuronViewModel>)this.Children).AddRange(children);
             this.NewItemsCount = 0;
 
             if (this.RenderDirection == RenderDirectionValue.BottomToTop)
                 await this.ScrollToFragment("bottom");
         }
-        catch (HttpRequestExceptionEx hex)
-        {
-            Blazor.Helper.ShowFriendlyHttpRequestExceptionEx(
-                this.toastService,
-                hex,
-                $"An error occurred while reloading the Tree."
-                );
-        }
         catch (Exception ex)
         {
-            this.toastService.ShowError(ex.Message);
+            string description, clipboardData;
+            if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out description, out clipboardData))
+            {
+                description = ex.Message;
+                clipboardData = ex.ToString();
+            }
+
+            Blazor.Helper.ShowFriendlyException(
+                this.toastService,
+                "An error occurred while reloading the Tree.",
+                description,
+                clipboardData
+            );
         }
         finally
         {
@@ -390,7 +394,7 @@ else
 
     private static void ExtractNodes(IEnumerable<NeuronViewModel> children, List<Node> allNodes)
     {
-        allNodes.AddRange(children.Select(c => new Node { id = c.Neuron.Id, tag = c.Tag }).ToArray());
+        allNodes.AddRange(children.Select(c => new Node { id = c.Neuron.Id, tag = c.Neuron.Tag }).ToArray());
 
         children.ToList().ForEach(c => Tree.ExtractNodes(c.Children, allNodes));
     }

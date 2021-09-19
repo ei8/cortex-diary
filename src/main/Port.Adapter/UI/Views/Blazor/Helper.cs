@@ -21,7 +21,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             optionSetter(ContextMenuOption.New);
         }
 
-        internal static async Task CreateRelativeCore(INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType, string tag, NeurotransmitterEffect effect, float strength)
+        internal static async Task CreateRelativeCore(INeuronApplicationService neuronApplicationService, ITerminalApplicationService terminalApplicationService, string avatarUrl, string regionId, string targetNeuronId, RelativeType relativeType, string tag, NeurotransmitterEffect effect, float strength, string neuronExternalReferenceUrl, string terminalExternalReferenceUrl)
         {
             var presynapticNeuronId = string.Empty;
             var postsynapticNeuronId = string.Empty;
@@ -42,7 +42,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 avatarUrl,
                 newNeuronId,
                 tag,
-                regionId
+                regionId,
+                neuronExternalReferenceUrl
             );
             await terminalApplicationService.CreateTerminal(
                 avatarUrl,
@@ -50,11 +51,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 presynapticNeuronId,
                 postsynapticNeuronId,
                 effect,
-                strength
+                strength,
+                terminalExternalReferenceUrl
                 );
         }
 
-        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<NeuronResult> candidates, NeurotransmitterEffect effect, float strength)
+        public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<Neuron> candidates, NeurotransmitterEffect effect, float strength, string terminalExternalReferenceUrl)
         {
             foreach (var n in candidates)
             {
@@ -64,7 +66,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                     relativeType == RelativeType.Presynaptic ? n.Id : targetNeuronId,
                     relativeType == RelativeType.Presynaptic ? targetNeuronId : n.Id,
                     effect,
-                    strength
+                    strength,
+                    terminalExternalReferenceUrl
                     );
             }
         }
@@ -80,7 +83,23 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                     : string.Empty;
         }
 
-        public static void ShowFriendlyHttpRequestExceptionEx(IToastService toastService, HttpRequestExceptionEx hex, string message)
+        public static bool TryGetHttpRequestExceptionExDetalis(Exception exception, out string description, out string clipboardData)
+        {
+            bool result = false;
+            description = string.Empty;
+            clipboardData = string.Empty;
+            if (exception is HttpRequestExceptionEx)
+            {
+                var m = System.Text.RegularExpressions.Regex.Match(exception.Message, @"Description\"":\""(?<Description>(?!\"",\""Type\"").*)\"",\""Type\""");
+                if(m.Success)
+                    description = m.Groups["Description"].Value;
+                clipboardData = exception.Message;
+                result = true;
+            }
+            return result;        
+        }
+
+        public static void ShowFriendlyException(IToastService toastService, string message, string description, string clipboardData)
         {
             toastService.ShowError(
                     new RenderFragment(builder => {
@@ -89,13 +108,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                         builder.CloseElement();
                         builder.OpenElement(3, "br");
                         builder.CloseElement();
-
-                        var m = System.Text.RegularExpressions.Regex.Match(hex.Message, @"Description\"":\""(?<Description>(?!\"",\""Type\"").*)\"",\""Type\""");
+                        
                         int x = 4;
-                        if (m.Success)
+                        if (!string.IsNullOrWhiteSpace(description))
                         {
                             builder.OpenElement(x++, "i");
-                            builder.AddContent(x++, m.Groups["Description"].Value);
+                            builder.AddContent(x++, description);
                             builder.CloseElement();
                             builder.OpenElement(x++, "br");
                             builder.CloseElement();
@@ -104,7 +122,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                         }
 
                         builder.OpenElement(x++, "button");
-                        builder.AddAttribute(x++, "onclick", $"copyToClipboard('{System.Text.Json.JsonEncodedText.Encode(hex.Message)}');");
+                        builder.AddAttribute(x++, "onclick", $"copyToClipboard('{System.Text.Json.JsonEncodedText.Encode(clipboardData)}');");
                         builder.AddContent(x++, "Copy to clipboard");
                         builder.CloseElement();
                     }

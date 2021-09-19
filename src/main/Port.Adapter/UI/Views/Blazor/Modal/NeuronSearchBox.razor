@@ -50,7 +50,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary btn-sm" @onclick="this.Select">Select</button>
+                    <button class="btn btn-primary btn-sm" @onclick="() => this.SelectNeuron(this.TempSelectedNeuron)">Select</button>
                 </div>
             </div>
         </div>
@@ -62,7 +62,8 @@
         this.Children = new NeuronViewModel[0];
     }
 
-    private string AvatarUrl { get; set; }
+    [Parameter]
+    public string AvatarUrl { get; set; }
 
     private NeuronViewModel[] Children { get; set; } = new NeuronViewModel[0];
 
@@ -86,8 +87,8 @@
 
     private void SelectNeuron(NeuronViewModel value)
     {
-        this.IsVisible = false;
         this.SelectedNeuron = value;
+        this.IsVisible = false;        
     }
 
     private NeuronViewModel TempSelectedNeuron { get; set; }
@@ -113,14 +114,8 @@
     private async Task Load()
     {
         var children = new List<NeuronViewModel>();
-        var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Neurons;
-        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new NeuronResult(n), this.AvatarUrl, this.NeuronQueryService)));
+        var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Items;
+        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.NeuronQueryService)));
         this.Children = children.ToArray();
-    }
-
-    private async Task Select()
-    {
-        this.IsVisible = false;
-        this.SelectedNeuron = this.TempSelectedNeuron;
     }
 }
