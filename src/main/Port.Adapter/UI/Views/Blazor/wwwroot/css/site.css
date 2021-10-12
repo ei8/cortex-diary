@@ -309,6 +309,9 @@ text {
 
 .treeitembutton{
     visibility: hidden;
+    height: 25px;
+    width: 25px;
+    padding: .1rem .1rem !important;
 }
 
 .treeitem:hover .treeitembutton {

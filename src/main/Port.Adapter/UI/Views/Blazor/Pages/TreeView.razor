@@ -95,7 +95,18 @@
                                             <Blazorise.Icon Name="FontAwesomeIcons.Lock" IconStyle="IconStyle.Light" />
                                         </div>
                                     }
-                                    @child.Neuron.Tag
+                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.Tag))
+                                    {
+                                        var tagLines = child.Neuron.Tag.Split("\n");
+                                        @foreach(var line in tagLines)
+                                        {
+                                            @if (Array.IndexOf(tagLines, line) > 0)
+                                            {
+                                                <br />
+                                            }
+                                            @line
+                                        }                                        
+                                    }
                                 </div>
                                 @if (!this.ShouldRightJustifyBasedOnRoot(child))
                                 {
