@@ -104,7 +104,18 @@
                                             {
                                                 <br />
                                             }
-                                            @line
+                                            @foreach(var c in line)
+                                            {
+                                                @if (c == ' ')
+                                                {
+                                                    @:&nbsp;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            @line.TrimStart()
                                         }                                        
                                     }
                                 </div>

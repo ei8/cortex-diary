@@ -138,10 +138,20 @@
 
             var text = svg.append("g").selectAll("text")
                 .data(force.nodes())
-                .enter().append("text")
+                .enter()
+                .append("text")
                 .attr("x", -7)
-                .attr("y", 17)
-                .text(function (d) { return d.tag; });
+                .attr("y", 7);
+            
+            text.selectAll("tspan.text")
+                .data(d => d.tag.split("\n"))
+                .enter()
+                .append("tspan")
+                .attr("class", "text")
+                .text(d => d.replace(/ /g, '\u00a0'))
+                .attr("x", -7)
+                .attr("dx", 0)
+                .attr("dy", 10);
 
             // Use elliptical arc path segments to doubly-encode directionality.
             function tick() {
