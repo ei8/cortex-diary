@@ -61,7 +61,8 @@
     private async void Close()
     {
         this.IsVisible = false;
-        await this.OnCloseCallback.InvokeAsync(this);
+        if (this.OnCloseCallback.HasDelegate)
+            await this.OnCloseCallback.InvokeAsync(this);
     }
 
     private async void Confirm()

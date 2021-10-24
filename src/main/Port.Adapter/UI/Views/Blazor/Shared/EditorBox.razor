@@ -1,5 +1,6 @@
 ﻿@using Blazorise.Icons.FontAwesome
 @using ei8.Cortex.Diary.Application.Neurons;
+@using ei8.Cortex.Diary.Application.Notifications;
 @using ei8.Cortex.Library.Client;
 @using ei8.Cortex.Library.Common;
 @using ei8.Cortex.Diary.Port.Adapter.Common;
@@ -9,10 +10,15 @@
 @using neurUL.Cortex.Common;
 @using neurUL.Common.Http;
 @using Blazored.FluentValidation;
+
+@inject INeuronQueryService neuronQueryService;
 @inject INeuronApplicationService neuronApplicationService;
+@inject INotificationApplicationService notificationApplicationService;
 @inject ITerminalApplicationService terminalApplicationService;
 @inject IToastService toastService;
 
+<ConfirmationBox Title="Confirm Owner Creation" Message='This Avatar needs to be initialized with an Owner Neuron. Do you wish to continue creating one?' @bind-IsVisible="@this.IsConfirmCreateOwnerVisible" OnConfirmCallback="@this.ConfirmCreateOwner" />
+<ConfirmationBox Title="Similar Neuron Exists" Message='At least one other Neuron containing a similar Tag value already exists. Are you sure you wish to continue?' @bind-IsVisible="@this.IsConfirmCreateSimilarVisible" OnConfirmCallback="@this.ConfirmCreateSimilar" />
 <div class="container-fluid">
     <EditForm Model=@this.editorNeuronViewModel OnSubmit=@this.FormSubmitted>
         <FluentValidationValidator />
@@ -358,7 +364,7 @@
         }
     }
 
-private bool isSearchExternalReferenceTerminalVisible = false;
+    private bool isSearchExternalReferenceTerminalVisible = false;
     private bool IsSearchExternalReferenceTerminalVisible 
     { 
         get => this.isSearchExternalReferenceTerminalVisible;
@@ -382,104 +388,104 @@ private bool isSearchExternalReferenceTerminalVisible = false;
         }
     }
 
-
     private async Task FormSubmitted(EditContext editContext)
     {
         bool formValid = editContext.Validate();
-        if (formValid && QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result) && !this.sending)
+        if (formValid)
         {
-            string description = string.Empty;
-            try
-            {
-                this.sending = true;
-                switch (this.SelectedOption)
-                {
-                    case ContextMenuOption.New:
-                        await this.neuronApplicationService.CreateNeuron(
-                            result.AvatarUrl,
-                            Guid.NewGuid().ToString(),
-                            this.editorNeuronViewModel.Tag,
-                            this.editorNeuronViewModel.RegionId,
-                            this.editorNeuronViewModel.NeuronExternalReferenceUrl
-                            );
-                        description = "Neuron created";
-                        break;
-                    case ContextMenuOption.Edit:
-                        // TODO: indicate how many and which changes succeeded/failed
-                        if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
-                        {
-                            await this.neuronApplicationService.ChangeNeuronTag(
-                                result.AvatarUrl,
-                                this.editorNeuronViewModel.Id,
+            await this.ProcessSend(
+                async (rq, pi) => {
+                    bool result = false;
+                    switch (this.SelectedOption)
+                    {
+                        case ContextMenuOption.New:
+                            pi.Description = "Neuron creation";
+                            this.IsConfirmCreateOwnerVisible = 
+                                (await this.notificationApplicationService.GetNotificationLog(rq.AvatarUrl, string.Empty))
+                                .NotificationList.Count == 0;
+                            
+                            if (!this.IsConfirmCreateOwnerVisible)
+                            {
+                                var items = (await this.neuronQueryService.GetNeurons(rq.AvatarUrl, neuronQuery: new NeuronQuery() { TagContains = new string[] { this.editorNeuronViewModel.Tag } })).Items;
+                                this.IsConfirmCreateSimilarVisible = items.Any();
+
+                                if (!this.IsConfirmCreateSimilarVisible)
+                                {
+                                    await this.neuronApplicationService.CreateNeuron(
+                                        rq.AvatarUrl,
+                                        Guid.NewGuid().ToString(),
+                                        this.editorNeuronViewModel.Tag,
+                                        this.editorNeuronViewModel.RegionId,
+                                        this.editorNeuronViewModel.NeuronExternalReferenceUrl
+                                        );
+                                    result = true;
+                                }
+                                else
+                                    pi.Suspend = true;                                
+                            }
+                            else
+                                pi.Suspend = true;
+
+                            break;
+                        case ContextMenuOption.Edit:
+                            pi.Description = "Neuron modification";
+                            // TODO: indicate how many and which changes succeeded/failed
+                            if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
+                            {
+                                await this.neuronApplicationService.ChangeNeuronTag(
+                                    rq.AvatarUrl,
+                                    this.editorNeuronViewModel.Id,
+                                    this.editorNeuronViewModel.Tag,
+                                    this.editorNeuronViewModel.Version
+                                    );
+                            }
+                            if (this.editorNeuronViewModel.NeuronExternalReferenceUrl != this.preEditCopy.ExternalReferenceUrl)
+                            {
+                                await this.neuronApplicationService.ChangeNeuronExternalReferenceUrl(
+                                    rq.AvatarUrl,
+                                    this.editorNeuronViewModel.Id,
+                                    this.editorNeuronViewModel.NeuronExternalReferenceUrl,
+                                    this.editorNeuronViewModel.Version
+                                    );
+                            }
+                            result = true;                            
+                            break;
+                        case ContextMenuOption.AddRelative:
+                            pi.Description = "Relative addition"; 
+                            await Blazor.Helper.CreateRelativeCore(
+                                this.neuronApplicationService,
+                                this.terminalApplicationService,
+                                rq.AvatarUrl,
+                                this.editorNeuronViewModel.RegionId,
+                                this.SelectedNeuron.Neuron.Id,
+                                this.editorNeuronViewModel.Type.Value,
                                 this.editorNeuronViewModel.Tag,
-                                this.editorNeuronViewModel.Version
-                                );
-                        }
-                        if (this.editorNeuronViewModel.NeuronExternalReferenceUrl != this.preEditCopy.ExternalReferenceUrl)
-                        {
-                            await this.neuronApplicationService.ChangeNeuronExternalReferenceUrl(
-                                result.AvatarUrl,
-                                this.editorNeuronViewModel.Id,
+                                this.editorNeuronViewModel.Effect.Value,
+                                this.editorNeuronViewModel.Strength.Value,
                                 this.editorNeuronViewModel.NeuronExternalReferenceUrl,
-                                this.editorNeuronViewModel.Version
+                                this.editorNeuronViewModel.TerminalExternalReferenceUrl
                                 );
-                        }
-                        description = "Neuron saved";
-                        break;
-                    case ContextMenuOption.AddRelative:
-                        await Blazor.Helper.CreateRelativeCore(
-                            this.neuronApplicationService,
-                            this.terminalApplicationService,
-                            result.AvatarUrl,
-                            this.editorNeuronViewModel.RegionId,
-                            this.SelectedNeuron.Neuron.Id,
-                            this.editorNeuronViewModel.Type.Value,
-                            this.editorNeuronViewModel.Tag,
-                            this.editorNeuronViewModel.Effect.Value,
-                            this.editorNeuronViewModel.Strength.Value,
-                            this.editorNeuronViewModel.NeuronExternalReferenceUrl,
-                            this.editorNeuronViewModel.TerminalExternalReferenceUrl
-                            );
-                        description = "Relative added";
-                        break;
-                    case ContextMenuOption.LinkRelative:
-                        await Blazor.Helper.LinkRelativeCore(
-                            this.terminalApplicationService,
-                            result.AvatarUrl,
-                            this.SelectedNeuron.Neuron.Id,
-                            this.editorNeuronViewModel.Type.Value,
-                            this.editorNeuronViewModel.LinkCandidates,
-                            this.editorNeuronViewModel.Effect.Value,
-                            this.editorNeuronViewModel.Strength.Value,
-                            this.editorNeuronViewModel.TerminalExternalReferenceUrl
-                            );
-                        description = "Relative linked";
-                        break;
-                }
-                this.toastService.ShowSuccess($"{description} successfully.");
-            }
-            catch (Exception ex)
-            {
-                string errorDescription, clipboardData;
-                if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out errorDescription, out clipboardData))
-                {
-                    errorDescription = ex.Message;
-                    clipboardData = ex.ToString();
-                }
-
-                Blazor.Helper.ShowFriendlyException(
-                    this.toastService,
-                    $"An error occurred while processing the '{this.selectedOption.ToString()}' request:",
-                    errorDescription,
-                    clipboardData
-                );
-            }
-            finally
-            {
-                this.sending = false;
-            }
-
-            Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
+                            result = true;
+                            break;
+                        case ContextMenuOption.LinkRelative:
+                            pi.Description = "Relative linking";
+                            await Blazor.Helper.LinkRelativeCore(
+                                this.terminalApplicationService,
+                                rq.AvatarUrl,
+                                this.SelectedNeuron.Neuron.Id,
+                                this.editorNeuronViewModel.Type.Value,
+                                this.editorNeuronViewModel.LinkCandidates,
+                                this.editorNeuronViewModel.Effect.Value,
+                                this.editorNeuronViewModel.Strength.Value,
+                                this.editorNeuronViewModel.TerminalExternalReferenceUrl
+                                );
+                            result = true;
+                            break;
+                    }
+                    return result;
+                },
+                () => Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o)
+            );
         }
     }
 
@@ -538,5 +544,84 @@ private bool isSearchExternalReferenceTerminalVisible = false;
                 break;
         }
         return string.Format(result, (this.SelectedNeuron != null ? this.SelectedNeuron.Neuron.Tag : string.Empty));
+    }
+
+    private async Task ProcessSend(Func<QueryUrl, ProcessInfo, Task<bool>> processCore, Action postProcess)
+    {
+        if(QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery) && !this.sending)
+        {
+            var processInfo = new ProcessInfo();
+            try
+            {
+                this.sending = true;
+                var success = (await processCore.Invoke(resultQuery, processInfo));
+
+                if (!processInfo.Suspend && success)
+                    this.toastService.ShowSuccess($"{processInfo.Description} successful.");
+            }
+            catch (Exception ex)
+            {
+                string errorDescription, clipboardData;
+                if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out errorDescription, out clipboardData))
+                {
+                    errorDescription = ex.Message;
+                    clipboardData = ex.ToString();
+                }
+
+                Blazor.Helper.ShowFriendlyException(
+                    this.toastService,
+                    $"{processInfo.Description} failed:",
+                    errorDescription,
+                    clipboardData
+                );
+            }
+            finally
+            {
+                this.sending = false;
+            }
+
+            if (!processInfo.Suspend)
+                postProcess.Invoke();
+        }
+    }
+
+    private bool IsConfirmCreateSimilarVisible { get; set; } = false;
+
+    private async void ConfirmCreateSimilar()
+    {
+        await this.ProcessSend(
+                async (rq, pi) => {
+                    pi.Description = "Neuron creation";
+                    await this.neuronApplicationService.CreateNeuron(
+                        rq.AvatarUrl,
+                        Guid.NewGuid().ToString(),
+                        this.editorNeuronViewModel.Tag,
+                        this.editorNeuronViewModel.RegionId,
+                        this.editorNeuronViewModel.NeuronExternalReferenceUrl
+                        );
+                    return true;
+                },
+                () => Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o)
+            );
+    }
+
+    private bool IsConfirmCreateOwnerVisible { get; set; } = false;
+
+    private async void ConfirmCreateOwner()
+    {
+        await this.ProcessSend(
+            async (rq, pi) => {
+                pi.Description = "Owner Neuron creation";
+                await this.neuronApplicationService.CreateNeuron(
+                    rq.AvatarUrl,
+                    Guid.NewGuid().ToString(),
+                    this.editorNeuronViewModel.Tag,
+                    this.editorNeuronViewModel.RegionId,
+                    this.editorNeuronViewModel.NeuronExternalReferenceUrl
+                    );
+                return true;
+            },
+            () => Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o)
+        );
     }
 }
