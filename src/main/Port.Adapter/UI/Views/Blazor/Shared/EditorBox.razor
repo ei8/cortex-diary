@@ -406,7 +406,13 @@
                             
                             if (!this.IsConfirmCreateOwnerVisible)
                             {
-                                var items = (await this.neuronQueryService.GetNeurons(rq.AvatarUrl, neuronQuery: new NeuronQuery() { TagContains = new string[] { this.editorNeuronViewModel.Tag } })).Items;
+                                var items = (await this.neuronQueryService.GetNeurons(
+                                    rq.AvatarUrl, 
+                                    neuronQuery: new NeuronQuery() { 
+                                        TagContains = new string[] { this.editorNeuronViewModel.Tag },
+                                        TagContainsIgnoreWhitespace = true
+                                    })
+                                ).Items;
                                 this.IsConfirmCreateSimilarVisible = items.Any();
 
                                 if (!this.IsConfirmCreateSimilarVisible)
