@@ -2,10 +2,12 @@
 @using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 @using Microsoft.AspNetCore.Authentication
 @using System.Globalization
+@using ei8.Cortex.Diary.Application.Settings
 
 @namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@inject ISettingsService settingsService
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,7 +15,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>d# neurUL Studio</title>
-    <base href="~/" />
+    <base href=@(this.settingsService.BasePath + "/") />
     <link rel="shortcut icon" type="image/ico" href="~/dasz.ico">
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />

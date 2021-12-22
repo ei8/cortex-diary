@@ -91,7 +91,7 @@ else
     <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
 </div>
 
-<audio id="sound" src="/media/alert.wav" />
+<audio id="sound" src=@(this.settingsService.BasePath + "/media/alert.wav") />
 
 @code
 {

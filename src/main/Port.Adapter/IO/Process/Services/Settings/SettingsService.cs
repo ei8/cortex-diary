@@ -60,6 +60,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdClientId = "client_id";
         private const string IdClientSecret = "client_secret";
         private const string IdDatabasePath = "database_path";
+        private const string IdBasePath = "base_path";
+        private const string IdValidateServerCertificate = "validate_server_certificate";
         private const string IdLoginCallback = "login_callback";
         private const string IdLogoutCallback = "logout_callback";
         private const string IdApplicationUrl = "application_url";
@@ -74,6 +76,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string ClientIdDefault = Identity.Constants.ClientId;
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
         private readonly string DatabasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.DatabasePath);
+        private readonly string BasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.BasePath);
+        private readonly bool ValidateServerCertificateDefault = 
+            bool.TryParse(Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ValidateServerCertificate), out bool result) ? 
+                result : 
+                true;
         private readonly string LoginCallbackDefault = string.Empty;
         private readonly string LogoutCallbackDefault = string.Empty;
         private readonly string ApplicationUrlDefault = string.Empty;
@@ -130,6 +137,18 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         {
             get => AppSettings.GetValueOrDefault(IdDatabasePath, DatabasePathDefault);
             set => AppSettings.AddOrUpdateValue(IdDatabasePath, value);
+        }
+
+        public string BasePath
+        {
+            get => AppSettings.GetValueOrDefault(IdBasePath, BasePathDefault);
+            set => AppSettings.AddOrUpdateValue(IdBasePath, value);
+        }
+
+        public bool ValidateServerCertificate
+        {
+            get => AppSettings.GetValueOrDefault(IdValidateServerCertificate, ValidateServerCertificateDefault);
+            set => AppSettings.AddOrUpdateValue(IdValidateServerCertificate, value);
         }
         #endregion
 
