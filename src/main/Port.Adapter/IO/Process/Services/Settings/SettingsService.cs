@@ -73,7 +73,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly bool AllowGpsLocationDefault = false;
         private readonly int UpdateCheckIntervalDefault = int.Parse(Environment.GetEnvironmentVariable(EnvironmentVariableKeys.UpdateCheckInterval));
         private readonly string OidcAuthorityDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.OidcAuthority);
-        private readonly string ClientIdDefault = Identity.Constants.ClientId;
+        private readonly string ClientIdDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientId);
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
         private readonly string DatabasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.DatabasePath);
         private readonly string BasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.BasePath);
