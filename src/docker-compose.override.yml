@@ -6,15 +6,13 @@ services:
       - ./var1.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:64003;http://+:80
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=eB245ebK28ubsQJR
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_URLS=http://+:64103;http://+:80
     volumes:
       - ~/.aspnet/https:/https:ro
-      - /C/ei8/avatars/prod/sample:/C/db
+      - /C/ei8/avatars/dev/test:/C/db
     ports:
-      - 192.168.1.110:64003:64003
+      - 192.168.1.110:64103:64103
 networks:
     default:
         external:
-            name: sample_default
+            name: test_default

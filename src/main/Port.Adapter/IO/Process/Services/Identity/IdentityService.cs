@@ -95,7 +95,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
                 );
             return es;
             // TODO: use something other than bearerToken
-            // DEL:return $"{identityServerInfo.LogoutEndpoint}?id_token_hint={bearerToken}&post_logout_redirect_uri={WebUtility.UrlEncode(identityServerInfo.LogoutCallback)}&state={bearerToken}";
         }
 
         public async Task<UserInfoResponse> GetUserInfoAsync(string bearerToken, string userInfoEndpoint)

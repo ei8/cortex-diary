@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -58,23 +60,39 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
 
-            services.AddHttpClient(Options.DefaultName)
-                .ConfigurePrimaryHttpMessageHandler(
-                // TODO: REMOVE ONCE CERTIFICATE SORTED
-                () => new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator }
-                );
-            services.AddScoped<ITokenProvider, TokenProvider>();
-            services.AddScoped<ITokenManager, TokenManager>();
             services.AddScoped<ISettingsServiceImplementation, SettingsServiceImplementation>();
             services.AddScoped<IDependencyService, DependencyService>();
             services.AddScoped<ISettingsService, SettingsService>();
+            
+            var sp = services.BuildServiceProvider();
+            var ss = sp.GetService<ISettingsService>();
+
+            var hcb = services.AddHttpClient(Options.DefaultName);
+
+            if (!ss.ValidateServerCertificate)
+            {
+                hcb.ConfigurePrimaryHttpMessageHandler(
+                    () => new HttpClientHandler() { 
+                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator 
+                    }
+                );
+            }
+
+            services.AddScoped<ITokenProvider, TokenProvider>();
+            services.AddScoped<ITokenManager, TokenManager>();
             services.AddScoped<IRequestProvider, RequestProvider>(sp =>
             {
                 var result = new RequestProvider();
+
                 result.SetHttpClientHandler(
-                    // TODO: REMOVE ONCE CERTIFICATE SORTED
-                    new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator }
+                    ss.ValidateServerCertificate ?
+                        new HttpClientHandler() :
+                        new HttpClientHandler() {
+                            ServerCertificateCustomValidationCallback = 
+                                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                        }
                     );
+
                 return result;
             });
             services.AddScoped<IIdentityService, IdentityService>();
@@ -88,9 +106,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<INeuronQueryClient, HttpNeuronQueryClient>();
             var vas = new ViewApplicationService(new ViewRepository());
             services.AddSingleton<IEnumerable<View>>(vas.GetAll().Result);
-            
-            var sp = services.BuildServiceProvider();
-
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -100,7 +115,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                var ss = sp.GetService<ISettingsService>();
                 options.Authority = ss.OidcAuthority;                
                 options.ClientId = ss.ClientId;
                 options.ClientSecret = ss.ClientSecret;
@@ -115,18 +129,34 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.TokenValidationParameters.NameClaimType = "name";
-                // TODO: REMOVE ONCE CERTIFICATE SORTED
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-                options.BackchannelHttpHandler = handler;
+                options.BackchannelHttpHandler =
+                    ss.ValidateServerCertificate ?
+                        new HttpClientHandler() :
+                        new HttpClientHandler()
+                        {
+                            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                        };
+                options.RequireHttpsMetadata = ss.OidcAuthority.ToUpper().StartsWith("HTTPS");
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsService settings)
         {
-            app.UsePathBase("/d23");
-
+            app.Use((context, next) =>
+            {
+                // TODO:var prefix = context.Request.Headers["x-forwarded-prefix"];
+                //if (!StringValues.IsNullOrEmpty(prefix))
+                //{
+                context.Request.PathBase = PathString.FromUriComponent(settings.BasePath);// prefix.ToString());
+                    // TODO: subtract PathBase from Path if needed.
+                //}
+                return next();
+            });
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
