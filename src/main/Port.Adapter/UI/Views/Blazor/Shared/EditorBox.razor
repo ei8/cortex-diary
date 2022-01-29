@@ -283,6 +283,29 @@
                 {
                     this.editorNeuronViewModel.RegionId = this.selectedRegionNeuron.Neuron.Id;
                     this.editorNeuronViewModel.RegionTag = this.selectedRegionNeuron.Neuron.Tag;
+                    this.editorNeuronViewModel.ClearInitialRegion();
+                }
+                else
+                    this.editorNeuronViewModel.InitializeRegion();
+            }
+        }
+    }
+
+    private NeuronViewModel initialRegionNeuron;
+    [Parameter]
+    public NeuronViewModel InitialRegionNeuron
+    {
+        get => this.initialRegionNeuron;
+        set
+        {
+            if (this.initialRegionNeuron != value)
+            {
+                this.initialRegionNeuron = value;
+
+                if (this.initialRegionNeuron != null)
+                {
+                    this.editorNeuronViewModel.InitialRegionId = this.initialRegionNeuron.Neuron.Id;
+                    this.editorNeuronViewModel.InitialRegionTag = this.initialRegionNeuron.Neuron.Tag;
                 }
                 else
                     this.editorNeuronViewModel.InitializeRegion();

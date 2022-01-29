@@ -17,6 +17,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
         public float? Strength { get; set; }
         public string RegionId { get; set; }
         public string RegionTag { get; set; }
+        public string InitialRegionId { get; set; } = string.Empty;
+        public string InitialRegionTag { get; set; } = EditorNeuronViewModel.BaseRegionTag;
         public string NeuronExternalReferenceUrl { get; set; }
         public string TerminalExternalReferenceUrl { get; set; }
         public IReadOnlyList<Neuron> LinkCandidates { get; set; }
@@ -40,8 +42,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
         public void InitializeRegion()
         {
-            this.RegionId = string.Empty;
-            this.RegionTag = EditorNeuronViewModel.BaseRegionTag;
+            this.RegionId = this.InitialRegionId;
+            this.RegionTag = this.InitialRegionTag;
+        }
+
+        public void ClearInitialRegion()
+        {
+            this.InitialRegionId = string.Empty;
+            this.InitialRegionTag = EditorNeuronViewModel.BaseRegionTag;
         }
     }
 }

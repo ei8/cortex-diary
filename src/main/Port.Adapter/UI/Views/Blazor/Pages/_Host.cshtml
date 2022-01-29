@@ -14,7 +14,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>d# neurUL Studio</title>
+    <title>neurUL Code</title>
     <base href=@(this.settingsService.BasePath + "/") />
     <link rel="shortcut icon" type="image/ico" href="~/dasz.ico">
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
@@ -146,7 +146,7 @@
                 .attr("y", 7);
             
             text.selectAll("tspan.text")
-                .data(d => d.tag.split("\n"))
+                .data(d => (d.tag || '').split("\n") || "")
                 .enter()
                 .append("tspan")
                 .attr("class", "text")

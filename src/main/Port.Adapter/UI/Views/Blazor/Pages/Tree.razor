@@ -88,7 +88,7 @@ else
     </div>
 }
 <div class="footer px-4 h-auto" style="z-index:2">
-    <EditorBox AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
+    <EditorBox AvatarUrl="@this.AvatarUrl" InitialRegionNeuron="@this.InitialRegionNeuron" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
 </div>
 
 <audio id="sound" src=@(this.settingsService.BasePath + "/media/alert.wav") />
@@ -138,7 +138,8 @@ else
                 this.StateHasChanged();
             }
             bool urlSet = false;
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("avatarUrl", out var encodedAvatarUrl))
+            var query = QueryHelpers.ParseQuery(uri.Query);
+            if (query.TryGetValue("avatarUrl", out var encodedAvatarUrl))
             {
                 Uri uriResult;
                 string decodedUrl = Nancy.Helpers.HttpUtility.UrlDecode(encodedAvatarUrl);
@@ -147,10 +148,22 @@ else
                 if (validUrl)
                 {
                     urlSet = true;
+                    NeuronViewModel regionNeuron = null;
+                    if (query.TryGetValue("regionId", out var regionId) && Library.Client.QueryUrl.TryParse(decodedUrl, out QueryUrl urlResult))
+                    {
+                        var n = (await this.neuronQueryService.GetNeuronById(
+                            urlResult.AvatarUrl,
+                            regionId.ToString(),
+                            new NeuronQuery()
+                            ))?.Items.SingleOrDefault();
+                        regionNeuron = new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService);
+                    }
+
                     await Task.Run(() =>
                     {
                         this.AvatarUrl = decodedUrl;
-                        this.Reload();
+                        this.InitialRegionNeuron = regionNeuron;
+                        this.Reload();                        
                     });
                 }
             }
@@ -264,6 +277,8 @@ else
     private bool ControlsEnabled { get; set; } = true;
 
     private NeuronViewModel SelectedNeuron { get; set; } = null;
+
+    private NeuronViewModel InitialRegionNeuron { get; set; } = null;
 
     private NeuronViewModel editNeuron = null;
     private NeuronViewModel EditNeuron
