@@ -200,13 +200,11 @@
 
             function dragstarted(d) {
                 d3.event.sourceEvent.stopPropagation();
-
                 d3.select(this).classed("dragging", true);
-                force.start();
             }
 
             function dragged(d) {
-
+                d.fixed = false;
                 d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
 
             }
@@ -215,9 +213,11 @@
 
                 d3.select(this).classed("dragging", false);
                 d.fixed = true;
+                force.start();
             }
 
             function dblclick(d) {
+                event.stopPropagation();
                 d.fixed = false;
             }
 
