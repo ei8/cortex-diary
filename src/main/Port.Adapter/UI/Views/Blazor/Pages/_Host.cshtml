@@ -105,11 +105,8 @@
                 .scaleExtent([1, 10])
                 .on("zoom", zoomed);
 
-            var drag = d3.behavior.drag()
-                .origin(function (d) { return d; })
-                .on("dragstart", dragstarted)
-                .on("drag", dragged)
-                .on("dragend", dragended);
+            var drag = force.drag()
+                .on("dragstart", dragstarted);
 
             d3.selectAll("svg > *").remove();
 
@@ -199,21 +196,8 @@
             }
 
             function dragstarted(d) {
-                d3.event.sourceEvent.stopPropagation();
-                d3.select(this).classed("dragging", true);
-            }
-
-            function dragged(d) {
-                d.fixed = false;
-                d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-
-            }
-
-            function dragended(d) {
-
-                d3.select(this).classed("dragging", false);
                 d.fixed = true;
-                force.start();
+                d3.event.sourceEvent.stopPropagation();
             }
 
             function dblclick(d) {
