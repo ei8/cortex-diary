@@ -33,8 +33,6 @@
 @inject ISettingsService settingsService
 @inject IIdentityService identityService
 
-@inject NavigationManager MyNavigationManager
-
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 <NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
@@ -55,8 +53,11 @@
 			<button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowOptionsMenu" title="Options">
 				<Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
 			</button>
-			<Blazorise.DropdownMenu>
-				<button class="btn btn-default" style="margin-left: 18px;" @onclick="this.CopyAvatarUrl"><i class="fa fa-clone" aria-hidden="true" style="margin-right: 7px;"></i>Copy URL</button>
+			<Blazorise.DropdownMenu style="width: 250px">
+				<DropdownItem @onclick="this.CopyAvatarUrl">
+					<Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
+					Copy Direct Avatar URL
+				</DropdownItem>
 				<DropdownItem @onclick="this.ToggleRenderDirection">
 					<Blazorise.Icon Name="FontAwesomeIcons.Sort" Class="px-2" />
 					@if (this.RenderDirection == RenderDirectionValue.TopToBottom)
@@ -443,7 +444,7 @@ else
 
 	private void CopyAvatarUrl()
 	{
-		var baseUrl = MyNavigationManager.Uri;
+		var baseUrl = this.navigationManager.Uri;
 		var parsedBasedUrl = baseUrl.Substring(0, baseUrl.IndexOf("?") == -1 ? baseUrl.Length : baseUrl.IndexOf("?"));
 		var prefixKeyword = "?avatarurl=";
 		var encodedUrl = System.Net.WebUtility.UrlEncode(AvatarUrl);
@@ -453,5 +454,6 @@ else
 
 		this.toastService.ShowInfo($"Copied successfully.");
 
+		this.optionsDropdown.Hide();
 	}
 }
