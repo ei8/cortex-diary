@@ -138,6 +138,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                         };
                 options.RequireHttpsMetadata = ss.OidcAuthority.ToUpper().StartsWith("HTTPS");
             });
+            services.AddSingleton<ViewOptionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -38,6 +38,9 @@
 <NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
 <div class="top-row px-4" style="padding-top:12px;z-index:1">
 	<div class="details align-middle ">
+		<div style="margin-right:10px">
+			<ToggleSidebar />
+		</div>
 		<button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px;width:32px;" title="Reload">
 			<Blazorise.Icon Name="FontAwesomeIcons.Redo" />
 			@if (this.NewItemsCount > 0)
@@ -54,10 +57,10 @@
 				<Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
 			</button>
 			<Blazorise.DropdownMenu style="width: 250px">
-				<DropdownItem @onclick="this.CopyAvatarUrl">
-					<Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
-					Copy Direct Avatar URL
-				</DropdownItem>
+                <DropdownItem @onclick="this.CopyAvatarUrl">
+                    <Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
+                    Copy Direct Avatar URL
+                </DropdownItem>
 				<DropdownItem @onclick="this.ToggleRenderDirection">
 					<Blazorise.Icon Name="FontAwesomeIcons.Sort" Class="px-2" />
 					@if (this.RenderDirection == RenderDirectionValue.TopToBottom)

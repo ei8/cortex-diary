@@ -1,0 +1,24 @@
+﻿@using Blazorise.Icons.FontAwesome;
+@using Blazorise.Bootstrap;
+
+@inject ViewOptionService ViewOption
+
+@*
+    @if (ViewOption.IsNavigationVisible)
+    {
+    <button @onclick="ViewOption.Toggle" class="btn btn-primary manual-toggle">Hide Menu</button>
+    }
+    else
+    {
+    <button @onclick="ViewOption.Toggle"  class="btn btn-primary manual-toggle">Show Menu</button>
+    }
+*@
+
+<Blazorise.Bootstrap.Button @onclick="ViewOption.Toggle" Display="Display.None.Block.OnDesktop" Class="btn-sm btn-outline-dark">
+    <Blazorise.Icon Name="FontAwesomeIcons.Bars" />
+</Blazorise.Bootstrap.Button>
+
+
+@code {
+
+}
