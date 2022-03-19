@@ -1,0 +1,45 @@
+﻿@inherits LayoutComponentBase
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
+@using Blazorise.Icons.FontAwesome;
+
+<Layout Sider>
+    <LayoutSider>
+        <LayoutSiderContent>
+            <BlazoriseSidebar />
+        </LayoutSiderContent>
+    </LayoutSider>
+    <Layout>
+        @*<LayoutHeader Fixed>
+            <Bar Breakpoint="Breakpoint.Desktop"
+            Background="Background.Dark"
+            ThemeContrast="ThemeContrast.Dark">
+            <BarToggler />
+            <BarMenu>
+            <BarStart>
+            <BarItem>
+            <Image Source="dasz.ico" Text="Home" Style="width:30px; height:30px"/>
+            <BarLink To="#home">neurUL Code</BarLink>
+            </BarItem>
+            </BarStart>
+            <BarEnd>
+            </BarEnd>
+            </BarMenu>
+            </Bar>
+            </LayoutHeader>*@
+        <LayoutContent>
+            <div class="main">
+                @Body
+            </div>
+        </LayoutContent>
+    </Layout>
+</Layout>
+
+
+
+<BlazoredToasts Timeout="10"
+                IconType="IconType.FontAwesome"
+                SuccessClass="success-toast-override"
+                SuccessIcon="fa fa-check"
+                ErrorIcon="fa fa-times"
+                InfoIcon="fa fa-info"
+                WarningIcon="fa fa-warning" />
