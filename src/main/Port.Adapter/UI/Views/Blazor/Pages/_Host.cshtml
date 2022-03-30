@@ -144,12 +144,34 @@
                 .data(force.nodes())
                 .enter().append("g")
                 .attr("class", "node")
+                .attr("id", d => d.id)
+                .on("mouseover", function () {
+                    
+                    var element = document.getElementsByTagName("div");
+                    for (var i = 0; i < element.length; i++) {
+                        
+                        if (element[i].id == this.id) {
+                            element[i].style.backgroundColor = "blue";
+                        }
+                    }
+                })
+                .on("mouseleave", function () {
+
+                    var element = document.getElementsByTagName("div");
+                    for (var i = 0; i < element.length; i++) {
+
+                        if (element[i].id == this.id) {
+                            element[i].style.backgroundColor = "#e6e6e6";
+                        }
+                    }
+                })
                 .attr("cx", function (d) { return d.x; })
                 .attr("cy", function (d) { return d.y; })
                 .call(drag);
 
             node.append("circle")
                 .attr("r", 6)
+                
                 .on("dblclick", dblclick);
 
             var text = container.append("g").selectAll("text")
@@ -209,6 +231,29 @@
                 container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
             }
         }
+
+        function hover(tag) {
+            var element = document.getElementsByTagName("g");
+            for (var i = 0; i < element.length; i++) {
+
+                if (element[i].id == tag.id) {
+                    
+                    element[i].children[0].classList.add("blue");
+                }
+            }
+        }
+
+        function unhover(tag) {
+            var element = document.getElementsByTagName("g");
+            for (var i = 0; i < element.length; i++) {
+
+                if (element[i].id == tag.id) {
+                    element[i].children[0].classList.remove("blue");
+                }
+            }
+        }
+
+
     </script>
 </body>
 </html>
