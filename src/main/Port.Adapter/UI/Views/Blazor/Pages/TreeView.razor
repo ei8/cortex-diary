@@ -87,7 +87,7 @@
                                         }
                                     }
                                 </div>
-                                <div class="col-auto p-1" style="@this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor)">
+                                <div class="col-auto p-1" style="max-width:75%; @this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor)">
                                     @if (child.Neuron.Validation.RestrictionReasons.Count() > 0)
                                     {
                                         <div class="tooltip-wrapper">
