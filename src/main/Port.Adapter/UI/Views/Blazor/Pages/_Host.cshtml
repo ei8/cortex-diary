@@ -145,8 +145,8 @@
                 .data(force.nodes())
                 .enter().append("g")
                 .attr("class", "node")
-                .attr("onmouseover", "hover(this)")
-                .attr("onmouseout","unhover(this)")
+                .attr("onmouseover", "hover('div', this.id, true, highlightTreeItem)")
+                .attr("onmouseout","hover('div', this.id, false, highlightTreeItem)")
                 .attr("id", d => d.id)
                 
                 .attr("cx", function (d) { return d.x; })
@@ -216,52 +216,26 @@
             }
         }
 
-
-        
-        
-
-        function hover(tag) {
-            if (tag.tagName == "g") {
-                var element = document.getElementsByTagName("div");
-                for (var i = 0; i < element.length; i++) {
-                    if (element[i].id == tag.id) {
-                        element[i].style.backgroundColor = "blue";
-                    }
+        function hover(tagName, tagId, over, highlight) {
+            var element = document.getElementsByTagName(tagName);
+            for (var i = 0; i < element.length; i++) {
+                var currElement = element[i];
+                if (currElement.id == tagId) {
+                    highlight(currElement, over);
                 }
             }
-            else {
-                var element = document.getElementsByTagName("g");
-                for (var i = 0; i < element.length; i++) {
-                    if (element[i].id == tag.id) {
-                        element[i].children[0].classList.add("blue");
-                    }
-                }
-            }
-            
         }
 
-        function unhover(tag) {
-            if (tag.tagName == "g") {
-                var element = document.getElementsByTagName("div");
-                for (var i = 0; i < element.length; i++) {
-                    if (element[i].id == tag.id) {
-                        element[i].style.backgroundColor ="#e6e6e6";
-                    }
-                }
-            }
-            else {
-                var element = document.getElementsByTagName("g");
-                for (var i = 0; i < element.length; i++) {
-                    if (element[i].id == tag.id) {
-                        element[i].children[0].classList.remove("blue");
-                    }
-                }
-            }
-
-
-            
+        function highlightTreeItem(currElement, over) {
+            currElement.style.backgroundColor = over ? "#1E90FF" : "#e6e6e6";
         }
 
+        function highlightNode(currElement, over) {
+            if (over)
+                currElement.children[0].classList.add("blue");
+            else
+                currElement.children[0].classList.remove("blue");
+        }
 
     </script>
 </body>

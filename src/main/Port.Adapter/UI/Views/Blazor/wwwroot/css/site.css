@@ -4,12 +4,9 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-
 .blue{
-  fill: blue !important; 
+  fill: #1E90FF !important; 
 }
-
-
 
 iframe {
     border-style: solid;
