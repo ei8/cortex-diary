@@ -464,27 +464,4 @@ else
 
         this.optionsDropdown.Hide();
     }
-
-    private void CopyAvatarUrl(string Id, string Uri, string avatarUrl, NavigationManager navigation)
-    {
-        var baseUrl = Uri;
-        var parsedBasedUrl = baseUrl.Substring(0, baseUrl.IndexOf("?") == -1 ? baseUrl.Length : baseUrl.IndexOf("?"));
-        var prefixKeyword = "?avatarurl=";
-        var encodedUrl = System.Net.WebUtility.UrlEncode(avatarUrl);
-        var fullAvatarUrl = parsedBasedUrl + prefixKeyword + encodedUrl + "&regionid=" + Id;
-        this.navigationManager = navigation;
-        navigationManager.NavigateTo(fullAvatarUrl);
-
-
-
-
-
-
-    }
-
-
-    public void AddAvaterUrl(string Id, string Uri, string avatarUrl, NavigationManager navigation)
-    {
-        this.CopyAvatarUrl(Id, Uri, avatarUrl, navigation);
-    }
 }
