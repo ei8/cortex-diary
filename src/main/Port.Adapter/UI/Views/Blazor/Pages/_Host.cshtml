@@ -70,7 +70,7 @@
     <app>
         <component type="typeof(App)" render-mode="ServerPrerendered" param-InitialState="initialTokenState" />
     </app>
-           
+
     <script src="_framework/blazor.server.js"></script>
     <script src="JsInterop.js"></script>
     <script src="https://d3js.org/d3.v3.min.js"></script>
@@ -129,7 +129,7 @@
                 .attr("orient", "auto")
                 .append("path")
                 .attr("d", "M0,-5L10,0L0,5")
-                .attr("fill", function (d) { if (d.includes("inhibit")) { return "#f00"; } else { return "#000"; }});
+                .attr("fill", function (d) { if (d.includes("inhibit")) { return "#f00"; } else { return "#000"; } });
 
             var container = svg.append("g");
 
@@ -164,7 +164,7 @@
                 .append("text")
                 .attr("x", -7)
                 .attr("y", 7);
-            
+
             text.selectAll("tspan.text")
                 .data(d => (d.tag || '').split("\n") || "")
                 .enter()
@@ -236,7 +236,30 @@
             else
                 currElement.children[0].classList.remove("blue");
         }
+        // function to set a given theme/color-scheme
+        function setTheme(themeName) {
+            localStorage.setItem('theme', themeName);
+            document.documentElement.className = themeName;
 
+        }
+
+        // function to toggle between light and dark theme
+        function darkMode(tag) {
+            if (localStorage.getItem('theme') === 'dark-mode') {
+                setTheme('light');
+            } else {
+                setTheme('dark-mode');
+            }
+        }
+
+        // Immediately invoked function to set the theme on initial load
+        (function () {
+            if (localStorage.getItem('theme') === 'dark-mode') {
+                setTheme('dark-mode');
+            } else {
+                setTheme('light');
+            }
+        })();
     </script>
 </body>
 </html>

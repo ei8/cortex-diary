@@ -1,5 +1,22 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+:root {
+    /*light theme*/
+    --background: white;
+    --font-color: black;
+    --highlight: #f7f7f7;
+    --highlight-2: #e2e3e5;
+    --link: #0366d6;
+}
+
+.dark-mode {
+    --background: #2d2d2d;
+    --font-color: white;
+    --highlight: #393939;
+    --highlight-2: #414648;
+    --link: #3ca4ff;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -21,7 +38,21 @@ input {
 }
 
 a, .btn-link {
-    color: #0366d6;
+    color: var(--link);
+}
+
+.alert-secondary {
+    background-color: var(--highlight-2);
+    color: var(--font-color);
+}
+
+.table {
+    color: var(--font-color);
+}
+
+div.main {
+    background-color: var(--background);
+    color: var(--font-color);
 }
 
 .btn-primary {
@@ -53,29 +84,30 @@ app {
     flex-direction: column;
 }
 
-.main .top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
-}
+    .main .top-row {
+        background-color: var(--background);
+        color: var(--font-color);
+        border-bottom: 1px solid #d6d5d5;
+    }
 
-.main .top-row .title {
-    font-size: 1.1rem;
-    font-weight: bolder;
-    padding-top: 7px;
-    padding-bottom: 1px;
-}
+        .main .top-row .title {
+            font-size: 1.1rem;
+            font-weight: bolder;
+            padding-top: 7px;
+            padding-bottom: 1px;
+        }
 
-.main .top-row .details {
-    display: flex;
-}
+        .main .top-row .details {
+            display: flex;
+        }
 
-.main .top-row .details > input {
-    flex: 1;
-}
+            .main .top-row .details > input {
+                flex: 1;
+            }
 
-.main .top-row .details > div {
-    margin-right: 2px;
-}
+            .main .top-row .details > div {
+                margin-right: 2px;
+            }
 
 .content {
     flex: 1;
@@ -90,7 +122,8 @@ app {
     bottom: 0;
     height: 5rem;
     display: flex;
-    background-color: #f7f7f7;
+    background-color: var(--background);
+    color: var(--font-color);
     border-top: 1px solid #d6d5d5;
     justify-content: flex-end;
 }
@@ -103,52 +136,52 @@ app {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #145596 70%);
 }
 
-.sidebar .top-row {
-    background-color: rgba(0,0,0,0.4);
-}
+    .sidebar .top-row {
+        background-color: var(--highlight);
+    }
 
-.sidebar .navbar-brand {
-    font-size: 1.1rem;
-}
+    .sidebar .navbar-brand {
+        font-size: 1.1rem;
+    }
 
-.sidebar .oi {
-    width: 2rem;
-    font-size: 1.1rem;
-    vertical-align: text-top;
-    top: -2px;
-}
+    .sidebar .oi {
+        width: 2rem;
+        font-size: 1.1rem;
+        vertical-align: text-top;
+        top: -2px;
+    }
 
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
 }
 
-.nav-item:first-of-type {
-    padding-top: 1rem;
-}
+    .nav-item:first-of-type {
+        padding-top: 1rem;
+    }
 
-.nav-item:last-of-type {
-    padding-bottom: 1rem;
-}
+    .nav-item:last-of-type {
+        padding-bottom: 1rem;
+    }
 
-.nav-item a {
-    color: #d7d7d7;
-    border-radius: 4px;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    line-height: 3rem;
-}
+    .nav-item a {
+        color: #d7d7d7;
+        border-radius: 4px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+    }
 
-.nav-item a.active {
-    background-color: rgba(255,255,255,0.25);
-    color: white;
-}
+        .nav-item a.active {
+            background-color: rgba(255,255,255,0.25);
+            color: white;
+        }
 
-.nav-item a:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
-}
+        .nav-item a:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
 
 .navbar-toggler {
     background-color: rgba(255, 255, 255, 0.1);
@@ -175,7 +208,8 @@ app {
     border-width: thin;
     border-color: lightgray;
     width: 100% !important;
-    background-color: #f8f9fa !important;
+    background-color: var(--background);
+    color: var(--font-color);
 }
 
 @media (max-width: 767.98px) {
@@ -199,12 +233,15 @@ app {
         position: sticky;
         top: 0;
     }
+
     .pl-4, .px-4 {
         padding-left: 0.5rem !important;
     }
+
     .pr-4, .px-4 {
         padding-right: 0.5rem !important;
     }
+
     .navbar {
         padding: .5rem 0rem;
     }
@@ -309,9 +346,10 @@ text {
     text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
 }
 
-.treeitem{}
+.treeitem {
+}
 
-.treeitembutton{
+.treeitembutton {
     visibility: hidden;
     height: 25px;
     width: 25px;
@@ -348,7 +386,8 @@ a[title]:hover::after {
     left: 0;
 }
 
-.nav-item-bottom{}
+.nav-item-bottom {
+}
 
 .tooltip-wrapper {
     position: relative;
@@ -357,7 +396,7 @@ a[title]:hover::after {
     cursor: help;
 }
 
-.tooltip-wrapper-text {
+@inherits LayoutComponentBase .tooltip-wrapper-text {
     visibility: hidden;
     position: absolute;
     width: 120px;
