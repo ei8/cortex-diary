@@ -4,6 +4,10 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.blue{
+  fill: #1E90FF !important; 
+}
+
 iframe {
     border-style: solid;
     border-width: thin;
