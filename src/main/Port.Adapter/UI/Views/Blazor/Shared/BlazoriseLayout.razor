@@ -2,30 +2,37 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
 @using Blazorise.Icons.FontAwesome;
 
+@*<div class="sidebar" Display="Display.Always.OnMobile">
+    <NavMenu />
+    </div>*@
 <Layout Sider>
     <LayoutSider>
-        <LayoutSiderContent>
+        @*Hides on screens smaller than lg*@
+        <LayoutSiderContent Display="Display.None.Block.OnTablet">
             <BlazoriseSidebar />
         </LayoutSiderContent>
     </LayoutSider>
     <Layout>
-        @*<LayoutHeader Fixed>
-            <Bar Breakpoint="Breakpoint.Desktop"
-            Background="Background.Dark"
-            ThemeContrast="ThemeContrast.Dark">
-            <BarToggler />
-            <BarMenu>
-            <BarStart>
-            <BarItem>
-            <Image Source="dasz.ico" Text="Home" Style="width:30px; height:30px"/>
-            <BarLink To="#home">neurUL Code</BarLink>
-            </BarItem>
-            </BarStart>
-            <BarEnd>
-            </BarEnd>
-            </BarMenu>
-            </Bar>
-            </LayoutHeader>*@
+        <LayoutHeader Display="Display.None.OnTablet">
+            @*<Bar Breakpoint="Breakpoint.Desktop" Display="Display.None.OnFullHD"
+                Background="Background.Dark"
+                ThemeContrast="ThemeContrast.Dark">
+                <BarToggler />
+                <BarMenu>
+                <BarStart>
+                <BarItem>
+                <Image Source="dasz.ico" Text="Home" Style="width:30px; height:30px"/>
+                <BarLink To="#home">neurUL Code</BarLink>
+                </BarItem>
+                </BarStart>
+                <BarEnd>
+                </BarEnd>
+                </BarMenu>
+                </Bar>*@
+            <div class="sidebar" Display="Display.Always.OnMobile">
+                <NavMenu />
+            </div>
+        </LayoutHeader>
         <LayoutContent>
             <div class="main">
                 @Body
