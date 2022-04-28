@@ -1,12 +1,13 @@
 ﻿@inherits LayoutComponentBase
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
+@inject ViewOptionService ViewOption
 
-<div class="sidebar">
+<div class="sidebar @ViewOption.NavBarClass">
     <NavMenu />
 </div>
 
 <div class="main">
-    @Body    
+    @Body
 </div>
 
 <BlazoredToasts Timeout="10"
@@ -16,3 +17,14 @@
                 ErrorIcon="fa fa-times"
                 InfoIcon="fa fa-info"
                 WarningIcon="fa fa-warning" />
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewOption.OnChanged = () =>
+        {
+            StateHasChanged();
+        };
+    }
+}
