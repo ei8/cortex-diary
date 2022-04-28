@@ -4,6 +4,72 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 4px;
+}
+.none{
+    display:none;
+}
+.progress {
+    position: absolute;
+    right:1.5rem;
+}
+.modal {
+    position: absolute;
+    display: none;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: white;
+    max-height: 5%;
+    max-width: 15%;
+}
+
+    .modal.active {
+        display: block;
+    }
+
+.modal-body {
+    padding: 10px 15px;
+}
+
+.modal-list {
+    list-style-type: none;
+    cursor: default;
+    margin: 4px 0px;
+    padding: 0px;
+}
+
+.InnerOption {
+    display: list-item;
+    text-align: -webkit-match-parent;
+    padding: 4px 16px;
+}
+
+    .InnerOption:hover {
+        background-color: #4677f8;
+        color: #fefefe;
+    }
+
+
+
+.templink {
+    fill: none;
+    stroke: red;
+    stroke-width: 3px;
+}
+
+.ghostCircle.show {
+    display: block;
+}
+
+.ghostCircle,
+.activeDrag .ghostCircle {
+    display: none;
+}
+
+
 .blue{
   fill: #1E90FF !important; 
 }

@@ -20,9 +20,9 @@
 @using System.Timers
 @using neurUL.Common.Http
 @* Need further research how to implement custom toasts...
-	@using Blazored.Toast
-	@using Blazored.Toast.Services
-	@using Blazored.Toast.Configuration
+    @using Blazored.Toast
+    @using Blazored.Toast.Services
+    @using Blazored.Toast.Configuration
 *@
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
@@ -32,428 +32,475 @@
 @inject IJSRuntime jsRuntime
 @inject ISettingsService settingsService
 @inject IIdentityService identityService
+@inject IJSRuntime JS
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 <NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
 <div class="top-row px-4" style="padding-top:12px;z-index:1">
-	<div class="details align-middle ">
-		<button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px;width:32px;" title="Reload">
-			<Blazorise.Icon Name="FontAwesomeIcons.Redo" />
-			@if (this.NewItemsCount > 0)
-			{
-				<Badge Pill="true" Color="Color.Danger" style="top:-35px;left:8px;height:14px;font-size:0.6em">@(this.NewItemsCount)</Badge>
-			}
-		</button>
-		<input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
-		<button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
-			<Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
-		</button>
-		<Dropdown RightAligned="true" @ref="this.optionsDropdown">
-			<button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowOptionsMenu" title="Options">
-				<Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
-			</button>
-			<Blazorise.DropdownMenu style="width: 250px">
-				<DropdownItem @onclick="this.CopyAvatarUrl">
-					<Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
-					Copy Direct Avatar URL
-				</DropdownItem>
-				<DropdownItem @onclick="this.ToggleRenderDirection">
-					<Blazorise.Icon Name="FontAwesomeIcons.Sort" Class="px-2" />
-					@if (this.RenderDirection == RenderDirectionValue.TopToBottom)
-					{
-						@((MarkupString)"First At Top")
-					}
-					else
-					{
-						@((MarkupString)"First At Bottom")
-					}
-				</DropdownItem>
-			</Blazorise.DropdownMenu>
-		</Dropdown>
-	</div>
+    <div class="details align-middle ">
+        <button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px;width:32px;" title="Reload">
+            <Blazorise.Icon Name="FontAwesomeIcons.Redo" />
+            @if (this.NewItemsCount > 0)
+            {
+                <Badge Pill="true" Color="Color.Danger" style="top:-35px;left:8px;height:14px;font-size:0.6em">@(this.NewItemsCount)</Badge>
+            }
+        </button>
+        <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
+        <button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
+            <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
+        </button>
+        <Dropdown RightAligned="true" @ref="this.optionsDropdown">
+            <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowOptionsMenu" title="Options">
+                <Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
+            </button>
+            <Blazorise.DropdownMenu style="width: 250px">
+                <DropdownItem @onclick="this.CopyAvatarUrl">
+                    <Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
+                    Copy Direct Avatar URL
+                </DropdownItem>
+                <DropdownItem @onclick="this.ToggleRenderDirection">
+                    <Blazorise.Icon Name="FontAwesomeIcons.Sort" Class="px-2" />
+                    @if (this.RenderDirection == RenderDirectionValue.TopToBottom)
+                    {
+                        @((MarkupString)"First At Top")
+                    }
+                    else
+                    {
+                        @((MarkupString)"First At Bottom")
+                    }
+                </DropdownItem>
+            </Blazorise.DropdownMenu>
+        </Dropdown>
+    </div>
 </div>
 
 @if (this.reloading)
 {
-	<div class="d-flex justify-content-center vh-100" style="padding-top: 300px">
-		<div class="spinner-border" role="status">
-			<span class="sr-only">Loading...</span>
-		</div>
-	</div>
+    <div class="d-flex justify-content-center vh-100" style="padding-top: 300px">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 }
 else
 {
-	<div class="content px-0">
-		<div class="treecontent">
-			<div class="treecontent-item content px-lg-4 px-3">
-				<TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" @bind-RenderDirection="@this.RenderDirection" />
-			</div>
-			<div class="treecontent-item sticky-top" style="z-index:0">
-				<div class="sticky-top" style="z-index:0">
-					<svg class="svgview" />
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="content px-0">
+    <div class="treecontent">
+        <div class="treecontent-item content px-lg-4 px-3">
+            <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" @bind-RenderDirection="@this.RenderDirection" />
+        </div>
+        <div class="treecontent-item sticky-top" style="z-index:0">
+            <div class="modal" id="modal">
+                <div class="modal-body">
+                    <ul class="modal-list">
+                        <li class="InnerOption" id="contextmenu">
+                            Link
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="sticky-top" style="z-index:0">
+                <span class="progress spinner-border text-primary none"></span>
+                <svg class="svgview" />
+            </div>
+        </div>
+    </div>
+</div>
 }
 <div class="footer px-4 h-auto" style="z-index:2">
-	<EditorBox AvatarUrl="@this.AvatarUrl" InitialRegionNeuron="@this.InitialRegionNeuron" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
+    <EditorBox AvatarUrl="@this.AvatarUrl" InitialRegionNeuron="@this.InitialRegionNeuron" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
 </div>
 
 <audio id="sound" src=@(this.settingsService.BasePath + "/media/alert.wav") />
 
 @code
 {
-	private bool reloading = true;
-	private bool expandSubNavSettings;
-	private Dropdown optionsDropdown;
-	private Timer refreshTimer;
+    private bool reloading = true;
+    private bool expandSubNavSettings;
+    private Dropdown optionsDropdown;
+    private Timer refreshTimer;
 
-	private void ShowOptionsMenu()
-	{
-		if (this.optionsDropdown.Visible)
-			this.optionsDropdown.Hide();
-		else
-			this.optionsDropdown.Show();
+    private DotNetObjectReference<Tree>? dotNetHelper;
+    
 
-		// hide other dropdowns
-		//this.userDropdown.Hide();
-	}
+    private void ShowOptionsMenu()
+    {
+        if (this.optionsDropdown.Visible)
+            this.optionsDropdown.Hide();
+        else
+            this.optionsDropdown.Show();
 
-	private void ToggleRenderDirection()
-	{
-		this.RenderDirection = this.RenderDirection == RenderDirectionValue.TopToBottom ?
-			RenderDirectionValue.BottomToTop :
-			RenderDirectionValue.TopToBottom;
+        // hide other dropdowns
+        //this.userDropdown.Hide();
+    }
 
-		this.optionsDropdown.Hide();
-	}
+    private void ToggleRenderDirection()
+    {
+        this.RenderDirection = this.RenderDirection == RenderDirectionValue.TopToBottom ?
+            RenderDirectionValue.BottomToTop :
+            RenderDirectionValue.TopToBottom;
 
-	protected override void OnInitialized()
-	{
-		this.Children = new List<NeuronViewModel>();
-	}
+        this.optionsDropdown.Hide();
+    }
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			var uri = this.navigationManager.ToAbsoluteUri(this.navigationManager.Uri);
-			if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("direction", out var directionValue) &&
-				Enum.TryParse<RenderDirectionValue>(directionValue, out RenderDirectionValue directionEnum)
-				)
-			{
-				this.RenderDirection = directionEnum;
-				this.StateHasChanged();
-			}
-			bool urlSet = false;
-			var query = QueryHelpers.ParseQuery(uri.Query);
-			if (query.TryGetValue("avatarUrl", out var encodedAvatarUrl))
-			{
-				Uri uriResult;
-				string decodedUrl = Nancy.Helpers.HttpUtility.UrlDecode(encodedAvatarUrl);
-				bool validUrl = Uri.TryCreate(decodedUrl, UriKind.Absolute, out uriResult)
-					&& (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-				if (validUrl)
-				{
-					urlSet = true;
-					NeuronViewModel regionNeuron = null;
-					if (query.TryGetValue("regionId", out var regionId) && Library.Client.QueryUrl.TryParse(decodedUrl, out QueryUrl urlResult))
-					{
-						var n = (await this.neuronQueryService.GetNeuronById(
-							urlResult.AvatarUrl,
-							regionId.ToString(),
-							new NeuronQuery()
-							))?.Items.SingleOrDefault();
-						regionNeuron = new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService);
-					}
+    protected override void OnInitialized()
+    {
+        this.Children = new List<NeuronViewModel>();
+    }
 
-					await Task.Run(() =>
-					{
-						this.AvatarUrl = decodedUrl;
-						this.InitialRegionNeuron = regionNeuron;
-						this.Reload();
-					});
-				}
-			}
-			if (!urlSet)
-				await this.SetReloading(false);
+    [JSInvokable]
+    public async Task<Boolean> SendLinkData(string sourceNeuronID, string targetNeuronID)
+    {
+        try
+        {
+            if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery))
+            {
+                await Blazor.Helper.AddLink(this.terminalApplicationService, resultQuery.AvatarUrl, sourceNeuronID, targetNeuronID);
+            }
 
-			this.refreshTimer = new Timer();
-			this.refreshTimer.Interval = this.settingsService.UpdateCheckInterval;
-			this.refreshTimer.Elapsed += OnTimerInterval;
-			this.refreshTimer.AutoReset = true;
-			// Start the timer
-			this.refreshTimer.Enabled = true;
-		}
+            return true;
+        }
+        catch (Exception ex)
+        {
+            string errorDescription, clipboardData;
+            if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out errorDescription, out clipboardData))
+            {
+                errorDescription = ex.Message;
+                clipboardData = ex.ToString();
+            }
 
-		await base.OnAfterRenderAsync(firstRender);
-	}
+            Blazor.Helper.ShowFriendlyException(
+                this.toastService,
+                $"Linking failed:",
+                errorDescription,
+                clipboardData
+            );
+            return false;
+        }
+    }
 
-	private async void OnTimerInterval(object sender, ElapsedEventArgs e)
-	{
-		if (this.Children.Count() > 0)
-		{
-			try
-			{
-				var ns = await Tree.GetOrderedNeurons(this);
-				var currentLastIndex = ns.ToList().FindLastIndex(nr => nr.Id == this.Children.Last().Neuron.Id);
-				var newNeurons = ns.Where((n, i) => i > currentLastIndex && !this.Children.Any(nvm => nvm.Neuron.Id == n.Id));
-				if (newNeurons.Count() > 0)
-				{
-					if (this.NewItemsCount == 0)
-						await this.jsRuntime.InvokeAsync<string>("PlaySound");
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.dotNetHelper = DotNetObjectReference.Create(this);
+            await JS.InvokeAsync<string>("DotNetHelperSetter", this.dotNetHelper);
+            var uri = this.navigationManager.ToAbsoluteUri(this.navigationManager.Uri);
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("direction", out var directionValue) &&
+                Enum.TryParse<RenderDirectionValue>(directionValue, out RenderDirectionValue directionEnum)
+                )
+            {
+                this.RenderDirection = directionEnum;
+                this.StateHasChanged();
+            }
+            bool urlSet = false;
+            var query = QueryHelpers.ParseQuery(uri.Query);
+            if (query.TryGetValue("avatarUrl", out var encodedAvatarUrl))
+            {
+                Uri uriResult;
+                string decodedUrl = Nancy.Helpers.HttpUtility.UrlDecode(encodedAvatarUrl);
+                bool validUrl = Uri.TryCreate(decodedUrl, UriKind.Absolute, out uriResult)
+                    && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                if (validUrl)
+                {
+                    urlSet = true;
+                    NeuronViewModel regionNeuron = null;
+                    if (query.TryGetValue("regionId", out var regionId) && Library.Client.QueryUrl.TryParse(decodedUrl, out QueryUrl urlResult))
+                    {
+                        var n = (await this.neuronQueryService.GetNeuronById(
+                            urlResult.AvatarUrl,
+                            regionId.ToString(),
+                            new NeuronQuery()
+                            ))?.Items.SingleOrDefault();
+                        regionNeuron = new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService);
+                    }
 
-					this.NewItemsCount += newNeurons.Count();
-					newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService)));
-					await this.InvokeAsync(() => this.StateHasChanged());
-				}
-			}
-			catch (Exception ex)
-			{
-				this.toastService.ShowError(ex.ToString());
-			}
-		}
-	}
+                    await Task.Run(() =>
+                    {
+                        this.AvatarUrl = decodedUrl;
+                        this.InitialRegionNeuron = regionNeuron;
+                        this.Reload();
+                    });
+                }
+            }
+            if (!urlSet)
+                await this.SetReloading(false);
 
-	public void Dispose()
-	{
-		// During prerender, this component is rendered without calling OnAfterRender and then immediately disposed
-		// this mean timer will be null so we have to check for null or use the Null-conditional operator ?
-		this.refreshTimer?.Dispose();
-	}
+            this.refreshTimer = new Timer();
+            this.refreshTimer.Interval = this.settingsService.UpdateCheckInterval;
+            this.refreshTimer.Elapsed += OnTimerInterval;
+            this.refreshTimer.AutoReset = true;
+            // Start the timer
+            this.refreshTimer.Enabled = true;
+        }
 
-	private async static Task<IEnumerable<Neuron>> GetOrderedNeurons(Tree value)
-	{
-		var ns = (await value.neuronQueryService.SendQuery(
-					value.AvatarUrl
-					)).Items;
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
-		if (value.RenderDirection == RenderDirectionValue.BottomToTop)
-			ns = ns.Reverse().ToArray();
+    private async void OnTimerInterval(object sender, ElapsedEventArgs e)
+    {
+        if (this.Children.Count() > 0)
+        {
+            try
+            {
+                var ns = await Tree.GetOrderedNeurons(this);
+                var currentLastIndex = ns.ToList().FindLastIndex(nr => nr.Id == this.Children.Last().Neuron.Id);
+                var newNeurons = ns.Where((n, i) => i > currentLastIndex && !this.Children.Any(nvm => nvm.Neuron.Id == n.Id));
+                if (newNeurons.Count() > 0)
+                {
+                    if (this.NewItemsCount == 0)
+                        await this.jsRuntime.InvokeAsync<string>("PlaySound");
 
-		return ns;
-	}
+                    this.NewItemsCount += newNeurons.Count();
+                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService)));
+                    await this.InvokeAsync(() => this.StateHasChanged());
+                }
+            }
+            catch (Exception ex)
+            {
+                this.toastService.ShowError(ex.ToString());
+            }
+        }
+    }
 
-	private int NewItemsCount { get; set; } = 0;
+    public void Dispose()
+    {
+        // During prerender, this component is rendered without calling OnAfterRender and then immediately disposed
+        // this mean timer will be null so we have to check for null or use the Null-conditional operator ?
+        this.refreshTimer?.Dispose();
+    }
 
-	public string IdServerUrl { get; set; }
+    private async static Task<IEnumerable<Neuron>> GetOrderedNeurons(Tree value)
+    {
+        var ns = (await value.neuronQueryService.SendQuery(
+                    value.AvatarUrl
+                    )).Items;
 
-	[Parameter]
-	public string AvatarUrl { get; set; }
+        if (value.RenderDirection == RenderDirectionValue.BottomToTop)
+            ns = ns.Reverse().ToArray();
 
-	[Parameter]
-	public IList<NeuronViewModel> Children { get; set; } = new List<NeuronViewModel>();
+        return ns;
+    }
 
-	private bool IsConfirmVisible { get; set; } = false;
+    private int NewItemsCount { get; set; } = 0;
 
-	private bool IsContextMenuVisible { get; set; } = false;
+    public string IdServerUrl { get; set; }
 
-	private bool IsInfoVisible { get; set; } = false;
+    [Parameter]
+    public string AvatarUrl { get; set; }
 
-	private RenderDirectionValue RenderDirection { get; set; } = RenderDirectionValue.TopToBottom;
+    [Parameter]
+    public IList<NeuronViewModel> Children { get; set; } = new List<NeuronViewModel>();
 
-	private ContextMenuOption selectedOption = ContextMenuOption.New;
-	public ContextMenuOption SelectedOption
-	{
-		get => this.selectedOption;
-		set
-		{
-			if (this.selectedOption != value)
-			{
-				this.selectedOption = value;
-				switch (this.SelectedOption)
-				{
-					case ContextMenuOption.New:
-						this.SelectedNeuron = null;
-						this.EditNeuron = null;
-						this.ControlsEnabled = true;
-						break;
-					case ContextMenuOption.Delete:
-						this.IsConfirmVisible = true;
-						break;
-					case ContextMenuOption.Edit:
-					case ContextMenuOption.AddRelative:
-					case ContextMenuOption.LinkRelative:
-						this.ControlsEnabled = false;
-						this.EditNeuron = this.SelectedNeuron;
-						break;
-				}
-			}
-		}
-	}
+    private bool IsConfirmVisible { get; set; } = false;
 
-	private bool ControlsEnabled { get; set; } = true;
+    private bool IsContextMenuVisible { get; set; } = false;
 
-	private NeuronViewModel SelectedNeuron { get; set; } = null;
+    private bool IsInfoVisible { get; set; } = false;
 
-	private NeuronViewModel InitialRegionNeuron { get; set; } = null;
+    private RenderDirectionValue RenderDirection { get; set; } = RenderDirectionValue.TopToBottom;
 
-	private NeuronViewModel editNeuron = null;
-	private NeuronViewModel EditNeuron
-	{
-		get => this.editNeuron;
-		set
-		{
-			this.editNeuron = value;
-		}
-	}
+    private ContextMenuOption selectedOption = ContextMenuOption.New;
+    public ContextMenuOption SelectedOption
+    {
+        get => this.selectedOption;
+        set
+        {
+            if (this.selectedOption != value)
+            {
+                this.selectedOption = value;
+                switch (this.SelectedOption)
+                {
+                    case ContextMenuOption.New:
+                        this.SelectedNeuron = null;
+                        this.EditNeuron = null;
+                        this.ControlsEnabled = true;
+                        break;
+                    case ContextMenuOption.Delete:
+                        this.IsConfirmVisible = true;
+                        break;
+                    case ContextMenuOption.Edit:
+                    case ContextMenuOption.AddRelative:
+                    case ContextMenuOption.LinkRelative:
+                        this.ControlsEnabled = false;
+                        this.EditNeuron = this.SelectedNeuron;
+                        break;
+                }
+            }
+        }
+    }
 
-	private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
-			string.Format(format, this.SelectedNeuron.Neuron.Tag) :
-			"[Error: Not a valid Neuron]";
+    private bool ControlsEnabled { get; set; } = true;
 
-	private async Task Reload()
-	{
-		try
-		{
-			await this.SetReloading(true);
-			this.Children.Clear();
-			var ns = await Tree.GetOrderedNeurons(this);
-			var children = ns.Select(nr => new NeuronViewModel(new Neuron(nr), this.AvatarUrl, this.neuronQueryService));
-			((List<NeuronViewModel>)this.Children).AddRange(children);
-			this.NewItemsCount = 0;
+    private NeuronViewModel SelectedNeuron { get; set; } = null;
 
-			if (this.RenderDirection == RenderDirectionValue.BottomToTop)
-				await this.ScrollToFragment("bottom");
-		}
-		catch (Exception ex)
-		{
-			string description, clipboardData;
-			if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out description, out clipboardData))
-			{
-				description = ex.Message;
-				clipboardData = ex.ToString();
-			}
+    private NeuronViewModel InitialRegionNeuron { get; set; } = null;
 
-			Blazor.Helper.ShowFriendlyException(
-				this.toastService,
-				"An error occurred while reloading the Tree.",
-				description,
-				clipboardData
-			);
-		}
-		finally
-		{
-			await this.SetReloading(false);
-			await this.LoadGraph();
-		}
-	}
+    private NeuronViewModel editNeuron = null;
+    private NeuronViewModel EditNeuron
+    {
+        get => this.editNeuron;
+        set
+        {
+            this.editNeuron = value;
+        }
+    }
 
-	private async Task SetReloading(bool value)
-	{
-		this.reloading = value;
-		await this.InvokeAsync(() => this.StateHasChanged());
-	}
+    private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
+            string.Format(format, this.SelectedNeuron.Neuron.Tag) :
+            "[Error: Not a valid Neuron]";
 
-	private async Task ScrollToFragment(string elementId)
-	{
-		// https://github.com/WICG/scroll-to-text-fragment/
-		if (!string.IsNullOrEmpty(elementId))
-		{
-			await this.jsRuntime.InvokeVoidAsync("BlazorScrollToId", elementId);
-		}
-	}
+    private async Task Reload()
+    {
+        try
+        {
+            await this.SetReloading(true);
+            this.Children.Clear();
+            var ns = await Tree.GetOrderedNeurons(this);
+            var children = ns.Select(nr => new NeuronViewModel(new Neuron(nr), this.AvatarUrl, this.neuronQueryService));
+            ((List<NeuronViewModel>)this.Children).AddRange(children);
+            this.NewItemsCount = 0;
 
-	private async void MenuRequested() => this.IsContextMenuVisible = true;
+            if (this.RenderDirection == RenderDirectionValue.BottomToTop)
+                await this.ScrollToFragment("bottom");
+        }
+        catch (Exception ex)
+        {
+            string description, clipboardData;
+            if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out description, out clipboardData))
+            {
+                description = ex.Message;
+                clipboardData = ex.ToString();
+            }
 
-	private async void InfoRequested() => this.IsInfoVisible = true;
+            Blazor.Helper.ShowFriendlyException(
+                this.toastService,
+                "An error occurred while reloading the Tree.",
+                description,
+                clipboardData
+            );
+        }
+        finally
+        {
+            await this.SetReloading(false);
+            await this.LoadGraph();
+        }
+    }
 
-	private async void ConfirmDelete()
-	{
-		if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result))
-		{
-			try
-			{
-				string description = string.Empty;
+    private async Task SetReloading(bool value)
+    {
+        this.reloading = value;
+        await this.InvokeAsync(() => this.StateHasChanged());
+    }
 
-				if (this.SelectedNeuron.Neuron.Type == RelativeType.NotSet)
-				{
-					await this.neuronApplicationService.DeactivateNeuron(
-						result.AvatarUrl,
-						this.SelectedNeuron.Neuron.Id,
-						this.SelectedNeuron.Neuron.Version
-						);
-					description = "Neuron removed";
-				}
-				else
-				{
-					await this.terminalApplicationService.DeactivateTerminal(
-						result.AvatarUrl,
-						this.SelectedNeuron.Neuron.Terminal.Id,
-						this.SelectedNeuron.Neuron.Terminal.Version
-						);
-					description = "Terminal removed";
-				}
-				this.toastService.ShowSuccess($"{description} successfully.");
-			}
-			catch (Exception ex)
-			{
-				this.toastService.ShowError(ex.Message);
-			}
-		}
-	}
+    private async Task ScrollToFragment(string elementId)
+    {
+        // https://github.com/WICG/scroll-to-text-fragment/
+        if (!string.IsNullOrEmpty(elementId))
+        {
+            await this.jsRuntime.InvokeVoidAsync("BlazorScrollToId", elementId);
+        }
+    }
 
-	private async void CloseConfirmation() => Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
+    private async void MenuRequested() => this.IsContextMenuVisible = true;
 
-	private async Task LoadGraph()
-	{
-		var allNodes = new List<Node>();
-		Tree.ExtractNodes(this.Children.ToArray(), allNodes);
+    private async void InfoRequested() => this.IsInfoVisible = true;
 
-		var distinctNodes = new List<Node>();
-		// get distinct nodes
-		allNodes.ForEach(n =>
-		{
-			if (!distinctNodes.Any(dn => dn.id == n.id))
-				distinctNodes.Add(new Node() { id = n.id, tag = n.tag });
-		});
+    private async void ConfirmDelete()
+    {
+        if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result))
+        {
+            try
+            {
+                string description = string.Empty;
 
-		// get links
-		var links = new List<Graph.Link>();
-		Tree.ExtractLinks(this.Children.ToArray(), distinctNodes, links);
+                if (this.SelectedNeuron.Neuron.Type == RelativeType.NotSet)
+                {
+                    await this.neuronApplicationService.DeactivateNeuron(
+                        result.AvatarUrl,
+                        this.SelectedNeuron.Neuron.Id,
+                        this.SelectedNeuron.Neuron.Version
+                        );
+                    description = "Neuron removed";
+                }
+                else
+                {
+                    await this.terminalApplicationService.DeactivateTerminal(
+                        result.AvatarUrl,
+                        this.SelectedNeuron.Neuron.Terminal.Id,
+                        this.SelectedNeuron.Neuron.Terminal.Version
+                        );
+                    description = "Terminal removed";
+                }
+                this.toastService.ShowSuccess($"{description} successfully.");
+            }
+            catch (Exception ex)
+            {
+                this.toastService.ShowError(ex.Message);
+            }
+        }
+    }
 
-		await this.jsRuntime.InvokeVoidAsync("displayGraph", distinctNodes, links);
-	}
+    private async void CloseConfirmation() => Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
 
-	private static void ExtractNodes(IEnumerable<NeuronViewModel> children, List<Node> allNodes)
-	{
-		allNodes.AddRange(children.Select(c => new Node { id = c.Neuron.Id, tag = c.Neuron.Tag }).ToArray());
+    private async Task LoadGraph()
+    {
+        var allNodes = new List<Node>();
+        Tree.ExtractNodes(this.Children.ToArray(), allNodes);
 
-		children.ToList().ForEach(c => Tree.ExtractNodes(c.Children, allNodes));
-	}
+        var distinctNodes = new List<Node>();
+        // get distinct nodes
+        allNodes.ForEach(n =>
+        {
+            if (!distinctNodes.Any(dn => dn.id == n.id))
+                distinctNodes.Add(new Node() { id = n.id, tag = n.tag });
+        });
 
-	private static void ExtractLinks(IEnumerable<NeuronViewModel> children, List<Node> distinctNodes, List<Graph.Link> links)
-	{
-		children.ToList().ForEach(c =>
-		{
-			if (c.Neuron.Type != RelativeType.NotSet)
-			{
-				var tsource = distinctNodes.FindIndex(n => n.id == c.Neuron.Terminal.PresynapticNeuronId);
-				var ttarget = distinctNodes.FindIndex(n => n.id == c.Neuron.Terminal.PostsynapticNeuronId);
+        // get links
+        var links = new List<Graph.Link>();
+        Tree.ExtractLinks(this.Children.ToArray(), distinctNodes, links);
 
-				var typeVal = (c.Neuron.Terminal.Strength == "1" ? "full" : "partial") + (c.Neuron.Terminal.Effect == "-1" ? "inhibit" : "excite");
-				if (!links.Any(gl => gl.source == tsource && gl.target == ttarget))
-					links.Add(new Graph.Link() { source = tsource, target = ttarget, type = typeVal });
-			}
-		});
+        await this.jsRuntime.InvokeVoidAsync("displayGraph", distinctNodes, links);
+    }
 
-		children.ToList().ForEach(c => Tree.ExtractLinks(c.Children.ToArray(), distinctNodes, links));
-	}
+    private static void ExtractNodes(IEnumerable<NeuronViewModel> children, List<Node> allNodes)
+    {
+        allNodes.AddRange(children.Select(c => new Node { id = c.Neuron.Id, tag = c.Neuron.Tag }).ToArray());
 
-	private void CopyAvatarUrl()
-	{
-		var baseUrl = this.navigationManager.Uri;
-		var parsedBasedUrl = baseUrl.Substring(0, baseUrl.IndexOf("?") == -1 ? baseUrl.Length : baseUrl.IndexOf("?"));
-		var prefixKeyword = "?avatarurl=";
-		var encodedUrl = System.Net.WebUtility.UrlEncode(AvatarUrl);
-		var fullAvatarUrl = parsedBasedUrl + prefixKeyword + encodedUrl;
+        children.ToList().ForEach(c => Tree.ExtractNodes(c.Children, allNodes));
+    }
 
-		jsRuntime.InvokeVoidAsync("copyToClipboard", fullAvatarUrl);
+    private static void ExtractLinks(IEnumerable<NeuronViewModel> children, List<Node> distinctNodes, List<Graph.Link> links)
+    {
+        children.ToList().ForEach(c =>
+        {
+            if (c.Neuron.Type != RelativeType.NotSet)
+            {
+                var tsource = distinctNodes.FindIndex(n => n.id == c.Neuron.Terminal.PresynapticNeuronId);
+                var ttarget = distinctNodes.FindIndex(n => n.id == c.Neuron.Terminal.PostsynapticNeuronId);
 
-		this.toastService.ShowInfo($"Copied successfully.");
+                var typeVal = (c.Neuron.Terminal.Strength == "1" ? "full" : "partial") + (c.Neuron.Terminal.Effect == "-1" ? "inhibit" : "excite");
+                if (!links.Any(gl => gl.source == tsource && gl.target == ttarget))
+                    links.Add(new Graph.Link() { source = tsource, target = ttarget, type = typeVal });
+            }
+        });
 
-		this.optionsDropdown.Hide();
-	}
+        children.ToList().ForEach(c => Tree.ExtractLinks(c.Children.ToArray(), distinctNodes, links));
+    }
+
+    private void CopyAvatarUrl()
+    {
+        var baseUrl = this.navigationManager.Uri;
+        var parsedBasedUrl = baseUrl.Substring(0, baseUrl.IndexOf("?") == -1 ? baseUrl.Length : baseUrl.IndexOf("?"));
+        var prefixKeyword = "?avatarurl=";
+        var encodedUrl = System.Net.WebUtility.UrlEncode(AvatarUrl);
+        var fullAvatarUrl = parsedBasedUrl + prefixKeyword + encodedUrl;
+
+        jsRuntime.InvokeVoidAsync("copyToClipboard", fullAvatarUrl);
+
+        this.toastService.ShowInfo($"Copied successfully.");
+
+        this.optionsDropdown.Hide();
+    }
 }
