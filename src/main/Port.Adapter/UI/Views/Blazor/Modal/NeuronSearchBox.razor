@@ -4,11 +4,7 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 @using ei8.Cortex.Diary.Port.Adapter.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages;
 @inject INeuronQueryService NeuronQueryService;
-@inject NavigationManager navigationManager;
-@inject IToastService toastService;
-@inject IJSRuntime jsRuntime;
 
 @if (this.IsVisible)
 {
@@ -95,8 +91,6 @@
         this.IsVisible = false;
     }
 
-    Tree tree = new Tree();
-
     private NeuronViewModel TempSelectedNeuron { get; set; }
 
     private NeuronViewModel selectedNeuron { get; set; }
@@ -108,13 +102,8 @@
         {
             if (this.selectedNeuron != value)
             {
-
                 this.selectedNeuron = value;
                 this.SelectedNeuronChanged.InvokeAsync(this.selectedNeuron);
-                tree.AddAvaterUrl(value.Neuron.Id, navigationManager.Uri, AvatarUrl,navigationManager);
-                
-                
-                
             }
         }
     }
