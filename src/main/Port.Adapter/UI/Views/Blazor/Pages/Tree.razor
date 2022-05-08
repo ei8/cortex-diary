@@ -39,25 +39,25 @@
 <NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchDefaultRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedDefaultRegionNeuron" />
 
 <div class="top-row px-4" style="padding-top:12px;z-index:1">
-	<div class="details align-middle ">
-		<div style="margin-right:10px">
-		</div>
-		<button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px;width:32px;" title="Reload">
-			<Blazorise.Icon Name="FontAwesomeIcons.Redo" />
-			@if (this.NewItemsCount > 0)
-			{
-				<Badge Pill="true" Color="Color.Danger" style="top:-35px;left:8px;height:14px;font-size:0.6em">@(this.NewItemsCount)</Badge>
-			}
-		</button>
-		<input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
-		<button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
-			<Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
-		</button>
-		<Dropdown RightAligned="true" @ref="this.optionsDropdown">
-			<button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowOptionsMenu" title="Options">
-				<Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
-			</button>
-			<Blazorise.DropdownMenu style="width: 250px">
+    <div class="details align-middle ">
+        <div style="margin-right:10px">
+        </div>
+        <button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px;width:32px;" title="Reload">
+            <Blazorise.Icon Name="FontAwesomeIcons.Redo" />
+            @if (this.NewItemsCount > 0)
+            {
+                <Badge Pill="true" Color="Color.Danger" style="top:-35px;left:8px;height:14px;font-size:0.6em">@(this.NewItemsCount)</Badge>
+            }
+        </button>
+        <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
+        <button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
+            <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
+        </button>
+        <Dropdown RightAligned="true" @ref="this.optionsDropdown">
+            <button class="btn btn-light btn-sm ml-1 rounded-circle" @onclick="this.ShowOptionsMenu" title="Options">
+                <Blazorise.Icon Name="FontAwesomeIcons.EllipsisV" Class="px-1" />
+            </button>
+            <Blazorise.DropdownMenu style="width: 250px">
                 <DropdownItem @onclick="this.CopyAvatarUrl">
                     <Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
                     Copy Direct Avatar URL
