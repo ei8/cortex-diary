@@ -34,9 +34,12 @@
 @inject IIdentityService identityService
 @inject IJSRuntime JS
 
+
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 <NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
+<NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchDefaultRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedDefaultRegionNeuron" />
+
 <div class="top-row px-4" style="padding-top:12px;z-index:1">
     <div class="details align-middle ">
         <button class="btn btn-light btn-sm rounded-circle" @onclick="this.Reload" style="height:32px;width:32px;" title="Reload">
@@ -70,6 +73,10 @@
                         @((MarkupString)"First At Bottom")
                     }
                 </DropdownItem>
+                <DropdownItem @onclick="this.SearchDefaultRegionNeuron">
+                    <Blazorise.Icon Name="FontAwesomeIcons.SearchPlus" Class="px-2" />
+                    Set Default Region ID
+                </DropdownItem>
             </Blazorise.DropdownMenu>
         </Dropdown>
     </div>
@@ -85,28 +92,28 @@
 }
 else
 {
-<div class="content px-0">
-    <div class="treecontent">
-        <div class="treecontent-item content px-lg-4 px-3">
-            <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" @bind-RenderDirection="@this.RenderDirection" />
-        </div>
-        <div class="treecontent-item sticky-top" style="z-index:0">
-            <div class="modal" id="modal">
-                <div class="modal-body">
-                    <ul class="modal-list">
-                        <li class="InnerOption" id="contextmenu">
-                            Link
-                        </li>
-                    </ul>
-                </div>
+    <div class="content px-0">
+        <div class="treecontent">
+            <div class="treecontent-item content px-lg-4 px-3">
+                <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" @bind-RenderDirection="@this.RenderDirection" />
             </div>
-            <div class="sticky-top" style="z-index:0">
-                <span class="progress spinner-border text-primary none"></span>
-                <svg class="svgview" />
+            <div class="treecontent-item sticky-top" style="z-index:0">
+                <div class="modal" id="modal">
+                    <div class="modal-body">
+                        <ul class="modal-list">
+                            <li class="InnerOption" id="contextmenu">
+                                Link
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sticky-top" style="z-index:0">
+                    <span class="progress spinner-border text-primary none"></span>
+                    <svg class="svgview" />
+                </div>
             </div>
         </div>
     </div>
-</div>
 }
 <div class="footer px-4 h-auto" style="z-index:2">
     <EditorBox AvatarUrl="@this.AvatarUrl" InitialRegionNeuron="@this.InitialRegionNeuron" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
@@ -120,10 +127,8 @@ else
     private bool expandSubNavSettings;
     private Dropdown optionsDropdown;
     private Timer refreshTimer;
-
     private DotNetObjectReference<Tree>? dotNetHelper;
     
-
     private void ShowOptionsMenu()
     {
         if (this.optionsDropdown.Visible)
@@ -142,11 +147,6 @@ else
             RenderDirectionValue.TopToBottom;
 
         this.optionsDropdown.Hide();
-    }
-
-    protected override void OnInitialized()
-    {
-        this.Children = new List<NeuronViewModel>();
     }
 
     [JSInvokable]
@@ -178,6 +178,18 @@ else
             );
             return false;
         }
+    }
+
+    private void SearchDefaultRegionNeuron()
+    {
+        this.IsSearchDefaultRegionNeuronVisible = true;
+
+        this.optionsDropdown.Hide();
+    }
+
+    protected override void OnInitialized()
+    {
+        this.Children = new List<NeuronViewModel>();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -300,6 +312,29 @@ else
     private bool IsInfoVisible { get; set; } = false;
 
     private RenderDirectionValue RenderDirection { get; set; } = RenderDirectionValue.TopToBottom;
+
+    private NeuronViewModel selectedDefaultRegionNeuron;
+    private NeuronViewModel SelectedDefaultRegionNeuron
+    {
+        get => this.selectedDefaultRegionNeuron;
+        set
+        {
+            if (this.selectedDefaultRegionNeuron != value)
+            {
+                this.selectedDefaultRegionNeuron = value;
+
+                if (this.selectedDefaultRegionNeuron != null)
+                {
+                    this.navigationManager.NavigateTo(
+                        Tree.BuildAvatarUrl(this.navigationManager.Uri, this.AvatarUrl) + "&regionid=" + value.Neuron.Id,
+                        true);
+                    this.selectedDefaultRegionNeuron = null;
+                }
+            }
+        }
+    }
+
+    private bool IsSearchDefaultRegionNeuronVisible { get; set; } = false;
 
     private ContextMenuOption selectedOption = ContextMenuOption.New;
     public ContextMenuOption SelectedOption
@@ -491,16 +526,16 @@ else
 
     private void CopyAvatarUrl()
     {
-        var baseUrl = this.navigationManager.Uri;
+        jsRuntime.InvokeVoidAsync("copyToClipboard", Tree.BuildAvatarUrl(this.navigationManager.Uri, this.AvatarUrl));
+        this.toastService.ShowInfo($"Copied successfully.");
+        this.optionsDropdown.Hide();
+    }
+
+    private static string BuildAvatarUrl(string baseUrl, string avatarUrl)
+    {
         var parsedBasedUrl = baseUrl.Substring(0, baseUrl.IndexOf("?") == -1 ? baseUrl.Length : baseUrl.IndexOf("?"));
         var prefixKeyword = "?avatarurl=";
-        var encodedUrl = System.Net.WebUtility.UrlEncode(AvatarUrl);
-        var fullAvatarUrl = parsedBasedUrl + prefixKeyword + encodedUrl;
-
-        jsRuntime.InvokeVoidAsync("copyToClipboard", fullAvatarUrl);
-
-        this.toastService.ShowInfo($"Copied successfully.");
-
-        this.optionsDropdown.Hide();
+        var encodedUrl = System.Net.WebUtility.UrlEncode(avatarUrl);
+        return parsedBasedUrl + prefixKeyword + encodedUrl;
     }
 }
