@@ -8,7 +8,6 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 @inject ISettingsService settingsService
-@inject ITerminalApplicationService terminalApplicationService
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +19,6 @@
     <link rel="shortcut icon" type="image/ico" href="~/dasz.ico">
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    
     <link href="css/site.css" rel="stylesheet" />
     <script type="text/javascript">
         var receiveMessage = function (event) {
@@ -76,10 +74,10 @@
     <app>
         <component type="typeof(App)" render-mode="ServerPrerendered" param-InitialState="initialTokenState" />
     </app>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-	  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-	  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
     <script src="_content/Blazorise/blazorise.js"></script>
     <script src="_framework/blazor.server.js"></script>
     <script src="JsInterop.js"></script>
@@ -105,10 +103,7 @@
         function displayGraph(nodes, links) {
             var width = 500,
                 height = 500;
-            var force = null,
-                zoom = null,
-                svg = null,
-                container = null,
+            var container = null,
                 path = null,
                 node = null,
                 text = null,
@@ -117,7 +112,7 @@
             var selectedNode = null;
             document.getElementById('contextmenu').addEventListener("click", selectNode);
             function update() {
-                force = d3.layout.force()
+                var force = d3.layout.force()
                     .nodes(d3.values(nodes))
                     .links(links)
                     .size([width, height])
@@ -126,16 +121,16 @@
                     .on("tick", tick)
                     .start();
 
-                zoom = d3.behavior.zoom()
+                var zoom = d3.behavior.zoom()
                     .scaleExtent([1, 10])
                     .on("zoom", zoomed);
 
                 var drag = force.drag()
-                    .on("dragstart", dragstarted);
+                    .on("dragstart", dragStarted);
 
                 d3.selectAll("svg > *").remove();
 
-                svg = d3.select("svg")
+                var svg = d3.select("svg")
                     .attr("width", width)
                     .attr("height", height)
                     .call(zoom);
@@ -154,15 +149,15 @@
                     .append("path")
                     .attr("d", "M0,-5L10,0L0,5")
                     .attr("fill", function (d) { if (d.includes("inhibit")) { return "#f00"; } else { return "#000"; } });
-                svg.on("click", SelectEnded);
+                svg.on("click", selectEnded);
                 container = svg.append("g");
-                     
+
                 path = container.append("g").selectAll("path")
                     .data(force.links())
                     .enter().append("path")
                     .attr("class", function (d) { return "link " + d.type; })
                     .attr("marker-end", function (d) { return "url(#" + d.type + ")"; });
-                
+
                 node = container.append("g")
                     .attr("class", "nodes")
                     .selectAll(".node")
@@ -172,11 +167,10 @@
                     .attr("onmouseover", "hover('div', this.id, true, highlightTreeItem)")
                     .attr("onmouseout", "hover('div', this.id, false, highlightTreeItem)")
                     .attr("id", d => d.id)
-
                     .attr("cx", function (d) { return d.x; })
                     .attr("cy", function (d) { return d.y; })
                     .call(drag)
-                    .on("contextmenu", StartSelect);
+                    .on("contextmenu", startSelect);
 
                 node.append("circle")
                     .attr("r", 6)
@@ -189,7 +183,7 @@
                     .attr("opacity", 0.3) // change this to zero to hide the target area
                     .style("fill", "red")
                     .on("mouseover", function (node) {
-                        
+
                         overCircle(node);
                     })
                     .on("mouseout", function (node) {
@@ -211,7 +205,6 @@
                     .attr("x", -7)
                     .attr("dx", 0)
                     .attr("dy", 10);
-
             }
             update();
             // Use elliptical arc path segments to doubly-encode directionality.
@@ -294,9 +287,7 @@
                     .attr('pointer-events', 'none');
             };
 
-
-
-            function StartSelect(d) {
+            function startSelect(d) {
                 d.fixed = true;
                 d.fx = d.x;
                 d.fy = d.y;
@@ -308,20 +299,15 @@
                 currentDraggingNode = d;
             }
 
-
-
-
-
-
             function selectNode(d) {
-                
+
                 currentNode = d;
                 const modal = document.getElementById("modal");
                 closeModal(modal)
                 d = currentDraggingNode;
 
                 d3.selectAll("ghostCircle");
-                
+
                 domNode = document.getElementById(d.id);
                 initiateDrag(d, domNode);
                 updateTempConnector();
@@ -329,23 +315,21 @@
 
             }
 
-            async function SelectEnded(d) {
+            async function selectEnded(d) {
                 if (d == undefined) {
                     d = currentNode;
                 }
                 d.fx = d.x;
                 d.fy = d.y;
                 d3.selectAll('.ghostCircle').attr('class', 'ghostCircle');
-                
+
                 updateTempConnector();
                 // now restore the mouseover event or we won't be able to drag a 2nd time
                 d3.select(domNode).select('.ghostCircle').attr('pointer-events', '');
                 domNode = this;
-                
-                if (selectedNode) {
-                    
 
-                    var addlink = { "source": nodes[nodes.indexOf(draggingNode)], "target": nodes[nodes.indexOf(selectedNode)], "value": 1, "index": 1 }
+                if (selectedNode) {
+                    var addlink = { "source": nodes[nodes.indexOf(draggingNode)], "target": nodes[nodes.indexOf(selectedNode)], "value": 1, "index": 1, "type": "fullexcite"}
 
                     // now remove the element from the parent, and insert it into the new elements children
 
@@ -353,16 +337,13 @@
                     progress.classList.remove('none');
                     d.fixed = true;
                     // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
-                    
+
                     var status = await dotNetHelper.invokeMethodAsync('SendLinkData', draggingNode.id, selectedNode.id);
-                    
-                    if(status) {
+
+                    if (status) {
                         links.push(addlink);
                     }
                     updateTempConnector();
-                    
-                    
-
                     update();
 
                     selectedNode = null;
@@ -370,24 +351,21 @@
                     progress.classList.add('none');
                 }
             }
-            function dragstarted(d) {
+
+            function dragStarted(d) {
                 d.fixed = true;
                 d3.event.sourceEvent.stopPropagation();
             }
 
             var overCircle = function (d) {
-
                 selectedNode = d;
-                
                 updateTempConnector();
-
             };
 
             var outCircle = function (d) {
                 d3.selectAll(".templink").remove();
                 selectedNode = null;
                 updateTempConnector();
-
             };
 
             function dblclick(d) {
@@ -402,7 +380,7 @@
             const overlay = document.getElementsByClassName('svgview')[0];
             overlay.addEventListener('click', () => {
                 const modals = document.querySelectorAll('.modal.active')
-               
+
                 modals.forEach(modal => {
                     closeModal(modal)
                 })
@@ -412,20 +390,17 @@
 
                 var body = document.getElementsByClassName("modal-list")[0];
 
+                if (modal == null) return;
 
+                modal.classList.add('active');
 
-                if (modal == null) return
-                modal.classList.add('active')
-                
-                var x = currentNode.x;
-                var y = currentNode.y
+                var x = d3.event.pageX;
+                var y = d3.event.pageY;
                 modal.style.left = "" + x + "px";
                 modal.style.top = "" + y + "px";
-
             }
 
             function closeModal(modal) {
-
                 if (modal == null) return
                 modal.classList.remove('active')
                 overlay.classList.remove('active')

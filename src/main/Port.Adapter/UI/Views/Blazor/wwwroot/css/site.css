@@ -10,15 +10,15 @@ html, body {
     stroke-width: 4px;
 }
 .none{
-    display:none;
+    display: none !important;
 }
 .progress {
     position: absolute;
-    right:1.5rem;
+    right: 1.5rem;
+    top: 1.5rem;
+    background-color: transparent !important;
 }
-.modal {
-    position: absolute;
-    display: none;
+.modal-context {
     border: 1px solid black;
     border-radius: 10px;
     background-color: white;
@@ -51,8 +51,6 @@ html, body {
         background-color: #4677f8;
         color: #fefefe;
     }
-
-
 
 .templink {
     fill: none;

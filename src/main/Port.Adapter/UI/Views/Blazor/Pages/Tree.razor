@@ -32,8 +32,6 @@
 @inject IJSRuntime jsRuntime
 @inject ISettingsService settingsService
 @inject IIdentityService identityService
-@inject IJSRuntime JS
-
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
@@ -98,16 +96,16 @@ else
                 <TreeView AvatarUrl="@this.AvatarUrl" Children="@this.Children" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested" OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" @bind-RenderDirection="@this.RenderDirection" />
             </div>
             <div class="treecontent-item sticky-top" style="z-index:0">
-                <div class="modal" id="modal">
-                    <div class="modal-body">
-                        <ul class="modal-list">
-                            <li class="InnerOption" id="contextmenu">
-                                Link
-                            </li>
-                        </ul>
-                    </div>
-                </div>
                 <div class="sticky-top" style="z-index:0">
+                    <div class="modal modal-context" id="modal" style="height: 50px">
+                        <div class="modal-body p-1">
+                            <ul class="modal-list">
+                                <li class="InnerOption" id="contextmenu">
+                                    Link
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                     <span class="progress spinner-border text-primary none"></span>
                     <svg class="svgview" />
                 </div>
@@ -197,7 +195,7 @@ else
         if (firstRender)
         {
             this.dotNetHelper = DotNetObjectReference.Create(this);
-            await JS.InvokeAsync<string>("DotNetHelperSetter", this.dotNetHelper);
+            await this.jsRuntime.InvokeAsync<string>("DotNetHelperSetter", this.dotNetHelper);
             var uri = this.navigationManager.ToAbsoluteUri(this.navigationManager.Uri);
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("direction", out var directionValue) &&
                 Enum.TryParse<RenderDirectionValue>(directionValue, out RenderDirectionValue directionEnum)

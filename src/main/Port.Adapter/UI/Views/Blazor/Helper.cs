@@ -57,18 +57,19 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 );
         }
         
-        public static async Task AddLink(ITerminalApplicationService terminalApplicationService, string avatarUrl, string SourceNeuronID,string TargetNeuronID)
+        public static async Task AddLink(ITerminalApplicationService terminalApplicationService, string avatarUrl, string sourceNeuronID, string targetNeuronID)
         {
             NeurotransmitterEffect effect = NeurotransmitterEffect.Excite;
             await terminalApplicationService.CreateTerminal(avatarUrl,
                 Guid.NewGuid().ToString(),
-                SourceNeuronID,
-                TargetNeuronID,
+                sourceNeuronID,
+                targetNeuronID,
                 effect,
                 1f,
-                ""
+                string.Empty
                 );
         }
+
         public static async Task LinkRelativeCore(ITerminalApplicationService terminalApplicationService, string avatarUrl, string targetNeuronId, RelativeType relativeType, IEnumerable<Neuron> candidates, NeurotransmitterEffect effect, float strength, string terminalExternalReferenceUrl)
         {
             foreach (var n in candidates)
