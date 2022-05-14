@@ -33,7 +33,6 @@
 @inject ISettingsService settingsService
 @inject IIdentityService identityService
 
-
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 <NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
@@ -71,7 +70,6 @@
                     {
                         @((MarkupString)"First At Bottom")
                     }
-
                 </DropdownItem>
                 <DropdownItem @onclick="this.SearchDefaultRegionNeuron">
                     <Blazorise.Icon Name="FontAwesomeIcons.SearchPlus" Class="px-2" />
@@ -99,6 +97,16 @@ else
             </div>
             <div class="treecontent-item sticky-top" style="z-index:0">
                 <div class="sticky-top" style="z-index:0">
+                    <div class="modal modal-context" id="modal" style="height: 50px">
+                        <div class="modal-body p-1">
+                            <ul class="modal-list">
+                                <li class="InnerOption" id="contextmenu">
+                                    Link
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <span class="progress spinner-border text-primary none"></span>
                     <svg class="svgview" />
                 </div>
             </div>
@@ -117,7 +125,8 @@ else
     private bool expandSubNavSettings;
     private Dropdown optionsDropdown;
     private Timer refreshTimer;
-
+    private DotNetObjectReference<Tree>? dotNetHelper;
+    
     private void ShowOptionsMenu()
     {
         if (this.optionsDropdown.Visible)
@@ -138,6 +147,37 @@ else
         this.optionsDropdown.Hide();
     }
 
+    [JSInvokable]
+    public async Task<Boolean> SendLinkData(string sourceNeuronID, string targetNeuronID)
+    {
+        try
+        {
+            if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery))
+            {
+                await Blazor.Helper.AddLink(this.terminalApplicationService, resultQuery.AvatarUrl, sourceNeuronID, targetNeuronID);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            string errorDescription, clipboardData;
+            if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out errorDescription, out clipboardData))
+            {
+                errorDescription = ex.Message;
+                clipboardData = ex.ToString();
+            }
+
+            Blazor.Helper.ShowFriendlyException(
+                this.toastService,
+                $"Linking failed:",
+                errorDescription,
+                clipboardData
+            );
+            return false;
+        }
+    }
+
     private void SearchDefaultRegionNeuron()
     {
         this.IsSearchDefaultRegionNeuronVisible = true;
@@ -154,6 +194,8 @@ else
     {
         if (firstRender)
         {
+            this.dotNetHelper = DotNetObjectReference.Create(this);
+            await this.jsRuntime.InvokeAsync<string>("DotNetHelperSetter", this.dotNetHelper);
             var uri = this.navigationManager.ToAbsoluteUri(this.navigationManager.Uri);
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("direction", out var directionValue) &&
                 Enum.TryParse<RenderDirectionValue>(directionValue, out RenderDirectionValue directionEnum)
