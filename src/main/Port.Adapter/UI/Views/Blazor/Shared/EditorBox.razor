@@ -210,7 +210,7 @@
                     if (this.selectedNeuron != null)
                     {
                         this.preEditCopy = new Neuron(this.selectedNeuron.Neuron);
-                        
+
                         // similar to NeuronViewModelBase.SetNeuron
                         this.editorNeuronViewModel.Id = this.selectedNeuron.Neuron.Id;
                         this.editorNeuronViewModel.Tag = this.selectedNeuron.Neuron.Tag;
@@ -346,21 +346,21 @@
         {
             if (this.selectedExternalReferenceNeuron != value)
             {
-                this.selectedExternalReferenceNeuron = value;                
+                this.selectedExternalReferenceNeuron = value;
             }
         }
     }
 
     private bool isSearchExternalReferenceNeuronVisible = false;
-    private bool IsSearchExternalReferenceNeuronVisible 
-    { 
+    private bool IsSearchExternalReferenceNeuronVisible
+    {
         get => this.isSearchExternalReferenceNeuronVisible;
         set
         {
             if (this.isSearchExternalReferenceNeuronVisible != value)
             {
                 this.isSearchExternalReferenceNeuronVisible = value;
-                
+
                 if (!this.isSearchExternalReferenceNeuronVisible)
                 {
                     if (this.selectedExternalReferenceNeuron != null)
@@ -372,7 +372,7 @@
                         this.editorNeuronViewModel.NeuronExternalReferenceUrl = string.Empty;
                 }
             }
-        } 
+        }
     }
 
     private NeuronViewModel selectedExternalReferenceTerminalRelative;
@@ -389,8 +389,8 @@
     }
 
     private bool isSearchExternalReferenceTerminalVisible = false;
-    private bool IsSearchExternalReferenceTerminalVisible 
-    { 
+    private bool IsSearchExternalReferenceTerminalVisible
+    {
         get => this.isSearchExternalReferenceTerminalVisible;
         set
         {
@@ -424,15 +424,15 @@
                     {
                         case ContextMenuOption.New:
                             pi.Description = "Neuron creation";
-                            this.IsConfirmCreateOwnerVisible = 
+                            this.IsConfirmCreateOwnerVisible =
                                 (await this.notificationApplicationService.GetNotificationLog(rq.AvatarUrl, string.Empty))
                                 .NotificationList.Count == 0;
-                            
+
                             if (!this.IsConfirmCreateOwnerVisible)
                             {
                                 var items = (await this.neuronQueryService.GetNeurons(
-                                    rq.AvatarUrl, 
-                                    neuronQuery: new NeuronQuery() { 
+                                    rq.AvatarUrl,
+                                    neuronQuery: new NeuronQuery() {
                                         TagContains = new string[] { this.editorNeuronViewModel.Tag },
                                         TagContainsIgnoreWhitespace = true
                                     })
@@ -451,7 +451,7 @@
                                     result = true;
                                 }
                                 else
-                                    pi.Suspend = true;                                
+                                    pi.Suspend = true;
                             }
                             else
                                 pi.Suspend = true;
@@ -478,10 +478,10 @@
                                     this.editorNeuronViewModel.Version
                                     );
                             }
-                            result = true;                            
+                            result = true;
                             break;
                         case ContextMenuOption.AddRelative:
-                            pi.Description = "Relative addition"; 
+                            pi.Description = "Relative addition";
                             await Blazor.Helper.CreateRelativeCore(
                                 this.neuronApplicationService,
                                 this.terminalApplicationService,
