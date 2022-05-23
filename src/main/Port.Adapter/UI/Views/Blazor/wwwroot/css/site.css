@@ -386,3 +386,49 @@ a[title]:hover::after {
 .tooltip-wrapper:hover .tooltip-wrapper-text {
     visibility: visible;
 }
+
+
+
+.multiselect {
+    
+    width: 100%;
+}
+
+.selectBox {
+    width: 100%;
+    position: relative;
+}
+
+    .selectBox select {
+        width: 100%;
+        font-weight: bold;
+    }
+
+.overSelect {
+    width:15.5rem;
+    position: absolute;
+    
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+#checkboxes {
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    padding: 0 0.2rem;
+    display: none;
+    border: 1px #dadada solid;
+    background-color: white;
+    position: absolute;
+}
+
+    #checkboxes label {
+        display: block;
+    }
+
+        #checkboxes label:hover {
+            background-color: #1e90ff;
+        }

@@ -182,6 +182,7 @@
 <NeuronSearchBox AvatarUrl="@this.editorNeuronViewModel.NeuronExternalReferenceUrl" @bind-IsVisible="@this.IsSearchExternalReferenceNeuronVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceNeuron" />
 <NeuronSearchBox AvatarUrl="@this.editorNeuronViewModel.TerminalExternalReferenceUrl" @bind-IsVisible="@this.IsSearchExternalReferenceTerminalVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceTerminalRelative" />
 
+
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
     private Neuron preEditCopy = null;

@@ -19,8 +19,64 @@
     <link rel="shortcut icon" type="image/ico" href="~/dasz.ico">
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="css/site.css" rel="stylesheet" />
     <script type="text/javascript">
+
+        var expanded = false;
+
+        function showCheckboxes(event) {
+            
+            var checkboxes = event.target.parentNode.parentNode.children[1];
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
+            }
+        }
+        function Checked(event) {
+            
+            if (event.target.checked) {
+                if (event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text == "Select an option") {
+                    event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text = event.target.dataset.value;
+                } else {
+                    event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text += "," + event.target.dataset.value;
+                }
+            } else {
+                if (event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text.indexOf(event.target.dataset.value) == 0) {
+                    event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text = event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text.replace(event.target.dataset.value, "");
+                    event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text = event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text.replace(",", "");
+                    if (event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text == "") {
+                        event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text = "Select an option";
+                    }
+                }
+                else {
+                    event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text = event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0].text.replace("," + event.target.dataset.value, "");
+                }
+                
+            }
+           
+        }
+
+        function DeleteForm(event) {
+            if (event.target.parentNode.children[1].value.length != 0) {
+                console.log('change');
+                event.target.parentNode.children[1].value = "";
+                var e = new Event('change');
+                event.target.parentNode.children[1].dispatchEvent(e);
+            }
+            
+            event.target.parentNode.remove()
+        }
+        function DeleteMultiSelectMenu(event) {
+
+            console.log(event.target.parentNode.children[1].children[0].children[0].tagName)
+            var e = new Event('change');
+            event.target.parentNode.children[1].children[0].children[0].dispatchEvent(e);
+            event.target.parentNode.remove()
+        }
         var receiveMessage = function (event) {
             if (document.getElementById('currentUrl') != null) {
                 document.getElementById('currentUrl').value = event.data;
@@ -76,6 +132,8 @@
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
         
+        
+
         function copyToClipboard(text) {
             var input = document.body.appendChild(document.createElement("input"));
             input.value = text;
