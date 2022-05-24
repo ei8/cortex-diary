@@ -39,7 +39,7 @@
 @if (IsAvatarUrlVisible)
 {
     <AvatarUrlEditorBox @bind-Parameters="@this.AvatarUrl"  AvatarUrl="@this.AvatarUrl"   @bind-IsVisible="@this.IsAvatarUrlVisible" />
-} 
+}
 <NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchDefaultRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedDefaultRegionNeuron" />
 
 <div class="top-row px-4" style="padding-top:12px;z-index:1">
@@ -133,7 +133,7 @@ else
     private Dropdown optionsDropdown;
     private Timer refreshTimer;
     private DotNetObjectReference<Tree>? dotNetHelper;
-    
+
     private void ShowOptionsMenu()
     {
         if (this.optionsDropdown.Visible)
@@ -315,6 +315,8 @@ else
     private bool IsContextMenuVisible { get; set; } = false;
 
     private bool IsInfoVisible { get; set; } = false;
+
+    private bool IsAvatarUrlVisible { get; set; } = false;
 
     private RenderDirectionValue RenderDirection { get; set; } = RenderDirectionValue.TopToBottom;
 
