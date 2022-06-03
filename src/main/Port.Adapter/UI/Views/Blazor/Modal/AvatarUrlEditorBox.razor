@@ -803,12 +803,22 @@
     public EventCallback<string> ParametersChanged { get; set; }
 
     [Parameter]
-    public string AvatarUrl { get; set; }
+    public string AvatarUrl
+    {
+        get => this.avatarUrl;
+        set
+        {
+            this.avatarUrl = value;
+            this.Load();
+        }
+    }
+
     [Parameter]
     public string Parameters { get; set; }
 
     private NeuronQuery neuronQuery ;
     private string url;
+    private string avatarUrl;
 
 
     private List<string> ParametersAttributes;
@@ -840,7 +850,7 @@
 
     //end
 
-    protected override void OnInitialized()
+    private void Load()
     {
 
         if (AvatarUrl !=null)
@@ -931,9 +941,10 @@
             }
         }
 
-        this.ParametersAttributes = new List<string>(new string[] { nameof(this.neuronQuery.Page), nameof(this.neuronQuery.PageSize), nameof(this.neuronQuery.RegionId), nameof(this.neuronQuery.RegionIdNot), nameof(this.neuronQuery.ExternalReferenceUrl), nameof(this.neuronQuery.ExternalReferenceUrlContains), nameof(this.neuronQuery.Id), nameof(this.neuronQuery.Postsynaptic) , nameof(this.neuronQuery.PostsynapticNot) , nameof(this.neuronQuery.Presynaptic), nameof(this.neuronQuery.PresynapticNot) , nameof(this.neuronQuery.TagContains) , nameof(this.neuronQuery.TagContainsNot), nameof(this.neuronQuery.SortOrder), nameof(this.neuronQuery.SortBy), nameof(this.neuronQuery.TerminalActiveValues), nameof(this.neuronQuery.NeuronActiveValues), nameof(this.neuronQuery.RelativeValues) });
-
+        if (this.neuronQuery != null)
+            this.ParametersAttributes = new List<string>(new string[] { nameof(this.neuronQuery.Page), nameof(this.neuronQuery.PageSize), nameof(this.neuronQuery.RegionId), nameof(this.neuronQuery.RegionIdNot), nameof(this.neuronQuery.ExternalReferenceUrl), nameof(this.neuronQuery.ExternalReferenceUrlContains), nameof(this.neuronQuery.Id), nameof(this.neuronQuery.Postsynaptic), nameof(this.neuronQuery.PostsynapticNot), nameof(this.neuronQuery.Presynaptic), nameof(this.neuronQuery.PresynapticNot), nameof(this.neuronQuery.TagContains), nameof(this.neuronQuery.TagContainsNot), nameof(this.neuronQuery.SortOrder), nameof(this.neuronQuery.SortBy), nameof(this.neuronQuery.TerminalActiveValues), nameof(this.neuronQuery.NeuronActiveValues), nameof(this.neuronQuery.RelativeValues) });
     }
+
 
 
 
