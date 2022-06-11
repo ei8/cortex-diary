@@ -3,7 +3,9 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-
+body {
+    background-color: #212336 ;
+}
 .link {
     fill: none;
     stroke: #ccc;
