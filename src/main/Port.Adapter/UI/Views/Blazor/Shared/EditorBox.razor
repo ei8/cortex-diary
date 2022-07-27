@@ -129,10 +129,10 @@
                     }
                     <div class="row">
                         <div class="col-auto pb-1 pr-1 p-0">
-                            <button type="button" class="btn btn-secondary btn-sm" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @onclick="this.OnSearchRegionNeuron">Region...</button>
+                            <button type="button" class="btn btn-secondary btn-sm"  @onclick="this.OnSearchRegionNeuron">Region...</button>
                         </div>
                         <div class="col-auto pb-1 p-0">
-                            <input class="form-control-sm" style="width:150px" readonly value="@this.editorNeuronViewModel.RegionTag" />
+                            <input class="form-control-sm" style="width:150px"  value="@this.editorNeuronViewModel.RegionTag" @onchange="@((x) => { this.editorNeuronViewModel.RegionTag =x.Value.ToString() ; })" />
                         </div>
                         <div class="col-auto pb-1 p-0">
                             @if (string.IsNullOrWhiteSpace(this.editorNeuronViewModel.NeuronExternalReferenceUrl))
@@ -465,6 +465,15 @@
                                     rq.AvatarUrl,
                                     this.editorNeuronViewModel.Id,
                                     this.editorNeuronViewModel.Tag,
+                                    this.editorNeuronViewModel.Version
+                                    );
+                            }
+                            if (this.editorNeuronViewModel.RegionId != this.preEditCopy.Region.Id)
+                            {
+                                await this.neuronApplicationService.ChangeNeuronRegionId(
+                                    rq.AvatarUrl,
+                                    this.editorNeuronViewModel.Id,
+                                    this.editorNeuronViewModel.RegionId,
                                     this.editorNeuronViewModel.Version
                                     );
                             }
