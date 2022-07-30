@@ -88,7 +88,7 @@
     private void SelectNeuron(NeuronViewModel value)
     {
         this.SelectedNeuron = value;
-        this.IsVisible = false;        
+        this.IsVisible = false;
     }
 
     private NeuronViewModel TempSelectedNeuron { get; set; }
@@ -107,7 +107,7 @@
             }
         }
     }
-        
+
     [Parameter]
     public EventCallback<NeuronViewModel> SelectedNeuronChanged { get; set; }
 

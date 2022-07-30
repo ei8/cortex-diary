@@ -4,6 +4,7 @@ using ei8.Cortex.Diary.Application.Notifications;
 using ei8.Cortex.Diary.Port.Adapter.Common;
 using ei8.Cortex.Library.Common;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using neurUL.Common.Http;
 using neurUL.Cortex.Common;
 using System;
@@ -53,6 +54,19 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 effect,
                 strength,
                 terminalExternalReferenceUrl
+                );
+        }
+        
+        public static async Task AddLink(ITerminalApplicationService terminalApplicationService, string avatarUrl, string sourceNeuronID, string targetNeuronID)
+        {
+            NeurotransmitterEffect effect = NeurotransmitterEffect.Excite;
+            await terminalApplicationService.CreateTerminal(avatarUrl,
+                Guid.NewGuid().ToString(),
+                sourceNeuronID,
+                targetNeuronID,
+                effect,
+                1f,
+                string.Empty
                 );
         }
 
