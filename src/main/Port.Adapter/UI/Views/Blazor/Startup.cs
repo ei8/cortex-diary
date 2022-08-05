@@ -8,6 +8,7 @@ using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Application.Notifications;
 using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Application.Subscriptions;
 using ei8.Cortex.Diary.Domain.Model;
 using ei8.Cortex.Diary.Nucleus.Client.In;
 using ei8.Cortex.Diary.Nucleus.Client.Out;
@@ -104,6 +105,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<INeuronApplicationService, NeuronApplicationService>();
             services.AddScoped<ITerminalApplicationService, TerminalApplicationService>();
             services.AddScoped<INeuronQueryClient, HttpNeuronQueryClient>();
+            services.AddScoped<ISubscriptionClient, HttpSubscriptionClient>();
+            services.AddScoped<ISubscriptionApplicationService, SubscriptionApplicationService>();
+            services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
+            services.AddScoped<ISubscriptionConfigurationClient, HttpSubscriptionConfigurationClient>();
+
             var vas = new ViewApplicationService(new ViewRepository());
             services.AddSingleton<IEnumerable<View>>(vas.GetAll().Result);
             services.AddAuthentication(options =>

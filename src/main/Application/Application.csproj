@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.13.9" />
     <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.11" />
-    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.18" />
+    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.21" />
     <PackageReference Include="ei8.Cortex.Library.Client" Version="0.2.12" />
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.2.14" />
     <PackageReference Include="Neurul.Common" Version="0.1.19" />
