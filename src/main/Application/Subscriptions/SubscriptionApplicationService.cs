@@ -22,7 +22,7 @@ namespace ei8.Cortex.Diary.Application.Subscriptions
 
 			await this.subscriptionClient.AddSubscriptionAsync(avatarUrl, new BrowserSubscriptionInfo()
 			{
-				AvatarUrl = avatarUrl,
+				AvatarUrl = avatarSnapshotUrl,
 				Name = deviceName,
 				PushAuth = pushAuth,	
 				PushEndpoint = pushEndpoint,
