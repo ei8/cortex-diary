@@ -704,13 +704,13 @@
     </div>
 }
 @code {
-    private NeuronQuery neuronQuery ;
+    private NeuronQuery neuronQuery;
     private string url;
     private string avatarUrl;
     private List<string> ParametersAttributes;
     private string newField = "";
     private List<string> FieldsCount = new List<string>();
-    private int? page=null;
+    private int? page = null;
     private int? pageSize = null;
     private List<string> regionIdNot = new List<string>();
     private List<string> regionId = new List<string>();
@@ -723,7 +723,7 @@
     private List<string> presynapticNot = new List<string>();
     private List<string> tagContains = new List<string>();
     private List<string> tagContainsNot = new List<string>();
-    private SortOrderValue? sortOrderValue ;
+    private SortOrderValue? sortOrderValue;
     private SortByValue? sortByValue;
     private ActiveValues? terminalActiveValues;
     private ActiveValues? neuronActiveValues;
@@ -731,7 +731,17 @@
     private bool isVisible;
 
     [Parameter]
-    public EventCallback<string> ParametersChanged { get; set; }
+    public string Parameters { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ParametersChanged 
+    {
+        get => this.ParametersChanged; 
+        set 
+        {
+            this.ParametersChanged.InvokeAsync(this.Parameters);
+        } 
+    }
 
     [Parameter]
     public string AvatarUrl
@@ -743,9 +753,6 @@
             this.Load();
         }
     }
-
-    [Parameter]
-    public string Parameters { get; set; }
 
     [Parameter]
     public bool IsVisible
@@ -768,7 +775,6 @@
     {
         if (this.AvatarUrl !=null)
         {
-
             var startWith = this.AvatarUrl.IndexOf("?");
             var parameters = "";
             if (startWith != -1)
@@ -862,9 +868,10 @@
                 nameof(this.neuronQuery.RelativeValues) });
     }
 
-    private void AddTerminalActiveValues(ActiveValues? data,bool status)
+    private void AddTerminalActiveValues(ActiveValues? data, bool status)
     {
-        if (data == null){
+        if (data == null)
+        {
             this.terminalActiveValues = null;
         }
         if (this.terminalActiveValues == null)
@@ -919,10 +926,9 @@
                 this.neuronActiveValues &= ~data;
             }
         }
-
     }
 
-    private void AddRelativeValues(RelativeValues? data,bool status)
+    private void AddRelativeValues(RelativeValues? data, bool status)
     {
         if (data == null)
         {
@@ -951,7 +957,8 @@
         }
     }
 
-    private void RemoveAllEmptyValues() {
+    private void RemoveAllEmptyValues()
+    {
         if (this.presynaptic != null)
         {
             this.presynaptic.RemoveAll(x => string.IsNullOrWhiteSpace(x));
@@ -1019,7 +1026,6 @@
         this.neuronQuery.RelativeValues = this.relativeValues;
         // End of assign proccess
         this.Parameters = url + this.neuronQuery.ToString();
-        this.ParametersChanged.InvokeAsync(this.Parameters);
         this.IsVisible = false;
     }
 }

@@ -4,7 +4,7 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 body {
-    background-color: #212336 ;
+    background-color: #212336;
 }
 .link {
     fill: none;
@@ -452,8 +452,6 @@ a[title]:hover::after {
 .tooltip-wrapper:hover .tooltip-wrapper-text {
     visibility: visible;
 }
-
-
 
 .multiselect {
     
