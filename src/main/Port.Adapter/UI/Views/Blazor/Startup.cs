@@ -17,6 +17,7 @@ using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Services;
 using ei8.Cortex.Library.Client.Out;
+using ei8.Cortex.Subscriptions.Common.Receivers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -105,7 +106,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<INeuronApplicationService, NeuronApplicationService>();
             services.AddScoped<ITerminalApplicationService, TerminalApplicationService>();
             services.AddScoped<INeuronQueryClient, HttpNeuronQueryClient>();
-            services.AddScoped<ISubscriptionClient, HttpSubscriptionClient>();
+            services.AddScoped<ISubscriptionClient<BrowserReceiverInfo>, HttpSubscriptionClient<BrowserReceiverInfo>>();
             services.AddScoped<ISubscriptionApplicationService, SubscriptionApplicationService>();
             services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
             services.AddScoped<ISubscriptionConfigurationClient, HttpSubscriptionConfigurationClient>();
