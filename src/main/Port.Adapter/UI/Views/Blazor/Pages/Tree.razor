@@ -63,7 +63,7 @@
                     <Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
                     Copy Direct Avatar URL
                 </DropdownItem>
-				<DropdownItem @onclick="this.SubscribeWIthBrowser">
+				<DropdownItem @onclick="this.SubscribeWithBrowser">
 					<Blazorise.Icon Name="FontAwesomeIcons.Bell" Class="px-2" />
 					Subscribe
 				</DropdownItem>
@@ -554,7 +554,7 @@ else
         return parsedBasedUrl + prefixKeyword + encodedUrl;
     }
 
-    private async Task SubscribeWIthBrowser()
+    private async Task SubscribeWithBrowser()
 	{
 		QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result);
 		await this.subscriptionApplicationService.SubscribeWithBrowserAsync(result.AvatarUrl, this.AvatarUrl, this.deviceName, this.pushAuth, this.pushP256DH, this.pushEndpoint);
