@@ -108,7 +108,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<INeuronQueryClient, HttpNeuronQueryClient>();
             // TODO: Add other receiver info type registrations for subscription client once implemented
             services.AddScoped<ISubscriptionClient<BrowserReceiverInfo>, HttpSubscriptionClient<BrowserReceiverInfo>>();
-            services.AddScoped<ISubscriptionApplicationService<BrowserReceiverInfo>, BrowserSubscriptionApplicationService>();
+            services.AddScoped<ISubscriptionApplicationService, SubscriptionApplicationService>();
             services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
             services.AddScoped<ISubscriptionConfigurationClient, HttpSubscriptionConfigurationClient>();
 
@@ -168,7 +168,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseHttpsRedirection();
             }
             else
             {

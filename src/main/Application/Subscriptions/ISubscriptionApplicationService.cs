@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Application.Subscriptions
 {
-    public interface ISubscriptionApplicationService<in T> where T : IReceiverInfo
+    public interface ISubscriptionApplicationService
     {
-        Task SubscribeAsync(string avatarUrl, SubscriptionInfo subscription, T receiverInfo);
+        Task SubscribeAsync(string avatarUrl, SubscriptionInfo subscription, IReceiverInfo receiverInfo);
     }
 }

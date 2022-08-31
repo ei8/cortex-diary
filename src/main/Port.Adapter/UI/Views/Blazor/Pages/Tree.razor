@@ -35,7 +35,7 @@
 @inject IJSRuntime jsRuntime
 @inject ISettingsService settingsService
 @inject IIdentityService identityService
-@inject ISubscriptionApplicationService<BrowserReceiverInfo> browserSubscriptionApplicationService
+@inject ISubscriptionApplicationService subscriptionApplicationService
 @inject ISubscriptionQueryService subscriptionsQueryService
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
@@ -573,7 +573,7 @@ else
             PushP256DH = this.pushP256DH
         };
 
-		await this.browserSubscriptionApplicationService.SubscribeAsync(result.AvatarUrl, subscriptionInfo, receiverInfo);
+		await this.subscriptionApplicationService.SubscribeAsync(result.AvatarUrl, subscriptionInfo, receiverInfo);
 	}
 
 	#region Subscription Interop
