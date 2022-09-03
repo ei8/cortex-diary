@@ -115,6 +115,7 @@ app {
     line-height: normal;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 .main .top-row {
