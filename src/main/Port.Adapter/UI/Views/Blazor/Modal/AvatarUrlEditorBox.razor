@@ -729,18 +729,22 @@
     private ActiveValues? neuronActiveValues;
     private RelativeValues? relativeValues;
     private bool isVisible;
+    private string parameters;
 
     [Parameter]
-    public string Parameters { get; set; }
+    public EventCallback<string> ParametersChanged{ get; set; }
 
     [Parameter]
-    public EventCallback<string> ParametersChanged 
-    {
-        get => this.ParametersChanged; 
-        set 
+    public string Parameters {
+        get => this.Parameters;
+        set
         {
-            this.ParametersChanged.InvokeAsync(this.Parameters);
-        } 
+            if (!Equals(this.parameters , value))
+            {
+                this.parameters = value;
+                this.ParametersChanged.InvokeAsync(this.parameters);
+            }
+        }
     }
 
     [Parameter]

@@ -49,9 +49,7 @@
             }
         </button>
         <input class="form-control form-control-sm ml-1 rounded " id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" />
-        <button style="position: absolute; right: 6.2rem; bottom:0.85rem;  height:1.8rem; border:0; border-radius:2px; background-color:white;   margin: 0;  " @onclick="() => {
-                                                                                                                                                                            this.IsAvatarUrlVisible = true;
-                                                                                                                                                                         }"><i class="fas fa-edit"></i></button>
+        <button style="position: absolute; right: 6.2rem; bottom:0.85rem;  height:1.8rem; border:0; border-radius:2px; background-color:white;   margin: 0;  " @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
         <button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
             <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
         </button>
@@ -140,6 +138,11 @@ else
 
         // hide other dropdowns
         //this.userDropdown.Hide();
+    }
+
+    private void ShowAvatarEditorBox()
+    {
+        this.IsAvatarUrlVisible = true;
     }
 
     private void ToggleRenderDirection()
