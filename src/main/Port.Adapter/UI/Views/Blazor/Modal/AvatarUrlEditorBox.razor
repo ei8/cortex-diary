@@ -14,16 +14,15 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <div class="row">
-                            <button type="button" class="col-4 mr-auto btn btn-secondary" style="font-size:0.75rem" @onclick="@(() => { this.FieldsCount.Add(this.newField); })">Add New Parameter</button>
-                            <select class="col-6 form-control selectpicker" @bind="@this.newField">
-                                @foreach (var item in this.ParametersAttributes)
-                                {
-                                    <option value="@item">@item</option>
-                                }
-                            </select>
-                        </div>
+                    <div class="form-group row">
+                        <label class="control-label col-4">New Parameter</label>
+                        <select class="col-5 ml-auto form-control selectpicker" @bind="@this.newField">
+                            @foreach (var item in this.ParametersAttributes)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                        <button type="button" class="mx-3 btn btn-secondary" @onclick="@(() => { this.FieldsCount.Add(this.newField); })">Add</button>
                     </div>
                     @if (this.neuronQuery.PageSize != null)
                     {
@@ -732,20 +731,21 @@
     private string parameters;
 
     [Parameter]
-    public EventCallback<string> ParametersChanged{ get; set; }
-
-    [Parameter]
-    public string Parameters {
-        get => this.Parameters;
+    public string Parameters
+    {
+        get => this.parameters;
         set
         {
-            if (!Equals(this.parameters , value))
+            if (this.parameters != value)
             {
                 this.parameters = value;
-                this.ParametersChanged.InvokeAsync(this.parameters);
+                this.ParametersChanged.InvokeAsync(this.Parameters);
             }
         }
     }
+
+    [Parameter]
+    public EventCallback<string> ParametersChanged { get; set; }
 
     [Parameter]
     public string AvatarUrl
@@ -754,7 +754,6 @@
         set
         {
             this.avatarUrl = value;
-            this.Load();
         }
     }
 
@@ -767,6 +766,9 @@
             if (this.isVisible != value)
             {
                 this.isVisible = value;
+                if (this.isVisible)
+                    this.Load();
+
                 this.IsVisibleChanged.InvokeAsync(this.isVisible);
             }
         }
@@ -796,7 +798,7 @@
                 // TODO: transfer to NeuronQuery
                 this.pageSize = this.neuronQuery.PageSize;
                 this.page = this.neuronQuery.Page;
-                if(this.neuronQuery.Postsynaptic!=null)
+                if (this.neuronQuery.Postsynaptic!=null)
                 {
                     this.postsynaptic = this.neuronQuery.Postsynaptic.ToList();
                 }
@@ -938,9 +940,10 @@
         {
             this.relativeValues = null;
         }
-        if(this.relativeValues == null)
+        if (this.relativeValues == null)
         {
-            if (status){
+            if (status)
+            {
                 this.relativeValues = data;
             }
             else
