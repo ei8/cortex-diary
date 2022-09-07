@@ -728,24 +728,24 @@
     private ActiveValues? neuronActiveValues;
     private RelativeValues? relativeValues;
     private bool isVisible;
-    private string parameters;
+    private string newAvatarUrl;
 
     [Parameter]
-    public string Parameters
+    public string NewAvatarUrl
     {
-        get => this.parameters;
+        get => this.newAvatarUrl;
         set
         {
-            if (this.parameters != value)
+            if (this.newAvatarUrl != value)
             {
-                this.parameters = value;
-                this.ParametersChanged.InvokeAsync(this.Parameters);
+                this.newAvatarUrl = value;
+                this.NewAvatarUrlChanged.InvokeAsync(this.NewAvatarUrl);
             }
         }
     }
 
     [Parameter]
-    public EventCallback<string> ParametersChanged { get; set; }
+    public EventCallback<string> NewAvatarUrlChanged { get; set; }
 
     [Parameter]
     public string AvatarUrl
@@ -1032,7 +1032,7 @@
         this.neuronQuery.NeuronActiveValues = this.neuronActiveValues;
         this.neuronQuery.RelativeValues = this.relativeValues;
         // End of assign proccess
-        this.Parameters = url + this.neuronQuery.ToString();
+        this.NewAvatarUrl = url + this.neuronQuery.ToString();
         this.IsVisible = false;
     }
 }
