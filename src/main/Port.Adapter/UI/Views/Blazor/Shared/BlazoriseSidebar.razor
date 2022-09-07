@@ -25,7 +25,7 @@
             @foreach (var v in this.views)
             {
                 <BarItem>
-                    <BarLink To="@v.Url" Clicked="() => this.Navigate(v.Url)">
+                    <BarLink Clicked="() => this.Navigate(v.Url)">
                         <BarIcon IconName="MainMenu(v.Icon)" />
                         @v.Name
                     </BarLink>
