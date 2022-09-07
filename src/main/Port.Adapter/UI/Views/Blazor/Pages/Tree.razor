@@ -41,6 +41,7 @@
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
 <ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 <NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
+<AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />
 <NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchDefaultRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedDefaultRegionNeuron" />
 
 <div class="top-row px-4" style="padding-top:12px;z-index:1">
@@ -52,7 +53,8 @@
                 <Badge Pill="true" Color="Color.Danger" style="top:-35px;left:8px;height:14px;font-size:0.6em">@(this.NewItemsCount)</Badge>
             }
         </button>
-        <input class="form-control form-control-sm ml-1 rounded" placeholder="Avatar URL" @bind="AvatarUrl" />
+        <input class="form-control form-control-sm ml-1 rounded " id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" />
+        <button style="position: absolute; right: 6.2rem; bottom:0.85rem;  height:1.8rem; border:0; border-radius:2px; background-color:white;   margin: 0;  " @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
         <button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
             <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
         </button>
@@ -145,6 +147,11 @@ else
 
         // hide other dropdowns
         //this.userDropdown.Hide();
+    }
+
+    private void ShowAvatarEditorBox()
+    {
+        this.IsAvatarUrlVisible = true;
     }
 
     private void ToggleRenderDirection()
@@ -321,6 +328,8 @@ else
     private bool IsContextMenuVisible { get; set; } = false;
 
     private bool IsInfoVisible { get; set; } = false;
+
+    private bool IsAvatarUrlVisible { get; set; } = false;
 
     private RenderDirectionValue RenderDirection { get; set; } = RenderDirectionValue.TopToBottom;
 
