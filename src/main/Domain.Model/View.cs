@@ -10,6 +10,8 @@ namespace ei8.Cortex.Diary.Domain.Model
         [PrimaryKey]
         public string Url { get; set; }
 
+        public string ParentUrl { get; set; }
+
         public string Name { get; set; }
 
         public bool IsDefault { get; set; }
@@ -17,7 +19,5 @@ namespace ei8.Cortex.Diary.Domain.Model
         public int Sequence { get; set; }
 
         public string Icon { get; set; }
-
-        public string Padding { get; set; }
     }
 }

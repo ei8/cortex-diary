@@ -27,4 +27,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         Expanding,
         Expanded
     }
+
+    public enum NavBarType
+    {
+        Side,
+        Top
+    }
 }

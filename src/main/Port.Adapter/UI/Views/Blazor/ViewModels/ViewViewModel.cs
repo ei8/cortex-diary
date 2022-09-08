@@ -16,6 +16,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
         public string Url => this.view.Url;
 
+        public string ParentUrl => this.view.ParentUrl;
+
         public string Name => this.view.Name;
 
         public bool IsDefault => this.view.IsDefault;
@@ -23,7 +25,5 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
         public int Sequence => this.view.Sequence;
 
         public string Icon => this.view.Icon;
-
-        public string Padding => this.view.Padding;
     }
 }

@@ -272,13 +272,26 @@ app {
     .pr-4, .px-4 {
         padding-right: 0.5rem !important;
     }
-    .navbar {
-        padding: .5rem 0rem;
-    }
 
     .svgview {
         border-bottom-style: solid;
         height: 250px;
+    }
+
+    .b-bar-icon {
+        padding-right: .5rem !important
+    }
+
+    .nav-link {
+        padding: 0 .5rem 0 .5rem !important;
+    }
+
+    .nav-item {
+        padding: 0 !important;
+    }
+
+    .navbar {
+        padding: 0 .5rem 0 .5rem !important;
     }
 }
 
