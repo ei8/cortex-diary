@@ -20,7 +20,7 @@
 <ConfirmationBox Title="Confirm Owner Creation" Message='This Avatar needs to be initialized with an Owner Neuron. Do you wish to continue creating one?' @bind-IsVisible="@this.IsConfirmCreateOwnerVisible" OnConfirmCallback="@this.ConfirmCreateOwner" />
 <ConfirmationBox Title="Similar Neuron Exists" Message='At least one other Neuron containing a similar Tag value already exists. Are you sure you wish to continue?' @bind-IsVisible="@this.IsConfirmCreateSimilarVisible" OnConfirmCallback="@this.ConfirmCreateSimilar" />
 <div class="container-fluid">
-    <EditForm Model=@this.editorNeuronViewModel OnSubmit=@this.FormSubmitted>
+    <EditForm EditContext="@this.editContext" OnSubmit=@this.FormSubmitted>
         <FluentValidationValidator />
         <div class="row">
             <div class="col p-0">
@@ -88,7 +88,7 @@
                         // show tag text area
                         <div class="row">
                             <div class="col py-1 px-0">
-                                <InputTextArea class="form-control w-100" placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" rows="4" />
+                                <InputTextArea class="form-control w-100" placeholder="Tag" Value="@this.editorNeuronViewModel.Tag" @oninput="(args) => this.editorNeuronViewModel.Tag = args.Value.ToString()" ValueExpression="@(() => this.editorNeuronViewModel.Tag)" rows="4" @onkeypress="(async e => await this.KeyPress(e))" />
                                 <ValidationMessage For=@(() => this.editorNeuronViewModel.Tag) />
                             </div>
                         </div>
@@ -185,8 +185,13 @@
 @code {
     private EditorNeuronViewModel editorNeuronViewModel = new EditorNeuronViewModel();
     private Neuron preEditCopy = null;
-
     private bool sending = false;
+    private EditContext editContext;
+
+    protected override void OnInitialized()
+    {
+        this.editContext = new EditContext(this.editorNeuronViewModel);
+    }
 
     [Parameter]
     public string AvatarUrl { get; set; }
@@ -408,6 +413,14 @@
                         this.editorNeuronViewModel.TerminalExternalReferenceUrl = string.Empty;
                 }
             }
+        }
+    }
+
+    private async Task KeyPress(KeyboardEventArgs e)
+    {
+        if ((e.Code == "Enter" || e.Code == "NumpadEnter") && e.CtrlKey)
+        {
+            await this.FormSubmitted(this.editContext);
         }
     }
 
