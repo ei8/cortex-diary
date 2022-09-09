@@ -107,7 +107,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             services.AddScoped<ITerminalApplicationService, TerminalApplicationService>();
             services.AddScoped<INeuronQueryClient, HttpNeuronQueryClient>();
             // TODO: Add other receiver info type registrations for subscription client once implemented
-            services.AddScoped<ISubscriptionClient<BrowserReceiverInfo>, HttpSubscriptionClient<BrowserReceiverInfo>>();
+            services.AddScoped<ISubscriptionClient, HttpSubscriptionClient>();
             services.AddScoped<ISubscriptionApplicationService, SubscriptionApplicationService>();
             services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
             services.AddScoped<ISubscriptionConfigurationClient, HttpSubscriptionConfigurationClient>();

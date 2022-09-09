@@ -8,13 +8,12 @@ namespace ei8.Cortex.Diary.Application.Subscriptions
 {
     public class SubscriptionApplicationService : ISubscriptionApplicationService
     {
-
-		private readonly ISubscriptionClient<BrowserReceiverInfo> browserReceiverClient;
+		private readonly ISubscriptionClient subscriptionClient;
         private readonly ITokenManager tokenManager;
 
-        public SubscriptionApplicationService(ISubscriptionClient<BrowserReceiverInfo> browserReceiverClient, ITokenManager tokenManager)
+        public SubscriptionApplicationService(ISubscriptionClient subscriptionClient, ITokenManager tokenManager)
 		{
-			this.browserReceiverClient = browserReceiverClient;
+			this.subscriptionClient = subscriptionClient;
             this.tokenManager = tokenManager;
         }
 
@@ -25,7 +24,7 @@ namespace ei8.Cortex.Diary.Application.Subscriptions
             switch (receiverInfo)
             {
                 case BrowserReceiverInfo br:
-                    await this.browserReceiverClient.AddSubscriptionAsync(avatarUrl, new AddSubscriptionWebReceiverRequest()
+                    await this.subscriptionClient.AddSubscriptionAsync(avatarUrl, new AddSubscriptionWebReceiverRequest()
                     {
                         SubscriptionInfo = subscription,
                         ReceiverInfo = br

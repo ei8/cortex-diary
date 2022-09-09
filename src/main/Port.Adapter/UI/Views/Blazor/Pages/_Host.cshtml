@@ -19,8 +19,57 @@
     <link rel="shortcut icon" type="image/ico" href="~/dasz.ico">
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="css/site.css" rel="stylesheet" />
     <script type="text/javascript">
+
+        var expanded = false;
+        function showCheckboxes(event) {
+            if (!expanded) {
+                event.style.display = "block";
+                expanded = true;
+            } else {
+                event.style.display = "none";
+                expanded = false;
+            }
+        }
+        function updateCheckboxText(checked, event, dataset) {
+            if (checked) {
+                if (event.text == "Select an option") {
+                    event.text = dataset.value;
+                } else {
+                    event.text += "," + dataset.value;
+                }
+            } else {
+                if (event.text.indexOf(dataset.value) == 0) {
+                    event.text = event.text.replace(dataset.value, "");
+                    event.text = event.text.replace(",", "");
+                    if (event.text == "") {
+                        event.text = "Select an option";
+                    }
+                }
+                else {
+                    event.text = event.text.replace("," + dataset.value, "");
+                }
+            }
+        }
+
+        function deleteForm(child,parent) {
+            if (child.value.length != 0) {
+
+                child.value = "";
+                var e = new Event('change');
+                child.dispatchEvent(e);
+            }
+            parent.remove();
+        }
+
+        function deleteMultiSelectMenu(child, parent) {
+            var e = new Event('change');
+            event.target.parentNode.children[1].children[0].children[0].dispatchEvent(e);
+            event.target.parentNode.remove();
+        }
+
         var receiveMessage = function (event) {
             if (document.getElementById('currentUrl') != null) {
                 document.getElementById('currentUrl').value = event.data;

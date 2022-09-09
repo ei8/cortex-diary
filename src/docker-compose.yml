@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
   blazor:
-    image: ei8works/d23.api:0.2.7
+    image: ei8works/d23.api:0.2.8
     build:
       context: .
       dockerfile: ./main/Port.Adapter/UI/Views/Blazor/Dockerfile

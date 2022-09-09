@@ -6,10 +6,10 @@ services:
       - ./var1.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:64103;http://+:80
+      - ASPNETCORE_URLS=https://+:65103;http://+:80
     volumes:
       - ~/.aspnet/https:/https:ro
-      - /C/ei8/avatars/dev/test:/C/db
+      - /C/ei8/avatars/prod/sample:/C/db
     ports:
       - 192.168.95.1:64103:64103
 networks:
