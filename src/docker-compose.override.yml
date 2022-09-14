@@ -9,10 +9,11 @@ services:
       - ASPNETCORE_URLS=http://+:64103;http://+:80
     volumes:
       - ~/.aspnet/https:/https:ro
-      - /C/ei8/avatars/dev/test:/C/db
+      - /C/Users/Lenovo/Documents/GitHub/avatar-server-pack/avatars/prod/sample:/C/db
+      - /C/Users/Lenovo/Documents/GitHub/avatar-server-pack/avatars/prod/sample/d23-plugins:/C/plugins
     ports:
-      - 192.168.1.110:64103:64103
+      - 192.168.100.9:64103:64103
 networks:
     default:
         external:
-            name: test_default
+            name: sample_default
