@@ -39,7 +39,7 @@
 @inject ISubscriptionQueryService subscriptionsQueryService
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
-<ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag(this.SelectedNeuron.Neuron.Type == RelativeType.NotSet ? "Are you sure you want to delete Neuron '{0}'?" : "Are you sure you want to delete '" + this.SelectedNeuron.Neuron.Type.ToString() + "' Terminal to Neuron '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
+<ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete Neuron '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
 <NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
 <AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />
 <NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchDefaultRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedDefaultRegionNeuron" />
