@@ -67,7 +67,7 @@
 
     private async void Confirm()
     {
-        await this.OnConfirmCallback.InvokeAsync(this);
         this.Close();
+        await this.OnConfirmCallback.InvokeAsync(this);
     }
 }

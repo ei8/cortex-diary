@@ -221,9 +221,9 @@
     [Parameter]
     public EventCallback<bool> IsVisibleChanged { get; set; }
 
-    private NeuronViewModel selectedNeuron { get; set; }
+    private TreeNeuronViewModel selectedNeuron { get; set; }
     [Parameter]
-    public NeuronViewModel SelectedNeuron
+    public TreeNeuronViewModel SelectedNeuron
     {
         get => this.selectedNeuron;
         set
@@ -237,5 +237,5 @@
     }
 
     [Parameter]
-    public EventCallback<NeuronViewModel> SelectedNeuronChanged { get; set; }
+    public EventCallback<TreeNeuronViewModel> SelectedNeuronChanged { get; set; }
 }

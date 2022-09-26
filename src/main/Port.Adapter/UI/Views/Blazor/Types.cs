@@ -11,8 +11,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         New,
         Edit,
         Delete,
-        AddRelative,
-        LinkRelative
+        AddRelative
     }
 
     public enum RenderDirectionValue

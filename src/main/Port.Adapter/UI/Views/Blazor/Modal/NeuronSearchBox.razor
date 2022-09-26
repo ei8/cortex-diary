@@ -59,13 +59,13 @@
 @code {
     protected override void OnInitialized()
     {
-        this.Children = new NeuronViewModel[0];
+        this.Children = new NeuronResultItemViewModel[0];
     }
 
     [Parameter]
     public string AvatarUrl { get; set; }
 
-    private NeuronViewModel[] Children { get; set; } = new NeuronViewModel[0];
+    private NeuronResultItemViewModel[] Children { get; set; } = new NeuronResultItemViewModel[0];
 
     private bool isVisible;
     [Parameter]
@@ -85,17 +85,17 @@
     [Parameter]
     public EventCallback<bool> IsVisibleChanged { get; set; }
 
-    private void SelectNeuron(NeuronViewModel value)
+    private void SelectNeuron(NeuronResultItemViewModel value)
     {
         this.SelectedNeuron = value;
         this.IsVisible = false;
     }
 
-    private NeuronViewModel TempSelectedNeuron { get; set; }
+    private NeuronResultItemViewModel TempSelectedNeuron { get; set; }
 
-    private NeuronViewModel selectedNeuron { get; set; }
+    private NeuronResultItemViewModel selectedNeuron { get; set; }
     [Parameter]
-    public NeuronViewModel SelectedNeuron
+    public NeuronResultItemViewModel SelectedNeuron
     {
         get => this.selectedNeuron;
         set
@@ -109,13 +109,13 @@
     }
 
     [Parameter]
-    public EventCallback<NeuronViewModel> SelectedNeuronChanged { get; set; }
+    public EventCallback<NeuronResultItemViewModel> SelectedNeuronChanged { get; set; }
 
     private async Task Load()
     {
-        var children = new List<NeuronViewModel>();
-        var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Items;
-        ns.ToList().ForEach(n => children.Add(new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.NeuronQueryService)));
+        var children = new List<NeuronResultItemViewModel>();
+        var ns = (await this.NeuronQueryService.SendQuery(this.AvatarUrl)).Items;
+        ns.ToList().ForEach(n => children.Add(new NeuronResultItemViewModel(new Neuron(n))));
         this.Children = children.ToArray();
     }
 }

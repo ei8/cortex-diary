@@ -159,7 +159,7 @@
 
 @code {
     [Parameter]
-    public IList<NeuronViewModel> Children { get; set; } = new List<NeuronViewModel>();
+    public IList<TreeNeuronViewModel> Children { get; set; } = new List<TreeNeuronViewModel>();
 
     [Parameter]
     public bool IsRoot { get; set; } = true;
@@ -195,11 +195,11 @@
     }
 
     [Parameter]
-    public EventCallback<NeuronViewModel> SelectedNeuronChanged { get; set; }
+    public EventCallback<TreeNeuronViewModel> SelectedNeuronChanged { get; set; }
 
-    private NeuronViewModel selectedNeuron;
+    private TreeNeuronViewModel selectedNeuron;
     [Parameter]
-    public NeuronViewModel SelectedNeuron
+    public TreeNeuronViewModel SelectedNeuron
     {
         get => this.selectedNeuron;
         set
@@ -230,17 +230,17 @@
         }
     }
 
-    private bool ShouldRightJustify(NeuronViewModel child)
+    private bool ShouldRightJustify(TreeNeuronViewModel child)
     {
         return child.Neuron.Validation.IsCurrentUserCreationAuthor && child.Neuron.Type == Library.Common.RelativeType.NotSet;
     }
 
-    private bool ShouldRightJustifyBasedOnRoot(NeuronViewModel child)
+    private bool ShouldRightJustifyBasedOnRoot(TreeNeuronViewModel child)
     {
         return this.ShouldRightJustify(child) || this.IsRootRightJustified;
     }
 
-    private string GetJustifyStyle(NeuronViewModel child)
+    private string GetJustifyStyle(TreeNeuronViewModel child)
     {
         return this.ShouldRightJustify(child) ?
             "display: flex; justify-content: flex-end;" :
@@ -257,13 +257,13 @@
         return result;
     }
 
-    private async void RequestItemMenu(NeuronViewModel neuronViewModel)
+    private async void RequestItemMenu(TreeNeuronViewModel neuronViewModel)
     {
         this.SelectedNeuron = neuronViewModel;
         this.MenuRequested();
     }
 
-    private async void RequestItemInfo(NeuronViewModel neuronViewModel)
+    private async void RequestItemInfo(TreeNeuronViewModel neuronViewModel)
     {
         this.SelectedNeuron = neuronViewModel;
         this.InfoRequested();
@@ -286,7 +286,7 @@
         return dict;
     }
 
-    private Dictionary<string, object> GetAttributes(NeuronViewModel child)
+    private Dictionary<string, object> GetAttributes(TreeNeuronViewModel child)
     {
         var dict = new Dictionary<string, object>();
         if (child.Neuron.Terminal.Effect == "-1")
