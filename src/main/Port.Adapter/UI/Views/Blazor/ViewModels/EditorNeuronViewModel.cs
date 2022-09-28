@@ -3,6 +3,7 @@ using ei8.Cortex.Library.Common;
 using neurUL.Cortex.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 {
@@ -17,7 +18,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
         public string RegionTag { get; set; }
         public string InitialRegionId { get; set; } = string.Empty;
         public string InitialRegionTag { get; set; } = EditorNeuronViewModel.BaseRegionTag;
-        public Neuron InitialPostsynaptic { get; set; } = null;
+        public IEnumerable<Neuron> InitialPostsynaptics { get; set; } = null;
         public string NeuronExternalReferenceUrl { get; set; }
         public IReadOnlyList<EditorTerminalViewModel> Terminals { get; set; }
 
@@ -41,18 +42,16 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
         public void InitializePostsynaptic()
         {
-            if (this.InitialPostsynaptic != null)
-                this.Terminals = new EditorTerminalViewModel[]
-                {
-                    new EditorTerminalViewModel()
+            if (this.InitialPostsynaptics != null)
+                this.Terminals = this.InitialPostsynaptics.Select(ip => new EditorTerminalViewModel()
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Neuron = new Neuron(this.InitialPostsynaptic),
+                        Neuron = new Neuron(ip),
                         Type = RelativeType.Postsynaptic,
                         Effect = NeurotransmitterEffect.Excite,
                         Strength = 1f
                     }
-                };
+                ).ToArray();
         }
 
         public void ClearInitialRegion()

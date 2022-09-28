@@ -388,19 +388,19 @@
         }
     }
 
-    private Neuron initialPostsynapticNeuron;
+    private IEnumerable<Neuron> initialPostsynapticNeurons;
     [Parameter]
-    public Neuron InitialPostsynapticNeuron
+    public IEnumerable<Neuron> InitialPostsynapticNeurons
     {
-        get => this.initialPostsynapticNeuron;
+        get => this.initialPostsynapticNeurons;
         set
         {
-            if (this.initialPostsynapticNeuron != value)
+            if (this.initialPostsynapticNeurons != value)
             {
-                this.initialPostsynapticNeuron = value;
+                this.initialPostsynapticNeurons = value;
 
-                if (this.initialPostsynapticNeuron != null)
-                    this.editorNeuronViewModel.InitialPostsynaptic = this.initialPostsynapticNeuron;
+                if (this.initialPostsynapticNeurons != null)
+                    this.editorNeuronViewModel.InitialPostsynaptics = this.initialPostsynapticNeurons;
                 else
                     this.editorNeuronViewModel.InitializePostsynaptic();
             }

@@ -125,7 +125,7 @@ else
     </div>
 }
 <div class="footer px-4 h-auto" style="z-index:2">
-    <EditorBox AvatarUrl="@this.AvatarUrl" InitialRegionNeuron="@this.InitialRegionNeuron" InitialPostsynapticNeuron="@this.InitialPostsynapticNeuron" SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
+    <EditorBox AvatarUrl="@this.AvatarUrl" InitialRegionNeuron="@this.InitialRegionNeuron" InitialPostsynapticNeurons="@this.InitialPostsynapticNeurons" SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
 </div>
 
 <audio id="sound" src=@(this.settingsService.BasePath + "/media/alert.wav") />
@@ -232,7 +232,7 @@ else
                 {
                     urlSet = true;
                     Neuron regionNeuron = null;
-                    Neuron postsynapticNeuron = null;
+                    IEnumerable<Neuron> postsynapticNeurons = null;
 
                     if (Library.Client.QueryUrl.TryParse(decodedUrl, out QueryUrl urlResult))
                     {
@@ -245,13 +245,15 @@ else
                                 ))?.Items.SingleOrDefault();
                         }
 
-                        if (query.TryGetValue("postsynaptic", out var postsynaptic))
+                        if (query.TryGetValue("postsynaptic", out var postsynaptics))
                         {
-                            postsynapticNeuron = (await this.neuronQueryService.GetNeuronById(
+                            postsynapticNeurons = (await this.neuronQueryService.GetNeurons(
                                 urlResult.AvatarUrl,
-                                postsynaptic.ToString(),
                                 new NeuronQuery()
-                                ))?.Items.SingleOrDefault();
+                                {
+                                    Id = postsynaptics.ToArray()
+                                }
+                                ))?.Items;
                         }
                     }
 
@@ -259,7 +261,7 @@ else
                     {
                         this.AvatarUrl = decodedUrl;
                         this.InitialRegionNeuron = regionNeuron;
-                        this.InitialPostsynapticNeuron = postsynapticNeuron;
+                        this.InitialPostsynapticNeurons = postsynapticNeurons;
                         this.Reload();
                     });
                 }
@@ -405,7 +407,7 @@ else
 
     private Neuron InitialRegionNeuron { get; set; } = null;
 
-    private Neuron InitialPostsynapticNeuron { get; set; } = null;
+    private IEnumerable<Neuron> InitialPostsynapticNeurons { get; set; } = null;
 
     private Neuron editNeuron = null;
     private Neuron EditNeuron
