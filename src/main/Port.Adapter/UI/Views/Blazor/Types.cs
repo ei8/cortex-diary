@@ -32,4 +32,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         Side,
         Top
     }
+
+    public class Constants
+    {
+        public const int TreeNodeChildrenQueryPageSize = 200;
+    }
 }

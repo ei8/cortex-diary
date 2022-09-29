@@ -37,7 +37,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
                 var children = new List<TreeNeuronViewModel>();
                 if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
                 {
-                    (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
+                    (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery() { PageSize = Constants.TreeNodeChildrenQueryPageSize }))
                         .Items
                         .ToList().ForEach(n =>
                         children.Add(new TreeNeuronViewModel(new Neuron(n), this.avatarUrl, this.neuronQueryService))

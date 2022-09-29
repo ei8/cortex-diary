@@ -69,7 +69,7 @@
                     </div>
                     <div class="row"
                         <div class="col py-1 px-0">
-                            <InputTextArea class="form-control w-100" placeholder="Tag" Value="@this.editorNeuronViewModel.Tag" @oninput="(args) => this.editorNeuronViewModel.Tag = args.Value.ToString()" ValueExpression="@(() => this.editorNeuronViewModel.Tag)" rows="4" @onkeypress="(async e => await this.KeyPress(e))" />
+                            <KeyWatcherInputTextArea class="form-control w-100" placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" rows="4" @onkeydown="@this.KeyPress" />
                             <ValidationMessage For=@(() => this.editorNeuronViewModel.Tag) />
                         </div>
                     </div>
