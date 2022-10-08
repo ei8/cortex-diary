@@ -6,6 +6,7 @@ using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 using ei8.Cortex.Library.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using neurUL.Common.Domain.Model;
 using neurUL.Common.Http;
 using neurUL.Cortex.Common;
 using System;
@@ -82,8 +83,19 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             if (exception is HttpRequestExceptionEx)
             {
                 var m = System.Text.RegularExpressions.Regex.Match(exception.Message, @"Description\"":\""(?<Description>(?!\"",\""Type\"").*)\"",\""Type\""");
-                if(m.Success)
+                if (m.Success)
                     description = m.Groups["Description"].Value;
+                else
+                {
+                    var m2 = System.Text.RegularExpressions.Regex.Match(exception.Message, @"detail\"":\""(?<Detail>(?!\n).*)\n");
+                    if (m2.Success)
+                    {
+                        var detail = m2.Groups["Detail"].Value;
+                        // get first line only
+                        // TODO: use regex only instead of substring + indexof
+                        description = detail.Substring(0, detail.IndexOf("\\n"));
+                    }
+                }
                 clipboardData = exception.Message;
                 result = true;
             }
@@ -120,6 +132,50 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                     )
                     );
         }
+
+        internal static async Task UITryHandler(
+            Func<Task<bool>> tryActionInvoker, 
+            IToastService toastService,
+            Func<string> processDescriptionGenerator,
+            Action preActionInvoker = null,
+            Action postActionInvoker = null
+            )
+        {
+            AssertionConcern.AssertArgumentNotNull(tryActionInvoker, nameof(tryActionInvoker));
+            AssertionConcern.AssertArgumentNotNull(toastService, nameof(toastService));
+            AssertionConcern.AssertArgumentNotNull(processDescriptionGenerator, nameof(processDescriptionGenerator));
+
+            if (preActionInvoker != null)
+                preActionInvoker.Invoke();
+
+            try
+            {
+                if (await tryActionInvoker.Invoke())
+                    toastService.ShowSuccess($"{processDescriptionGenerator.Invoke()} successful.");
+            }
+            catch (Exception ex)
+            {
+                string errorDescription, clipboardData;
+                if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out errorDescription, out clipboardData))
+                {
+                    errorDescription = ex.Message;
+                    clipboardData = ex.ToString();
+                }
+
+                Blazor.Helper.ShowFriendlyException(
+                    toastService,
+                    $"{processDescriptionGenerator.Invoke()} failed:",
+                    errorDescription,
+                    clipboardData
+                );
+            }
+            finally
+            {
+                if (postActionInvoker != null)
+                    postActionInvoker.Invoke();
+            }
+        }
+
         // TODO: internal async static Task<bool> ChangeNeuronTag(string tag, INeuronApplicationService neuronApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, int expectedVersion, string bearerToken)
         //{
         //    bool result = false;

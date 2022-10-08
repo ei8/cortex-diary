@@ -22,11 +22,13 @@
 @using ei8.Cortex.Subscriptions.Common
 @using ei8.Cortex.Subscriptions.Common.Receivers
 @using neurUL.Common.Http
+@using System.Linq
 @* Need further research how to implement custom toasts...
     @using Blazored.Toast
     @using Blazored.Toast.Services
     @using Blazored.Toast.Configuration
 *@
+@inject IHttpContextAccessor httpContextAccessor
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
 @inject ITerminalApplicationService terminalApplicationService
@@ -67,10 +69,22 @@
                     <Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
                     Copy Direct Avatar URL
                 </DropdownItem>
-				<DropdownItem @onclick="this.SubscribeWithBrowser">
-					<Blazorise.Icon Name="FontAwesomeIcons.Bell" Class="px-2" />
-					Subscribe
-				</DropdownItem>
+                <Dropdown Direction="Direction.Left">
+                    <DropdownToggle>
+                        <Blazorise.Icon Name="FontAwesomeIcons.Bell" Class="px-2" />
+                        Subscribe
+                    </DropdownToggle>
+                    <DropdownMenu>
+				        <DropdownItem @onclick="this.SubscribeWithBrowser">
+					        <Blazorise.Icon Name="FontAwesomeIcons.Rocket" Class="px-2" />
+					        Web Push
+				        </DropdownItem>
+                        <DropdownItem @onclick="this.SubscribeWithEmail">
+					        <Blazorise.Icon Name="FontAwesomeIcons.Envelope" Class="px-2" />
+					        E-mail
+				        </DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
                 <DropdownItem @onclick="this.ToggleRenderDirection">
                     <Blazorise.Icon Name="FontAwesomeIcons.Sort" Class="px-2" />
                     @if (this.RenderDirection == RenderDirectionValue.TopToBottom)
@@ -166,32 +180,22 @@ else
     [JSInvokable]
     public async Task<Boolean> SendLinkData(string sourceNeuronID, string targetNeuronID)
     {
-        try
-        {
-            if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery))
+        var result = false;
+        await Blazor.Helper.UITryHandler(
+            async () =>
             {
-                await Blazor.Helper.AddLink(this.terminalApplicationService, resultQuery.AvatarUrl, sourceNeuronID, targetNeuronID);
-            }
+                if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery))
+                {
+                    await Blazor.Helper.AddLink(this.terminalApplicationService, resultQuery.AvatarUrl, sourceNeuronID, targetNeuronID);
+                }
 
-            return true;
-        }
-        catch (Exception ex)
-        {
-            string errorDescription, clipboardData;
-            if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out errorDescription, out clipboardData))
-            {
-                errorDescription = ex.Message;
-                clipboardData = ex.ToString();
-            }
+                return true;
+            },
+            this.toastService,
+            () => "Linking"
+        );
 
-            Blazor.Helper.ShowFriendlyException(
-                this.toastService,
-                $"Linking failed:",
-                errorDescription,
-                clipboardData
-            );
-            return false;
-        }
+        return result;
     }
 
     private void SearchDefaultRegionNeuron()
@@ -425,45 +429,35 @@ else
 
     private async Task Reload()
     {
-        try
-        {
-            await this.SetReloading(true);
-            this.Children.Clear();
-            var ns = await Tree.GetOrderedNeurons(this);
-            var children = ns.Select(nr => new TreeNeuronViewModel(new Neuron(nr), this.AvatarUrl, this.neuronQueryService));
-            ((List<TreeNeuronViewModel>)this.Children).AddRange(children);
-            this.NewItemsCount = 0;
-
-            if (this.RenderDirection == RenderDirectionValue.BottomToTop)
-                await this.ScrollToFragment("bottom");
-
-            QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result);
-            this.serverPushPublicKey = (await this.subscriptionsQueryService.GetServerConfigurationAsync(result.AvatarUrl)).ServerPublicKey;
-
-            var objRef = DotNetObjectReference.Create(this);
-            await this.jsRuntime.InvokeVoidAsync("Subscribe", objRef, this.serverPushPublicKey);
-        }
-        catch (Exception ex)
-        {
-            string description, clipboardData;
-            if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out description, out clipboardData))
+        await Blazor.Helper.UITryHandler(
+            async () =>
             {
-                description = ex.Message;
-                clipboardData = ex.ToString();
-            }
+                await this.SetReloading(true);
+                this.Children.Clear();
+                var ns = await Tree.GetOrderedNeurons(this);
+                var children = ns.Select(nr => new TreeNeuronViewModel(new Neuron(nr), this.AvatarUrl, this.neuronQueryService));
+                ((List<TreeNeuronViewModel>)this.Children).AddRange(children);
+                this.NewItemsCount = 0;
 
-            Blazor.Helper.ShowFriendlyException(
-                this.toastService,
-                "An error occurred while reloading the Tree.",
-                description,
-                clipboardData
-            );
-        }
-        finally
-        {
-            await this.SetReloading(false);
-            await this.LoadGraph();
-        }
+                if (this.RenderDirection == RenderDirectionValue.BottomToTop)
+                    await this.ScrollToFragment("bottom");
+
+                QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result);
+                this.serverPushPublicKey = (await this.subscriptionsQueryService.GetServerConfigurationAsync(result.AvatarUrl)).ServerPublicKey;
+
+                var objRef = DotNetObjectReference.Create(this);
+                await this.jsRuntime.InvokeVoidAsync("Subscribe", objRef, this.serverPushPublicKey);
+
+                return false;
+            },
+            this.toastService,
+            () => "Tree reload",
+            postActionInvoker: async () =>
+            {
+                await this.SetReloading(false);
+                await this.LoadGraph();
+            }
+        );
     }
 
     private async Task SetReloading(bool value)
@@ -600,6 +594,45 @@ else
         };
 
         await this.subscriptionApplicationService.SubscribeAsync(result.AvatarUrl, subscriptionInfo, receiverInfo);
+    }
+
+    private async Task SubscribeWithEmail()
+    {
+        string emailDescription = string.Empty;
+
+        await Blazor.Helper.UITryHandler(
+            async () =>
+            {
+                QueryUrl.TryParse(this.AvatarUrl, out QueryUrl qu);
+
+                var subscriptionInfo = new SubscriptionInfo()
+                {
+                    AvatarUrl = this.AvatarUrl
+                };
+
+                var e = this.httpContextAccessor.HttpContext.User?.Claims.SingleOrDefault(i => i.Type == "email");
+
+                var result = e != null;
+
+                if (result)
+                {
+                    emailDescription += " using '" + e.Value + "'";
+                    var receiverInfo = new SmtpReceiverInfo()
+                    {
+                        EmailAddress = e.Value
+                    };
+
+                    await this.subscriptionApplicationService.SubscribeAsync(qu.AvatarUrl, subscriptionInfo, receiverInfo);
+                }
+                else
+                    throw new InvalidOperationException("User not signed-in.");
+            
+                return result;
+            },
+            this.toastService,
+            () => "E-mail Subscription" + emailDescription,
+            () => this.optionsDropdown.Hide()
+        );        
     }
 
     #region Subscription Interop

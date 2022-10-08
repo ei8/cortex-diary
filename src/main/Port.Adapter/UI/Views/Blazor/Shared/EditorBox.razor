@@ -193,31 +193,27 @@
 
     private async static Task ReloadTerminals(string avatarUrl, string centralId, INeuronQueryService neuronQueryService, IToastService toastService, EditorNeuronViewModel editorNeuronViewModel)
     {
-        var terminalNeurons = new QueryResult<Neuron>();
-        try
-        {
-            terminalNeurons = await neuronQueryService.GetNeurons(avatarUrl, centralId, new NeuronQuery());
-        }
-        catch (Exception ex)
-        {
-            Blazor.Helper.ShowFriendlyException(
-                toastService,
-                $"Neuron Terminals retrieval failed:",
-                ex.Message,
-                ex.ToString()
-            ); ;
-        }
+        await Blazor.Helper.UITryHandler(
+            async () =>
+            {
+                var terminalNeurons = new QueryResult<Neuron>();
+                terminalNeurons = await neuronQueryService.GetNeurons(avatarUrl, centralId, new NeuronQuery());
+                editorNeuronViewModel.Terminals = terminalNeurons.Items.Select(n => new EditorTerminalViewModel()
+                {
+                    Id = n.Terminal.Id,
+                    Neuron = new Neuron(n),
+                    Type = n.Type,
+                    Effect = Enum.TryParse<NeurotransmitterEffect>(n.Terminal.Effect, out NeurotransmitterEffect effect) ? effect : NeurotransmitterEffect.NotSet,
+                    Strength = float.TryParse(n.Terminal.Strength, out float strength) ? strength : 0,
+                    TerminalExternalReferenceUrl = n.Terminal.ExternalReferenceUrl,
+                    Version = n.Terminal.Version
+                }).ToArray();
 
-        editorNeuronViewModel.Terminals = terminalNeurons.Items.Select(n => new EditorTerminalViewModel()
-        {
-            Id = n.Terminal.Id,
-            Neuron = new Neuron(n),
-            Type = n.Type,
-            Effect = Enum.TryParse<NeurotransmitterEffect>(n.Terminal.Effect, out NeurotransmitterEffect effect) ? effect : NeurotransmitterEffect.NotSet,
-            Strength = float.TryParse(n.Terminal.Strength, out float strength) ? strength : 0,
-            TerminalExternalReferenceUrl = n.Terminal.ExternalReferenceUrl,
-            Version = n.Terminal.Version
-        }).ToArray();
+                return false;
+            },
+            toastService,
+            () => "Neuron Terminals retrieval"
+        );        
     }
 
     private async Task HandleResultTerminalChanged(EditorTerminalViewModel value)
@@ -235,8 +231,8 @@
                         async (rq, pi) =>
                         {
                             pi.Description = "Terminal creation";
-                            // add directly via API
-                            this.resultTerminal.Id = Guid.NewGuid().ToString();
+                        // add directly via API
+                        this.resultTerminal.Id = Guid.NewGuid().ToString();
 
                             await Blazor.Helper.CreateTerminalFromViewModel(
                                 this.resultTerminal,
@@ -519,8 +515,8 @@
                             break;
                         case ContextMenuOption.Edit:
                             pi.Description = "Neuron modification";
-                            // TODO: indicate how many and which changes succeeded/failed
-                            if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
+                        // TODO: indicate how many and which changes succeeded/failed
+                        if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
                             {
                                 await this.neuronApplicationService.ChangeNeuronTag(
                                     rq.AvatarUrl,
@@ -671,34 +667,19 @@
         if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery) && !this.sending)
         {
             var processInfo = new ProcessInfo();
-            try
-            {
-                this.sending = true;
-                result = (await processCore.Invoke(resultQuery, processInfo));
 
-                if (!processInfo.Suspend && result)
-                    this.toastService.ShowSuccess($"{processInfo.Description} successful.");
-            }
-            catch (Exception ex)
-            {
-                string errorDescription, clipboardData;
-                if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out errorDescription, out clipboardData))
+            await Blazor.Helper.UITryHandler(
+                async () =>
                 {
-                    errorDescription = ex.Message;
-                    clipboardData = ex.ToString();
-                }
+                    this.sending = true;
+                    result = (await processCore.Invoke(resultQuery, processInfo));
 
-                Blazor.Helper.ShowFriendlyException(
-                    this.toastService,
-                    $"{processInfo.Description} failed:",
-                    errorDescription,
-                    clipboardData
-                );
-            }
-            finally
-            {
-                this.sending = false;
-            }
+                    return !processInfo.Suspend && result;
+                },
+                this.toastService,
+                () => processInfo.Description,
+                postActionInvoker: () => this.sending = false
+            );
 
             if (!processInfo.Suspend && postProcess != null)
                 postProcess.Invoke();

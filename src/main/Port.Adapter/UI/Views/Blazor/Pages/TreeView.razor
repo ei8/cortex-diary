@@ -10,7 +10,7 @@
         {
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
             <li class="p-0 my-1" style="list-style-type: none;">
-                <div class="container m-0" style="@this.GetJustifyStyle(child)">
+                <div class="container-fluid m-0" style="@this.GetJustifyStyle(child)">
                     <div class="row">
                         <div class="container m-0">
                             @if (currentAuthor != lastAuthor && !this.ShouldRightJustifyBasedOnRoot(child))
