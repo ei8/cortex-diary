@@ -14,7 +14,7 @@
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.2.14" />
     <PackageReference Include="ei8.Cortex.Subscriptions.Common" Version="0.1.5" />
     <PackageReference Include="Neurul.Common" Version="0.1.19" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Splat" Version="9.0.5" />
   </ItemGroup>
 
