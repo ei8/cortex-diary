@@ -11,7 +11,7 @@
     <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.11" />
     <PackageReference Include="Neurul.Common" Version="0.1.19" />
     <PackageReference Include="Neurul.Cortex.Common" Version="0.1.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>
