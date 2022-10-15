@@ -12,7 +12,7 @@ services:
       - /C/Users/Lenovo/Documents/GitHub/avatar-server-pack/avatars/prod/sample:/C/db
       - /C/Users/Lenovo/Documents/GitHub/avatar-server-pack/avatars/prod/sample/d23-plugins:/C/plugins
     ports:
-      - 192.168.100.9:64103:64103
+      - 172.20.10.4:64103:64103
 networks:
     default:
         external:

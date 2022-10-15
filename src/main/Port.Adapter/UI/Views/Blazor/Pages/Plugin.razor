@@ -40,13 +40,12 @@
         service.Add("settingsService", settingsService);
         service.Add("identityService", identityService);
 
-        base.OnInitialized();
     }
+
 
     protected override void OnParametersSet()
     {
         //scan assembly from a folder
-        //var path = System.IO.Path.Combine(Environment.ContentRootPath, "wwwroot/plugin");
         var path = this.settingsService.PluginsPath;
         string[] allfiles = Directory.GetFiles(path, "*.dll", SearchOption.AllDirectories);
 
