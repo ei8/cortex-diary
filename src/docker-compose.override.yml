@@ -11,8 +11,7 @@ services:
       - ~/.aspnet/https:/https:ro
       - /C/Users/Lenovo/Documents/GitHub/avatar-server-pack/avatars/prod/sample:/C/db
     ports: 
-        - 172.20.10.4:64103:6410
-
+        - 172.20.10.4:64103:64103
 networks:
     default:
         external:
