@@ -10,17 +10,10 @@ services:
     volumes:
       - ~/.aspnet/https:/https:ro
       - /C/ei8/avatars/dev/test:/C/db
-    ports:
-<<<<<<< HEAD
-<<<<<<< HEAD
-      - 172.20.10.4:64103:64103
-=======
-      - 192.168.1.110:64103:64103
->>>>>>> parent of badb9b6 (-msg plugin changes)
-=======
-      - 192.168.1.110:64103:64103
->>>>>>> parent of badb9b6 (-msg plugin changes)
+    ports: 
+        - 172.20.10.4:64103:6410
+
 networks:
     default:
         external:
-            name: test_default
+            name: sample_default
