@@ -131,7 +131,7 @@ else
     {
         if(args.Code == "Enter" || args.Code == "NumpadEnter")
         {
-            if(AvatarUrl is not null or "")
+            if(AvatarUrl != null && AvatarUrl != "")
                 await Reload();
         }
     }

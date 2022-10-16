@@ -9,7 +9,7 @@ services:
       - ASPNETCORE_URLS=http://+:64103;http://+:80
     volumes:
       - ~/.aspnet/https:/https:ro
-      - /C/ei8/avatars/dev/test:/C/db
+      - /C/Users/Lenovo/Documents/GitHub/avatar-server-pack/avatars/prod/sample:/C/db
     ports: 
         - 172.20.10.4:64103:6410
 
