@@ -48,7 +48,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
         public void ClearInitialRegion()
         {
-            this.InitialRegionId = string.Empty;
+            this.InitialRegionId = null;
             this.InitialRegionTag = EditorNeuronViewModel.BaseRegionTag;
         }
     }

@@ -25,7 +25,6 @@
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.2.4" />
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.2.14" />
     <PackageReference Include="Blazorise.Sidebar" Version="0.9.2.4" />
-    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.2.0" />
     <PackageReference Include="ei8.Cortex.Subscriptions.Common" Version="0.1.2" />
     <PackageReference Include="FluentValidation" Version="9.3.0" />
     <PackageReference Include="IdentityServer4" Version="3.1.4" />

@@ -177,7 +177,7 @@
         </div>
     </EditForm>
 </div>
-<NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
+<RegionSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
 <NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchLinkNeuronVisible" @bind-SelectedNeuron="this.SelectedLinkNeuron" />
 <NeuronSearchBox AvatarUrl="@this.editorNeuronViewModel.NeuronExternalReferenceUrl" @bind-IsVisible="@this.IsSearchExternalReferenceNeuronVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceNeuron" />
 <NeuronSearchBox AvatarUrl="@this.editorNeuronViewModel.TerminalExternalReferenceUrl" @bind-IsVisible="@this.IsSearchExternalReferenceTerminalVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceTerminalRelative" />
@@ -275,8 +275,6 @@
         get => this.selectedRegionNeuron;
         set
         {
-            if (this.selectedRegionNeuron != value)
-            {
                 this.selectedRegionNeuron = value;
 
                 if (this.selectedRegionNeuron != null)
@@ -287,7 +285,7 @@
                 }
                 else
                     this.editorNeuronViewModel.InitializeRegion();
-            }
+           
         }
     }
 
