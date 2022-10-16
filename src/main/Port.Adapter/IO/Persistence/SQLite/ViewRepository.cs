@@ -37,7 +37,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Persistence.SQLite
         {
             SQLiteAsyncConnection result = null;
             string databasePath = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.DatabasePath);
-            
+
             if (!databasePath.Contains(":memory:"))
                 AssertionConcern.AssertPathValid(databasePath, nameof(databasePath));
 

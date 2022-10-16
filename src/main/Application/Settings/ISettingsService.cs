@@ -42,7 +42,6 @@ namespace ei8.Cortex.Diary.Application.Settings
         string ClientSecret { get; }
         string DatabasePath { get; set; }
         string BasePath { get; set; }
-        string PluginsPath { get; set; }
         bool ValidateServerCertificate { get; set; }
         string LoginCallback { get; set; }
         string LogoutCallback { get; set; }
