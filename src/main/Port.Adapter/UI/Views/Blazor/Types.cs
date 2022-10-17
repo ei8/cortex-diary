@@ -11,8 +11,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         New,
         Edit,
         Delete,
-        AddRelative,
-        LinkRelative
+        AddRelative
     }
 
     public enum RenderDirectionValue
@@ -26,5 +25,16 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
         Collapsed,
         Expanding,
         Expanded
+    }
+
+    public enum NavBarType
+    {
+        Side,
+        Top
+    }
+
+    public class Constants
+    {
+        public const int TreeNodeChildrenQueryPageSize = 200;
     }
 }

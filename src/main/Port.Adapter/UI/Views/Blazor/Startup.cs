@@ -61,6 +61,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
                 })
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
+            services.AddHttpContextAccessor();
 
             services.AddScoped<ISettingsServiceImplementation, SettingsServiceImplementation>();
             services.AddScoped<IDependencyService, DependencyService>();

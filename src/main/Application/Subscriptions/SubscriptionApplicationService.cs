@@ -24,13 +24,27 @@ namespace ei8.Cortex.Diary.Application.Subscriptions
             switch (receiverInfo)
             {
                 case BrowserReceiverInfo br:
-                    await this.subscriptionClient.AddSubscriptionAsync(avatarUrl, new AddSubscriptionWebReceiverRequest()
-                    {
-                        SubscriptionInfo = subscription,
-                        ReceiverInfo = br
-                    }, token);
+                    await this.subscriptionClient.AddSubscriptionAsync(
+                        avatarUrl, 
+                        new AddSubscriptionWebReceiverRequest()
+                        {
+                            SubscriptionInfo = subscription,
+                            ReceiverInfo = br
+                        }, 
+                        token
+                        );
                     break;
-
+                case SmtpReceiverInfo sr:
+                    await this.subscriptionClient.AddSubscriptionAsync(
+                        avatarUrl, 
+                        new AddSubscriptionSmtpReceiverRequest()
+                        {
+                            SubscriptionInfo = subscription,
+                            ReceiverInfo = sr
+                        }, 
+                        token
+                        );
+                    break;
                 default:
                     throw new NotSupportedException($"Unsupported receiver info type {receiverInfo.GetType().Name}");
             }

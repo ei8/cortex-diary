@@ -9,26 +9,48 @@
 @inject IToastService toastService
 @inject ISettingsService settingsService
 
-<Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Dark"
-     Mode="BarMode.VerticalInline" CollapseMode="BarCollapseMode.Small">
-    <BarToggler />
+<Bar Background="Background.Dark" ThemeContrast="ThemeContrast.Dark"
+     Mode="@(this.NavBarType == NavBarType.Side ? BarMode.VerticalInline : BarMode.Horizontal)" CollapseMode="BarCollapseMode.Small"
+     Visible="@(this.NavBarType == NavBarType.Side)">
     <BarBrand>
         <BarItem>
             <BarLink To="">
                 <BarIcon IconName="brandLogo" />
-                neurUL Code
+                neurUL &lt;#
             </BarLink>
         </BarItem>
     </BarBrand>
-    <BarMenu>
+    <BarToggler />
+    <BarMenu Class="@(this.NavBarType == NavBarType.Top ? "m-2" : string.Empty)">
         <BarStart>
-            @foreach (var v in this.views)
+            @foreach (var v1 in this.views.Where(vi => string.IsNullOrWhiteSpace(vi.ParentUrl)))
             {
                 <BarItem>
-                    <BarLink Clicked="() => this.Navigate(v.Url)">
-                        <BarIcon IconName="MainMenu(v.Icon)" />
-                        @v.Name
-                    </BarLink>
+                    @if (this.views.Any(vi => vi.ParentUrl == v1.Url))
+                    {
+                        <BarDropdown>
+                            <BarDropdownToggle>
+                                <BarIcon IconName="MainMenu(v1.Icon)" />
+                                @v1.Name
+                            </BarDropdownToggle>
+                            <BarDropdownMenu>
+                                @foreach (var v2 in this.views.Where(vi => vi.ParentUrl == v1.Url))
+                                {
+                                    <BarDropdownItem Clicked="() => this.Navigate(v2.Url)">
+                                        <BarIcon IconName="MainMenu(v2.Icon)" />
+                                        @v2.Name
+                                    </BarDropdownItem>
+                                }
+                            </BarDropdownMenu>
+                        </BarDropdown>
+                    }
+                    else
+                    {
+                        <BarLink Clicked="() => this.Navigate(v1.Url)">
+                            <BarIcon IconName="MainMenu(v1.Icon)" />
+                            @v1.Name
+                        </BarLink>
+                    }
                 </BarItem>
             }
         </BarStart>
@@ -67,8 +89,9 @@
                     </NotAuthorized>
                     <Authorized>
                         <form action=@(this.settingsService.BasePath + "/logoutidp") method="post" id="ff">
-                            <BarLink To="@(this.settingsService.BasePath + "/loginidp")">
+                            <BarLink href="#" onclick="frmsubmit('ff');">
                                 <BarIcon IconName="signOut" />
+                                @context.User.Identity.Name.Truncate(15)
                                 <span style="padding-left: 5px; font-size: smaller; font-style: italic">(Sign out)</span>
                             </BarLink>
                             <input name="__RequestVerificationToken" type="hidden" value="@this.tokenProvider.XsrfToken">
@@ -93,6 +116,9 @@
         retFragment = @<span class="oi @iconName" aria-hidden="true"></span>;
         return retFragment;
     }
+
+    [Parameter]
+    public NavBarType NavBarType { get; set; }
 
     RenderFragment brandLogo =
     @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;

@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 {
-    public class NeuronViewModel
+    public class TreeNeuronViewModel
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
 
-        public NeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
+        public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
             this.Neuron = neuron;
             this.avatarUrl = avatarUrl;
             this.neuronQueryService = neuronQueryService;
-            this.Children = new List<NeuronViewModel>();
+            this.Children = new List<TreeNeuronViewModel>();
         }
 
-        public IList<NeuronViewModel> Children { get; set; }
+        public IList<TreeNeuronViewModel> Children { get; set; }
 
         public Neuron Neuron { get; private set; }
 
@@ -34,13 +34,13 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 
             if (this.ExpansionState == ExpansionState.Expanding)
             {
-                var children = new List<NeuronViewModel>();
+                var children = new List<TreeNeuronViewModel>();
                 if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
                 {
-                    (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery()))
+                    (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, new NeuronQuery() { PageSize = Constants.TreeNodeChildrenQueryPageSize }))
                         .Items
                         .ToList().ForEach(n =>
-                        children.Add(new NeuronViewModel(new Neuron(n), this.avatarUrl, this.neuronQueryService))
+                        children.Add(new TreeNeuronViewModel(new Neuron(n), this.avatarUrl, this.neuronQueryService))
                     );
                     this.Children = children.ToArray();
                 }

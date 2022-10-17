@@ -3,7 +3,7 @@
 <ConditionalDisplay Show="@Render">
     @HeaderTitle
 
-    <ul>
+    <ul class="@this.ListCssClass">
         <ForEach Items="@Items" Context="item">
             <ItemTemplate>
                 @ItemTemplate(item)
@@ -25,4 +25,7 @@
 
     [Parameter]
     public IReadOnlyList<TItem> Items { get; set; }
+
+    [Parameter]
+    public string ListCssClass { get; set; }
 }

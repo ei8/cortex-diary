@@ -22,11 +22,13 @@
 @using ei8.Cortex.Subscriptions.Common
 @using ei8.Cortex.Subscriptions.Common.Receivers
 @using neurUL.Common.Http
+@using System.Linq
 @* Need further research how to implement custom toasts...
     @using Blazored.Toast
     @using Blazored.Toast.Services
     @using Blazored.Toast.Configuration
 *@
+@inject IHttpContextAccessor httpContextAccessor
 @inject INeuronQueryService neuronQueryService
 @inject INeuronApplicationService neuronApplicationService
 @inject ITerminalApplicationService terminalApplicationService
@@ -39,7 +41,7 @@
 @inject ISubscriptionQueryService subscriptionsQueryService
 
 <NeuronContextMenu @bind-SelectedOption="@this.SelectedOption" @bind-IsVisible="@this.IsContextMenuVisible" />
-<ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" OnCloseCallback="@this.CloseConfirmation" />
+<ConfirmationBox Title="Confirm Delete" Message='@this.ProcessSelectionTag("Are you sure you want to delete Neuron '{0}'?")' @bind-IsVisible="@this.IsConfirmVisible" OnConfirmCallback="@this.ConfirmDelete" />
 <NeuronInfoBox @bind-SelectedNeuron="@this.SelectedNeuron" @bind-IsVisible="@this.IsInfoVisible" />
 <AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />
 <NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchDefaultRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedDefaultRegionNeuron" />
@@ -53,8 +55,8 @@
                 <Badge Pill="true" Color="Color.Danger" style="top:-35px;left:8px;height:14px;font-size:0.6em">@(this.NewItemsCount)</Badge>
             }
         </button>
-        <input class="form-control form-control-sm ml-1 rounded " id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" />
-        <button style="position: absolute; right: 6.2rem; bottom:0.85rem;  height:1.8rem; border:0; border-radius:2px; background-color:white;   margin: 0;  " @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
+        <input class="form-control form-control-sm ml-1 rounded " style="padding-right:33px" id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" />
+        <button style="position: absolute; right: 6.2rem; bottom:0.99rem;  height:1.6rem; border:0; border-radius:2px; background-color:white;   margin: 0;  " @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
         <button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
             <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
         </button>
@@ -67,12 +69,22 @@
                     <Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
                     Copy Direct Avatar URL
                 </DropdownItem>
-
-				<DropdownItem @onclick="this.SubscribeWithBrowser">
-
-					<Blazorise.Icon Name="FontAwesomeIcons.Bell" Class="px-2" />
-					Subscribe
-				</DropdownItem>
+                <Dropdown Direction="Direction.Left">
+                    <DropdownToggle>
+                        <Blazorise.Icon Name="FontAwesomeIcons.Bell" Class="px-2" />
+                        Subscribe
+                    </DropdownToggle>
+                    <DropdownMenu>
+				        <DropdownItem @onclick="this.SubscribeWithBrowser">
+					        <Blazorise.Icon Name="FontAwesomeIcons.Rocket" Class="px-2" />
+					        Web Push
+				        </DropdownItem>
+                        <DropdownItem @onclick="this.SubscribeWithEmail">
+					        <Blazorise.Icon Name="FontAwesomeIcons.Envelope" Class="px-2" />
+					        E-mail
+				        </DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
                 <DropdownItem @onclick="this.ToggleRenderDirection">
                     <Blazorise.Icon Name="FontAwesomeIcons.Sort" Class="px-2" />
                     @if (this.RenderDirection == RenderDirectionValue.TopToBottom)
@@ -127,7 +139,7 @@ else
     </div>
 }
 <div class="footer px-4 h-auto" style="z-index:2">
-    <EditorBox AvatarUrl="@this.AvatarUrl" InitialRegionNeuron="@this.InitialRegionNeuron" @bind-SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
+    <EditorBox AvatarUrl="@this.AvatarUrl" InitialRegionNeuron="@this.InitialRegionNeuron" InitialPostsynapticNeurons="@this.InitialPostsynapticNeurons" SelectedNeuron="@this.EditNeuron" @bind-SelectedOption="@this.SelectedOption" />
 </div>
 
 <audio id="sound" src=@(this.settingsService.BasePath + "/media/alert.wav") />
@@ -168,32 +180,22 @@ else
     [JSInvokable]
     public async Task<Boolean> SendLinkData(string sourceNeuronID, string targetNeuronID)
     {
-        try
-        {
-            if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery))
+        var result = false;
+        await Blazor.Helper.UITryHandler(
+            async () =>
             {
-                await Blazor.Helper.AddLink(this.terminalApplicationService, resultQuery.AvatarUrl, sourceNeuronID, targetNeuronID);
-            }
+                if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery))
+                {
+                    await Blazor.Helper.AddLink(this.terminalApplicationService, resultQuery.AvatarUrl, sourceNeuronID, targetNeuronID);
+                }
 
-            return true;
-        }
-        catch (Exception ex)
-        {
-            string errorDescription, clipboardData;
-            if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out errorDescription, out clipboardData))
-            {
-                errorDescription = ex.Message;
-                clipboardData = ex.ToString();
-            }
+                return true;
+            },
+            this.toastService,
+            () => "Linking"
+        );
 
-            Blazor.Helper.ShowFriendlyException(
-                this.toastService,
-                $"Linking failed:",
-                errorDescription,
-                clipboardData
-            );
-            return false;
-        }
+        return result;
     }
 
     private void SearchDefaultRegionNeuron()
@@ -205,7 +207,7 @@ else
 
     protected override void OnInitialized()
     {
-        this.Children = new List<NeuronViewModel>();
+        this.Children = new List<TreeNeuronViewModel>();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -233,21 +235,37 @@ else
                 if (validUrl)
                 {
                     urlSet = true;
-                    NeuronViewModel regionNeuron = null;
-                    if (query.TryGetValue("regionId", out var regionId) && Library.Client.QueryUrl.TryParse(decodedUrl, out QueryUrl urlResult))
+                    Neuron regionNeuron = null;
+                    IEnumerable<Neuron> postsynapticNeurons = null;
+
+                    if (Library.Client.QueryUrl.TryParse(decodedUrl, out QueryUrl urlResult))
                     {
-                        var n = (await this.neuronQueryService.GetNeuronById(
-                            urlResult.AvatarUrl,
-                            regionId.ToString(),
-                            new NeuronQuery()
-                            ))?.Items.SingleOrDefault();
-                        regionNeuron = new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService);
+                        if (query.TryGetValue("regionId", out var regionId))
+                        {
+                            regionNeuron = (await this.neuronQueryService.GetNeuronById(
+                                urlResult.AvatarUrl,
+                                regionId.ToString(),
+                                new NeuronQuery()
+                                ))?.Items.SingleOrDefault();
+                        }
+
+                        if (query.TryGetValue("postsynaptic", out var postsynaptics))
+                        {
+                            postsynapticNeurons = (await this.neuronQueryService.GetNeurons(
+                                urlResult.AvatarUrl,
+                                new NeuronQuery()
+                                {
+                                    Id = postsynaptics.ToArray()
+                                }
+                                ))?.Items;
+                        }
                     }
 
                     await Task.Run(() =>
                     {
                         this.AvatarUrl = decodedUrl;
                         this.InitialRegionNeuron = regionNeuron;
+                        this.InitialPostsynapticNeurons = postsynapticNeurons;
                         this.Reload();
                     });
                 }
@@ -284,7 +302,7 @@ else
                         await this.jsRuntime.InvokeAsync<string>("PlaySound");
 
                     this.NewItemsCount += newNeurons.Count();
-                    newNeurons.ToList().ForEach(n => this.Children.Add(new NeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService)));
+                    newNeurons.ToList().ForEach(n => this.Children.Add(new TreeNeuronViewModel(new Neuron(n), this.AvatarUrl, this.neuronQueryService)));
                     await this.InvokeAsync(() => this.StateHasChanged());
                 }
             }
@@ -322,7 +340,7 @@ else
     public string AvatarUrl { get; set; }
 
     [Parameter]
-    public IList<NeuronViewModel> Children { get; set; } = new List<NeuronViewModel>();
+    public IList<TreeNeuronViewModel> Children { get; set; } = new List<TreeNeuronViewModel>();
 
     private bool IsConfirmVisible { get; set; } = false;
 
@@ -334,8 +352,8 @@ else
 
     private RenderDirectionValue RenderDirection { get; set; } = RenderDirectionValue.TopToBottom;
 
-    private NeuronViewModel selectedDefaultRegionNeuron;
-    private NeuronViewModel SelectedDefaultRegionNeuron
+    private NeuronResultItemViewModel selectedDefaultRegionNeuron;
+    private NeuronResultItemViewModel SelectedDefaultRegionNeuron
     {
         get => this.selectedDefaultRegionNeuron;
         set
@@ -378,9 +396,8 @@ else
                         break;
                     case ContextMenuOption.Edit:
                     case ContextMenuOption.AddRelative:
-                    case ContextMenuOption.LinkRelative:
                         this.ControlsEnabled = false;
-                        this.EditNeuron = this.SelectedNeuron;
+                        this.EditNeuron = this.SelectedNeuron.Neuron;
                         break;
                 }
             }
@@ -389,12 +406,14 @@ else
 
     private bool ControlsEnabled { get; set; } = true;
 
-    private NeuronViewModel SelectedNeuron { get; set; } = null;
+    private TreeNeuronViewModel SelectedNeuron { get; set; } = null;
 
-    private NeuronViewModel InitialRegionNeuron { get; set; } = null;
+    private Neuron InitialRegionNeuron { get; set; } = null;
 
-    private NeuronViewModel editNeuron = null;
-    private NeuronViewModel EditNeuron
+    private IEnumerable<Neuron> InitialPostsynapticNeurons { get; set; } = null;
+
+    private Neuron editNeuron = null;
+    private Neuron EditNeuron
     {
         get => this.editNeuron;
         set
@@ -403,47 +422,41 @@ else
         }
     }
 
-    private string ProcessSelectionTag(string format) => this.SelectedNeuron is NeuronViewModel ?
+    private string ProcessSelectionTag(string format) => this.SelectedNeuron is TreeNeuronViewModel ?
             string.Format(format, this.SelectedNeuron.Neuron.Tag) :
             "[Error: Not a valid Neuron]";
 
     private async Task Reload()
     {
-        try
-        {
-            await this.SetReloading(true);
-            this.Children.Clear();
-            var ns = await Tree.GetOrderedNeurons(this);
-            var children = ns.Select(nr => new NeuronViewModel(new Neuron(nr), this.AvatarUrl, this.neuronQueryService));
-            ((List<NeuronViewModel>)this.Children).AddRange(children);
-            this.NewItemsCount = 0;
-            if (this.RenderDirection == RenderDirectionValue.BottomToTop)
-                await this.ScrollToFragment("bottom");
-            QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result);
-            this.serverPushPublicKey = (await this.subscriptionsQueryService.GetServerConfigurationAsync(result.AvatarUrl)).ServerPublicKey;
-            var objRef = DotNetObjectReference.Create(this);
-            await this.jsRuntime.InvokeVoidAsync("Subscribe", objRef, this.serverPushPublicKey);
-        }
-        catch (Exception ex)
-        {
-            string description, clipboardData;
-            if (!Blazor.Helper.TryGetHttpRequestExceptionExDetalis(ex, out description, out clipboardData))
+        await Blazor.Helper.UITryHandler(
+            async () =>
             {
-                description = ex.Message;
-                clipboardData = ex.ToString();
+                await this.SetReloading(true);
+                this.Children.Clear();
+                var ns = await Tree.GetOrderedNeurons(this);
+                var children = ns.Select(nr => new TreeNeuronViewModel(new Neuron(nr), this.AvatarUrl, this.neuronQueryService));
+                ((List<TreeNeuronViewModel>)this.Children).AddRange(children);
+                this.NewItemsCount = 0;
+
+                if (this.RenderDirection == RenderDirectionValue.BottomToTop)
+                    await this.ScrollToFragment("bottom");
+
+                QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result);
+                this.serverPushPublicKey = (await this.subscriptionsQueryService.GetServerConfigurationAsync(result.AvatarUrl)).ServerPublicKey;
+
+                var objRef = DotNetObjectReference.Create(this);
+                await this.jsRuntime.InvokeVoidAsync("Subscribe", objRef, this.serverPushPublicKey);
+
+                return false;
+            },
+            this.toastService,
+            () => "Tree reload",
+            postActionInvoker: async () =>
+            {
+                await this.SetReloading(false);
+                await this.LoadGraph();
             }
-            Blazor.Helper.ShowFriendlyException(
-                this.toastService,
-                "An error occurred while reloading the Tree.",
-                description,
-                clipboardData
-            );
-        }
-        finally
-        {
-            await this.SetReloading(false);
-            await this.LoadGraph();
-        }
+        );
     }
 
     private async Task SetReloading(bool value)
@@ -491,6 +504,8 @@ else
                         );
                     description = "Terminal removed";
                 }
+                Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
+
                 this.toastService.ShowSuccess($"{description} successfully.");
             }
             catch (Exception ex)
@@ -499,8 +514,6 @@ else
             }
         }
     }
-
-    private async void CloseConfirmation() => Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
 
     private async Task LoadGraph()
     {
@@ -522,14 +535,14 @@ else
         await this.jsRuntime.InvokeVoidAsync("displayGraph", distinctNodes, links);
     }
 
-    private static void ExtractNodes(IEnumerable<NeuronViewModel> children, List<Node> allNodes)
+    private static void ExtractNodes(IEnumerable<TreeNeuronViewModel> children, List<Node> allNodes)
     {
         allNodes.AddRange(children.Select(c => new Node { id = c.Neuron.Id, tag = c.Neuron.Tag }).ToArray());
 
         children.ToList().ForEach(c => Tree.ExtractNodes(c.Children, allNodes));
     }
 
-    private static void ExtractLinks(IEnumerable<NeuronViewModel> children, List<Node> distinctNodes, List<Graph.Link> links)
+    private static void ExtractLinks(IEnumerable<TreeNeuronViewModel> children, List<Node> distinctNodes, List<Graph.Link> links)
     {
         children.ToList().ForEach(c =>
         {
@@ -578,47 +591,86 @@ else
             PushP256DH = this.pushP256DH
         };
 
-		await this.subscriptionApplicationService.SubscribeAsync(result.AvatarUrl, subscriptionInfo, receiverInfo);
-	}
-
-	#region Subscription Interop
-	private bool notificationsSupported = false;
-	private bool serviceWorkerRegistered = false;
-	private string permissionStatus = string.Empty;
-	private string deviceName = string.Empty;
-	private string pushP256DH;
-	private string pushAuth;
-	private string pushEndpoint;
-	private string serverPushPublicKey;
-
-	[JSInvokable]
-	public void SetPermissionStatus(string status)
-	{
-		permissionStatus = status;
-		StateHasChanged();
-	}
-
-	[JSInvokable]
-	public void SetSupportState(bool isNotificationSupported)
-	{
-		notificationsSupported = isNotificationSupported;
-		StateHasChanged();
-	}
-
-	[JSInvokable]
-	public void SetServiceWorkerStatus(bool isRegistered)
-	{
-		serviceWorkerRegistered = isRegistered;
-		StateHasChanged();
-	}
-
-	[JSInvokable]
-	public void SetDeviceProperties(string name, string pushp256dh, string pushAuth, string pushEndpoint)
-	{
-		this.deviceName = name;
-		this.pushP256DH = pushp256dh;
-		this.pushAuth = pushAuth;
-		this.pushEndpoint = pushEndpoint;
+        await this.subscriptionApplicationService.SubscribeAsync(result.AvatarUrl, subscriptionInfo, receiverInfo);
     }
-	#endregion
+
+    private async Task SubscribeWithEmail()
+    {
+        string emailDescription = string.Empty;
+
+        await Blazor.Helper.UITryHandler(
+            async () =>
+            {
+                QueryUrl.TryParse(this.AvatarUrl, out QueryUrl qu);
+
+                var subscriptionInfo = new SubscriptionInfo()
+                {
+                    AvatarUrl = this.AvatarUrl
+                };
+
+                var e = this.httpContextAccessor.HttpContext.User?.Claims.SingleOrDefault(i => i.Type == "email");
+
+                var result = e != null;
+
+                if (result)
+                {
+                    emailDescription += " using '" + e.Value + "'";
+                    var receiverInfo = new SmtpReceiverInfo()
+                    {
+                        EmailAddress = e.Value
+                    };
+
+                    await this.subscriptionApplicationService.SubscribeAsync(qu.AvatarUrl, subscriptionInfo, receiverInfo);
+                }
+                else
+                    throw new InvalidOperationException("User not signed-in.");
+            
+                return result;
+            },
+            this.toastService,
+            () => "E-mail Subscription" + emailDescription,
+            () => this.optionsDropdown.Hide()
+        );        
+    }
+
+    #region Subscription Interop
+    private bool notificationsSupported = false;
+    private bool serviceWorkerRegistered = false;
+    private string permissionStatus = string.Empty;
+    private string deviceName = string.Empty;
+    private string pushP256DH;
+    private string pushAuth;
+    private string pushEndpoint;
+    private string serverPushPublicKey;
+
+    [JSInvokable]
+    public void SetPermissionStatus(string status)
+    {
+        permissionStatus = status;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void SetSupportState(bool isNotificationSupported)
+    {
+        notificationsSupported = isNotificationSupported;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void SetServiceWorkerStatus(bool isRegistered)
+    {
+        serviceWorkerRegistered = isRegistered;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void SetDeviceProperties(string name, string pushp256dh, string pushAuth, string pushEndpoint)
+    {
+        this.deviceName = name;
+        this.pushP256DH = pushp256dh;
+        this.pushAuth = pushAuth;
+        this.pushEndpoint = pushEndpoint;
+    }
+    #endregion
 }
