@@ -75,7 +75,7 @@
                     </div>
                     <div class="row">
                         <div class="col-auto pb-1 pr-1 p-0">
-                            <button type="button" class="btn btn-secondary btn-sm" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @onclick="this.OnSearchRegionNeuron">
+                            <button type="button" class="btn btn-secondary btn-sm" @onclick="this.OnSearchRegionNeuron">
                                 <Blazorise.Icon Name="FontAwesomeIcons.ChartPie" />
                             </button>
                         </div>
@@ -213,7 +213,7 @@
             },
             toastService,
             () => "Neuron Terminals retrieval"
-        );        
+        );
     }
 
     private async Task HandleResultTerminalChanged(EditorTerminalViewModel value)
@@ -231,8 +231,8 @@
                         async (rq, pi) =>
                         {
                             pi.Description = "Terminal creation";
-                        // add directly via API
-                        this.resultTerminal.Id = Guid.NewGuid().ToString();
+                            // add directly via API
+                            this.resultTerminal.Id = Guid.NewGuid().ToString();
 
                             await Blazor.Helper.CreateTerminalFromViewModel(
                                 this.resultTerminal,
@@ -346,17 +346,18 @@
         get => this.selectedRegionNeuron;
         set
         {
-                this.selectedRegionNeuron = value;
+            this.selectedRegionNeuron = value;
 
-                if (this.selectedRegionNeuron != null)
-                {
-                    this.editorNeuronViewModel.RegionId = this.selectedRegionNeuron.Neuron.Id;
-                    this.editorNeuronViewModel.RegionTag = this.selectedRegionNeuron.Neuron.Tag;
-                    this.editorNeuronViewModel.ClearInitialRegion();
-                }
-                else
-                    this.editorNeuronViewModel.InitializeRegion();
-           
+            if (this.selectedRegionNeuron != null)
+            {
+                this.editorNeuronViewModel.RegionId = this.selectedRegionNeuron.Neuron.Id;
+                this.editorNeuronViewModel.RegionTag = this.selectedRegionNeuron.Neuron.Tag;
+            }
+            else
+            {
+                this.editorNeuronViewModel.RegionId = null;
+                this.editorNeuronViewModel.RegionTag = EditorNeuronViewModel.BaseRegionTag;
+            }
         }
     }
 
@@ -377,7 +378,10 @@
                     this.editorNeuronViewModel.InitialRegionTag = this.initialRegionNeuron.Tag;
                 }
                 else
-                    this.editorNeuronViewModel.InitializeRegion();
+                {
+                    this.editorNeuronViewModel.InitialRegionId = null;
+                    this.editorNeuronViewModel.InitialRegionTag = EditorNeuronViewModel.BaseRegionTag;
+                }
             }
         }
     }
@@ -513,8 +517,8 @@
                             break;
                         case ContextMenuOption.Edit:
                             pi.Description = "Neuron modification";
-                        // TODO: indicate how many and which changes succeeded/failed
-                        if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
+                            // TODO: indicate how many and which changes succeeded/failed
+                            if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
                             {
                                 await this.neuronApplicationService.ChangeNeuronTag(
                                     rq.AvatarUrl,
