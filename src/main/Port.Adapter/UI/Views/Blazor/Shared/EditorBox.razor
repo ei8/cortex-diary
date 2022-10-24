@@ -152,7 +152,7 @@
                     this.editorNeuronViewModel.Id = this.selectedNeuron.Id;
                     this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
                     this.editorNeuronViewModel.RegionId = this.selectedNeuron.Region.Id;
-                    this.editorNeuronViewModel.RegionTag = this.selectedNeuron.Region.Tag;
+                    this.editorNeuronViewModel.RegionTag = this.selectedNeuron.Region.Tag==null?EditorNeuronViewModel.BaseRegionTag:this.selectedNeuron.Region.Tag;
                     this.editorNeuronViewModel.Version = this.selectedNeuron.Version;
                     this.editorNeuronViewModel.NeuronExternalReferenceUrl = this.selectedNeuron.ExternalReferenceUrl;
 
