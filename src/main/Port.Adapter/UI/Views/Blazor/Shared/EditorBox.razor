@@ -80,7 +80,7 @@
                             </button>
                         </div>
                         <div class="col-auto pb-1 p-0">
-                            <input class="form-control-sm" style="width:150px"  value="@this.editorNeuronViewModel.RegionTag" @onchange="@((x) => { this.editorNeuronViewModel.RegionTag =x.Value.ToString() ; })" />
+                            <input class="form-control-sm" style="width:150px" readonly="readonly" value="@this.editorNeuronViewModel.RegionTag" />
                         </div>
                         <div class="col-auto pb-1 p-0">
                             @if (string.IsNullOrWhiteSpace(this.editorNeuronViewModel.NeuronExternalReferenceUrl))
