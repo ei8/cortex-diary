@@ -132,6 +132,12 @@
     <script src="JsInterop.js"></script>
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
+
+        //defined hover color constants
+        const yellow = "#ffa500";
+        const gray = "#e6e6e6";
+        const blue = "#1E90FF";
+
         var dotNetHelper = null;
         window.DotNetHelperSetter = (dotHelper) => {
             dotNetHelper = dotHelper;
@@ -467,7 +473,14 @@
         }
 
         function highlightTreeItem(currElement, over) {
-            currElement.style.backgroundColor = over ? "#1E90FF" : "#e6e6e6";
+            //get attribute value and set hover color
+            var element = currElement.getAttribute("userCreated");
+            
+            if(element == "true"){
+                currElement.style.backgroundColor = over ? yellow : blue;
+            }else{
+                currElement.style.backgroundColor = over ? blue : gray;
+            }
         }
 
         function highlightNode(currElement, over) {
