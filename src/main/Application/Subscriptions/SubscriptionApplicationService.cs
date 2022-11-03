@@ -4,7 +4,6 @@ using ei8.Cortex.Subscriptions.Common;
 using ei8.Cortex.Subscriptions.Common.Receivers;
 using System;
 using System.Threading.Tasks;
-
 namespace ei8.Cortex.Diary.Application.Subscriptions
 {
     public class SubscriptionApplicationService : ISubscriptionApplicationService

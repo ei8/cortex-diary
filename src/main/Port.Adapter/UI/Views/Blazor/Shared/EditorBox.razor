@@ -75,12 +75,12 @@
                     </div>
                     <div class="row">
                         <div class="col-auto pb-1 pr-1 p-0">
-                            <button type="button" class="btn btn-secondary btn-sm" disabled="@(this.SelectedOption == ContextMenuOption.Edit)" @onclick="this.OnSearchRegionNeuron">
+                            <button type="button" class="btn btn-secondary btn-sm" @onclick="this.OnSearchRegionNeuron">
                                 <Blazorise.Icon Name="FontAwesomeIcons.ChartPie" />
                             </button>
                         </div>
                         <div class="col-auto pb-1 p-0">
-                            <input class="form-control-sm" style="width:150px" readonly value="@this.editorNeuronViewModel.RegionTag" />
+                            <input class="form-control-sm" style="width:150px" readonly="readonly" value="@this.editorNeuronViewModel.RegionTag" />
                         </div>
                         <div class="col-auto pb-1 p-0">
                             @if (string.IsNullOrWhiteSpace(this.editorNeuronViewModel.NeuronExternalReferenceUrl))
@@ -117,7 +117,7 @@
         </div>
     </EditForm>
 </div>
-<NeuronSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
+<RegionSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
 <TerminalEditorBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsTerminalEditorVisible" SelectedTerminal="this.EditTerminal" @bind-ResultTerminal="this.ResultTerminal" />
 <NeuronSearchBox AvatarUrl="@this.editorNeuronViewModel.NeuronExternalReferenceUrl" @bind-IsVisible="@this.IsSearchExternalReferenceNeuronVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceNeuron" />
 
@@ -127,57 +127,87 @@
     private bool sending = false;
     private EditContext editContext;
 
-    protected override void OnInitialized()
+    public EditorBox()
     {
-        this.editContext = new EditContext(this.editorNeuronViewModel);
+        this.internalSelectedRegionNeuronChanged = EventCallback.Factory.Create(this, new Func<NeuronResultItemViewModel, Task>(this.HandleSelectedRegionNeuronChanged));
         this.internalSelectedOptionChanged = EventCallback.Factory.Create(this, new Func<ContextMenuOption, Task>(this.HandleSelectionOptionChanged));
         this.internalResultTerminalChanged = EventCallback.Factory.Create(this, new Func<EditorTerminalViewModel, Task>(this.HandleResultTerminalChanged));
+    }
+
+    protected override void OnInitialized()
+    {
+        this.editContext = new EditContext(this.editorNeuronViewModel);        
     }
 
     private string ProcessSelectionTag(string format) => (this.selectedOption != ContextMenuOption.Edit || this.selectedNeuron != null) && this.EditTerminal != null ?
         string.Format(format, (this.selectedOption == ContextMenuOption.Edit ? this.selectedNeuron.Tag : this.editorNeuronViewModel.Tag), this.EditTerminal.NeuronTag) :
         "[Error: Both SelectedNeuron and EditTerminal should not be null]";
 
+    private async Task HandleSelectedRegionNeuronChanged(NeuronResultItemViewModel value)
+    {
+        if (value != null)
+        {
+            this.editorNeuronViewModel.RegionId = value.Neuron.Id;
+            this.editorNeuronViewModel.RegionTag = value.Neuron.Tag;
+        }
+        else
+            // should use null region
+            this.editorNeuronViewModel.InitializeRegion(false);
+    }
+
     private async Task HandleSelectionOptionChanged(ContextMenuOption value)
     {
-        if (this.selectedOption == ContextMenuOption.Edit)
+        switch (this.selectedOption)
         {
-            if (this.selectedNeuron != null)
-            {
-                if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery))
-                {
-                    this.preEditCopy = new Neuron(this.selectedNeuron);
-
-                    // similar to NeuronViewModelBase.SetNeuron
-                    this.editorNeuronViewModel.Id = this.selectedNeuron.Id;
-                    this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
-                    this.editorNeuronViewModel.RegionId = this.selectedNeuron.Region.Id;
-                    this.editorNeuronViewModel.RegionTag = this.selectedNeuron.Region.Tag;
-                    this.editorNeuronViewModel.Version = this.selectedNeuron.Version;
-                    this.editorNeuronViewModel.NeuronExternalReferenceUrl = this.selectedNeuron.ExternalReferenceUrl;
-
-                    await EditorBox.ReloadTerminals(
-                        resultQuery.AvatarUrl,
-                        this.selectedNeuron.Id,
-                        this.neuronQueryService,
-                        this.toastService,
-                        this.editorNeuronViewModel
-                        );
-
-                    // TODO:
-                    //this.TerminalCreation = new AuthorEventInfo(neuron.Terminal.Creation);
-                    //this.TerminalLastModification = new AuthorEventInfo(neuron.Terminal.LastModification);
-                }
-            }
-        }
-        else if (this.selectedOption == ContextMenuOption.AddRelative)
-        {
-            // auto-add selectedNeuron as Terminal
-            if (this.selectedNeuron != null)
-            {
+            case ContextMenuOption.New:
                 this.editorNeuronViewModel.Initialize();
-                this.editorNeuronViewModel.Terminals = new EditorTerminalViewModel[]
+                break;
+
+            case ContextMenuOption.Edit:
+                if (this.selectedNeuron != null)
                 {
+                    if (QueryUrl.TryParse(this.AvatarUrl, out QueryUrl resultQuery))
+                    {
+                        this.preEditCopy = new Neuron(this.selectedNeuron);
+
+                        // similar to NeuronViewModelBase.SetNeuron
+                        this.editorNeuronViewModel.Id = this.selectedNeuron.Id;
+                        this.editorNeuronViewModel.Tag = this.selectedNeuron.Tag;
+                        this.SelectedRegionNeuron = this.selectedNeuron.Region.Id != null ?
+                            new NeuronResultItemViewModel(new Neuron()
+                                {
+                                    Id = this.selectedNeuron.Region.Id,
+                                    Tag = this.selectedNeuron.Region.Tag
+                                }) :
+                            null;
+
+                        // force region sync
+                        await this.HandleSelectedRegionNeuronChanged(this.SelectedRegionNeuron);
+
+                        this.editorNeuronViewModel.Version = this.selectedNeuron.Version;
+                        this.editorNeuronViewModel.NeuronExternalReferenceUrl = this.selectedNeuron.ExternalReferenceUrl;
+
+                        await EditorBox.ReloadTerminals(
+                            resultQuery.AvatarUrl,
+                            this.selectedNeuron.Id,
+                            this.neuronQueryService,
+                            this.toastService,
+                            this.editorNeuronViewModel
+                            );
+
+                        // TODO:
+                        //this.TerminalCreation = new AuthorEventInfo(neuron.Terminal.Creation);
+                        //this.TerminalLastModification = new AuthorEventInfo(neuron.Terminal.LastModification);
+                    }
+                }
+                break;
+            case ContextMenuOption.AddRelative:
+                // auto-add selectedNeuron as Terminal
+                if (this.selectedNeuron != null)
+                {
+                    this.editorNeuronViewModel.Initialize();
+                    this.editorNeuronViewModel.Terminals = new EditorTerminalViewModel[]
+                    {
                     new EditorTerminalViewModel()
                     {
                         Id = Guid.NewGuid().ToString(),
@@ -186,8 +216,9 @@
                         Strength = 1,
                         Type = RelativeType.Postsynaptic
                     }
-                };
-            }
+                    };
+                }
+                break;
         }
     }
 
@@ -213,7 +244,7 @@
             },
             toastService,
             () => "Neuron Terminals retrieval"
-        );        
+        );
     }
 
     private async Task HandleResultTerminalChanged(EditorTerminalViewModel value)
@@ -231,8 +262,8 @@
                         async (rq, pi) =>
                         {
                             pi.Description = "Terminal creation";
-                        // add directly via API
-                        this.resultTerminal.Id = Guid.NewGuid().ToString();
+                            // add directly via API
+                            this.resultTerminal.Id = Guid.NewGuid().ToString();
 
                             await Blazor.Helper.CreateTerminalFromViewModel(
                                 this.resultTerminal,
@@ -320,8 +351,7 @@
         }
     }
 
-    [Parameter]
-    public EventCallback<ContextMenuOption> internalSelectedOptionChanged { get; set; }
+    private EventCallback<ContextMenuOption> internalSelectedOptionChanged { get; set; }
     [Parameter]
     public EventCallback<ContextMenuOption> SelectedOptionChanged { get; set; }
 
@@ -334,30 +364,20 @@
         {
             if (this.selectedNeuron != value)
                 this.selectedNeuron = value;
-
-            if (this.selectedNeuron == null)
-                this.editorNeuronViewModel.Initialize();
         }
     }
 
+    private EventCallback<NeuronResultItemViewModel> internalSelectedRegionNeuronChanged { get; set; }
     private NeuronResultItemViewModel selectedRegionNeuron;
     private NeuronResultItemViewModel SelectedRegionNeuron
     {
         get => this.selectedRegionNeuron;
         set
         {
-            if (this.selectedRegionNeuron != value)
+            if (this.selectedRegionNeuron?.Neuron?.Id != value?.Neuron?.Id)
             {
                 this.selectedRegionNeuron = value;
-
-                if (this.selectedRegionNeuron != null)
-                {
-                    this.editorNeuronViewModel.RegionId = this.selectedRegionNeuron.Neuron.Id;
-                    this.editorNeuronViewModel.RegionTag = this.selectedRegionNeuron.Neuron.Tag;
-                    this.editorNeuronViewModel.ClearInitialRegion();
-                }
-                else
-                    this.editorNeuronViewModel.InitializeRegion();
+                this.internalSelectedRegionNeuronChanged.InvokeAsync(this.selectedRegionNeuron);
             }
         }
     }
@@ -379,7 +399,7 @@
                     this.editorNeuronViewModel.InitialRegionTag = this.initialRegionNeuron.Tag;
                 }
                 else
-                    this.editorNeuronViewModel.InitializeRegion();
+                    this.editorNeuronViewModel.ClearInitialRegion();
             }
         }
     }
@@ -515,13 +535,22 @@
                             break;
                         case ContextMenuOption.Edit:
                             pi.Description = "Neuron modification";
-                        // TODO: indicate how many and which changes succeeded/failed
-                        if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
+                            // TODO: indicate how many and which changes succeeded/failed
+                            if (this.editorNeuronViewModel.Tag != this.preEditCopy.Tag)
                             {
                                 await this.neuronApplicationService.ChangeNeuronTag(
                                     rq.AvatarUrl,
                                     this.editorNeuronViewModel.Id,
                                     this.editorNeuronViewModel.Tag,
+                                    this.editorNeuronViewModel.Version
+                                    );
+                            }
+                            if (this.editorNeuronViewModel.RegionId != this.preEditCopy.Region.Id)
+                            {
+                                await this.neuronApplicationService.ChangeNeuronRegionId(
+                                    rq.AvatarUrl,
+                                    this.editorNeuronViewModel.Id,
+                                    this.editorNeuronViewModel.RegionId,
                                     this.editorNeuronViewModel.Version
                                     );
                             }
