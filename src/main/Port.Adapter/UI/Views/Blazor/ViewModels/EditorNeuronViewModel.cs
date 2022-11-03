@@ -9,14 +9,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
 {
     public class EditorNeuronViewModel
     {
-        public const string BaseRegionTag = "[Base]";
+        private const string BaseRegionTag = "[Base]";
         public EditorNeuronViewModel() => this.Initialize();
         public string Id { get; set; }
         public string Tag { get; set; }
         public int Version { get; set; }
         public string RegionId { get; set; }
         public string RegionTag { get; set; }
-        public string InitialRegionId { get; set; } = string.Empty;
+        public string InitialRegionId { get; set; } = null;
         public string InitialRegionTag { get; set; } = EditorNeuronViewModel.BaseRegionTag;
         public IEnumerable<Neuron> InitialPostsynaptics { get; set; } = null;
         public string NeuronExternalReferenceUrl { get; set; }
@@ -34,10 +34,24 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
             this.InitializePostsynaptic();
         }
 
-        public void InitializeRegion()
+        public void InitializeRegion(bool useConfigurableInitialRegion = true)
         {
-            this.RegionId = this.InitialRegionId;
-            this.RegionTag = this.InitialRegionTag;
+            if (useConfigurableInitialRegion)
+            {
+                this.RegionId = this.InitialRegionId;
+                this.RegionTag = this.InitialRegionTag;
+            }
+            else
+            {
+                this.RegionId = null;
+                this.RegionTag = EditorNeuronViewModel.BaseRegionTag;
+            }
+        }
+
+        public void ClearInitialRegion()
+        {
+            this.InitialRegionId = null;
+            this.InitialRegionTag = EditorNeuronViewModel.BaseRegionTag;
         }
 
         public void InitializePostsynaptic()
