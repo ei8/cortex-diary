@@ -1,4 +1,4 @@
-﻿using ei8.Cortex.Subscriptions.Common;
+using ei8.Cortex.Subscriptions.Common;
 using ei8.Cortex.Subscriptions.Common.Receivers;
 using System.Threading.Tasks;
 

@@ -152,6 +152,31 @@ else
     private Timer refreshTimer;
     private DotNetObjectReference<Tree>? dotNetHelper;
 
+    public Tree()
+    {
+        this.internalSelectedOptionChanged = EventCallback.Factory.Create(this, new Func<ContextMenuOption, Task>(this.HandleSelectionOptionChanged));
+    }
+
+    private async Task HandleSelectionOptionChanged(ContextMenuOption value)
+    {
+        switch (value)
+        {
+            case ContextMenuOption.New:
+                this.SelectedNeuron = null;
+                this.EditNeuron = null;
+                this.ControlsEnabled = true;
+                break;
+            case ContextMenuOption.Delete:
+                this.IsConfirmVisible = true;
+                break;
+            case ContextMenuOption.Edit:
+            case ContextMenuOption.AddRelative:
+                this.ControlsEnabled = false;
+                this.EditNeuron = this.SelectedNeuron.Neuron;
+                break;
+        }
+    }
+
     private async void OnKeyPress(KeyboardEventArgs e)
     {
         if(e.Code == "Enter" || e.Code == "NumpadEnter")
@@ -274,9 +299,11 @@ else
                     {
                         this.AvatarUrl = decodedUrl;
                         this.InitialRegionNeuron = regionNeuron;
-                        this.InitialPostsynapticNeurons = postsynapticNeurons;
+                        this.InitialPostsynapticNeurons = postsynapticNeurons;                        
                         this.Reload();
                     });
+
+                    Blazor.Helper.ReinitializeOption(o => this.SelectedOption = o);
                 }
             }
             if (!urlSet)
@@ -293,7 +320,6 @@ else
             var objRef = DotNetObjectReference.Create(this);
             await this.jsRuntime.InvokeVoidAsync("RegisterServiceWorker", objRef);
         }
-
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -386,6 +412,9 @@ else
     private bool IsSearchDefaultRegionNeuronVisible { get; set; } = false;
 
     private ContextMenuOption selectedOption = ContextMenuOption.New;
+
+    private EventCallback<ContextMenuOption> internalSelectedOptionChanged { get; set; }
+
     public ContextMenuOption SelectedOption
     {
         get => this.selectedOption;
@@ -394,22 +423,8 @@ else
             if (this.selectedOption != value)
             {
                 this.selectedOption = value;
-                switch (this.SelectedOption)
-                {
-                    case ContextMenuOption.New:
-                        this.SelectedNeuron = null;
-                        this.EditNeuron = null;
-                        this.ControlsEnabled = true;
-                        break;
-                    case ContextMenuOption.Delete:
-                        this.IsConfirmVisible = true;
-                        break;
-                    case ContextMenuOption.Edit:
-                    case ContextMenuOption.AddRelative:
-                        this.ControlsEnabled = false;
-                        this.EditNeuron = this.SelectedNeuron.Neuron;
-                        break;
-                }
+
+                this.internalSelectedOptionChanged.InvokeAsync(this.selectedOption);
             }
         }
     }
@@ -570,7 +585,7 @@ else
         children.ToList().ForEach(c => Tree.ExtractLinks(c.Children.ToArray(), distinctNodes, links));
     }
 
-    private void CopyAvatarUrl()
+	private void CopyAvatarUrl()
     {
         jsRuntime.InvokeVoidAsync("copyToClipboard", Tree.BuildAvatarUrl(this.navigationManager.Uri, this.AvatarUrl));
         this.toastService.ShowInfo($"Copied successfully.");
@@ -584,7 +599,6 @@ else
         var encodedUrl = System.Net.WebUtility.UrlEncode(avatarUrl);
         return parsedBasedUrl + prefixKeyword + encodedUrl;
     }
-
     private async Task SubscribeWithBrowser()
     {
         QueryUrl.TryParse(this.AvatarUrl, out QueryUrl result);
