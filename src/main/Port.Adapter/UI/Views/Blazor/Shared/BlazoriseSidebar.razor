@@ -25,33 +25,91 @@
         <BarStart>
             @foreach (var v1 in this.views.Where(vi => string.IsNullOrWhiteSpace(vi.ParentUrl)))
             {
-                <BarItem>
-                    @if (this.views.Any(vi => vi.ParentUrl == v1.Url))
-                    {
+                if (v1.Url == this.navigationManager.Uri)
+                {
+                    <BarItem Class="bar-active" >
+                        @if (this.views.Any(vi => vi.ParentUrl == v1.Url))
+                        {
+                            <BarDropdown>
+                                <BarDropdownToggle>
+                                    <BarIcon IconName="MainMenu(v1.Icon)" />
+                                    @v1.Name
+                                </BarDropdownToggle>
+                                <BarDropdownMenu>
+                                    @foreach (var v2 in this.views.Where(vi => vi.ParentUrl == v1.Url))
+                                    {
+                                        <BarDropdownItem Clicked="() => this.Navigate(v2.Url)">
+                                            <BarIcon IconName="MainMenu(v2.Icon)" />
+                                            @v2.Name
+                                        </BarDropdownItem>
+                                    }
+                                </BarDropdownMenu>
+                            </BarDropdown>
+                        }
+                        else
+                        {
+                            <BarLink Clicked="() => this.Navigate(v1.Url)">
+                                <BarIcon IconName="MainMenu(v1.Icon)" />
+                                @v1.Name
+                            </BarLink>
+                        }
+                    </BarItem>
+                }
+                else
+                {
+                    <BarItem data-visible="true">
+                        @if (this.views.Any(vi => vi.ParentUrl == v1.Url))
+                        {
                         <BarDropdown>
-                            <BarDropdownToggle>
+                            <BarDropdownToggle onclick="dataVisibility()" id="data-visibility">
                                 <BarIcon IconName="MainMenu(v1.Icon)" />
                                 @v1.Name
                             </BarDropdownToggle>
-                            <BarDropdownMenu>
-                                @foreach (var v2 in this.views.Where(vi => vi.ParentUrl == v1.Url))
+                            @if (this.views.Any(vi => vi.Url == this.navigationManager.Uri && vi.ParentUrl == v1.Url))
+                            {
+                        <BarDropdownMenu id="data-visible" Class="data-visibility">
+                            @foreach (var v2 in this.views.Where(vi => vi.ParentUrl == v1.Url))
+                            {
+                                if (v2.Url == this.navigationManager.Uri)
+                                {
+                                    <BarDropdownItem Class="bar-active" Clicked="() => this.Navigate(v2.Url)">
+                                        <BarIcon IconName="MainMenu(v2.Icon)" />
+                                        @v2.Name
+                                    </BarDropdownItem>
+                                }
+                                else
                                 {
                                     <BarDropdownItem Clicked="() => this.Navigate(v2.Url)">
                                         <BarIcon IconName="MainMenu(v2.Icon)" />
                                         @v2.Name
                                     </BarDropdownItem>
                                 }
-                            </BarDropdownMenu>
+                            }
+                        </BarDropdownMenu>
+                            }
+                            else
+                            {
+                                <BarDropdownMenu id="data-visible">
+                                    @foreach (var v2 in this.views.Where(vi => vi.ParentUrl == v1.Url))
+                                    {
+                                        <BarDropdownItem Clicked="() => this.Navigate(v2.Url)">
+                                            <BarIcon IconName="MainMenu(v2.Icon)" />
+                                            @v2.Name
+                                        </BarDropdownItem>
+                                    }
+                                </BarDropdownMenu>
+                            }
                         </BarDropdown>
-                    }
-                    else
-                    {
-                        <BarLink Clicked="() => this.Navigate(v1.Url)">
-                            <BarIcon IconName="MainMenu(v1.Icon)" />
-                            @v1.Name
-                        </BarLink>
-                    }
-                </BarItem>
+                        }
+                        else
+                        {
+                            <BarLink Clicked="() => this.Navigate(v1.Url)">
+                                <BarIcon IconName="MainMenu(v1.Icon)" />
+                                @v1.Name
+                            </BarLink>
+                        }
+                    </BarItem>
+                }
             }
         </BarStart>
         <BarEnd>
@@ -104,7 +162,6 @@
 </Bar>
 
 @code {
-
     private void Navigate(string url)
     {
         this.navigationManager.NavigateTo(url, true);

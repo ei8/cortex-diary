@@ -281,7 +281,6 @@ app {
     .b-bar-icon {
         padding-right: .5rem !important
     }
-
     .nav-link {
         padding: 0 .5rem 0 .5rem !important;
     }
@@ -491,7 +490,12 @@ a[title]:hover::after {
     top: 0;
     bottom: 0;
 }
-
+.bar-active {
+    background-color: #d3d3d3;
+}
+.data-visibility{
+    display:block !important;
+}
 #checkboxes {
     position: absolute;
     z-index: 100;
