@@ -59,6 +59,31 @@
                                     <ConditionalDisplay Show="@true">
                                         <li style="list-style:none" @key="@itemContext.Id">
                                             <input type="radio" id="@itemContext.Id" checked="@(this.EditTerminal != null && this.EditTerminal.Id == itemContext.Id)" @onchange="@(() => { this.EditTerminal = itemContext; })" />
+                                            @if (itemContext.Neuron.Type != Library.Common.RelativeType.NotSet)
+                                            {
+                                                if (itemContext.Neuron.Terminal.Strength == "1")
+                                                {
+                                                    @if (itemContext.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
+                                                    {
+                                                        <span @attributes="GetAttributes(itemContext)">&#x21FE;</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span @attributes="GetAttributes(itemContext)">&#x21FD;</span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    @if (itemContext.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
+                                                    {
+                                                        <span @attributes="GetAttributes(itemContext)">&#x290F;</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span @attributes="GetAttributes(itemContext)">&#x290E;</span>
+                                                    }
+                                                }
+                                            }
                                             <label for="@itemContext.NeuronTag">@(!string.IsNullOrEmpty(itemContext.NeuronTag) ? itemContext.NeuronTag : " ")</label>
                                         </li>
                                     </ConditionalDisplay>
@@ -67,7 +92,7 @@
                             <ValidationMessage For=@(() => this.editorNeuronViewModel.Terminals) />
                         </div>
                     </div>
-                    <div class="row"
+                    <div class="row">
                         <div class="col py-1 px-0">
                             <KeyWatcherInputTextArea class="form-control w-100" placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" rows="4" @onkeydown="@this.KeyPress" />
                             <ValidationMessage For=@(() => this.editorNeuronViewModel.Tag) />
@@ -791,5 +816,14 @@
                 this.editorNeuronViewModel
                 );
         }
+    }
+
+    private Dictionary<string, object> GetAttributes(EditorTerminalViewModel child)
+    {
+        var dict = new Dictionary<string, object>();
+        if (child.Neuron.Terminal.Effect == "-1")
+            dict.Add("style", "color:red");
+        return dict;
+
     }
 }
