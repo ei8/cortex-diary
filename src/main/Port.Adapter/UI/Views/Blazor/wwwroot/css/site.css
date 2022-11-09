@@ -491,10 +491,7 @@ a[title]:hover::after {
     bottom: 0;
 }
 .bar-active {
-    background-color: #d3d3d3;
-}
-.data-visibility{
-    display:block !important;
+    background-color: #003080;
 }
 #checkboxes {
     position: absolute;
