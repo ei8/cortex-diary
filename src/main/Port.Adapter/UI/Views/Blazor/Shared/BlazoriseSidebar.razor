@@ -25,10 +25,10 @@
         <BarStart>
             @foreach (var v1 in this.views.Where(vi => string.IsNullOrWhiteSpace(vi.ParentUrl)))
             {
-                <BarItem>
+                <BarItem Class=@(this.GetBarActiveClassValue(v1))>
                     @if (this.views.Any(vi => vi.ParentUrl == v1.Url))
                     {
-                        <BarDropdown>
+                        <BarDropdown Visible=@(this.views.Any(vi => vi.ParentUrl == v1.Url && vi.Url == this.navigationManager.Uri))>
                             <BarDropdownToggle>
                                 <BarIcon IconName="MainMenu(v1.Icon)" />
                                 @v1.Name
@@ -36,7 +36,7 @@
                             <BarDropdownMenu>
                                 @foreach (var v2 in this.views.Where(vi => vi.ParentUrl == v1.Url))
                                 {
-                                    <BarDropdownItem Clicked="() => this.Navigate(v2.Url)">
+                                    <BarDropdownItem Class=@(this.GetBarActiveClassValue(v2)) Clicked="() => this.Navigate(v2.Url)">
                                         <BarIcon IconName="MainMenu(v2.Icon)" />
                                         @v2.Name
                                     </BarDropdownItem>
@@ -104,7 +104,6 @@
 </Bar>
 
 @code {
-
     private void Navigate(string url)
     {
         this.navigationManager.NavigateTo(url, true);
@@ -116,6 +115,9 @@
         retFragment = @<span class="oi @iconName" aria-hidden="true"></span>;
         return retFragment;
     }
+
+    private string GetBarActiveClassValue(View value) => 
+        value.Url == this.navigationManager.Uri ? "bar-active" : string.Empty;
 
     [Parameter]
     public NavBarType NavBarType { get; set; }
