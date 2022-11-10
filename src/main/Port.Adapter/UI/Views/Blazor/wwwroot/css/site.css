@@ -503,6 +503,9 @@ a[title]:hover::after {
     background-color: white;
     position: absolute;
 }
+.havor {
+    cursor: pointer;
+}
 
     #checkboxes label {
         display: block;
