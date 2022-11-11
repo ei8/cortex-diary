@@ -60,7 +60,7 @@
                                         <li style="list-style:none" @key="@itemContext.Id">
                                             <div class="row">
                                                 <input type="radio" id="@itemContext.Id" checked="@(this.EditTerminal != null && this.EditTerminal.Id == itemContext.Id)" @onchange="@(() => { this.EditTerminal = itemContext; })" />
-                                                <BarIcon IconName="this.GetSynapticIcons(itemContext)" />
+                                                <BarIcon Class="px-1" IconName="this.GetSynapticIcons(itemContext)" />
                                                 <label for="@itemContext.NeuronTag">@(!string.IsNullOrEmpty(itemContext.NeuronTag) ? itemContext.NeuronTag : " ")</label>
                                             </div>
                                         </li>
@@ -815,22 +815,22 @@
             {
                 if (itemContext.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
                 {
-                    return retFragment = @<span @attributes="GetSynapticSymbolSpan(itemContext.Neuron)">&#x21FE;</span>;
+                    return retFragment = @<span @attributes="this.GetSynapticSymbolSpan(itemContext.Neuron)">&#x21FE;</span>;
                 }
                 else
                 {
-                    return retFragment = @<span @attributes="GetSynapticSymbolSpan(itemContext.Neuron)">&#x21FD;</span>;
+                    return retFragment = @<span @attributes="this.GetSynapticSymbolSpan(itemContext.Neuron)">&#x21FD;</span>;
                 }
             }
             else
             {
                 if (itemContext.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
                 {
-                    return retFragment = @<span @attributes="GetSynapticSymbolSpan(itemContext.Neuron)">&#x290F;</span>;
+                    return retFragment = @<span @attributes="this.GetSynapticSymbolSpan(itemContext.Neuron)">&#x290F;</span>;
                 }
                 else
                 {
-                    return retFragment = @<span @attributes="GetSynapticSymbolSpan(itemContext.Neuron)">&#x290E;</span>;
+                    return retFragment = @<span @attributes="this.GetSynapticSymbolSpan(itemContext.Neuron)">&#x290E;</span>;
                 }
             }
         }
