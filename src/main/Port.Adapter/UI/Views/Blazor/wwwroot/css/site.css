@@ -503,10 +503,12 @@ a[title]:hover::after {
     background-color: white;
     position: absolute;
 }
-
-    #checkboxes label {
-        display: block;
-    }
+.hover{
+    cursor:pointer;
+}
+#checkboxes label {
+    display: block;
+}
 
         #checkboxes label:hover {
             background-color: #1e90ff;
