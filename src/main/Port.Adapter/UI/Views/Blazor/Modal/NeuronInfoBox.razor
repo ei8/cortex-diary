@@ -24,7 +24,7 @@
                                 Id:
                             </td>
                             <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px;">
-                                @this.selectedNeuron.Neuron.Id <i class="fas fa-copy hover" @onclick="this.CopyId"></i>
+                                @this.selectedNeuron.Neuron.Id <i class="fas fa-copy hover" @onclick="() => this.CopyToClipboard(this.selectedNeuron.Neuron.Id)"></i>
                             </td>
                         </tr>
                         <tr>
@@ -40,7 +40,7 @@
                                 URL:
                             </td>
                             <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px; max-width: 200px; word-break: break-all;">
-                                @this.selectedNeuron.Neuron.Url <i class="fas fa-copy hover" @onclick="this.CopyUrl"></i>
+                                @this.selectedNeuron.Neuron.Url <i class="fas fa-copy hover" @onclick="() => this.CopyToClipboard(this.selectedNeuron.Neuron.Url)"></i>
                             </td>
                         </tr>
                         <tr>
@@ -242,15 +242,9 @@
     [Parameter]
     public EventCallback<TreeNeuronViewModel> SelectedNeuronChanged { get; set; }
 
-    private void CopyId()
+    private void CopyToClipboard(string data)
     {
-        jsRuntime.InvokeVoidAsync("copyToClipboard", this.selectedNeuron.Neuron.Id);
-        this.toastService.ShowInfo($"Copied successfully.");
-    }
-
-    private void CopyUrl()
-    {
-        jsRuntime.InvokeVoidAsync("copyToClipboard", this.selectedNeuron.Neuron.Url);
+        jsRuntime.InvokeVoidAsync("copyToClipboard", data);
         this.toastService.ShowInfo($"Copied successfully.");
     }
 }
