@@ -1,6 +1,9 @@
 ﻿@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
 @using ei8.Cortex.Library.Common;
 
+@inject IToastService toastService
+@inject IJSRuntime jsRuntime
+
 @if (this.IsVisible)
 {
     <div class="modal" tabindex="-1" style="display:block" role="dialog">
@@ -21,7 +24,7 @@
                                 Id:
                             </td>
                             <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px;">
-                                @this.selectedNeuron.Neuron.Id
+                                @this.selectedNeuron.Neuron.Id <i class="fas fa-copy hover" @onclick="this.CopyId"></i>
                             </td>
                         </tr>
                         <tr>
@@ -37,7 +40,7 @@
                                 URL:
                             </td>
                             <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px; max-width: 200px; word-break: break-all;">
-                                @this.selectedNeuron.Neuron.Url
+                                @this.selectedNeuron.Neuron.Url <i class="fas fa-copy hover" @onclick="this.CopyUrl"></i>
                             </td>
                         </tr>
                         <tr>
@@ -238,4 +241,16 @@
 
     [Parameter]
     public EventCallback<TreeNeuronViewModel> SelectedNeuronChanged { get; set; }
+
+    private void CopyId()
+    {
+        jsRuntime.InvokeVoidAsync("copyToClipboard", this.selectedNeuron.Neuron.Id);
+        this.toastService.ShowInfo($"Copied successfully.");
+    }
+
+    private void CopyUrl()
+    {
+        jsRuntime.InvokeVoidAsync("copyToClipboard", this.selectedNeuron.Neuron.Url);
+        this.toastService.ShowInfo($"Copied successfully.");
+    }
 }
