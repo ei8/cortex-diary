@@ -796,7 +796,7 @@
         }
     }
 
-    private Dictionary<string, object> GetSynapticSymbolSpan(Neuron child)
+    private Dictionary<string, object> GetEffectStyle(Neuron child)
     {
         var dict = new Dictionary<string, object>();
         if (child.Terminal.Effect == "-1")
@@ -815,22 +815,22 @@
             {
                 if (itemContext.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
                 {
-                    return retFragment = @<span @attributes="this.GetSynapticSymbolSpan(itemContext.Neuron)">&#x21FE;</span>;
+                    return retFragment = @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x21FE;</span>;
                 }
                 else
                 {
-                    return retFragment = @<span @attributes="this.GetSynapticSymbolSpan(itemContext.Neuron)">&#x21FD;</span>;
+                    return retFragment = @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x21FD;</span>;
                 }
             }
             else
             {
                 if (itemContext.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
                 {
-                    return retFragment = @<span @attributes="this.GetSynapticSymbolSpan(itemContext.Neuron)">&#x290F;</span>;
+                    return retFragment = @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x290F;</span>;
                 }
                 else
                 {
-                    return retFragment = @<span @attributes="this.GetSynapticSymbolSpan(itemContext.Neuron)">&#x290E;</span>;
+                    return retFragment = @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x290E;</span>;
                 }
             }
         }
