@@ -58,8 +58,11 @@
                                 <ItemTemplate Context="itemContext">
                                     <ConditionalDisplay Show="@true">
                                         <li style="list-style:none" @key="@itemContext.Id">
-                                            <input type="radio" id="@itemContext.Id" checked="@(this.EditTerminal != null && this.EditTerminal.Id == itemContext.Id)" @onchange="@(() => { this.EditTerminal = itemContext; })" />
-                                            <label for="@itemContext.NeuronTag">@(!string.IsNullOrEmpty(itemContext.NeuronTag) ? itemContext.NeuronTag : " ")</label>
+                                            <div class="row">
+                                                <input type="radio" id="@itemContext.Id" checked="@(this.EditTerminal != null && this.EditTerminal.Id == itemContext.Id)" @onchange="@(() => { this.EditTerminal = itemContext; })" />
+                                                <BarIcon Class="px-1" IconName="this.GetSynapticIcons(itemContext)" />
+                                                <label for="@itemContext.NeuronTag">@(!string.IsNullOrEmpty(itemContext.NeuronTag) ? itemContext.NeuronTag : " ")</label>
+                                            </div>
                                         </li>
                                     </ConditionalDisplay>
                                 </ItemTemplate>
@@ -791,5 +794,47 @@
                 this.editorNeuronViewModel
                 );
         }
+    }
+
+    private Dictionary<string, object> GetEffectStyle(Neuron child)
+    {
+        var dict = new Dictionary<string, object>();
+        if (child.Terminal.Effect == "-1")
+            dict.Add("style", "color:red");
+        return dict;
+
+    }
+
+    private RenderFragment GetSynapticIcons(EditorTerminalViewModel itemContext)
+    {
+        RenderFragment retFragment = null;
+
+        if (itemContext.Neuron.Type != Library.Common.RelativeType.NotSet)
+        {
+            if (itemContext.Neuron.Terminal.Strength == "1")
+            {
+                if (itemContext.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
+                {
+                    return retFragment = @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x21FE;</span>;
+                }
+                else
+                {
+                    return retFragment = @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x21FD;</span>;
+                }
+            }
+            else
+            {
+                if (itemContext.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
+                {
+                    return retFragment = @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x290F;</span>;
+                }
+                else
+                {
+                    return retFragment = @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x290E;</span>;
+                }
+            }
+        }
+
+        return retFragment;
     }
 }
