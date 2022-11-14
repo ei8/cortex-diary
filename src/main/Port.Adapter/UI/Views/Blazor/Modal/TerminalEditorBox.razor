@@ -8,7 +8,7 @@
 @using Blazored.FluentValidation
 @using neurUL.Cortex.Common;
 @inject INeuronQueryService NeuronQueryService;
-
+<AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />
 @if (this.IsVisible)
 {
     <div class="modal" tabindex="-1" style="display:block" role="dialog">
@@ -29,6 +29,7 @@
                             </div>
                             <div class="col p-0">
                                 <input class="form-control form-control-sm ml-1" placeholder="Avatar URL" @bind="AvatarUrl" />
+                                <button style="position: absolute; right: 0.0rem; bottom:0.2rem;  height:1.6rem; border:0; border-radius:2px; background-color:white;   margin: 0;  " @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
                             </div>
                         </div>
                         <div class="row pt-2">
@@ -118,6 +119,7 @@
 
     [Parameter]
     public string AvatarUrl { get; set; }
+    private bool IsAvatarUrlVisible { get; set; } = false;
 
     private NeuronResultItemViewModel[] Children { get; set; } = new NeuronResultItemViewModel[0];
 
@@ -238,5 +240,10 @@
     private void OnSearchExternalReferenceTerminal()
     {
         this.IsSearchExternalReferenceTerminalVisible = true;
+    }
+
+    private void ShowAvatarEditorBox()
+    {
+        this.IsAvatarUrlVisible = true;
     }
 }
