@@ -513,17 +513,7 @@ a[title]:hover::after {
         #checkboxes label:hover {
             background-color: #1e90ff;
         }
-.EditorUrl1 {
-    position: absolute;
-    right: 6.2rem;
-    bottom: 0.99rem;
-    height: 1.6rem;
-    border: 0;
-    border-radius: 2px;
-    background-color: white;
-    margin: 0;
-}
-.EditorUrl2 {
+.EditorUrl {
     position: absolute;
     right: 0.0rem;
     bottom: 0.2rem;

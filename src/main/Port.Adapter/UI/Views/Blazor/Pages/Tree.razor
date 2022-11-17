@@ -55,8 +55,10 @@
                 <Badge Pill="true" Color="Color.Danger" style="top:-35px;left:8px;height:14px;font-size:0.6em">@(this.NewItemsCount)</Badge>
             }
         </button>
-        <input class="form-control form-control-sm ml-1 rounded " style="padding-right:33px" id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" @onkeyup="@this.OnKeyPress" />
-        <button class="EditorUrl1" @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
+        <div class="col p-0">
+            <input class="form-control form-control-sm ml-1 rounded " style="padding-right:33px" id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" @onkeyup="@this.OnKeyPress" />
+            <button class="EditorUrl" @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
+        </div>
         <button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
             <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
         </button>
