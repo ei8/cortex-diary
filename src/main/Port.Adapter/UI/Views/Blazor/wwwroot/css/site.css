@@ -510,6 +510,20 @@ a[title]:hover::after {
     display: block;
 }
 
-        #checkboxes label:hover {
-            background-color: #1e90ff;
-        }
+    #checkboxes label:hover {
+        background-color: #1e90ff;
+    }
+
+.inputEditor {
+    padding-right: 33px!important;
+}
+.inputEditorButton {
+    position: absolute;
+    right: 0.0rem;
+    bottom: 0.2rem;
+    height: 1.6rem;
+    border: 0;
+    border-radius: 2px;
+    background-color: white;
+    margin: 0;
+}
