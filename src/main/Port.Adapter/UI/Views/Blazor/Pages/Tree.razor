@@ -56,8 +56,8 @@
             }
         </button>
         <div class="col p-0">
-            <input class="form-control form-control-sm ml-1 rounded " style="padding-right:33px" id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" @onkeyup="@this.OnKeyPress" />
-            <button class="EditorUrl" @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
+            <input class="form-control form-control-sm ml-1 rounded inputEditor" id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" @onkeyup="@this.OnKeyPress" />
+            <button class="inputEditorButton" @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
         </div>
         <button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
             <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
@@ -77,14 +77,14 @@
                         Subscribe
                     </DropdownToggle>
                     <DropdownMenu>
-				        <DropdownItem @onclick="this.SubscribeWithBrowser">
-					        <Blazorise.Icon Name="FontAwesomeIcons.Rocket" Class="px-2" />
-					        Web Push
-				        </DropdownItem>
+                        <DropdownItem @onclick="this.SubscribeWithBrowser">
+                            <Blazorise.Icon Name="FontAwesomeIcons.Rocket" Class="px-2" />
+                            Web Push
+                        </DropdownItem>
                         <DropdownItem @onclick="this.SubscribeWithEmail">
-					        <Blazorise.Icon Name="FontAwesomeIcons.Envelope" Class="px-2" />
-					        E-mail
-				        </DropdownItem>
+                            <Blazorise.Icon Name="FontAwesomeIcons.Envelope" Class="px-2" />
+                            E-mail
+                        </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>
                 <DropdownItem @onclick="this.ToggleRenderDirection">

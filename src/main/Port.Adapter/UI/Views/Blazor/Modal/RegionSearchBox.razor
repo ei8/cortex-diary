@@ -6,6 +6,7 @@
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @inject INeuronQueryService NeuronQueryService;
 
+<AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />
 @if (this.IsVisible)
 {
     <div class="modal" tabindex="-1" style="display:block" role="dialog">
@@ -25,7 +26,8 @@
                                 <button class="btn btn-secondary btn-sm" @onclick="this.Load">Reload</button>
                             </div>
                             <div class="col p-0">
-                                <input class="form-control form-control-sm ml-1" placeholder="Avatar URL" @bind="AvatarUrl" />
+                                <input class="form-control form-control-sm ml-1 inputEditor" placeholder="Avatar URL" @bind="AvatarUrl" />
+                                <button class="inputEditorButton" @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
                             </div>
                         </div>
                         <div class="row pt-2">
@@ -65,6 +67,8 @@
 
     [Parameter]
     public string AvatarUrl { get; set; }
+
+    private bool IsAvatarUrlVisible { get; set; } = false;
 
     private NeuronResultItemViewModel[] Children { get; set; } = new NeuronResultItemViewModel[0];
 
@@ -137,5 +141,10 @@
         var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Items;
         ns.ToList().ForEach(n => children.Add(new NeuronResultItemViewModel(new Neuron(n))));
         this.Children = children.ToArray();
+    }
+
+    private void ShowAvatarEditorBox()
+    {
+        this.IsAvatarUrlVisible = true;
     }
 }

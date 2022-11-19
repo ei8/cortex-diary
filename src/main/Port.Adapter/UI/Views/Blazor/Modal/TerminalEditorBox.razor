@@ -8,6 +8,7 @@
 @using Blazored.FluentValidation
 @using neurUL.Cortex.Common;
 @inject INeuronQueryService NeuronQueryService;
+
 <AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />
 @if (this.IsVisible)
 {
@@ -28,8 +29,8 @@
                                 <button class="btn btn-primary btn-sm" @onclick="this.Load">Reload</button>
                             </div>
                             <div class="col p-0">
-                                <input class="form-control form-control-sm ml-1" placeholder="Avatar URL" @bind="AvatarUrl" />
-                                <button class="EditorUrl" @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
+                                <input class="form-control form-control-sm ml-1 inputEditor" placeholder="Avatar URL" @bind="AvatarUrl" />
+                                <button class="inputEditorButton" @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
                             </div>
                         </div>
                         <div class="row pt-2">
