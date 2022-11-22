@@ -1,0 +1,53 @@
+﻿@using ei8.Cortex.Diary.Domain.Model
+@using ei8.Cortex.Diary.Application.Settings
+@using ei8.Cortex.Diary.Application
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
+
+@inject ITokenProvider tokenProvider
+@inject IEnumerable<View> views
+@inject NavigationManager navigationManager
+@inject ISettingsService settingsService
+
+<BarDropdown Visible=@(this.views.Any(pi => pi.ParentUrl == this.ActiveView.Url && pi.Url == this.navigationManager.Uri))>
+    <BarDropdownToggle>
+        <BarIcon IconName="MainMenu(this.ParentView.Icon)" />
+        @this.ParentView.Name
+    </BarDropdownToggle>
+    <BarDropdownMenu>
+        @foreach (var v3 in this.views.Where(vi => vi.ParentUrl == this.ParentView.Url))
+        {
+            @if (this.views.Any(pi => pi.ParentUrl == v3.Url))
+            {
+                <ParentBarLink ActiveView="@this.ActiveView" ParentView="@v3" />
+            }
+            else
+            {
+                <BarDropdownItem Class=@(this.GetBarActiveClassValue(v3)) Clicked="() => this.Navigate(v3.Url)">
+                    <BarIcon IconName="MainMenu(v3.Icon)" />
+                    @v3.Name
+                </BarDropdownItem>
+            }
+        }
+    </BarDropdownMenu>
+</BarDropdown>
+
+@code {
+
+    [Parameter] public View ActiveView { set; get; }
+    [Parameter] public View ParentView { set; get; }
+
+    private void Navigate(string url)
+    {
+        this.navigationManager.NavigateTo(url, true);
+    }
+
+    private RenderFragment MainMenu(string iconName)
+    {
+        RenderFragment retFragment = null;
+        retFragment = @<span class="oi @iconName" aria-hidden="true"></span>;
+        return retFragment;
+    }
+
+    private string GetBarActiveClassValue(View value) =>
+       value.Url == this.navigationManager.Uri ? "bar-active hover" : "hover";
+}
