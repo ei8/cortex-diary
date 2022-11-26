@@ -8,7 +8,7 @@
 @inject NavigationManager navigationManager
 @inject ISettingsService settingsService
 
-<BarDropdown Visible=@(this.views.Any(pi => pi.ParentUrl == this.ActiveView.Url && pi.Url == this.navigationManager.Uri))>
+<BarDropdown>
     <BarDropdownToggle>
         <BarIcon IconName="MainMenu(this.ParentView.Icon)" />
         @this.ParentView.Name
