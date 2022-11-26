@@ -65,6 +65,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdLoginCallback = "login_callback";
         private const string IdLogoutCallback = "logout_callback";
         private const string IdApplicationUrl = "application_url";
+        private const string IdTitle = "title";
 
         private readonly bool UseMocksDefault = true;
         private readonly bool UseFakeLocationDefault = false;
@@ -77,6 +78,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
         private readonly string DatabasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.DatabasePath);
         private readonly string BasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.BasePath);
+        private readonly string TitleDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.Title);
         private readonly bool ValidateServerCertificateDefault = 
             bool.TryParse(Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ValidateServerCertificate), out bool result) ? 
                 result : 
@@ -145,6 +147,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             set => AppSettings.AddOrUpdateValue(IdBasePath, value);
         }
 
+        public string Title
+        {
+            get => AppSettings.GetValueOrDefault(IdTitle, TitleDefault);
+            set => AppSettings.AddOrUpdateValue(IdTitle, value);
+        }
+
         public bool ValidateServerCertificate
         {
             get => AppSettings.GetValueOrDefault(IdValidateServerCertificate, ValidateServerCertificateDefault);
@@ -204,6 +212,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             this.AppSettings.Remove(IdLoginCallback);
             this.AppSettings.Remove(IdApplicationUrl);
             this.AppSettings.Remove(IdLogoutCallback);
+        }
+
+        void ISettingsService.Clear()
+        {
+            throw new NotImplementedException();
         }
     }
 }

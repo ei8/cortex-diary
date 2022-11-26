@@ -17,7 +17,7 @@
         <BarItem>
             <BarLink To="">
                 <BarIcon IconName="brandLogo" />
-                @this.title
+                @(string.IsNullOrEmpty(settingsService.Title) ? " neurUL <# " : settingsService.Title)
             </BarLink>
         </BarItem>
     </BarBrand>
@@ -117,8 +117,7 @@
         retFragment =@<span class="oi @iconName" aria-hidden="true"></span>;
         return retFragment;
     }
-
-    private string title = string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableKeys.Title)) ? " neurUL <# " : Environment.GetEnvironmentVariable(EnvironmentVariableKeys.Title);
+ //string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableKeys.Title)) ? " neurUL <# " : Environment.GetEnvironmentVariable(EnvironmentVariableKeys.Title);
     private string GetBarActiveClassValue(View value) => 
         value.Url == this.navigationManager.Uri ? "bar-active hover" : "hover";
 
