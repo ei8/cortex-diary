@@ -55,8 +55,10 @@
                 <Badge Pill="true" Color="Color.Danger" style="top:-35px;left:8px;height:14px;font-size:0.6em">@(this.NewItemsCount)</Badge>
             }
         </button>
-        <input class="form-control form-control-sm ml-1 rounded " style="padding-right:33px" id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" @onkeyup="@this.OnKeyPress" />
-        <button style="position: absolute; right: 6.2rem; bottom:0.99rem;  height:1.6rem; border:0; border-radius:2px; background-color:white;   margin: 0;  " @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
+        <div class="col p-0">
+            <input class="form-control form-control-sm ml-1 rounded inputEditor" id="AvatarUrl" placeholder="Avatar URL" @bind="AvatarUrl" @onkeyup="@this.OnKeyPress" />
+            <button class="inputEditorButton" @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
+        </div>
         <button class="btn btn-light btn-sm rounded-circle ml-1" @onclick="this.LoadGraph" style="height:32px; width:32px" title="Load Graph">
             <Blazorise.Icon Name="FontAwesomeIcons.CodeBranch" />
         </button>
@@ -75,14 +77,14 @@
                         Subscribe
                     </DropdownToggle>
                     <DropdownMenu>
-				        <DropdownItem @onclick="this.SubscribeWithBrowser">
-					        <Blazorise.Icon Name="FontAwesomeIcons.Rocket" Class="px-2" />
-					        Web Push
-				        </DropdownItem>
+                        <DropdownItem @onclick="this.SubscribeWithBrowser">
+                            <Blazorise.Icon Name="FontAwesomeIcons.Rocket" Class="px-2" />
+                            Web Push
+                        </DropdownItem>
                         <DropdownItem @onclick="this.SubscribeWithEmail">
-					        <Blazorise.Icon Name="FontAwesomeIcons.Envelope" Class="px-2" />
-					        E-mail
-				        </DropdownItem>
+                            <Blazorise.Icon Name="FontAwesomeIcons.Envelope" Class="px-2" />
+                            E-mail
+                        </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>
                 <DropdownItem @onclick="this.ToggleRenderDirection">

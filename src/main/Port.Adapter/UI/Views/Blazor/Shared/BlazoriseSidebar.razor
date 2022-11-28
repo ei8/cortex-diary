@@ -2,6 +2,7 @@
 @using ei8.Cortex.Diary.Application.Settings
 @using ei8.Cortex.Diary.Application
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
+@using ei8.Cortex.Diary.Port.Adapter.Common;
 
 @inject ITokenProvider tokenProvider
 @inject IEnumerable<View> views
@@ -16,7 +17,7 @@
         <BarItem>
             <BarLink To="">
                 <BarIcon IconName="brandLogo" />
-                neurUL &lt;#
+                @(string.IsNullOrEmpty(settingsService.Title) ? " neurUL <# " : settingsService.Title)
             </BarLink>
         </BarItem>
     </BarBrand>
@@ -30,7 +31,7 @@
                     {
                         <BarDropdown Visible=@(this.views.Any(vi => vi.ParentUrl == v1.Url && vi.Url == this.navigationManager.Uri))>
                             <BarDropdownToggle>
-                                <BarIcon IconName="MainMenu(v1.Icon)" />
+                                <BarIcon IconName="this.GenerateIconName(v1.Icon)" />
                                 @v1.Name
                             </BarDropdownToggle>
                             <BarDropdownMenu>
@@ -43,7 +44,7 @@
                                     else
                                     {
                                         <BarDropdownItem Class=@(this.GetBarActiveClassValue(v2)) Clicked="() => this.Navigate(v2.Url)">
-                                            <BarIcon IconName="MainMenu(v2.Icon)" />
+                                            <BarIcon IconName="GenerateIconName(v2.Icon)" />
                                             @v2.Name
                                         </BarDropdownItem>
                                     }
@@ -54,7 +55,7 @@
                     else
                     {
                         <BarLink Clicked="() => this.Navigate(v1.Url)">
-                            <BarIcon IconName="MainMenu(v1.Icon)" />
+                            <BarIcon IconName="GenerateIconName(v1.Icon)" />
                             @v1.Name
                         </BarLink>
                     }
@@ -110,27 +111,23 @@
     </BarMenu>
 </Bar>
 
-@code {
+@code
+{
     private void Navigate(string url)
     {
         this.navigationManager.NavigateTo(url, true);
     }
 
-    private RenderFragment MainMenu(string iconName)
-    {
-        RenderFragment retFragment = null;
-        retFragment = @<span class="oi @iconName" aria-hidden="true"></span>;
-        return retFragment;
-    }
+    private RenderFragment GenerateIconName(string iconName) =>
+        @<span class="oi @iconName" aria-hidden="true"></span>;
 
-    private string GetBarActiveClassValue(View value) => 
+    private string GetBarActiveClassValue(View value) =>
         value.Url == this.navigationManager.Uri ? "bar-active hover" : "hover";
 
     [Parameter]
     public NavBarType NavBarType { get; set; }
 
-    RenderFragment brandLogo =
-    @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
-    RenderFragment signIn =@<span class="oi oi-account-login" aria-hidden="true"></span>;
-    RenderFragment signOut =@<span class="oi oi-account-logout" aria-hidden="true"></span>;
+    RenderFragment brandLogo = @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
+    RenderFragment signIn = @<span class="oi oi-account-login" aria-hidden="true"></span>;
+    RenderFragment signOut = @<span class="oi oi-account-logout" aria-hidden="true"></span>;
 }
