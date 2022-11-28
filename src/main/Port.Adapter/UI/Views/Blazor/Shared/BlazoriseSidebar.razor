@@ -2,6 +2,7 @@
 @using ei8.Cortex.Diary.Application.Settings
 @using ei8.Cortex.Diary.Application
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
+@using ei8.Cortex.Diary.Port.Adapter.Common;
 
 @inject ITokenProvider tokenProvider
 @inject IEnumerable<View> views
@@ -16,7 +17,7 @@
         <BarItem>
             <BarLink To="">
                 <BarIcon IconName="brandLogo" />
-                neurUL &lt;#
+                @(string.IsNullOrEmpty(settingsService.Title) ? " neurUL <# " : settingsService.Title)
             </BarLink>
         </BarItem>
     </BarBrand>
@@ -103,7 +104,8 @@
     </BarMenu>
 </Bar>
 
-@code {
+@code
+{
     private void Navigate(string url)
     {
         this.navigationManager.NavigateTo(url, true);
@@ -112,7 +114,7 @@
     private RenderFragment MainMenu(string iconName)
     {
         RenderFragment retFragment = null;
-        retFragment = @<span class="oi @iconName" aria-hidden="true"></span>;
+        retFragment =@<span class="oi @iconName" aria-hidden="true"></span>;
         return retFragment;
     }
 
@@ -122,8 +124,7 @@
     [Parameter]
     public NavBarType NavBarType { get; set; }
 
-    RenderFragment brandLogo =
-    @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
+    RenderFragment brandLogo = @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
     RenderFragment signIn =@<span class="oi oi-account-login" aria-hidden="true"></span>;
     RenderFragment signOut =@<span class="oi oi-account-logout" aria-hidden="true"></span>;
 }

@@ -45,7 +45,8 @@ namespace ei8.Cortex.Diary.Application.Settings
         bool ValidateServerCertificate { get; set; }
         string LoginCallback { get; set; }
         string LogoutCallback { get; set; }
-        string ApplicationUrl { get; set; }       
+        string ApplicationUrl { get; set; }
+        string Title { get; set; }
 
         void Clear();
     }
