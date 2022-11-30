@@ -65,7 +65,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdLoginCallback = "login_callback";
         private const string IdLogoutCallback = "logout_callback";
         private const string IdApplicationUrl = "application_url";
-        private const string IdTitle = "title";
+        private const string IdTitle = "APP_TITLE";
+        private const string IdAPP_ICON = "APP_ICON";
 
         private readonly bool UseMocksDefault = true;
         private readonly bool UseFakeLocationDefault = false;
@@ -78,7 +79,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
         private readonly string DatabasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.DatabasePath);
         private readonly string BasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.BasePath);
-        private readonly string TitleDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.Title);
+        private readonly string TitleDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.APP_TITLE);
+        private readonly string APP_ICONDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.APP_ICON);
+        
         private readonly bool ValidateServerCertificateDefault = 
             bool.TryParse(Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ValidateServerCertificate), out bool result) ? 
                 result : 
@@ -147,12 +150,16 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             set => AppSettings.AddOrUpdateValue(IdBasePath, value);
         }
 
-        public string Title
+        public string APP_TITLE
         {
             get => AppSettings.GetValueOrDefault(IdTitle, TitleDefault);
             set => AppSettings.AddOrUpdateValue(IdTitle, value);
         }
-
+        public string APP_ICON
+        {
+            get => AppSettings.GetValueOrDefault(IdAPP_ICON, APP_ICONDefault);
+            set => AppSettings.AddOrUpdateValue(IdAPP_ICON, value);
+        }
         public bool ValidateServerCertificate
         {
             get => AppSettings.GetValueOrDefault(IdValidateServerCertificate, ValidateServerCertificateDefault);
