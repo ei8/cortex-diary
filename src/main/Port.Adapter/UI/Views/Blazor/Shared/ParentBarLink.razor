@@ -1,0 +1,45 @@
+﻿@using ei8.Cortex.Diary.Domain.Model
+@using ei8.Cortex.Diary.Application.Settings
+@using ei8.Cortex.Diary.Application
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
+
+@inject ITokenProvider tokenProvider
+@inject IEnumerable<View> views
+@inject NavigationManager navigationManager
+@inject ISettingsService settingsService
+
+<BarDropdown Visible=@this.CurrentView.HasActiveChild(views, this.navigationManager.Uri)>
+    <BarDropdownToggle>
+        <BarIcon IconName="this.CurrentView.GenerateIconName()" />
+        @this.CurrentView.Name
+    </BarDropdownToggle>
+    <BarDropdownMenu>
+        @foreach (var v in this.views.Where(vi => vi.ParentUrl == this.CurrentView.Url))
+        {
+            @if (this.views.Any(pi => pi.ParentUrl == v.Url))
+            {
+                <ParentBarLink CurrentView="@v" />
+            }
+            else
+            {
+                <BarDropdownItem Class=@(this.GetBarActiveClassValue(v)) Clicked="() => this.Navigate(v.Url)">
+                    <BarIcon IconName="v.GenerateIconName()" />
+                    @v.Name
+                </BarDropdownItem>
+            }
+        }
+    </BarDropdownMenu>
+</BarDropdown>
+
+@code {
+
+    [Parameter] public View CurrentView { set; get; }
+
+    private void Navigate(string url)
+    {
+        this.navigationManager.NavigateTo(url, true);
+    }
+
+    private string GetBarActiveClassValue(View value) =>
+       value.Url == this.navigationManager.Uri ? "bar-active hover" : "hover";
+}
