@@ -8,23 +8,23 @@
 @inject NavigationManager navigationManager
 @inject ISettingsService settingsService
 
-<BarDropdown>
+<BarDropdown Visible=@this.CurrentView.HasActiveChild(views, this.navigationManager.Uri)>
     <BarDropdownToggle>
-        <BarIcon IconName="MainMenu(this.ParentView.Icon)" />
-        @this.ParentView.Name
+        <BarIcon IconName="this.CurrentView.GenerateIconName()" />
+        @this.CurrentView.Name
     </BarDropdownToggle>
     <BarDropdownMenu>
-        @foreach (var v3 in this.views.Where(vi => vi.ParentUrl == this.ParentView.Url))
+        @foreach (var v in this.views.Where(vi => vi.ParentUrl == this.CurrentView.Url))
         {
-            @if (this.views.Any(pi => pi.ParentUrl == v3.Url))
+            @if (this.views.Any(pi => pi.ParentUrl == v.Url))
             {
-                <ParentBarLink ActiveView="@this.ActiveView" ParentView="@v3" />
+                <ParentBarLink CurrentView="@v" />
             }
             else
             {
-                <BarDropdownItem Class=@(this.GetBarActiveClassValue(v3)) Clicked="() => this.Navigate(v3.Url)">
-                    <BarIcon IconName="MainMenu(v3.Icon)" />
-                    @v3.Name
+                <BarDropdownItem Class=@(this.GetBarActiveClassValue(v)) Clicked="() => this.Navigate(v.Url)">
+                    <BarIcon IconName="v.GenerateIconName()" />
+                    @v.Name
                 </BarDropdownItem>
             }
         }
@@ -33,19 +33,11 @@
 
 @code {
 
-    [Parameter] public View ActiveView { set; get; }
-    [Parameter] public View ParentView { set; get; }
+    [Parameter] public View CurrentView { set; get; }
 
     private void Navigate(string url)
     {
         this.navigationManager.NavigateTo(url, true);
-    }
-
-    private RenderFragment MainMenu(string iconName)
-    {
-        RenderFragment retFragment = null;
-        retFragment = @<span class="oi @iconName" aria-hidden="true"></span>;
-        return retFragment;
     }
 
     private string GetBarActiveClassValue(View value) =>
