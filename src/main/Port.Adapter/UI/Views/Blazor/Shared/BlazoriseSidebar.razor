@@ -16,8 +16,8 @@
     <BarBrand>
         <BarItem>
             <BarLink To="">
-                <BarIcon IconName="brandLogo" />
-                @(string.IsNullOrEmpty(settingsService.Title) ? " neurUL <# " : settingsService.Title)
+                <BarIcon IconName="BrandLogo(settingsService.APP_ICON)" />
+                @(string.IsNullOrEmpty(settingsService.APP_TITLE) ? " neurUL <# " : settingsService.APP_TITLE)
             </BarLink>
         </BarItem>
     </BarBrand>
@@ -114,13 +114,24 @@
     private RenderFragment GenerateIconName(string iconName) =>
         @<span class="oi @iconName" aria-hidden="true"></span>;
 
+    private RenderFragment BrandLogo(string url)
+    {
+        if (string.IsNullOrEmpty(url)) 
+        {
+            return @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
+        }
+        else 
+        {
+            return @<img src="@url" alt="Home" style="width:30px; height:30px">;
+        }
+    }
+
     private string GetBarActiveClassValue(View value) =>
         value.Url == this.navigationManager.Uri ? "bar-active hover" : "hover";
 
     [Parameter]
     public NavBarType NavBarType { get; set; }
 
-    RenderFragment brandLogo = @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
     RenderFragment signIn = @<span class="oi oi-account-login" aria-hidden="true"></span>;
     RenderFragment signOut = @<span class="oi oi-account-logout" aria-hidden="true"></span>;
 }

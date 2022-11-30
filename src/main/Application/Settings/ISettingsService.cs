@@ -46,7 +46,8 @@ namespace ei8.Cortex.Diary.Application.Settings
         string LoginCallback { get; set; }
         string LogoutCallback { get; set; }
         string ApplicationUrl { get; set; }
-        string Title { get; set; }
+        string APP_TITLE { get; set; }
+        string APP_ICON { get; set; }
 
         void Clear();
     }
