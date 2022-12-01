@@ -24,32 +24,18 @@
     <BarToggler />
     <BarMenu Class="@(this.NavBarType == NavBarType.Top ? "m-2" : string.Empty)">
         <BarStart>
-            @foreach (var v1 in this.views.Where(vi => string.IsNullOrWhiteSpace(vi.ParentUrl)))
+            @foreach (var v in this.views.Where(vi => string.IsNullOrWhiteSpace(vi.ParentUrl)))
             {
-                <BarItem Class=@(this.GetBarActiveClassValue(v1))>
-                    @if (this.views.Any(vi => vi.ParentUrl == v1.Url))
+                <BarItem Class=@(this.GetBarActiveClassValue(v))>
+                    @if (this.views.Any(vi => vi.ParentUrl == v.Url))
                     {
-                        <BarDropdown Visible=@(this.views.Any(vi => vi.ParentUrl == v1.Url && vi.Url == this.navigationManager.Uri))>
-                            <BarDropdownToggle>
-                                <BarIcon IconName="this.GenerateIconName(v1.Icon)" />
-                                @v1.Name
-                            </BarDropdownToggle>
-                            <BarDropdownMenu>
-                                @foreach (var v2 in this.views.Where(vi => vi.ParentUrl == v1.Url))
-                                {
-                                    <BarDropdownItem Class=@(this.GetBarActiveClassValue(v2)) Clicked="() => this.Navigate(v2.Url)">
-                                        <BarIcon IconName="GenerateIconName(v2.Icon)" />
-                                        @v2.Name
-                                    </BarDropdownItem>
-                                }
-                            </BarDropdownMenu>
-                        </BarDropdown>
+                        <ParentBarLink CurrentView="@v"/>
                     }
                     else
                     {
-                        <BarLink Clicked="() => this.Navigate(v1.Url)">
-                            <BarIcon IconName="GenerateIconName(v1.Icon)" />
-                            @v1.Name
+                        <BarLink Clicked="() => this.Navigate(v.Url)">
+                            <BarIcon IconName="v.GenerateIconName()" />
+                            @v.Name
                         </BarLink>
                     }
                 </BarItem>
@@ -110,9 +96,6 @@
     {
         this.navigationManager.NavigateTo(url, true);
     }
-
-    private RenderFragment GenerateIconName(string iconName) =>
-        @<span class="oi @iconName" aria-hidden="true"></span>;
 
     private RenderFragment BrandLogo(string url)
     {
