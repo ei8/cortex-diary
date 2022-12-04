@@ -65,8 +65,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdLoginCallback = "login_callback";
         private const string IdLogoutCallback = "logout_callback";
         private const string IdApplicationUrl = "application_url";
-        private const string IdAppTitle = "APP_TITLE";
-        private const string IdAppIcon = "APP_ICON";
+        private const string IdAppTitle = "app_title";
+        private const string IdAppIcon = "app_icon";
 
         private readonly bool UseMocksDefault = true;
         private readonly bool UseFakeLocationDefault = false;
