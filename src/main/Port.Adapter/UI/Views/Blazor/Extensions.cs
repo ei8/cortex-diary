@@ -31,5 +31,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 
         public static RenderFragment GenerateIconName(this View value) =>
             new RenderFragment(b => b.AddMarkupContent(0, $"<span class=\"oi {value.Icon}\" aria-hidden=\"true\"></span>"));
+
+        public static string GenerateBarActiveClass(this View value, NavigationManager navigationManager) =>
+            value.Url == navigationManager.Uri ? "active hover" : "hover";
+
+        public static void Navigate(this View value, NavigationManager navigationManager) =>
+            navigationManager.NavigateTo(value.Url, true);
     }
 }

@@ -16,24 +16,24 @@
     <BarBrand>
         <BarItem>
             <BarLink To="">
-                <BarIcon IconName="BrandLogo(settingsService.APP_ICON)" />
-                @(string.IsNullOrEmpty(settingsService.APP_TITLE) ? " neurUL <# " : settingsService.APP_TITLE)
+                <BarIcon Class="mt-0 ml-0" IconName="this.GenerateBrandLogo(settingsService.AppIcon)" />
+                @(string.IsNullOrEmpty(settingsService.AppTitle) ? " neurUL <# " : settingsService.AppTitle)
             </BarLink>
         </BarItem>
     </BarBrand>
-    <BarToggler />
+    <BarToggler Class="pt-2"/>
     <BarMenu Class="@(this.NavBarType == NavBarType.Top ? "m-2" : string.Empty)">
         <BarStart>
             @foreach (var v in this.views.Where(vi => string.IsNullOrWhiteSpace(vi.ParentUrl)))
             {
-                <BarItem Class=@(this.GetBarActiveClassValue(v))>
+                <BarItem>
                     @if (this.views.Any(vi => vi.ParentUrl == v.Url))
                     {
                         <ParentBarLink CurrentView="@v"/>
                     }
                     else
                     {
-                        <BarLink Clicked="() => this.Navigate(v.Url)">
+                        <BarLink Class=@(v.GenerateBarActiveClass(this.navigationManager)) Clicked="() => v.Navigate(this.navigationManager)">
                             <BarIcon IconName="v.GenerateIconName()" />
                             @v.Name
                         </BarLink>
@@ -92,12 +92,7 @@
 
 @code
 {
-    private void Navigate(string url)
-    {
-        this.navigationManager.NavigateTo(url, true);
-    }
-
-    private RenderFragment BrandLogo(string url)
+    private RenderFragment GenerateBrandLogo(string url)
     {
         if (string.IsNullOrEmpty(url)) 
         {
@@ -108,9 +103,6 @@
             return @<img src="@url" alt="Home" style="width:30px; height:30px">;
         }
     }
-
-    private string GetBarActiveClassValue(View value) =>
-        value.Url == this.navigationManager.Uri ? "bar-active hover" : "hover";
 
     [Parameter]
     public NavBarType NavBarType { get; set; }
