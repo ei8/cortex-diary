@@ -8,7 +8,7 @@
 @inject NavigationManager navigationManager
 @inject ISettingsService settingsService
 
-<BarDropdown Visible=@this.CurrentView.HasActiveChild(views, this.navigationManager.Uri)>
+<BarDropdown @bind-Visible="@this.dropdownVisible">
     <BarDropdownToggle>
         <BarIcon IconName="this.CurrentView.GenerateIconName()" />
         @this.CurrentView.Name
@@ -22,7 +22,7 @@
             }
             else
             {
-                <BarDropdownItem Class=@(this.GetBarActiveClassValue(v)) Clicked="() => this.Navigate(v.Url)">
+                <BarDropdownItem Class=@(v.GenerateBarActiveClass(this.navigationManager)) Clicked="() => v.Navigate(this.navigationManager)">
                     <BarIcon IconName="v.GenerateIconName()" />
                     @v.Name
                 </BarDropdownItem>
@@ -32,14 +32,20 @@
 </BarDropdown>
 
 @code {
+    private bool dropdownVisible;
 
-    [Parameter] public View CurrentView { set; get; }
+    [Parameter] public View CurrentView { get; set; }
 
-    private void Navigate(string url)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        this.navigationManager.NavigateTo(url, true);
+        if (firstRender)
+        {
+            this.dropdownVisible = this.CurrentView.HasActiveChild(views, this.navigationManager.Uri);
+            if (this.dropdownVisible)
+                this.StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
-    private string GetBarActiveClassValue(View value) =>
-       value.Url == this.navigationManager.Uri ? "bar-active hover" : "hover";
 }

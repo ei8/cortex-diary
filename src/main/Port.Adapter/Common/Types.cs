@@ -21,6 +21,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.Common
         public const string DatabasePath = "DATABASE_PATH";
         public const string BasePath = "BASE_PATH";
         public const string ValidateServerCertificate = "VALIDATE_SERVER_CERTIFICATE";
-        public const string Title = "TITLE";
+        public const string AppTitle = "APP_TITLE";
+        public const string AppIcon = "APP_ICON";
     }
 }

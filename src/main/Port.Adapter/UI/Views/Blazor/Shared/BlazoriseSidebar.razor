@@ -16,24 +16,24 @@
     <BarBrand>
         <BarItem>
             <BarLink To="">
-                <BarIcon IconName="brandLogo" />
-                @(string.IsNullOrEmpty(settingsService.Title) ? " neurUL <# " : settingsService.Title)
+                <BarIcon Class="mt-0 ml-0" IconName="this.GenerateBrandLogo(settingsService.AppIcon)" />
+                @(string.IsNullOrEmpty(settingsService.AppTitle) ? " neurUL <# " : settingsService.AppTitle)
             </BarLink>
         </BarItem>
     </BarBrand>
-    <BarToggler />
+    <BarToggler Class="pt-2"/>
     <BarMenu Class="@(this.NavBarType == NavBarType.Top ? "m-2" : string.Empty)">
         <BarStart>
             @foreach (var v in this.views.Where(vi => string.IsNullOrWhiteSpace(vi.ParentUrl)))
             {
-                <BarItem Class=@(this.GetBarActiveClassValue(v))>
+                <BarItem>
                     @if (this.views.Any(vi => vi.ParentUrl == v.Url))
                     {
                         <ParentBarLink CurrentView="@v"/>
                     }
                     else
                     {
-                        <BarLink Clicked="() => this.Navigate(v.Url)">
+                        <BarLink Class=@(v.GenerateBarActiveClass(this.navigationManager)) Clicked="() => v.Navigate(this.navigationManager)">
                             <BarIcon IconName="v.GenerateIconName()" />
                             @v.Name
                         </BarLink>
@@ -92,18 +92,21 @@
 
 @code
 {
-    private void Navigate(string url)
+    private RenderFragment GenerateBrandLogo(string url)
     {
-        this.navigationManager.NavigateTo(url, true);
+        if (string.IsNullOrEmpty(url)) 
+        {
+            return @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
+        }
+        else 
+        {
+            return @<img src="@url" alt="Home" style="width:30px; height:30px">;
+        }
     }
-
-    private string GetBarActiveClassValue(View value) =>
-        value.Url == this.navigationManager.Uri ? "bar-active hover" : "hover";
 
     [Parameter]
     public NavBarType NavBarType { get; set; }
 
-    RenderFragment brandLogo = @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
     RenderFragment signIn = @<span class="oi oi-account-login" aria-hidden="true"></span>;
     RenderFragment signOut = @<span class="oi oi-account-logout" aria-hidden="true"></span>;
 }
