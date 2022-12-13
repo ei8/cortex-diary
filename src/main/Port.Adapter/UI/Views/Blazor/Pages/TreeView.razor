@@ -97,26 +97,33 @@
                                     }
                                     @if (!string.IsNullOrWhiteSpace(child.Neuron.Tag))
                                     {
-                                        var tagLines = child.Neuron.Tag.Split("\n");
-                                        @foreach(var line in tagLines)
+                                        @if (CheckUrl(child.Neuron.Tag))
                                         {
-                                            @if (Array.IndexOf(tagLines, line) > 0)
+                                                   <img src="@child.Neuron.Tag" style="width:7rem;"/>
+                                        }
+                                        else
+                                        {
+                                            var tagLines = child.Neuron.Tag.Split("\n");
+                                            @foreach (var line in tagLines)
                                             {
-                                                <br />
-                                            }
-                                            @foreach(var c in line)
-                                            {
-                                                @if (c == ' ')
+                                                @if (Array.IndexOf(tagLines, line) > 0)
                                                 {
-                                                    @:&nbsp;
+                                                    <br />
                                                 }
-                                                else
+                                                @foreach (var c in line)
                                                 {
-                                                    break;
+                                                    @if (c == ' ')
+                                                    {
+                                                        @:&nbsp;
+                                                    }
+                                                    else
+                                                    {
+                                                        break;
+                                                    }
                                                 }
+                                                @line.TrimStart()
                                             }
-                                            @line.TrimStart()
-                                        }                                        
+                                        }
                                     }
                                 </div>
                                 @if (!this.ShouldRightJustifyBasedOnRoot(child))
@@ -245,6 +252,10 @@
         return this.ShouldRightJustify(child) ?
             "display: flex; justify-content: flex-end;" :
             "";
+    }
+
+    private bool CheckUrl(string Url) {
+        return Uri.IsWellFormedUriString(Url, UriKind.Absolute);
     }
 
     private string GetStyleByCreationAuthor(bool isCurrentUserCreationAuthor)
