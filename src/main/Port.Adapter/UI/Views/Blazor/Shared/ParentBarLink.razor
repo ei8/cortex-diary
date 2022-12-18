@@ -13,12 +13,12 @@
         <BarIcon IconName="this.CurrentView.GenerateIconName()" />
         @this.CurrentView.Name
     </BarDropdownToggle>
-    <BarDropdownMenu>
+    <BarDropdownMenu style=@(this.NavBarType == NavBarType.Top ? "background: #888" : string.Empty)>
         @foreach (var v in this.views.Where(vi => vi.ParentUrl == this.CurrentView.Url))
         {
             @if (this.views.Any(pi => pi.ParentUrl == v.Url))
             {
-                <ParentBarLink CurrentView="@v" />
+                <ParentBarLink CurrentView="@v" NavBarType="@this.NavBarType"/>
             }
             else
             {
@@ -35,6 +35,9 @@
     private bool dropdownVisible;
 
     [Parameter] public View CurrentView { get; set; }
+
+    [Parameter]
+    public NavBarType NavBarType { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

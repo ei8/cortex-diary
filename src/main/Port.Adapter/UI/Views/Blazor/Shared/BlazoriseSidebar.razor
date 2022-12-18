@@ -29,7 +29,7 @@
                 <BarItem>
                     @if (this.views.Any(vi => vi.ParentUrl == v.Url))
                     {
-                        <ParentBarLink CurrentView="@v"/>
+                        <ParentBarLink CurrentView="@v" NavBarType="@this.NavBarType"/>
                     }
                     else
                     {
