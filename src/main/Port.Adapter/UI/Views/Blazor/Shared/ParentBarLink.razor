@@ -13,7 +13,7 @@
         <BarIcon IconName="this.CurrentView.GenerateIconName()" />
         @this.CurrentView.Name
     </BarDropdownToggle>
-    <BarDropdownMenu style=@(this.NavBarType == NavBarType.Top ? "background: #888" : string.Empty)>
+    <BarDropdownMenu>
         @foreach (var v in this.views.Where(vi => vi.ParentUrl == this.CurrentView.Url))
         {
             @if (this.views.Any(pi => pi.ParentUrl == v.Url))
@@ -22,7 +22,7 @@
             }
             else
             {
-                <BarDropdownItem Class=@(v.GenerateBarActiveClass(this.navigationManager)) Clicked="() => v.Navigate(this.navigationManager)">
+                <BarDropdownItem Class=@(v.GenerateBarActiveClass(this.navigationManager, this.NavBarType)) Clicked="() => v.Navigate(this.navigationManager)">
                     <BarIcon IconName="v.GenerateIconName()" />
                     @v.Name
                 </BarDropdownItem>

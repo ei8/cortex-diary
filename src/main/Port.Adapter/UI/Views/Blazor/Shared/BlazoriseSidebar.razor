@@ -16,7 +16,7 @@
     <BarBrand>
         <BarItem>
             <BarLink To="">
-                <BarIcon Class="mt-0 ml-0" IconName="this.GenerateBrandLogo(settingsService.AppIcon)" />
+                <BarIcon Class=@($"mt-0 ml-0{(this.NavBarType == NavBarType.Side ? " mr-2" : string.Empty)}") IconName="this.GenerateBrandLogo(settingsService.AppIcon)" />
                 @(string.IsNullOrEmpty(settingsService.AppTitle) ? " neurUL <# " : settingsService.AppTitle)
             </BarLink>
         </BarItem>
@@ -33,7 +33,7 @@
                     }
                     else
                     {
-                        <BarLink Class=@(v.GenerateBarActiveClass(this.navigationManager)) Clicked="() => v.Navigate(this.navigationManager)">
+                        <BarLink Class=@(v.GenerateBarActiveClass(this.navigationManager, this.NavBarType)) Clicked="() => v.Navigate(this.navigationManager)">
                             <BarIcon IconName="v.GenerateIconName()" />
                             @v.Name
                         </BarLink>
