@@ -11,7 +11,8 @@
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
             <li class="p-0 my-1" style="list-style-type: none;">
                 <div class="container-fluid m-0" style="@this.GetJustifyStyle(child)">
-                    <div class="row">
+                    @{var isTagImageUrl = this.IsImageUrl(child.Neuron.Tag);}
+                    <div class="row" style=@(isTagImageUrl ? "max-width: 70%" : string.Empty)>
                         <div class="container m-0">
                             @if (currentAuthor != lastAuthor && !this.ShouldRightJustifyBasedOnRoot(child))
                             {
@@ -44,19 +45,19 @@
                                 }
                                 @if (@child.ExpansionState == ExpansionState.Collapsed)
                                 {
-                                    <button class="btn btn-light btn-xs rounded-circle" style="background-color: white; border-color: white" @onclick="child.Toggle">
+                                    <button class="btn btn-light btn-xs rounded-circle" style="height: 25px; background-color: white; border-color: white" @onclick="child.Toggle">
                                         <span class="small text-secondary">&#x25B7;</span>
                                     </button>
                                 }
                                 else if (@child.ExpansionState == ExpansionState.Expanded)
                                 {
-                                    <button class="btn btn-light btn-xs rounded-circle" style="background-color: white; border-color: white" @onclick="child.Toggle">
+                                    <button class="btn btn-light btn-xs rounded-circle" style="height: 25px; background-color: white; border-color: white" @onclick="child.Toggle">
                                         <span class="small text-secondary">&#x25E2;</span>
                                     </button>
                                 }
                                 else
                                 {
-                                    <div class="spinner-border spinner-border-sm m-1" role="status">
+                                    <div class="spinner-border spinner-border-sm m-1" role="status" >
                                         <span class="sr-only">Loading...</span>
                                     </div>
                                 }
@@ -87,7 +88,10 @@
                                         }
                                     }
                                 </div>
-                                <div onmouseover="hover('g', this.id, true, highlightNode)" onmouseout="hover('g', this.id, false, highlightNode)" class="col-auto p-1" id="@child.Neuron.Id" style="@this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor)" userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
+                                <div onmouseover="hover('g', this.id, true, highlightNode)" onmouseout="hover('g', this.id, false, highlightNode)" class="col-auto p-1" 
+                                    id="@child.Neuron.Id" style="@(this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor) + 
+                                    (isTagImageUrl ? "; max-width: calc(100% - 90px)" : string.Empty))" 
+                                    userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
                                     @if (child.Neuron.Validation.RestrictionReasons.Count() > 0)
                                     {
                                         <div class="tooltip-wrapper">
@@ -97,9 +101,9 @@
                                     }
                                     @if (!string.IsNullOrWhiteSpace(child.Neuron.Tag))
                                     {
-                                        @if (CheckUrl(child.Neuron.Tag))
+                                        @if (isTagImageUrl)
                                         {
-                                                   <img src="@child.Neuron.Tag" style="width:7rem;"/>
+                                            <img src="@child.Neuron.Tag" style="height: 100%; width: 100%; object-fit: contain" />
                                         }
                                         else
                                         {
@@ -254,8 +258,19 @@
             "";
     }
 
-    private bool CheckUrl(string Url) {
-        return Uri.IsWellFormedUriString(Url, UriKind.Absolute);
+    private bool IsImageUrl(string url)
+    {
+        var result = false;
+
+        if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
+        {
+            using var client = new HttpClient();
+            var response = client.Send(new HttpRequestMessage(HttpMethod.Head, url));
+            result = response.Content.Headers.ContentType.MediaType
+                .StartsWith("image/", StringComparison.OrdinalIgnoreCase);
+        }
+
+        return result;
     }
 
     private string GetStyleByCreationAuthor(bool isCurrentUserCreationAuthor)
