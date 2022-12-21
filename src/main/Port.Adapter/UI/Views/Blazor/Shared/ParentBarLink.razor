@@ -18,11 +18,11 @@
         {
             @if (this.views.Any(pi => pi.ParentUrl == v.Url))
             {
-                <ParentBarLink CurrentView="@v" />
+                <ParentBarLink CurrentView="@v" NavBarType="@this.NavBarType"/>
             }
             else
             {
-                <BarDropdownItem Class=@(v.GenerateBarActiveClass(this.navigationManager)) Clicked="() => v.Navigate(this.navigationManager)">
+                <BarDropdownItem Class=@(v.GenerateBarActiveClass(this.navigationManager, this.NavBarType)) Clicked="() => v.Navigate(this.navigationManager)">
                     <BarIcon IconName="v.GenerateIconName()" />
                     @v.Name
                 </BarDropdownItem>
@@ -35,6 +35,9 @@
     private bool dropdownVisible;
 
     [Parameter] public View CurrentView { get; set; }
+
+    [Parameter]
+    public NavBarType NavBarType { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

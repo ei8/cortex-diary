@@ -71,7 +71,7 @@
                     <Blazorise.Icon Name="FontAwesomeIcons.Clone" Class="px-2" />
                     Copy Direct Avatar URL
                 </DropdownItem>
-                <Dropdown Direction="Direction.Left">
+                <Dropdown Direction="Direction.End">
                     <DropdownToggle>
                         <Blazorise.Icon Name="FontAwesomeIcons.Bell" Class="px-2" />
                         Subscribe
@@ -559,6 +559,7 @@ else
         var links = new List<Graph.Link>();
         Tree.ExtractLinks(this.Children.ToArray(), distinctNodes, links);
 
+        // TODO: Crash
         await this.jsRuntime.InvokeVoidAsync("displayGraph", distinctNodes, links);
     }
 
