@@ -37,4 +37,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
     {
         public const int TreeNodeChildrenQueryPageSize = 200;
     }
+
+    public enum UrlType
+    {
+        Invalid,
+        Unrecognized,
+        GoogleDriveImage,
+        GoogleDriveVideo
+    }
 }
