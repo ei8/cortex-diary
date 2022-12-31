@@ -45,6 +45,6 @@ namespace ei8.Cortex.Diary.Application.Neurons
 
         Task<QueryResult<Neuron>> GetNeuronById(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken));
 
-        Task<QueryResult<Neuron>> SendQuery(string queryUrl, CancellationToken token = default(CancellationToken));
+        Task<QueryResult<Neuron>> SendQuery(string queryUrl, bool suppressAccessToken = false, CancellationToken token = default(CancellationToken));
     }
 }

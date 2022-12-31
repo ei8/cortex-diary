@@ -9,6 +9,7 @@ using Microsoft.JSInterop;
 using neurUL.Common.Domain.Model;
 using neurUL.Common.Http;
 using neurUL.Cortex.Common;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -176,6 +177,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
             }
         }
 
+        internal static bool IsExternalUrl(string currentUrlString, string avatarUrlString)
+        {
+            bool result = false;
+            if (Uri.TryCreate(currentUrlString, UriKind.Absolute, out Uri currentUri) && Uri.TryCreate(avatarUrlString, UriKind.Absolute, out Uri avatarUri))
+                result = currentUri.Authority != avatarUri.Authority;
+
+            return result;
+        }
         // TODO: internal async static Task<bool> ChangeNeuronTag(string tag, INeuronApplicationService neuronApplicationService, IStatusService statusService, string avatarUrl, string targetNeuronId, int expectedVersion, string bearerToken)
         //{
         //    bool result = false;

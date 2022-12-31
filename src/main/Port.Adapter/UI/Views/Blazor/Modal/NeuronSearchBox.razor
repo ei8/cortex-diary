@@ -5,6 +5,7 @@
 @using ei8.Cortex.Diary.Port.Adapter.Common;
 @using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @inject INeuronQueryService NeuronQueryService;
+@inject NavigationManager navigationManager;
 
 <AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />
 @if (this.IsVisible)
@@ -118,7 +119,10 @@
     private async Task Load()
     {
         var children = new List<NeuronResultItemViewModel>();
-        var ns = (await this.NeuronQueryService.SendQuery(this.AvatarUrl)).Items;
+        var ns = (await this.NeuronQueryService.SendQuery(
+            this.AvatarUrl, 
+            Blazor.Helper.IsExternalUrl(this.navigationManager.Uri, this.AvatarUrl)
+        )).Items;
         ns.ToList().ForEach(n => children.Add(new NeuronResultItemViewModel(new Neuron(n))));
         this.Children = children.ToArray();
     }

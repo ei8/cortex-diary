@@ -361,7 +361,8 @@ else
     private async static Task<IEnumerable<Neuron>> GetOrderedNeurons(Tree value)
     {
         var ns = (await value.neuronQueryService.SendQuery(
-                    value.AvatarUrl
+                    value.AvatarUrl,
+                    Blazor.Helper.IsExternalUrl(value.navigationManager.Uri, value.AvatarUrl)
                     )).Items;
 
         if (value.RenderDirection == RenderDirectionValue.BottomToTop)
