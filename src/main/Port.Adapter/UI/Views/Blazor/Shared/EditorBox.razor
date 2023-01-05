@@ -16,6 +16,7 @@
 @inject INotificationApplicationService notificationApplicationService;
 @inject ITerminalApplicationService terminalApplicationService;
 @inject IToastService toastService;
+@inject IJSRuntime JsRuntime
 
 <ConfirmationBox Title="Confirm Owner Creation" Message='This Avatar needs to be initialized with an Owner Neuron. Do you wish to continue creating one?' @bind-IsVisible="@this.IsConfirmCreateOwnerVisible" OnConfirmCallback="@this.ConfirmCreateOwner" />
 <ConfirmationBox Title="Similar Neuron Exists" Message='At least one other Neuron containing a similar Tag value already exists. Are you sure you wish to continue?' @bind-IsVisible="@this.IsConfirmCreateSimilarVisible" OnConfirmCallback="@this.ConfirmCreateSimilar" />
@@ -265,7 +266,7 @@
                         async (rq, pi) =>
                         {
                             pi.Description = "Terminal creation";
-                            // add directly via API
+                        // add directly via API
                             this.resultTerminal.Id = Guid.NewGuid().ToString();
 
                             await Blazor.Helper.CreateTerminalFromViewModel(
@@ -510,6 +511,18 @@
         bool formValid = editContext.Validate();
         if (formValid)
         {
+            var data =   (EditorNeuronViewModel)editContext.Model;
+            bool check = data.Tag.StartsWith("https://drive.google.com/file");
+            if (check)
+            {
+                bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "This is a google drive file");
+                if (confirmed)
+                {
+                    this.editorNeuronViewModel.RegionId = "84bb19d8-b5fa-4e38-af3c-8812b1af6ebd";
+                    this.editorNeuronViewModel.RegionTag = "New Neuron 2";
+                    var text = "";
+                }
+            }
             await this.ProcessSend(
                 async (rq, pi) =>
                 {
@@ -815,7 +828,8 @@
             {
                 if (itemContext.Neuron.Type == Library.Common.RelativeType.Postsynaptic)
                 {
-                    return retFragment = @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x21FE;</span>;
+                    return retFragment = 
+    @<span @attributes="this.GetEffectStyle(itemContext.Neuron)">&#x21FE;</span>;
                 }
                 else
                 {
