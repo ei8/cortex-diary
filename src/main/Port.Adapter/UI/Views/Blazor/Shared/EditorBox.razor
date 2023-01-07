@@ -73,7 +73,7 @@
                     </div>
                     <div class="row"
                         <div class="col py-1 px-0">
-                            <KeyWatcherInputTextArea class="form-control w-100" placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" rows="4" @onkeydown="@this.KeyPress" />
+                            <KeyWatcherInputTextArea class="form-control w-100" placeholder="Tag" @bind-Value="@this.editorNeuronViewModel.Tag" rows="4" @onkeyup="@this.KeyPress" />
                             <ValidationMessage For=@(() => this.editorNeuronViewModel.Tag) />
                         </div>
                     </div>
@@ -123,6 +123,7 @@
 </div>
 <RegionSearchBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsSearchRegionNeuronVisible" @bind-SelectedNeuron="this.SelectedRegionNeuron" />
 <TerminalEditorBox AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsTerminalEditorVisible" SelectedTerminal="this.EditTerminal" @bind-ResultTerminal="this.ResultTerminal" />
+<GoogleDriveBox @bind-IsVisible="@this.IsGoogleDriveBoxVisible" @bind-AcceptedDrive="this.AcceptedDrive" />
 <NeuronSearchBox AvatarUrl="@this.editorNeuronViewModel.NeuronExternalReferenceUrl" @bind-IsVisible="@this.IsSearchExternalReferenceNeuronVisible" @bind-SelectedNeuron="this.SelectedExternalReferenceNeuron" />
 
 @code {
@@ -386,6 +387,8 @@
         }
     }
 
+    private bool AcceptedDrive { get; set; }
+
     private Neuron initialRegionNeuron;
     [Parameter]
     public Neuron InitialRegionNeuron
@@ -428,6 +431,7 @@
     }
 
     private bool IsSearchRegionNeuronVisible { get; set; } = false;
+    private bool IsGoogleDriveBoxVisible { get; set; } = false;
 
     private EventCallback<EditorTerminalViewModel> internalResultTerminalChanged;
 
@@ -500,6 +504,11 @@
 
     private async Task KeyPress(KeyboardEventArgs e)
     {
+        bool check = this.editorNeuronViewModel.Tag.StartsWith("https://drive.google.com/file");
+        if (check && e.Code != "Backspace")
+        {
+            this.OnGoogleDrive();
+        }
         if ((e.Code == "Enter" || e.Code == "NumpadEnter") && e.CtrlKey)
         {
             await this.FormSubmitted(this.editContext);
@@ -511,17 +520,11 @@
         bool formValid = editContext.Validate();
         if (formValid)
         {
-            var data =   (EditorNeuronViewModel)editContext.Model;
-            bool check = data.Tag.StartsWith("https://drive.google.com/file");
-            if (check)
+            if (this.AcceptedDrive)
             {
-                bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "This is a google drive file");
-                if (confirmed)
-                {
-                    this.editorNeuronViewModel.RegionId = "84bb19d8-b5fa-4e38-af3c-8812b1af6ebd";
-                    this.editorNeuronViewModel.RegionTag = "New Neuron 2";
-                    var text = "";
-                }
+                this.editorNeuronViewModel.RegionId = "84bb19d8-b5fa-4e38-af3c-8812b1af6ebd";
+                this.editorNeuronViewModel.RegionTag = "New Neuron 2";
+                var text = "";
             }
             await this.ProcessSend(
                 async (rq, pi) =>
@@ -684,6 +687,11 @@
     private void OnSearchRegionNeuron()
     {
         this.IsSearchRegionNeuronVisible = true;
+    }
+
+    private void OnGoogleDrive()
+    {
+        this.IsGoogleDriveBoxVisible = true;
     }
 
     private void OnSearchExternalReferenceNeuron()

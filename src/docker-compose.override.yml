@@ -11,7 +11,7 @@ services:
       - ~/.aspnet/https:/https:ro
       - /C/ei8/avatars/prod/sample:/C/db
     ports:
-      - 192.168.1.110:65103:65103
+      - 192.168.1.2:65103:65103
 networks:
   default:
     external:

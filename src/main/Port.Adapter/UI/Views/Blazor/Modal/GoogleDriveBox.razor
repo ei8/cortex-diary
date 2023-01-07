@@ -1,0 +1,74 @@
+﻿
+@if (this.IsVisible)
+{
+ <div class="modal" tabindex="-1" style="display:block" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Googel Drive File</h5>
+        <button type="button" class="close" @onclick="() => this.IsVisible = false">
+           <span aria-hidden="true">X</span>
+         </button>
+      </div>
+      <div class="modal-body">
+        <p>Your Tag Neuron has a google drive file link</p>
+        <button type="button" @onclick="@this.OnGoogleDrive" class="btn btn-primary">yes</button>
+        <button type="button" @onclick="@this.Close" class="btn btn-danger">No</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" @onclick="() => this.IsVisible = false" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+@code {
+    private bool isVisible;
+    [Parameter]
+    public bool IsVisible
+    {
+        get => this.isVisible;
+        set
+        {
+            if (this.isVisible != value)
+            {
+                this.isVisible = value;
+                this.IsVisibleChanged.InvokeAsync(this.isVisible);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    private bool acceptedDrive { get; set; }
+    [Parameter]
+    public bool AcceptedDrive
+    {
+        get => this.acceptedDrive;
+        set
+        {
+            if (this.acceptedDrive != value)
+            {
+                this.acceptedDrive = value;
+                this.AcceptedDriveChanged.InvokeAsync(this.acceptedDrive);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> AcceptedDriveChanged { get; set; }
+
+    private void OnGoogleDrive()
+    {
+        this.AcceptedDrive = true;
+        this.Close();
+    }
+
+    private void Close()
+    {
+        this.IsVisible = false;
+    }
+
+}
