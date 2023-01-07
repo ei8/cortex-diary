@@ -1,38 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>ei8.Cortex.Diary.Port.Adapter.UI.ViewModels</AssemblyName>
     <RootNamespace>ei8.Cortex.Diary.Port.Adapter.UI.ViewModels</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="WinForms1\**" />
-    <Compile Remove="WinForms\**" />
-    <EmbeddedResource Remove="WinForms1\**" />
-    <EmbeddedResource Remove="WinForms\**" />
-    <None Remove="WinForms1\**" />
-    <None Remove="WinForms\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="DynamicData" Version="6.13.9" />
-    <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.11" />
-    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.1.18" />
-    <PackageReference Include="ei8.Cortex.Library.Client" Version="0.2.11" />
-    <PackageReference Include="ei8.Cortex.Library.Common" Version="0.2.10" />
-    <PackageReference Include="IdentityModel" Version="3.10.10" />
-    <PackageReference Include="Neurul.Common" Version="0.1.19" />
-    <PackageReference Include="Neurul.Cortex.Common" Version="0.1.4" />
-    <PackageReference Include="ReactiveUI" Version="10.3.1" />
-    <PackageReference Include="ReactiveUI.Fody" Version="10.3.1" />
-    <PackageReference Include="ReactiveUI.Validation" Version="1.4.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Application\Application.csproj" />
     <ProjectReference Include="..\..\..\Domain.Model\Domain.Model.csproj" />
-    <ProjectReference Include="..\..\IO\Process\Services\Services.csproj" />
-    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
 </Project>

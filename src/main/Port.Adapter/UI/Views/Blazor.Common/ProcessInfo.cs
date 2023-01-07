@@ -1,4 +1,4 @@
-namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common
 {
     public class ProcessInfo
     {

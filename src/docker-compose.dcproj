@@ -14,6 +14,7 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="main\Port.Adapter\UI\Views\Blazor\Pages\Plugin.razor.cs" />
     <None Include="var1.env" />
   </ItemGroup>
 </Project>

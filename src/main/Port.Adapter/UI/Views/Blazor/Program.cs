@@ -148,7 +148,7 @@ app.Use((context, next) =>
     // TODO:var prefix = context.Request.Headers["x-forwarded-prefix"];
     //if (!StringValues.IsNullOrEmpty(prefix))
     //{
-    context.Request.PathBase = PathString.FromUriComponent(ss.BasePath);// prefix.ToString());
+    context.Request.PathBase = PathString.FromUriComponent(ss.BasePath ?? string.Empty);// prefix.ToString());
                                                                         // TODO: subtract PathBase from Path if needed.
                                                                         //}
     return next();

@@ -61,6 +61,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdClientSecret = "client_secret";
         private const string IdDatabasePath = "database_path";
         private const string IdBasePath = "base_path";
+        private const string IdPluginsPath = "plugins_path";
         private const string IdValidateServerCertificate = "validate_server_certificate";
         private const string IdLoginCallback = "login_callback";
         private const string IdLogoutCallback = "logout_callback";
@@ -79,6 +80,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
         private readonly string DatabasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.DatabasePath);
         private readonly string BasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.BasePath);
+        private readonly string PluginsPathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.PluginsPath);
         private readonly string AppTitleDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.AppTitle);
         private readonly string AppIconDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.AppIcon);
         private readonly bool ValidateServerCertificateDefault = 
@@ -147,6 +149,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         {
             get => AppSettings.GetValueOrDefault(IdBasePath, BasePathDefault);
             set => AppSettings.AddOrUpdateValue(IdBasePath, value);
+        }
+
+        public string PluginsPath
+        {
+            get => AppSettings.GetValueOrDefault(IdPluginsPath, PluginsPathDefault);
+            set => AppSettings.AddOrUpdateValue(IdPluginsPath, value);
         }
 
         public string AppTitle

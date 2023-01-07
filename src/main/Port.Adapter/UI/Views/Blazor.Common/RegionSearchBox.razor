@@ -1,9 +1,7 @@
 ﻿@using ei8.Cortex.Diary.Application.Neurons;
 @using ei8.Cortex.Diary.Domain.Model;
+@using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 @using ei8.Cortex.Library.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
-@using ei8.Cortex.Diary.Port.Adapter.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @inject INeuronQueryService NeuronQueryService;
 
 <AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
-    public static class Extensions
+    public static class ExtensionMethods
     {
         public static bool HasActiveChild(this View value, IEnumerable<View> views, string currentUrl)
         {
@@ -37,5 +37,16 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 
         public static void Navigate(this View value, NavigationManager navigationManager) =>
             navigationManager.NavigateTo(value.Url, true);
+
+        public static string Truncate(this string value, int maxChars)
+        {
+            return !string.IsNullOrEmpty(value) ?
+                (
+                    value.Length <= maxChars ?
+                        value :
+                        value.Substring(0, maxChars) + "..."
+                        )
+                    : string.Empty;
+        }
     }
 }

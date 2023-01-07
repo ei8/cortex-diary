@@ -1,13 +1,11 @@
 ﻿using ei8.Cortex.Diary.Application.Neurons;
-using ei8.Cortex.Diary.Port.Adapter.Common;
 using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
-using IdentityModel.Client;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
+namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
     public class TreeNeuronViewModel
     {
