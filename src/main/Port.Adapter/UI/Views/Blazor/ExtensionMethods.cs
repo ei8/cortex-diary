@@ -1,5 +1,7 @@
 ﻿using ei8.Cortex.Diary.Domain.Model;
+using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
     public static class ExtensionMethods
     {
+        public static async Task LoadJsCssAsync(this IJSRuntime jsRuntime, string assetPath)
+        {
+            await jsRuntime.InvokeVoidAsync("loadJs", $"{assetPath}/script.js");
+            await jsRuntime.InvokeVoidAsync("loadCSS", $"{assetPath}/style.css");
+        }
+
         public static bool HasActiveChild(this View value, IEnumerable<View> views, string currentUrl)
         {
             bool result = false;

@@ -1,4 +1,5 @@
-﻿function loadJs(sourceUrl) {
+﻿/* https://www.puresourcecode.com/dotnet/blazor/dynamically-add-javascript-from-blazor-components/ */
+function loadJs(sourceUrl) {
     if (sourceUrl.Length == 0) {
         console.error("Invalid source URL");
         return;
@@ -17,4 +18,26 @@
     }
 
     document.body.appendChild(tag);
+}
+
+function loadCSS(sourceUrl) {
+    if (sourceUrl.Length == 0) {
+        console.error("Invalid source URL");
+        return;
+    }
+
+    var link = document.createElement('link');
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = sourceUrl;
+
+    link.onload = function () {
+        console.log("CSS loaded successfully");
+    }
+
+    link.onerror = function () {
+        console.error("CSS to load script");
+    }
+
+    document.head.appendChild(link);
 }

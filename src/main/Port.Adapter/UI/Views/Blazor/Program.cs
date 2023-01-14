@@ -15,6 +15,8 @@ using ei8.Cortex.Diary.Nucleus.Client.Out;
 using ei8.Cortex.Diary.Port.Adapter.IO.Persistence.SQLite;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity;
 using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings;
+using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor;
+using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Services;
 using ei8.Cortex.Library.Client.Out;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -23,18 +25,83 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using neurUL.Common.Http;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Reflection;
+
+/// <summary>
+/// To be used with Razor class libraries already referenced by this project
+/// </summary>
+void ConfigureStaticLibraries(ApplicationPartManager partManager)
+{
+    var assembly = typeof(ProcessInfo).Assembly;
+    var applicationPart = new AssemblyPart(assembly);
+
+    partManager.ApplicationParts.Add(applicationPart);
+}
+
+/// <summary>
+/// To be used with Razor class libraries loaded dynamically
+/// </summary>
+void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, IList<Assembly> pluginsAssemblies)
+{
+    // get the full filepath of any dll starting with the rcl_ prefix
+    string prefix = string.Empty; 
+    string searchPattern = $"{prefix}*.dll";
+    string[] libraryPaths = Directory.GetFiles(binFolder, searchPattern);
+
+    if (libraryPaths != null && libraryPaths.Length > 0)
+    {
+        // create the load context
+        var loadContext = new LibraryLoadContext(binFolder);
+
+        foreach (string libraryPath in libraryPaths)
+        {
+            // load each assembly using its filepath
+            var assembly = loadContext.LoadFromAssemblyPath(libraryPath);
+
+            // create an application part for that assembly
+            var applicationPart = libraryPath.EndsWith(".Views.dll") ? new CompiledRazorAssemblyPart(assembly) as ApplicationPart : new AssemblyPart(assembly);
+
+            // register the application part
+            partManager.ApplicationParts.Add(applicationPart);
+
+            // if it is NOT the *.Views.dll add it to a list for later use
+            if (!libraryPath.EndsWith(".Views.dll"))
+                pluginsAssemblies.Add(assembly);
+        }
+    }
+}
+
+/// <summary>
+/// Registers a <see cref="CompositeFileProvider"/> for each dynamically loaded assembly.
+/// </summary>
+void RegisterDynamicLibariesStaticFiles(IWebHostEnvironment env, IList<Assembly> pluginsAssemblies)
+{
+    foreach (var a in pluginsAssemblies)
+    {
+        // TODO: See https://stackoverflow.com/a/74985201
+        // create a "web root" file provider for the embedded static files found on wwwroot folder
+        var fileProvider = new ManifestEmbeddedFileProvider(a, "wwwroot");
+
+        // register a new composite provider containing
+        // the old web root file provider
+        // and the new one we just created
+        env.WebRootFileProvider = new CompositeFileProvider(env.WebRootFileProvider, fileProvider);
+    }
+}
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 IdentityModelEventSource.ShowPII = true;
 
@@ -52,10 +119,22 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ISettingsServiceImplementation, SettingsServiceImplementation>();
 builder.Services.AddScoped<IDependencyService, DependencyService>();
-builder.Services.AddScoped<ISettingsService, SettingsService>();
 
-var sp = builder.Services.BuildServiceProvider();
-var ss = sp.GetService<ISettingsService>();
+var ss = new SettingsService(
+    new DependencyService(
+        new SettingsServiceImplementation()
+        )
+    );
+builder.Services.AddSingleton<ISettingsService>(ss);
+var pluginsAssemblies = new List<Assembly>();
+builder.Services.AddSingleton<IList<Assembly>>(pluginsAssemblies);
+builder.Services.AddControllersWithViews()
+    .ConfigureApplicationPartManager(partManager => {
+        // static RCLs
+        ConfigureStaticLibraries(partManager);
+        // dynamic RCLs
+        LoadDynamicLibraries(partManager, ss.PluginsPath, pluginsAssemblies);
+    });
 
 var hcb = builder.Services.AddHttpClient(Options.DefaultName);
 
@@ -170,6 +249,11 @@ else
 
 // TODO: necessary?
 // app.UseHttpsRedirection();
+
+// register file providers for the dynamically loaded libraries
+if (pluginsAssemblies.Count > 0)
+    RegisterDynamicLibariesStaticFiles(app.Environment, pluginsAssemblies);
+
 app.UseStaticFiles();
 
 app.UseRouting();

@@ -1,0 +1,244 @@
+
+/* blazor.common + tree */
+.modal-body {
+    padding: 10px 15px;
+}
+
+/* blazor.common - treeview */
+.blue {
+    fill: #1E90FF !important;
+}
+
+/* blazor.common */
+iframe {
+    border-style: solid;
+    border-width: thin;
+    border-color: darkgray;
+}
+
+/* blazor.common */
+input {
+    border-style: solid;
+    border-width: thin;
+    border-color: darkgray;
+}
+
+
+/* blazor.common + tree */
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* blazor.common = root/index.razor + tree */
+.top-row {
+    height: 3.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* blazor.common */
+.main {
+    flex: 1;
+    line-height: normal;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* blazor.common */
+.main .top-row {
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #d6d5d5;
+}
+
+/* blazor.common */
+.main .top-row .title {
+    font-size: 1.1rem;
+    font-weight: bolder;
+    padding-top: 7px;
+    padding-bottom: 1px;
+}
+
+/* blazor.common */
+.main .top-row .details {
+    display: flex;
+}
+
+/* blazor.common */
+.main .top-row .details > input {
+    flex: 1;
+}
+
+/* blazor.common */
+.main .top-row .details > div {
+    margin-right: 2px;
+}
+
+/* blazor.common */
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* blazor.common */
+.main .top-row > a {
+    margin-left: 1.5rem;
+}
+
+@media (max-width: 767.98px) {
+    /* blazor.common */
+    .main .top-row {
+        position: sticky;
+        top: 0;
+    }
+
+    /* blazor.common */
+    .b-bar-icon {
+        padding-right: .5rem !important
+    }
+}
+
+@media (min-width: 768px) {
+    /* blazor.common */
+    .main .top-row {
+        position: sticky;
+        top: 0;
+    }
+
+    /* blazor.common */
+    .main > div {
+        padding-left: 2rem !important;
+        /*padding-right: 1.5rem !important;*/
+    }
+}
+
+/* blazor.common */
+.treeitem {
+}
+
+/* blazor.common */
+.treeitembutton {
+    visibility: hidden;
+    height: 25px;
+    width: 25px;
+    padding: .1rem .1rem !important;
+}
+
+/* blazor.common */
+.treeitem:hover .treeitembutton {
+    visibility: visible;
+}
+
+/* blazor.common */
+.tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    cursor: help;
+}
+
+/* blazor.common */
+.tooltip-wrapper-text {
+    visibility: hidden;
+    position: absolute;
+    width: 120px;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+    background-color: #363636;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    z-index: 1;
+}
+
+    /* blazor.common */
+    .tooltip-wrapper-text::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+/* blazor.common */
+.tooltip-wrapper:hover .tooltip-wrapper-text {
+    visibility: visible;
+}
+
+/* blazor.common */
+.multiselect {
+    width: 100%;
+}
+
+/* blazor.common */
+.selectBox {
+    width: 100%;
+    position: relative;
+}
+
+    /* blazor.common */
+    .selectBox select {
+        width: 100%;
+        font-weight: bold;
+    }
+
+/* blazor.common */
+.overSelect {
+    width: 15.5rem;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+/* blazor.common */
+#checkboxes {
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    padding: 0 0.2rem;
+    display: none;
+    border: 1px #dadada solid;
+    background-color: white;
+    position: absolute;
+}
+
+/* barlink, blazor.common */
+.hover {
+    cursor: pointer;
+}
+
+/* blazor.common */
+#checkboxes label {
+    display: block;
+}
+    /* blazor.common */
+    #checkboxes label:hover {
+        background-color: #1e90ff;
+    }
+
+/* blazor.common + tree */
+.inputEditor {
+    padding-right: 33px !important;
+}
+
+/* blazor.common + tree */
+.inputEditorButton {
+    position: absolute;
+    right: 0.0rem;
+    bottom: 0.2rem;
+    height: 1.6rem;
+    border: 0;
+    border-radius: 2px;
+    background-color: white;
+    margin: 0;
+}

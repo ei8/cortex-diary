@@ -35,8 +35,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModels", "main\Port.Ada
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Common", "main\Port.Adapter\UI\Views\Blazor.Common\Blazor.Common.csproj", "{F88D3FD9-979D-4D85-9E32-FC2099BB71A5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "[Temp]", "[Temp]", "{11CFDA9D-DDD4-4932-872F-E05DF0C1586C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU

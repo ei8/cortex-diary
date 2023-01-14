@@ -1,13 +1,7 @@
-﻿window.jsFunctions = {
-    getFieldValue: function (fieldName) {
-        return document.getElementById(fieldName).value;
-    }
-}
+﻿// TODO: transfer following to tree plugin? if so, check how to include notifications-sw.js
+// or transfer to blazor.common instead as it can be reused in different plugins
 
-window.PlaySound = function () {
-    document.getElementById('sound').play();
-}
-
+// tree
 // -- Subscriptions JS interop
 window.RegisterServiceWorker = function(dotnet) {
     if (!('PushManager' in window)) {
@@ -41,10 +35,10 @@ window.RegisterServiceWorker = function(dotnet) {
     });
 }
 
+// tree
 window.Subscribe = function (dotnet, applicationServerPublicKey) {
     if (navigator.serviceWorker) {
         navigator.serviceWorker.ready.then(function (reg) {
-
             if (reg.active) {
                 dotnet.invokeMethodAsync('SetServiceWorkerStatus', true);
 
@@ -81,6 +75,7 @@ window.Subscribe = function (dotnet, applicationServerPublicKey) {
     }
 }
 
+// tree
 function urlB64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
@@ -96,10 +91,12 @@ function urlB64ToUint8Array(base64String) {
     return outputArray;
 }
 
+// tree
 function base64Encode(arrayBuffer) {
     return btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));
 }
 
+// tree
 function detectBrowser() {
     const agent = navigator.userAgent
     if ((agent.indexOf("Opera") || agent.indexOf('OPR')) != -1) {

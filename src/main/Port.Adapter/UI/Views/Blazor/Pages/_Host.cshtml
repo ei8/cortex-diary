@@ -23,63 +23,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="css/site.css" rel="stylesheet" />
     <script type="text/javascript">
-
-        // Blazor.Common
-            // AvatarUrlEditorBox
-        var expanded = false;
-        function showCheckboxes(event) {
-            if (!expanded) {
-                event.style.display = "block";
-                expanded = true;
-            } else {
-                event.style.display = "none";
-                expanded = false;
-            }
-        }
-        function updateCheckboxText(checked, event, dataset) {
-            if (checked) {
-                if (event.text == "Select an option") {
-                    event.text = dataset.value;
-                } else {
-                    event.text += "," + dataset.value;
-                }
-            } else {
-                if (event.text.indexOf(dataset.value) == 0) {
-                    event.text = event.text.replace(dataset.value, "");
-                    event.text = event.text.replace(",", "");
-                    if (event.text == "") {
-                        event.text = "Select an option";
-                    }
-                }
-                else {
-                    event.text = event.text.replace("," + dataset.value, "");
-                }
-            }
-        }
-
-        function deleteForm(child, parent) {
-            if (child.value.length != 0) {
-
-                child.value = "";
-                var e = new Event('change');
-                child.dispatchEvent(e);
-            }
-            parent.remove();
-        }
-
-        function deleteMultiSelectMenu(child, parent) {
-            var e = new Event('change');
-            event.target.parentNode.children[1].children[0].children[0].dispatchEvent(e);
-            event.target.parentNode.remove();
-        }
-
-        // unknown
+        // TODO: unknown, used?
         var receiveMessage = function (event) {
             if (document.getElementById('currentUrl') != null) {
                 document.getElementById('currentUrl').value = event.data;
             }
         }
-
         window.addEventListener('message', receiveMessage, false);
 
     </script>
@@ -123,39 +72,13 @@
     <script src="_content/Blazorise/blazorise.js"></script>
     <script src="js/script.js"></script>
     <script src="_framework/blazor.server.js"></script>
-    <script src="JsInterop.js"></script>
+    <script src="js/JsInterop.js"></script>
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
-
-        //!!! tree, blazor.common.treeview
-        const yellow = "#ffa500";
-        const gray = "#e6e6e6";
-        const blue = "#1E90FF";
-
         // BlazoriseSidebar
         function frmsubmit(form) {
             document.getElementById(form).submit();
-        }
-        
-        //!!! tree, blazor.common.treeview
-        function hover(tagName, tagId, over, highlight) {
-            var element = document.getElementsByTagName(tagName);
-            for (var i = 0; i < element.length; i++) {
-                var currElement = element[i];
-                if (currElement.id == tagId) {
-                    highlight(currElement, over);
-                }
-            }
-        }
-
-        // blazor.common.treeview
-        function highlightNode(currElement, over) {
-            if (over)
-                currElement.children[0].classList.add("blue");
-            else
-                currElement.children[0].classList.remove("blue");
-        }
-
+        }        
     </script>
 </body>
 </html>

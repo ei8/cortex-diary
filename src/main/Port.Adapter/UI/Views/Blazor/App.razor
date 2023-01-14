@@ -1,6 +1,9 @@
 ﻿@using ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Identity
 @using ei8.Cortex.Diary.Domain.Model
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common
+
 @inject ITokenProvider TokenProvider
+@inject IJSRuntime JsRuntime
 
 @code {
     [Parameter]
@@ -14,6 +17,14 @@
         TokenProvider.ExpiresAt = InitialState.ExpiresAt;
 
         return base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await this.JsRuntime.LoadJsCssAsync($"_content/{typeof(ProcessInfo).Assembly.GetName().Name}");
+        }
     }
 }
 

@@ -41,10 +41,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
         {
             if (firstRender)
             {
-                var targetUrl = $"/_content/{this.componentType.Assembly.GetName().Name}/script.js";
-                await this.JsRuntime.InvokeVoidAsync("loadJs", targetUrl);
+                await this.JsRuntime.LoadJsCssAsync($"_plugin/{this.Name}");
             }
-            // return base.OnAfterRenderAsync(firstRender);
         }
 
         protected override void OnParametersSet()
@@ -72,12 +70,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
             this.componentType = typeof(Diary.Plugins.Tree.Tree);
 #else
         //scan assembly from a folder
-        var path = this.SettingsService.PluginsPath;
-        string[] allfiles = Directory.GetFiles(path, "*.dll", SearchOption.AllDirectories);
-
-        foreach (var file in allfiles)
+        foreach (var assembly in this.PluginAssemblies)
         {
-            var assembly = Assembly.LoadFrom(file);
             var fullname = assembly.GetTypes().FirstOrDefault(x => x.Name.ToLower() == Name.ToLower())?.FullName;
             if (fullname != null)
                 this.componentType = assembly.GetType(fullname);
