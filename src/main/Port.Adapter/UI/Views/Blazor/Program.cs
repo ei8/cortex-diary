@@ -1,3 +1,4 @@
+// #define staticLinkAssembly
 using Blazored.Toast;
 using Blazorise;
 using Blazorise.Bootstrap;
@@ -34,6 +35,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using neurUL.Common.Http;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -55,6 +57,28 @@ void ConfigureStaticLibraries(ApplicationPartManager partManager)
 /// </summary>
 void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, IList<Assembly> pluginsAssemblies)
 {
+#if (staticLinkAssembly)
+    // To debug a plugin
+    // 1. Uncomment #define staticLinkAssembly on line 1 of this file
+    // 2. Add project reference to plugin project
+    // 3. Change startup project to Blazor.csproj
+    // 4. Grab values from var1.env (docker-compose)
+    //     "environmentVariables": {
+    //       "ASPNETCORE_ENVIRONMENT": "Development",
+    //       "OIDC_AUTHORITY": "",
+    //       "CLIENT_ID": "",
+    //       "CLIENT_SECRET": "",
+    //       "UPDATE_CHECK_INTERVAL": "1000000",
+    //       "DATABASE_PATH": "",
+    //       "BASE_PATH": "",
+    //       "PLUGINS_PATH": "",
+    //       "VALIDATE_SERVER_CERTIFICATE": "false",
+    //       "APP_TITLE": "",
+    //       "APP_ICON": ""
+    //     },
+    //     "applicationUrl": "" - use value from docker-compose.override.yml
+    StaticAddAssembly(partManager, pluginsAssemblies, typeof(ei8.Cortex.Diary.Plugins.Tree.Tree).Assembly);
+#else
     // get the full filepath of any dll starting with the rcl_ prefix
     string prefix = string.Empty; 
     string searchPattern = $"{prefix}*.dll";
@@ -70,17 +94,34 @@ void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, 
             // load each assembly using its filepath
             var assembly = loadContext.LoadFromAssemblyPath(libraryPath);
 
-            // create an application part for that assembly
-            var applicationPart = libraryPath.EndsWith(".Views.dll") ? new CompiledRazorAssemblyPart(assembly) as ApplicationPart : new AssemblyPart(assembly);
-
-            // register the application part
-            partManager.ApplicationParts.Add(applicationPart);
-
-            // if it is NOT the *.Views.dll add it to a list for later use
-            if (!libraryPath.EndsWith(".Views.dll"))
-                pluginsAssemblies.Add(assembly);
+            AddAssembly(
+                partManager, 
+                pluginsAssemblies, 
+                assembly,
+                assembly => libraryPath.EndsWith(".Views.dll") ? new CompiledRazorAssemblyPart(assembly) : new AssemblyPart(assembly),
+                () => !libraryPath.EndsWith(".Views.dll")
+                );
         }
     }
+#endif
+}
+
+static void StaticAddAssembly(ApplicationPartManager partManager, IList<Assembly> pluginsAssemblies, Assembly assembly) =>
+    AddAssembly(partManager, pluginsAssemblies, assembly, (a) => new AssemblyPart(a), () => (true));
+
+static void AddAssembly(ApplicationPartManager partManager, IList<Assembly> pluginsAssemblies, Assembly assembly, 
+    Func<Assembly, ApplicationPart> partCreator,
+    Func<bool> addChecker)
+{
+    // create an application part for that assembly
+    var applicationPart = partCreator(assembly); 
+
+    // register the application part
+    partManager.ApplicationParts.Add(applicationPart);
+
+    // if it is NOT the *.Views.dll add it to a list for later use
+    if (addChecker())
+        pluginsAssemblies.Add(assembly);
 }
 
 /// <summary>

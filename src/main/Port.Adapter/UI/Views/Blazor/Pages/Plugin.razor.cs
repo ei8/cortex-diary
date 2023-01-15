@@ -1,4 +1,3 @@
-// #define static
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -47,36 +46,13 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
 
         protected override void OnParametersSet()
         {
-#if (static)
-            // To debug a plugin
-            // 1. Uncomment #define static on line 1 of this file
-            // 2. Add project reference to plugin project
-            // 3. Change startup project to Blazor.csproj
-            // 4. Grab values from var1.env (docker-compose)
-            //     "environmentVariables": {
-            //       "ASPNETCORE_ENVIRONMENT": "Development",
-            //       "OIDC_AUTHORITY": "",
-            //       "CLIENT_ID": "",
-            //       "CLIENT_SECRET": "",
-            //       "UPDATE_CHECK_INTERVAL": "1000000",
-            //       "DATABASE_PATH": "",
-            //       "BASE_PATH": "",
-            //       "PLUGINS_PATH": "",
-            //       "VALIDATE_SERVER_CERTIFICATE": "false",
-            //       "APP_TITLE": "",
-            //       "APP_ICON": ""
-            //     },
-            //     "applicationUrl": "" - use value from docker-compose.override.yml
-            this.componentType = typeof(Diary.Plugins.Tree.Tree);
-#else
-        //scan assembly from a folder
-        foreach (var assembly in this.PluginAssemblies)
-        {
-            var fullname = assembly.GetTypes().FirstOrDefault(x => x.Name.ToLower() == Name.ToLower())?.FullName;
-            if (fullname != null)
-                this.componentType = assembly.GetType(fullname);
-        }
-#endif
+            //scan assembly from a folder
+            foreach (var assembly in this.PluginAssemblies)
+            {
+                var fullname = assembly.GetTypes().FirstOrDefault(x => x.Name.ToLower() == Name.ToLower())?.FullName;
+                if (fullname != null)
+                    this.componentType = assembly.GetType(fullname);
+            }
             base.OnParametersSet();
         }
     }
