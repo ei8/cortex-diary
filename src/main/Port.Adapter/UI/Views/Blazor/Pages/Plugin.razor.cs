@@ -17,24 +17,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
 
         private Type componentType;
         private Dictionary<string, object> parameters;
-        protected override void OnInitialized()
-        {
-            var defParams = new DefaultComponentParameters()
-            {
-                HttpContextAccessor = this.HttpContextAccessor, 
-                NeuronQueryService = this.NeuronQueryService, 
-                NeuronApplicationService = this.NeuronApplicationService, 
-                TerminalApplicationService = this.TerminalApplicationService, 
-                ToastService = this.ToastService, 
-                NavigationManager = this.NavigationManager, 
-                JsRuntime = this.JsRuntime, 
-                SettingsService = this.SettingsService, 
-                IdentityService = this.IdentityService, 
-                SubscriptionApplicationService = this.SubscriptionApplicationService, 
-                SubscriptionsQueryService = this.SubscriptionsQueryService
-            };
-            this.parameters = defParams.GetParameterDictionary();
-        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -46,12 +28,43 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
 
         protected override void OnParametersSet()
         {
-            //scan assembly from a folder
             foreach (var assembly in this.PluginAssemblies)
             {
                 var fullname = assembly.GetTypes().FirstOrDefault(x => x.Name.ToLower() == Name.ToLower())?.FullName;
                 if (fullname != null)
+                {
                     this.componentType = assembly.GetType(fullname);
+
+                    var pluginSettingsName = assembly.GetTypes().FirstOrDefault(x => x.GetInterfaces().Contains(typeof(IPluginSettingsService)))?.FullName;
+                    Type pluginSettingsType = null;
+                    if (pluginSettingsName != null)
+                        pluginSettingsType = assembly.GetType(pluginSettingsName);
+
+                    var defParams = new DefaultComponentParameters()
+                    {
+                        HttpContextAccessor = this.HttpContextAccessor,
+                        NeuronQueryService = this.NeuronQueryService,
+                        NeuronApplicationService = this.NeuronApplicationService,
+                        TerminalApplicationService = this.TerminalApplicationService,
+                        ToastService = this.ToastService,
+                        NavigationManager = this.NavigationManager,
+                        JsRuntime = this.JsRuntime,
+                        SettingsService = this.SettingsService,
+                        IdentityService = this.IdentityService,
+                        SubscriptionApplicationService = this.SubscriptionApplicationService,
+                        SubscriptionsQueryService = this.SubscriptionsQueryService
+                    };
+
+                    if (pluginSettingsType != null)
+                    {
+                        defParams.PluginSettingsService =  (IPluginSettingsService) Activator.CreateInstance(pluginSettingsType);
+                        defParams.PluginSettingsService.LoadConfig();
+                    }
+
+                    this.parameters = defParams.GetParameterDictionary();
+
+                    break;
+                }
             }
             base.OnParametersSet();
         }

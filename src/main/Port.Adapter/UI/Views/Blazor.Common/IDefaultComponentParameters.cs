@@ -25,5 +25,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common
         IIdentityService IdentityService { get; set; }
         ISubscriptionApplicationService SubscriptionApplicationService { get; set; } 
         ISubscriptionQueryService SubscriptionsQueryService { get; set; }
+        IPluginSettingsService PluginSettingsService { get; set; }
     }
 }

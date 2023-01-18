@@ -1,5 +1,6 @@
 ﻿using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using neurUL.Common.Domain.Model;
 using neurUL.Common.Http;
 
@@ -115,6 +116,18 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common
                 result = true;
             }
             return result;
+        }
+
+        public static void LoadConfig(this IPluginSettingsService value)
+        {
+            var thisAssembly = value.GetType().Assembly;
+            var configurationBuilder = new ConfigurationBuilder()
+                .SetBasePath(System.IO.Path.GetDirectoryName(thisAssembly.Location))
+                .AddJsonFile($"{thisAssembly.GetName().Name}.appsettings.json",
+                optional: false,
+                reloadOnChange: true);
+
+            value.Configuration = configurationBuilder.Build();
         }
     }
 }

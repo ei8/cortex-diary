@@ -1,6 +1,11 @@
 ﻿// TODO: transfer following to tree plugin? if so, check how to include notifications-sw.js
 // or transfer to blazor.common instead as it can be reused in different plugins
 
+var dotNetHelper = null;
+window.DotNetHelperSetter = (dotHelper) => {
+    dotNetHelper = dotHelper;
+};
+
 // tree
 // -- Subscriptions JS interop
 window.RegisterServiceWorker = function(dotnet) {

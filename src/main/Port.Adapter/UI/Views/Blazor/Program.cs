@@ -82,7 +82,7 @@ void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, 
     // get the full filepath of any dll starting with the rcl_ prefix
     string prefix = string.Empty; 
     string searchPattern = $"{prefix}*.dll";
-    string[] libraryPaths = Directory.GetFiles(binFolder, searchPattern);
+    string[] libraryPaths = Directory.GetFiles(binFolder, searchPattern, SearchOption.AllDirectories);
 
     if (libraryPaths != null && libraryPaths.Length > 0)
     {

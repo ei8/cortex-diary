@@ -55,7 +55,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdLatitude = "latitude";
         private const string IdLongitude = "longitude";
         private const string IdAllowGpsLocation = "allow_gps_location";
-        private const string IdUpdateCheckInterval = "update_check_interval";
         private const string IdOidcAuthority = "oidc_authority";
         private const string IdClientId = "client_id";
         private const string IdClientSecret = "client_secret";
@@ -74,7 +73,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly double FakeLatitudeDefault = 47.604610d;
         private readonly double FakeLongitudeDefault = -122.315752d;
         private readonly bool AllowGpsLocationDefault = false;
-        private readonly int UpdateCheckIntervalDefault = int.Parse(Environment.GetEnvironmentVariable(EnvironmentVariableKeys.UpdateCheckInterval));
         private readonly string OidcAuthorityDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.OidcAuthority);
         private readonly string ClientIdDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientId);
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
@@ -113,12 +111,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         {
             get => AppSettings.GetValueOrDefault(IdLogoutCallback, LogoutCallbackDefault);
             set => AppSettings.AddOrUpdateValue(IdLogoutCallback, value);
-        }
-
-        public int UpdateCheckInterval
-        {
-            get => AppSettings.GetValueOrDefault(IdUpdateCheckInterval, UpdateCheckIntervalDefault);
-            set => AppSettings.AddOrUpdateValue(IdUpdateCheckInterval, value);
         }
 
         public string OidcAuthority
@@ -220,7 +212,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             this.AppSettings.Remove(IdLatitude);
             this.AppSettings.Remove(IdLongitude);
             this.AppSettings.Remove(IdAllowGpsLocation);
-            this.AppSettings.Remove(IdUpdateCheckInterval);
             this.AppSettings.Remove(IdOidcAuthority);
             this.AppSettings.Remove(IdClientId);
             this.AppSettings.Remove(IdClientSecret);
