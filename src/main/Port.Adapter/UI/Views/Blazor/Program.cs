@@ -58,7 +58,7 @@ void ConfigureStaticLibraries(ApplicationPartManager partManager)
 void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, IList<Assembly> pluginsAssemblies)
 {
 #if (staticLinkAssembly)
-    // To debug a plugin
+    // To debug a plugin:
     // 1. Uncomment #define staticLinkAssembly on line 1 of this file
     // 2. Add project reference to plugin project
     // 3. Change startup project to Blazor.csproj
