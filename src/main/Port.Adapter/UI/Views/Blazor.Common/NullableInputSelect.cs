@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared
+namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common
 {
     public class NullableInputSelect<T> : InputSelect<T?> where T : struct
     {

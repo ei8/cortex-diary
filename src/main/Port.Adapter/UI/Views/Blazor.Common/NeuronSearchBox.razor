@@ -1,11 +1,12 @@
-﻿@using ei8.Cortex.Diary.Application.Neurons;
-@using ei8.Cortex.Diary.Domain.Model;
+﻿@using Blazorise
+@using Microsoft.AspNetCore.Components.Web
+@using ei8.Cortex.Diary.Application.Neurons
+@using ei8.Cortex.Diary.Domain.Model
+@using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
+@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Common
 @using ei8.Cortex.Library.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels;
-@using ei8.Cortex.Diary.Port.Adapter.Common;
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Shared;
 @inject INeuronQueryService NeuronQueryService;
-@inject NavigationManager navigationManager;
+@inject NavigationManager navigationManager
 
 <AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />
 @if (this.IsVisible)
@@ -121,7 +122,7 @@
         var children = new List<NeuronResultItemViewModel>();
         var ns = (await this.NeuronQueryService.SendQuery(
             this.AvatarUrl, 
-            Blazor.Helper.IsExternalUrl(this.navigationManager.Uri, this.AvatarUrl)
+            Helpers.String.IsExternalUrl(this.navigationManager.Uri, this.AvatarUrl)
         )).Items;
         ns.ToList().ForEach(n => children.Add(new NeuronResultItemViewModel(new Neuron(n))));
         this.Children = children.ToArray();

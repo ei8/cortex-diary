@@ -1,5 +1,7 @@
 ﻿using ei8.Cortex.Diary.Domain.Model;
+using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +9,14 @@ using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
-    public static class Extensions
+    public static class ExtensionMethods
     {
+        public static async Task LoadJsCssAsync(this IJSRuntime jsRuntime, string assetPath)
+        {
+            await jsRuntime.InvokeVoidAsync("loadJs", $"{assetPath}/script.js");
+            await jsRuntime.InvokeVoidAsync("loadCSS", $"{assetPath}/style.css");
+        }
+
         public static bool HasActiveChild(this View value, IEnumerable<View> views, string currentUrl)
         {
             bool result = false;
@@ -37,5 +45,16 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 
         public static void Navigate(this View value, NavigationManager navigationManager) =>
             navigationManager.NavigateTo(value.Url, true);
+
+        public static string Truncate(this string value, int maxChars)
+        {
+            return !string.IsNullOrEmpty(value) ?
+                (
+                    value.Length <= maxChars ?
+                        value :
+                        value.Substring(0, maxChars) + "..."
+                        )
+                    : string.Empty;
+        }
     }
 }
