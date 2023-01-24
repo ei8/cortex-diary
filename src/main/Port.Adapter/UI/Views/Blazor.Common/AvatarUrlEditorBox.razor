@@ -1,0 +1,1038 @@
+﻿@using Microsoft.JSInterop
+@using ei8.Cortex.Library.Common
+@inject IJSRuntime jsRuntime
+@if (this.IsVisible)
+{
+    <div class="modal" tabindex="-1" style="display: block; z-index: 1051" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Avatar Parameters</h3>
+                    <!-- Button to close the popup -->
+                    <button type="button" class="close" @onclick="() => { this.IsVisible = false; }">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label class="control-label col-4">New Parameter</label>
+                        <select class="col-5 ml-auto form-control selectpicker" @bind="@this.newField">
+                            @foreach (var item in this.ParametersAttributes)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                        <button type="button" class="mx-3 btn btn-secondary" @onclick="@(() => { this.FieldsCount.Add(this.newField); })">Add</button>
+                    </div>
+                    @if (this.neuronQuery.PageSize != null)
+                    {
+                        <div class="form-group row">
+                            <label class="control-label col-4">PageSize</label>
+                            <input type="number" class="form-control  col-6 m-auto"
+                                   value="@neuronQuery.PageSize" @onchange="((ChangeEventArgs __e)=> {
+                                                                                if (!string.IsNullOrEmpty((__e.Value.ToString()))){
+                                                                                     try
+                                                                                {
+                                                                                    this.pageSize =  Convert.ToInt32(__e.Value.ToString());
+                                                                                }catch(Exception e)
+                                                                                {
+                                                                                    this.pageSize = null;
+                                                                                }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    this.pageSize = null;
+                                                                                }
+                                                                    })" />
+                            <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                        </div>
+                    }
+                    @if (this.neuronQuery.Page != null)
+                    {
+                        <div class="form-group row">
+                            <label class="control-label col-4">Page</label>
+                            <input type="number" class="form-control  col-6 m-auto"
+                                   value="@neuronQuery.Page" @onchange="((ChangeEventArgs __e)=> {
+                                                                                if (!string.IsNullOrEmpty((__e.Value.ToString()))){
+                                                                                     try
+                                                                                {
+                                                                                    this.page =  Convert.ToInt32(__e.Value.ToString());
+                                                                                }catch(Exception e)
+                                                                                {
+                                                                                    this.page = null;
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                this.page = null;
+                                                                            }
+                                                                    })" />
+                            <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                        </div>
+                    }
+                    @if (this.neuronQuery.Id != null)
+                    {
+                        foreach (var data in this.id)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">Id</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+                                                                    this.id[this.id.IndexOf(data)]=__e.Value.ToString();
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.Presynaptic != null)
+                    {
+                        foreach (var data in this.presynaptic)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">Presynaptic</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+                                                                    this.presynaptic[this.presynaptic.IndexOf(data)]=__e.Value.ToString();
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.PresynapticNot != null)
+                    {
+                        foreach (var data in this.presynapticNot)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">PresynapticNot</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+                                                                    this.presynapticNot[this.presynapticNot.IndexOf(data)]=__e.Value.ToString();
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.Postsynaptic != null)
+                    {
+                        foreach (var data in this.postsynaptic)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">Postsynaptic</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+
+                                                                    this.postsynaptic[this.postsynaptic.IndexOf(data)]=__e.Value.ToString();
+
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.PostsynapticNot != null)
+                    {
+                        foreach (var data in this.postsynapticNot)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">PostsynapticNot</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+
+                                                                    this.postsynapticNot[this.postsynapticNot.IndexOf(data)]=__e.Value.ToString();
+
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.TagContains != null)
+                    {
+                        foreach (var data in this.tagContains)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">TagContains</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+                                                                    this.tagContains[this.tagContains.IndexOf(data)]=__e.Value.ToString();
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.TagContainsNot != null)
+                    {
+                        foreach (var data in this.tagContainsNot)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">TagContainsNot</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+                                                                    this.tagContainsNot[this.tagContainsNot.IndexOf(data)]=__e.Value.ToString();
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.RegionId != null)
+                    {
+                        foreach (var data in this.regionId)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">RegionId</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+                                                                    this.regionId[this.regionId.IndexOf(data)]=__e.Value.ToString();
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.RegionIdNot != null)
+                    {
+                        foreach (var data in this.regionIdNot)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">RegionIdNot</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+                                                                    this.regionIdNot[this.regionIdNot.IndexOf(data)]=__e.Value.ToString();
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.ExternalReferenceUrl != null)
+                    {
+                        foreach (var data in this.externalReferenceUrl)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4" style="font-size:0.85rem">ExternalReferenceUrl</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+                                                                    this.externalReferenceUrl[this.externalReferenceUrl.IndexOf(data)]=__e.Value.ToString();
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.ExternalReferenceUrlContains != null)
+                    {
+                        foreach (var data in this.externalReferenceUrlContains)
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4  " style="font-size:0.75rem">ExternalReferenceUrlContains</label>
+                                <input class="form-control  col-6 m-auto"
+                                       value="@data" @onchange="((ChangeEventArgs __e)=> {
+                                                                    this.externalReferenceUrlContains[this.externalReferenceUrlContains.IndexOf(data)]=__e.Value.ToString();
+                                                                })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    @if (this.neuronQuery.SortOrder != null)
+                    {
+                        <div class="form-group row">
+                            <label class="control-label col-4">SortOrderValue</label>
+                            <select class="form-control  col-5 m-auto" @bind="@this.sortOrderValue">
+                                <option>null</option>
+                                @foreach (var item in Enum.GetValues(typeof(SortOrderValue)))
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                            <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                        </div>
+                    }
+                    @if (this.neuronQuery.SortBy != null)
+                    {
+                        <div class="form-group row">
+                            <label class="control-label col-4">SortByValue</label>
+                            <select class="form-control  col-5 m-auto" @bind="@this.sortByValue">
+                                <option>null</option>
+                                @foreach (var item in Enum.GetValues(typeof(SortByValue)))
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                            <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                        </div>
+                    }
+                    @if (this.neuronQuery.TerminalActiveValues != null)
+                    {
+                        <div class="form-group row">
+                            <label class="control-label col-4" style="font-size:0.85rem">TerminalActiveValues</label>
+                            <div class="multiselect   col-6 m-auto">
+                                <div class="selectBox" onclick="showCheckboxes(event.target.parentNode.parentNode.children[1])">
+                                    <select class="form-control" style="width: 15.5rem;" @onchange="((args)=> {
+                                                                                  this.AddTerminalActiveValues(null,false) ;
+                                                                               })">
+                                        @if (this.neuronQuery.TerminalActiveValues == ActiveValues.All)
+                                        {
+                                            <option>Active,Inactive</option>
+                                        }
+                                        else
+                                        {
+                                            <option>@this.neuronQuery.TerminalActiveValues.ToString()</option>
+                                        }
+                                    </select>
+                                    <div class="overSelect"></div>
+                                </div>
+                                <div id="checkboxes">
+                                    @foreach (ActiveValues item in Enum.GetValues(typeof(ActiveValues)))
+                                    {
+                                        if (item == ActiveValues.None || item == ActiveValues.All)
+                                        {
+                                            continue;
+                                        }
+                                        if (item == this.neuronQuery.TerminalActiveValues)
+                                        {
+                                            <label for="@item">
+                                                <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          this.AddTerminalActiveValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" checked />@item
+                                                </label>
+                                                continue;
+                                            }
+                                            if (this.neuronQuery.TerminalActiveValues == ActiveValues.All)
+                                            {
+                                                <label for="@item">
+                                                    <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          this.AddTerminalActiveValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" checked />@item
+                                                </label>
+                                                continue;
+                                            }
+                                            <label for="@item">
+                                                <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          this.AddTerminalActiveValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" />@item
+                                                </label>
+                                            }
+                                </div>
+                            </div>
+                            <i class="fa fa-remove col-1" onclick="deleteMultiSelectMenu(event.target.parentNode.children[1].children[0].children[0],event.target.parentNode)" style="cursor:pointer;"></i>
+                        </div>
+                    }
+                    @if (this.neuronQuery.NeuronActiveValues != null)
+                    {
+                        <div class="form-group row">
+                            <label class="control-label col-4" style="font-size:0.85rem">NeuronActiveValues</label>
+                            <div class="multiselect   col-6 m-auto">
+                                <div class="selectBox" onclick="showCheckboxes(event.target.parentNode.parentNode.children[1])">
+                                    <select class="form-control" style="width: 15.5rem;" @onchange="((args)=> {
+                                                                                  this.AddNeuronActiveValues(null,false) ;
+                                                                               })">
+                                        @if (this.neuronQuery.NeuronActiveValues == ActiveValues.All)
+                                        {
+                                            <option>Active,Inactive</option>
+                                        }
+                                        else
+                                        {
+                                            <option>@this.neuronQuery.NeuronActiveValues.ToString()</option>
+                                        }
+                                    </select>
+                                    <div class="overSelect"></div>
+                                </div>
+                                <div id="checkboxes">
+                                    @foreach (ActiveValues item in Enum.GetValues(typeof(ActiveValues)))
+                                    {
+                                        if (item == ActiveValues.None || item == ActiveValues.All)
+                                        {
+                                            continue;
+                                        }
+                                        if (item == this.neuronQuery.NeuronActiveValues)
+                                        {
+                                            <label for="@item">
+                                                <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          this.AddNeuronActiveValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" checked />@item
+                                                </label>
+                                                continue;
+                                            }
+                                        if (this.neuronQuery.NeuronActiveValues == ActiveValues.All)
+                                            {
+                                                <label for="@item">
+                                                    <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          this.AddNeuronActiveValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" checked />@item
+                                                </label>
+                                                continue;
+                                            }
+                                            <label for="@item">
+                                                <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          this.AddNeuronActiveValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" />@item
+                                                </label>
+                                            }
+                                </div>
+                            </div>
+                            <i class="fa fa-remove col-1" onclick="deleteMultiSelectMenu(event.target.parentNode.children[1].children[0].children[0],event.target.parentNode)" style="cursor:pointer;"></i>
+                        </div>
+                    }
+                    @if (this.neuronQuery.RelativeValues != null)
+                    {
+                        <div class="form-group row">
+                            <label class="control-label col-4" style="font-size:0.85rem">RelativeValues</label>
+                            <div class="multiselect   col-6 m-auto">
+                                <div class="selectBox" onclick="showCheckboxes(event.target.parentNode.parentNode.children[1])">
+                                    <select class="form-control" style="width: 15.5rem;" @onchange="(()=> {
+                                                                                  this.AddRelativeValues(null,false) ;
+                                                                               })">
+                                        @if (this.neuronQuery.RelativeValues == RelativeValues.All)
+                                        {
+                                            <option>Postsynaptic,Presynaptic</option>
+                                        }
+                                        else
+                                        {
+                                            <option>@this.neuronQuery.RelativeValues.ToString()</option>
+                                        }
+                                    </select>
+                                    <div class="overSelect"></div>
+                                </div>
+                                <div id="checkboxes">
+                                    @foreach (RelativeValues item in Enum.GetValues(typeof(RelativeValues)))
+                                    {
+                                        if (item == RelativeValues.None || item == RelativeValues.All)
+                                        {
+                                            continue;
+                                        }
+                                        if (item == this.neuronQuery.RelativeValues)
+                                        {
+                                            <label for="@item">
+                                                <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          this.AddRelativeValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" checked />@item
+                                                </label>
+                                                continue;
+                                        }
+                                        if (this.neuronQuery.RelativeValues == RelativeValues.All)
+                                            {
+                                                <label for="@item">
+                                                    <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          this.AddRelativeValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" checked />@item
+                                                </label>
+                                                continue;
+                                            }
+                                            <label id="overlay" for="@item">
+                                                <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          this.AddRelativeValues(item,(bool) args.Value);
+                                                      })" type="checkbox" data-value="@item" id="one" />@item
+                                                </label>
+                                     }
+                                </div>
+                            </div>
+                            <i class="fa fa-remove col-1" onclick="deleteMultiSelectMenu(event.target.parentNode.children[1].children[0].children[0],event.target.parentNode)" style="cursor:pointer;"></i>
+                        </div>
+                    }
+                    @foreach (var i in this.FieldsCount)
+                    {
+                        @if (i == nameof(this.neuronQuery.Page))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">Page</label>
+                                <input type="number" value="@this.page" class="form-control col-6 m-auto"
+                                       placeholder="Page" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.page =Convert.ToInt32(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.PageSize))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">PageSize</label>
+                                <input type="number" class="form-control col-6 m-auto"
+                                       placeholder="PageSize" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.pageSize =Convert.ToInt32(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.RegionId))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">RegionId</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="RegionId" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.regionId.Add(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.RegionIdNot))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">RegionIdNot</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="RegionIdNot" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.regionIdNot.Add(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.ExternalReferenceUrl))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4" style="font-size:0.85rem">ExternalReferenceUrl</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="ExternalReferenceUrl" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.externalReferenceUrl.Add(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.ExternalReferenceUrlContains))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4  " style="font-size:0.75rem">ExternalReferenceUrlContains</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="ExternalReferenceUrlContains" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.externalReferenceUrlContains.Add(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.Id))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">Id</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="Id" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.id.Add(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.Postsynaptic))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">Postsynaptic</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="Postsynaptic" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.postsynaptic.Add(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.PostsynapticNot))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">PostsynapticNot</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="PostsynapticNot" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.postsynapticNot.Add(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.Presynaptic))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">Presynaptic</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="Presynaptic" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.presynaptic.Add(__e.Value.ToString());
+                                                                             })" />
+
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.PresynapticNot))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">PresynapticNot</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="PresynapticNot" @onchange="((ChangeEventArgs __e)=> {
+                                                                                this.presynapticNot.Add(__e.Value.ToString() );
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.TagContains))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">TagContains</label>
+                                <input class="form-control  col-6 m-auto"
+                                       placeholder="TagContains" @onchange="((ChangeEventArgs __e)=> {
+                                                                                 this.tagContains.Add(__e.Value.ToString());
+                                                                             })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.TagContainsNot))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">TagContainsNot</label>
+                                <input class="form-control  col-5 m-auto"
+                                       placeholder="TagContainsNot" @onchange="((ChangeEventArgs __e)=> {
+                                                                                   this.tagContainsNot.Add(new string(__e.Value.ToString()));
+                                                                               })" />
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+
+                        @if (i == nameof(this.neuronQuery.SortOrder))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">SortOrderValue</label>
+                                <select class="form-control  col-5 m-auto" @bind="@this.sortOrderValue">
+                                    <option>null</option>
+                                    @foreach (var item in Enum.GetValues(typeof(SortOrderValue)))
+                                    {
+                                        <option value="@item">@item</option>
+                                    }
+                                </select>
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.SortBy) )
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4">SortByValue</label>
+                                <select class="form-control  col-5 m-auto" @bind="@this.sortByValue">
+                                    <option>null</option>
+                                    @foreach (var item in Enum.GetValues(typeof(SortByValue)))
+                                    {
+                                        <option value="@item">@item</option>
+                                    }
+                                </select>
+                                <i class="fa fa-remove col-1" onclick="deleteForm(event.target.parentNode.children[1],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+
+                        @if (i == nameof(this.neuronQuery.TerminalActiveValues))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4" style="font-size:0.85rem">TerminalActiveValues</label>
+                                <div class="multiselect   col-6 m-auto">
+                                    <div class="selectBox" onclick="showCheckboxes(event.target.parentNode.parentNode.children[1])">
+                                        <select class="form-control" style="width: 15.5rem;" @onchange="(()=> {
+                                                                                  AddTerminalActiveValues(null,false) ;
+                                                                               })">
+                                            <option>Select an option</option>
+                                        </select>
+                                        <div class="overSelect"></div>
+                                    </div>
+                                    <div id="checkboxes">
+                                        @foreach (ActiveValues item in Enum.GetValues(typeof(ActiveValues)))
+                                        {
+                                            if (item == ActiveValues.None || item == ActiveValues.All)
+                                            {
+                                                continue;
+                                            }
+                                            <label for="@item">
+                                                <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+
+                                                          AddTerminalActiveValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" />@item
+                                                </label>
+                                            }
+                                    </div>
+                                </div>
+                                <i class="fa fa-remove col-1" onclick="deleteMultiSelectMenu(event.target.parentNode.children[1].children[0].children[0],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.NeuronActiveValues))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4" style="font-size:0.85rem">NeuronActiveValues</label>
+                                <div class="multiselect   col-6 m-auto">
+                                    <div class="selectBox" onclick="showCheckboxes(event.target.parentNode.parentNode.children[1])">
+                                        <select class="form-control " style="width: 15.5rem;" @onchange="(()=> {
+                                                                                  AddNeuronActiveValues(null,false) ;
+                                                                               })">
+                                            <option>Select an option</option>
+                                        </select>
+                                        <div class="overSelect"></div>
+                                    </div>
+                                    <div id="checkboxes">
+                                        @foreach (ActiveValues item in Enum.GetValues(typeof(ActiveValues)))
+                                        {
+                                            if (item == ActiveValues.None || item == ActiveValues.All)
+                                            {
+                                                continue;
+                                            }
+                                            <label for="@item">
+                                                <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+                                                          AddNeuronActiveValues(item,(bool) args.Value);
+                                                      })" type="checkbox" id="one" data-value="@item" />@item
+                                                </label>
+                                            }
+                                    </div>
+                                </div>
+                                <i class="fa fa-remove col-1" onclick="deleteMultiSelectMenu(event.target.parentNode.children[1].children[0].children[0],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                        @if (i == nameof(this.neuronQuery.RelativeValues))
+                        {
+                            <div class="form-group row">
+                                <label class="control-label col-4" style="font-size:0.85rem">RelativeValues</label>
+                                <div class="multiselect   col-6 m-auto">
+                                    <div class="selectBox" onclick="showCheckboxes(event.target.parentNode.parentNode.children[1])">
+                                        <select class="form-control" style="width: 15.5rem;" @onchange="(()=> {
+                                                                                  AddRelativeValues(null,false) ;
+                                                                               })">
+                                            <option>Select an option</option>
+                                        </select>
+                                        <div class="overSelect"></div>
+                                    </div>
+                                    <div id="checkboxes">
+                                        @foreach (RelativeValues item in Enum.GetValues(typeof(RelativeValues)))
+                                        {
+                                            if (item == RelativeValues.None || item == RelativeValues.All)
+                                            {
+                                                continue;
+                                            }
+                                            <label id="overlay" for="@item">
+                                                <input onclick="updateCheckboxText(event.target.checked,event.target.parentNode.parentNode.parentNode.children[0].children[0].children[0],event.target.dataset)" @onchange="((args)=> {
+
+                                                          AddRelativeValues(item,(bool) args.Value);
+                                                      })" type="checkbox" data-value="@item" id="one" />@item
+                                                </label>
+                                            }
+                                    </div>
+                                </div>
+                                <i class="fa fa-remove col-1" onclick="deleteMultiSelectMenu(event.target.parentNode.children[1].children[0].children[0],event.target.parentNode)" style="cursor:pointer;"></i>
+                            </div>
+                        }
+                    }
+                    <button class="btn btn-primary btn-user btn-block mt-1 Apply" id="Apply"  @onclick="@this.Submit" type="submit">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private NeuronQuery neuronQuery;
+    private string url;
+    private string avatarUrl;
+    private List<string> ParametersAttributes;
+    private string newField = "";
+    private List<string> FieldsCount = new List<string>();
+    private int? page = null;
+    private int? pageSize = null;
+    private List<string> regionIdNot = new List<string>();
+    private List<string> regionId = new List<string>();
+    private List<string> externalReferenceUrlContains = new List<string>();
+    private List<string> id = new List<string>();
+    private List<string> externalReferenceUrl = new List<string>();
+    private List<string> postsynaptic = new List<string>();
+    private List<string> postsynapticNot = new List<string>();
+    private List<string> presynaptic = new List<string>();
+    private List<string> presynapticNot = new List<string>();
+    private List<string> tagContains = new List<string>();
+    private List<string> tagContainsNot = new List<string>();
+    private SortOrderValue? sortOrderValue;
+    private SortByValue? sortByValue;
+    private ActiveValues? terminalActiveValues;
+    private ActiveValues? neuronActiveValues;
+    private RelativeValues? relativeValues;
+    private bool isVisible;
+    private string newAvatarUrl;
+
+    [Parameter]
+    public string NewAvatarUrl
+    {
+        get => this.newAvatarUrl;
+        set
+        {
+            if (this.newAvatarUrl != value)
+            {
+                this.newAvatarUrl = value;
+                this.NewAvatarUrlChanged.InvokeAsync(this.NewAvatarUrl);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> NewAvatarUrlChanged { get; set; }
+
+    [Parameter]
+    public string AvatarUrl
+    {
+        get => this.avatarUrl;
+        set
+        {
+            this.avatarUrl = value;
+        }
+    }
+
+    [Parameter]
+    public bool IsVisible
+    {
+        get => this.isVisible;
+        set
+        {
+            if (this.isVisible != value)
+            {
+                this.isVisible = value;
+                if (this.isVisible)
+                    this.Load();
+
+                this.IsVisibleChanged.InvokeAsync(this.isVisible);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    private void Load()
+    {
+        if (this.AvatarUrl !=null)
+        {
+            var startWith = this.AvatarUrl.IndexOf("?");
+            var parameters = "";
+            if (startWith != -1)
+            {
+                this.url = this.AvatarUrl.Substring(0, AvatarUrl.IndexOf("?"));
+                parameters = this.AvatarUrl.Substring(startWith);
+            }
+            else
+            {
+                this.url = this.AvatarUrl;
+            }
+            if (NeuronQuery.TryParse(parameters, out NeuronQuery result))
+            {
+                neuronQuery = result;
+                // TODO: transfer to NeuronQuery
+                this.pageSize = this.neuronQuery.PageSize;
+                this.page = this.neuronQuery.Page;
+                if (this.neuronQuery.Postsynaptic!=null)
+                {
+                    this.postsynaptic = this.neuronQuery.Postsynaptic.ToList();
+                }
+                if (this.neuronQuery.PostsynapticNot != null)
+                {
+                    this.postsynapticNot = this.neuronQuery.PostsynapticNot.ToList();
+                }
+                if (this.neuronQuery.Presynaptic != null)
+                {
+                    this.presynaptic = this.neuronQuery.Presynaptic.ToList();
+                }
+                if (this.neuronQuery.PresynapticNot != null)
+                {
+                    this.presynapticNot = this.neuronQuery.PresynapticNot.ToList();
+                }
+                if (this.neuronQuery.TagContains != null)
+                {
+                    this.tagContains = this.neuronQuery.TagContains.ToList();
+                }
+                if (this.neuronQuery.TagContainsNot != null)
+                {
+                    this.tagContainsNot = this.neuronQuery.TagContainsNot.ToList();
+                }
+                if (this.neuronQuery.RegionId != null)
+                {
+                    this.regionId = this.neuronQuery.RegionId.ToList();
+                }
+                if (this.neuronQuery.RegionIdNot != null)
+                {
+                    this.regionIdNot = this.neuronQuery.RegionIdNot.ToList();
+                }
+                if (this.neuronQuery.ExternalReferenceUrl != null)
+                {
+                    this.externalReferenceUrl = this.neuronQuery.ExternalReferenceUrl.ToList();
+                }
+                if (this.neuronQuery.ExternalReferenceUrlContains != null)
+                {
+                    this.externalReferenceUrlContains = this.neuronQuery.ExternalReferenceUrlContains.ToList();
+                }
+                if (this.neuronQuery.Id != null)
+                {
+                    this.id = this.neuronQuery.Id.ToList();
+                }
+                if (this.neuronQuery.SortBy != null)
+                {
+                    this.sortByValue = this.neuronQuery.SortBy;
+                }
+                if (this.neuronQuery.SortOrder != null)
+                {
+                    this.sortOrderValue = this.neuronQuery.SortOrder;
+                }
+                if (this.neuronQuery.TerminalActiveValues != null)
+                {
+                    this.terminalActiveValues = this.neuronQuery.TerminalActiveValues;
+                }
+                if (this.neuronQuery.NeuronActiveValues != null)
+                {
+                    this.neuronActiveValues = this.neuronQuery.NeuronActiveValues;
+                }
+                if (this.neuronQuery.RelativeValues != null)
+                {
+                    this.relativeValues = this.neuronQuery.RelativeValues;
+                }
+            }
+        }
+        if (this.neuronQuery != null)
+            this.ParametersAttributes = new List<string>(new string[] { nameof(this.neuronQuery.Page), nameof(this.neuronQuery.PageSize),
+                nameof(this.neuronQuery.RegionId), nameof(this.neuronQuery.RegionIdNot), nameof(this.neuronQuery.ExternalReferenceUrl),
+                nameof(this.neuronQuery.ExternalReferenceUrlContains), nameof(this.neuronQuery.Id), nameof(this.neuronQuery.Postsynaptic),
+                nameof(this.neuronQuery.PostsynapticNot), nameof(this.neuronQuery.Presynaptic), nameof(this.neuronQuery.PresynapticNot),
+                nameof(this.neuronQuery.TagContains), nameof(this.neuronQuery.TagContainsNot), nameof(this.neuronQuery.SortOrder),
+                nameof(this.neuronQuery.SortBy), nameof(this.neuronQuery.TerminalActiveValues), nameof(this.neuronQuery.NeuronActiveValues),
+                nameof(this.neuronQuery.RelativeValues) });
+    }
+
+    private void AddTerminalActiveValues(ActiveValues? data, bool status)
+    {
+        if (data == null)
+        {
+            this.terminalActiveValues = null;
+        }
+        if (this.terminalActiveValues == null)
+        {
+            if (status)
+            {
+                this.terminalActiveValues = data;
+            }
+            else
+            {
+                this.terminalActiveValues = null;
+            }
+        }
+        else
+        {
+            if (status)
+            {
+                this.terminalActiveValues |= data;
+            }
+            else
+            {
+                this.terminalActiveValues &= ~data;
+            }
+        }
+    }
+
+    private void AddNeuronActiveValues(ActiveValues? data, bool status)
+    {
+        if (data == null)
+        {
+            this.neuronActiveValues = null;
+        }
+        if (this.neuronActiveValues == null)
+        {
+            if (status)
+            {
+                this.neuronActiveValues = data;
+            }
+            else
+            {
+                this.neuronActiveValues = null;
+            }
+        }
+        else
+        {
+            if (status)
+            {
+                this.neuronActiveValues |= data;
+            }
+            else
+            {
+                this.neuronActiveValues &= ~data;
+            }
+        }
+    }
+
+    private void AddRelativeValues(RelativeValues? data, bool status)
+    {
+        if (data == null)
+        {
+            this.relativeValues = null;
+        }
+        if (this.relativeValues == null)
+        {
+            if (status)
+            {
+                this.relativeValues = data;
+            }
+            else
+            {
+                this.relativeValues = null;
+            }
+        }
+        else
+        {
+            if (status)
+            {
+                this.relativeValues |= data;
+            }
+            else
+            {
+                this.relativeValues &= ~data;
+            }
+        }
+    }
+
+    private void RemoveAllEmptyValues()
+    {
+        if (this.presynaptic != null)
+        {
+            this.presynaptic.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+        if (this.presynapticNot != null)
+        {
+            this.presynapticNot.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+        if (this.postsynaptic != null)
+        {
+            this.postsynaptic.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+        if (this.postsynapticNot != null)
+        {
+            this.postsynapticNot.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+        if (this.tagContains != null)
+        {
+            this.tagContains.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+        if (this.tagContainsNot != null)
+        {
+            this.tagContainsNot.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+        if (this.regionId != null)
+        {
+            this.regionId.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+        if (this.regionIdNot != null)
+        {
+            this.regionIdNot.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+        if (this.externalReferenceUrl != null)
+        {
+            this.externalReferenceUrl.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+        if (this.externalReferenceUrlContains != null)
+        {
+            this.externalReferenceUrlContains.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+    }
+
+    public void Submit()
+    {
+        this.RemoveAllEmptyValues();
+        this.FieldsCount.Clear();
+        //Assign local parameters to object's parameters
+        this.neuronQuery.PageSize = this.pageSize;
+        this.neuronQuery.Page = this.page;
+        this.neuronQuery.Postsynaptic = this.postsynaptic;
+        this.neuronQuery.PostsynapticNot = this.postsynapticNot;
+        this.neuronQuery.Presynaptic = this.presynaptic;
+        this.neuronQuery.PresynapticNot = this.presynapticNot;
+        this.neuronQuery.TagContains = this.tagContains;
+        this.neuronQuery.TagContainsNot = this.tagContainsNot;
+        this.neuronQuery.ExternalReferenceUrl = this.externalReferenceUrl;
+        this.neuronQuery.ExternalReferenceUrlContains = this.externalReferenceUrlContains;
+        this.neuronQuery.RegionId = this.regionId;
+        this.neuronQuery.RegionIdNot = this.regionIdNot;
+        this.neuronQuery.Id = this.id;
+        this.neuronQuery.SortOrder = this.sortOrderValue;
+        this.neuronQuery.SortBy = this.sortByValue;
+        this.neuronQuery.TerminalActiveValues = this.terminalActiveValues;
+        this.neuronQuery.NeuronActiveValues = this.neuronActiveValues;
+        this.neuronQuery.RelativeValues = this.relativeValues;
+        // End of assign proccess
+        this.NewAvatarUrl = url + this.neuronQuery.ToString();
+        this.IsVisible = false;
+    }
+}

@@ -1,0 +1,31 @@
+﻿@typeparam TItem
+
+<ConditionalDisplay Show="@Render">
+    @HeaderTitle
+
+    <ul class="@this.ListCssClass">
+        <ForEach Items="@Items" Context="item">
+            <ItemTemplate>
+                @ItemTemplate(item)
+            </ItemTemplate>
+        </ForEach>
+    </ul>
+</ConditionalDisplay>
+
+@code {
+
+    [Parameter]
+    public bool Render { get; set; }
+
+    [Parameter]
+    public RenderFragment HeaderTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemTemplate { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<TItem> Items { get; set; }
+
+    [Parameter]
+    public string ListCssClass { get; set; }
+}

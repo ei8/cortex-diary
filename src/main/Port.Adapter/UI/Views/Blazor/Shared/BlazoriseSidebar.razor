@@ -1,7 +1,7 @@
 ﻿@using ei8.Cortex.Diary.Domain.Model
 @using ei8.Cortex.Diary.Application.Settings
 @using ei8.Cortex.Diary.Application
-@using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.ViewModels
+@using ei8.Cortex.Diary.Port.Adapter.Common;
 
 @inject ITokenProvider tokenProvider
 @inject IEnumerable<View> views
@@ -9,26 +9,34 @@
 @inject IToastService toastService
 @inject ISettingsService settingsService
 
-<Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Dark"
-     Mode="BarMode.VerticalInline" CollapseMode="BarCollapseMode.Small">
-    <BarToggler />
+<Bar Background="Background.Dark" ThemeContrast="ThemeContrast.Dark"
+     Mode="@(this.NavBarType == NavBarType.Side ? BarMode.VerticalInline : BarMode.Horizontal)" CollapseMode="BarCollapseMode.Small"
+     Visible="@(this.NavBarType == NavBarType.Side)">
     <BarBrand>
         <BarItem>
             <BarLink To="">
-                <BarIcon IconName="brandLogo" />
-                neurUL Code
+                <BarIcon Class=@($"mt-0 ml-0{(this.NavBarType == NavBarType.Side ? " mr-2" : string.Empty)}") IconName="this.GenerateBrandLogo(settingsService.AppIcon)" />
+                @(string.IsNullOrEmpty(settingsService.AppTitle) ? " neurUL <# " : settingsService.AppTitle)
             </BarLink>
         </BarItem>
     </BarBrand>
-    <BarMenu>
+    <BarToggler Class="pt-2"/>
+    <BarMenu Class="@(this.NavBarType == NavBarType.Top ? "m-2" : string.Empty)">
         <BarStart>
-            @foreach (var v in this.views)
+            @foreach (var v in this.views.Where(vi => string.IsNullOrWhiteSpace(vi.ParentUrl)))
             {
                 <BarItem>
-                    <BarLink To="@v.Url" Clicked="() => this.Navigate(v.Url)">
-                        <BarIcon IconName="MainMenu(v.Icon)" />
-                        @v.Name
-                    </BarLink>
+                    @if (this.views.Any(vi => vi.ParentUrl == v.Url))
+                    {
+                        <ParentBarLink CurrentView="@v" NavBarType="@this.NavBarType"/>
+                    }
+                    else
+                    {
+                        <BarLink Class=@(v.GenerateBarActiveClass(this.navigationManager, this.NavBarType)) Clicked="() => v.Navigate(this.navigationManager)">
+                            <BarIcon IconName="v.GenerateIconName()" />
+                            @v.Name
+                        </BarLink>
+                    }
                 </BarItem>
             }
         </BarStart>
@@ -67,8 +75,9 @@
                     </NotAuthorized>
                     <Authorized>
                         <form action=@(this.settingsService.BasePath + "/logoutidp") method="post" id="ff">
-                            <BarLink To="@(this.settingsService.BasePath + "/loginidp")">
+                            <BarLink href="#" onclick="frmsubmit('ff');">
                                 <BarIcon IconName="signOut" />
+                                @context.User.Identity.Name.Truncate(15)
                                 <span style="padding-left: 5px; font-size: smaller; font-style: italic">(Sign out)</span>
                             </BarLink>
                             <input name="__RequestVerificationToken" type="hidden" value="@this.tokenProvider.XsrfToken">
@@ -80,22 +89,23 @@
     </BarMenu>
 </Bar>
 
-@code {
-
-    private void Navigate(string url)
+@code
+{
+    private RenderFragment GenerateBrandLogo(string url)
     {
-        this.navigationManager.NavigateTo(url, true);
+        if (string.IsNullOrEmpty(url)) 
+        {
+            return @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
+        }
+        else 
+        {
+            return @<img src="@url" alt="Home" style="width:30px; height:30px">;
+        }
     }
 
-    private RenderFragment MainMenu(string iconName)
-    {
-        RenderFragment retFragment = null;
-        retFragment = @<span class="oi @iconName" aria-hidden="true"></span>;
-        return retFragment;
-    }
+    [Parameter]
+    public NavBarType NavBarType { get; set; }
 
-    RenderFragment brandLogo =
-    @<img src="dasz.ico" alt="Home" style="width:30px; height:30px">;
-    RenderFragment signIn =@<span class="oi oi-account-login" aria-hidden="true"></span>;
-    RenderFragment signOut =@<span class="oi oi-account-logout" aria-hidden="true"></span>;
+    RenderFragment signIn = @<span class="oi oi-account-login" aria-hidden="true"></span>;
+    RenderFragment signOut = @<span class="oi oi-account-logout" aria-hidden="true"></span>;
 }

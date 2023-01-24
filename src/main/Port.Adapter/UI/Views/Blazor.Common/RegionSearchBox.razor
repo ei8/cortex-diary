@@ -1,0 +1,148 @@
+﻿@using ei8.Cortex.Diary.Application.Neurons;
+@using ei8.Cortex.Diary.Domain.Model;
+@using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
+@using ei8.Cortex.Library.Common;
+@inject INeuronQueryService NeuronQueryService;
+
+<AvatarUrlEditorBox @bind-NewAvatarUrl="@this.AvatarUrl" AvatarUrl="@this.AvatarUrl" @bind-IsVisible="@this.IsAvatarUrlVisible" />
+@if (this.IsVisible)
+{
+    <div class="modal" tabindex="-1" style="display:block" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Select Region Neuron</h3>
+                    <!-- Button to close the popup -->
+                    <button type="button" class="close" @onclick="() => this.SelectNeuron(null)">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-auto p-0 pr-1">
+                                <button class="btn btn-secondary btn-sm" @onclick="this.Load">Reload</button>
+                            </div>
+                            <div class="col p-0">
+                                <input class="form-control form-control-sm ml-1 inputEditor" placeholder="Avatar URL" @bind="AvatarUrl" />
+                                <button class="inputEditorButton" @onclick="this.ShowAvatarEditorBox"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col p-0">
+                                <EditForm Model="this">
+                                    <ListView Items="@this.Children" Render="@true">
+                                        <HeaderTitle>
+                                            <h6>Search Results</h6>
+                                        </HeaderTitle>
+                                        <ItemTemplate Context="itemContext">
+                                            <ConditionalDisplay Show="@true">
+                                                <li style="list-style:none" @key="@itemContext.Neuron.Id">
+                                                    <input type="radio" id="@itemContext.Neuron.Id" checked="@(this.TempSelectedNeuron == itemContext)" @onchange="@(() => { this.TempSelectedNeuron = itemContext; })" />
+                                                    <label for="@itemContext.Neuron.Tag">@(!string.IsNullOrEmpty(itemContext.Neuron.Tag) ? itemContext.Neuron.Tag : " ")</label>
+                                                </li>
+                                            </ConditionalDisplay>
+                                        </ItemTemplate>
+                                    </ListView>
+                                </EditForm>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm mr-auto" @onclick="() => this.BaseNeuron()">Base Region</button>
+                    <button class="btn btn-primary btn-sm ml-auto" @onclick="() => this.SelectNeuron(this.TempSelectedNeuron)">Select</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    protected override void OnInitialized()
+    {
+        this.Children = new NeuronResultItemViewModel[0];
+    }
+
+    [Parameter]
+    public string AvatarUrl { get; set; }
+
+    private bool IsAvatarUrlVisible { get; set; } = false;
+
+    private NeuronResultItemViewModel[] Children { get; set; } = new NeuronResultItemViewModel[0];
+
+    private bool isVisible;
+    [Parameter]
+    public bool IsVisible
+    {
+        get => this.isVisible;
+        set
+        {
+            if (this.isVisible != value)
+            {
+                this.isVisible = value;
+                this.IsVisibleChanged.InvokeAsync(this.isVisible);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    private void SelectNeuron(NeuronResultItemViewModel value)
+    {
+        this.SelectedNeuron = value;
+        this.IsVisible = false;
+    }
+
+    private async void BaseNeuron()
+    {
+        this.SetSelectedNeuronCore(null);
+        //if (this.selectedNeuron != value)
+        //{
+        //    this.SelectedNeuron = value;
+        //}
+        //else 
+        //{
+        //   await this.SelectedNeuronChanged.InvokeAsync(this.selectedNeuron);
+        //}
+        this.IsVisible = false;
+    }
+
+    private void SetSelectedNeuronCore(NeuronResultItemViewModel value)
+    {
+        this.selectedNeuron = value;
+        this.SelectedNeuronChanged.InvokeAsync(this.selectedNeuron);
+    }
+
+    private NeuronResultItemViewModel TempSelectedNeuron { get; set; }
+
+    private NeuronResultItemViewModel selectedNeuron { get; set; }
+    [Parameter]
+    public NeuronResultItemViewModel SelectedNeuron
+    {
+        get => this.selectedNeuron;
+        set
+        {
+            if (this.selectedNeuron != value)
+            {
+                this.SetSelectedNeuronCore(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<NeuronResultItemViewModel> SelectedNeuronChanged { get; set; }
+
+    private async Task Load()
+    {
+        var children = new List<NeuronResultItemViewModel>();
+        var ns = (await NeuronQueryService.SendQuery(this.AvatarUrl)).Items;
+        ns.ToList().ForEach(n => children.Add(new NeuronResultItemViewModel(new Neuron(n))));
+        this.Children = children.ToArray();
+    }
+
+    private void ShowAvatarEditorBox()
+    {
+        this.IsAvatarUrlVisible = true;
+    }
+}

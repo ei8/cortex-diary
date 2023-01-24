@@ -1,8 +1,9 @@
 ﻿using ei8.Cortex.Diary.Domain.Model;
 using ei8.Cortex.Diary.Nucleus.Client.In;
 using ei8.Cortex.Subscriptions.Common;
+using ei8.Cortex.Subscriptions.Common.Receivers;
+using System;
 using System.Threading.Tasks;
-
 namespace ei8.Cortex.Diary.Application.Subscriptions
 {
     public class SubscriptionApplicationService : ISubscriptionApplicationService
@@ -16,18 +17,37 @@ namespace ei8.Cortex.Diary.Application.Subscriptions
             this.tokenManager = tokenManager;
         }
 
-		public async Task SubscribeAsync(string avatarUrl, string avatarSnapshotUrl, string deviceName, string pushAuth, string pushP256dh, string pushEndpoint)
+        public async Task SubscribeAsync(string avatarUrl, SubscriptionInfo subscription, IReceiverInfo receiverInfo)
         {
-			var token = await this.tokenManager.RetrieveAccessTokenAsync();
+            var token = await this.tokenManager.RetrieveAccessTokenAsync();
 
-			await this.subscriptionClient.AddSubscriptionAsync(avatarUrl, new BrowserSubscriptionInfo()
-			{
-				AvatarUrl = avatarUrl,
-				Name = deviceName,
-				PushAuth = pushAuth,	
-				PushEndpoint = pushEndpoint,
-				PushP256DH = pushP256dh
-			}, token);
+            switch (receiverInfo)
+            {
+                case BrowserReceiverInfo br:
+                    await this.subscriptionClient.AddSubscriptionAsync(
+                        avatarUrl, 
+                        new AddSubscriptionWebReceiverRequest()
+                        {
+                            SubscriptionInfo = subscription,
+                            ReceiverInfo = br
+                        }, 
+                        token
+                        );
+                    break;
+                case SmtpReceiverInfo sr:
+                    await this.subscriptionClient.AddSubscriptionAsync(
+                        avatarUrl, 
+                        new AddSubscriptionSmtpReceiverRequest()
+                        {
+                            SubscriptionInfo = subscription,
+                            ReceiverInfo = sr
+                        }, 
+                        token
+                        );
+                    break;
+                default:
+                    throw new NotSupportedException($"Unsupported receiver info type {receiverInfo.GetType().Name}");
+            }
         }
     }
 }

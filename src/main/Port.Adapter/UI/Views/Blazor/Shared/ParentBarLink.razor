@@ -1,0 +1,53 @@
+﻿@using ei8.Cortex.Diary.Domain.Model
+@using ei8.Cortex.Diary.Application.Settings
+@using ei8.Cortex.Diary.Application
+
+@inject ITokenProvider tokenProvider
+@inject IEnumerable<View> views
+@inject NavigationManager navigationManager
+@inject ISettingsService settingsService
+
+<BarDropdown @bind-Visible="@this.dropdownVisible">
+    <BarDropdownToggle>
+        <BarIcon IconName="this.CurrentView.GenerateIconName()" />
+        @this.CurrentView.Name
+    </BarDropdownToggle>
+    <BarDropdownMenu>
+        @foreach (var v in this.views.Where(vi => vi.ParentUrl == this.CurrentView.Url))
+        {
+            @if (this.views.Any(pi => pi.ParentUrl == v.Url))
+            {
+                <ParentBarLink CurrentView="@v" NavBarType="@this.NavBarType"/>
+            }
+            else
+            {
+                <BarDropdownItem Class=@(v.GenerateBarActiveClass(this.navigationManager, this.NavBarType)) Clicked="() => v.Navigate(this.navigationManager)">
+                    <BarIcon IconName="v.GenerateIconName()" />
+                    @v.Name
+                </BarDropdownItem>
+            }
+        }
+    </BarDropdownMenu>
+</BarDropdown>
+
+@code {
+    private bool dropdownVisible;
+
+    [Parameter] public View CurrentView { get; set; }
+
+    [Parameter]
+    public NavBarType NavBarType { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.dropdownVisible = this.CurrentView.HasActiveChild(views, this.navigationManager.Uri);
+            if (this.dropdownVisible)
+                this.StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+}

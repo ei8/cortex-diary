@@ -5,26 +5,9 @@ using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor
 {
-    public enum ContextMenuOption
+    public enum NavBarType
     {
-        NotSet,
-        New,
-        Edit,
-        Delete,
-        AddRelative,
-        LinkRelative
-    }
-
-    public enum RenderDirectionValue
-    {
-        TopToBottom,
-        BottomToTop
-    }
-
-    public enum ExpansionState
-    {
-        Collapsed,
-        Expanding,
-        Expanded
+        Side,
+        Top
     }
 }

@@ -78,9 +78,17 @@ namespace ei8.Cortex.Diary.Application.Neurons
             return relatives;
         }
 
-        public async Task<QueryResult<Neuron>> SendQuery(string queryUrl, CancellationToken token = default)
+        public async Task<QueryResult<Neuron>> SendQuery(string queryUrl, bool suppressAccessToken = false, CancellationToken token = default)
         {
-            return await this.neuronQueryClient.SendQuery(queryUrl, await this.tokenManager.RetrieveAccessTokenAsync(), token);
+            return await this.neuronQueryClient.SendQuery(
+                queryUrl, 
+                (
+                    suppressAccessToken ?
+                    string.Empty :
+                    await this.tokenManager.RetrieveAccessTokenAsync()
+                ), 
+                token
+                );
         }
     }
 }

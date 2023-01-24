@@ -6,14 +6,12 @@
     <LayoutSider>
         @*Hides on screens smaller than lg*@
         <LayoutSiderContent Display="Display.None.Block.OnTablet">
-            <BlazoriseSidebar />
+            <BlazoriseSidebar NavBarType="NavBarType.Side" />
         </LayoutSiderContent>
     </LayoutSider>
     <Layout>
         <LayoutHeader Display="Display.None.OnTablet">
-            <div class="sidebar" Display="Display.Always.OnMobile">
-                <NavMenu />
-            </div>
+            <BlazoriseSidebar NavBarType="NavBarType.Top" />
         </LayoutHeader>
         <LayoutContent>
             <div class="main">
@@ -22,8 +20,6 @@
         </LayoutContent>
     </Layout>
 </Layout>
-
-
 
 <BlazoredToasts Timeout="10"
                 IconType="IconType.FontAwesome"
