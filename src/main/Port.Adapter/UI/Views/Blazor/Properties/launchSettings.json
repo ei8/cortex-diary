@@ -19,9 +19,19 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "OIDC_AUTHORITY": "https://dev.example.com:65102",
+        "CLIENT_ID": "d23-sample",
+        "CLIENT_SECRET": "",
+        "UPDATE_CHECK_INTERVAL": "1000000",
+        "DATABASE_PATH": "C:\\ei8\\avatars\\prod\\sample\\d23.db",
+        "BASE_PATH": "",
+        "PLUGINS_PATH": "C:\\ei8\\avatars\\prod\\sample\\d23-plugins\\",
+        "VALIDATE_SERVER_CERTIFICATE": "false",
+        "APP_TITLE": "",
+        "APP_ICON": ""
       },
-      "applicationUrl": "http://localhost:5000"
+      "applicationUrl": "https://192.168.1.110:65103/"
     },
     "Docker": {
       "commandName": "Docker",

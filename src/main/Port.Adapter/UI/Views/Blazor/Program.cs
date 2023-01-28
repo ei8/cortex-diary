@@ -62,7 +62,7 @@ void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, 
     // 1. Uncomment #define staticLinkAssembly on line 1 of this file
     // 2. Add project reference to plugin project
     // 3. Change startup project to Blazor.csproj
-    // 4. Grab values from var1.env (docker-compose)
+    // 4. Use values from var1.env (docker-compose) in Blazor\Properties\launchSettings.json
     //     "environmentVariables": {
     //       "ASPNETCORE_ENVIRONMENT": "Development",
     //       "OIDC_AUTHORITY": "",
