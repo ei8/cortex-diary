@@ -3,6 +3,7 @@ using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
@@ -11,7 +12,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
-
+        private Timer timer;
         public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
             this.Neuron = neuron;
@@ -25,6 +26,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public Neuron Neuron { get; private set; }
 
         public ExpansionState ExpansionState { get; private set; }
+
+        public bool Seen { get; set; } = false;
 
         public async Task Toggle()
         {
@@ -44,6 +47,23 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 }
                 this.ExpansionState = ExpansionState.Expanded;
             }
+        }
+
+        public void StartTimer()
+        {
+            timer = new Timer
+            {
+                Interval=3000,
+                AutoReset = false
+            };
+            timer.Elapsed += new ElapsedEventHandler(TimerElapsed);
+            timer.Start();
+            //start timer for 3 sec
+        }
+
+        private void TimerElapsed(object source, ElapsedEventArgs e)
+        {
+            this.Seen = true;
         }
     }
 }

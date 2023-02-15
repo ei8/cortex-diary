@@ -2,7 +2,7 @@
 @using Blazorise.Icons.FontAwesome
 @using ei8.Cortex.Diary.Application.Neurons
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
-
+@using Ljbc1994.Blazor.IntersectionObserver.Components
 <ul @attributes="SetRootStyle()">
     @if (this.Children != null)
     {
@@ -10,7 +10,8 @@
         @foreach (var child in Children)
         {
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
-            <li class="p-0 my-1" style="list-style-type: none;">
+            <IntersectionObserve OnChange="() => this.Scroll(child)">
+            <li @ref="context.Ref.Current" class="p-0 my-1" style="list-style-type: none;">
                 <div class="container-fluid m-0" style="@this.GetJustifyStyle(child)">
                     @{var tagUrlType = this.GetUrlType(child.Neuron.Tag);}
                     <div class="row" style=@(tagUrlType == UrlType.GoogleDriveImage ? "max-width: 70%" : string.Empty)>
@@ -91,7 +92,7 @@
                                 </div>
                                 <div onmouseover="hover('g', this.id, true, highlightNode)" onmouseout="hover('g', this.id, false, highlightNode)" class="col-auto p-1" 
                                     id="@child.Neuron.Id" style="@(this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor) + 
-                                    ((int) tagUrlType > (int) UrlType.Unrecognized ? "; max-width: calc(100% - 90px)" : string.Empty))"
+                                    ((int) tagUrlType > (int) UrlType.Unrecognized ? "; max-width: calc(100% - 90px)" : string.Empty));@(child.Seen? "background-color:red;" : "")"
                                         userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
                                     @if (child.Neuron.Validation.RestrictionReasons.Count() > 0)
                                     {
@@ -169,6 +170,7 @@
                     </div>
                 </div>
             </li>
+            </IntersectionObserve>
         }
     }
 </ul>
@@ -333,5 +335,10 @@
             dict.Add("style", "color:red");
         return dict;
 
+    }
+
+    private void Scroll(TreeNeuronViewModel tree)
+    {
+        tree.StartTimer();
     }
 }
