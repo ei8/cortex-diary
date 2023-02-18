@@ -23,7 +23,7 @@
     <PackageReference Include="Blazorise.Bootstrap" Version="1.1.5" />
     <PackageReference Include="Blazorise.Components" Version="1.1.5" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.5" />
-    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.2.4" />
+    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.2.6" />
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.3.0" />
     <PackageReference Include="Blazorise.Sidebar" Version="1.1.5" />
     <PackageReference Include="ei8.Cortex.Subscriptions.Common" Version="0.1.6" />
@@ -36,6 +36,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\cdp-inquirer\src\main\Inquirer.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.csproj" />
     <ProjectReference Include="..\..\..\IO\Persistence\SQLite\SQLite.csproj" />
     <ProjectReference Include="..\..\..\IO\Process\Services\Services.csproj" />

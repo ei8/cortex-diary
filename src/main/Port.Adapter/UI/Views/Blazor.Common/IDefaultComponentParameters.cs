@@ -1,4 +1,5 @@
 ﻿using Blazored.Toast.Services;
+using ei8.Cortex.Diary.Application.Access;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Application.Settings;
@@ -26,5 +27,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common
         ISubscriptionApplicationService SubscriptionApplicationService { get; set; } 
         ISubscriptionQueryService SubscriptionsQueryService { get; set; }
         IPluginSettingsService PluginSettingsService { get; set; }
+        IAccessApplicationService AccessApplicationService { get; set; }
     }
 }

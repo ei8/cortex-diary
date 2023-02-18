@@ -124,7 +124,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common
             var configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Path.GetDirectoryName(thisAssembly.Location))
                 .AddJsonFile($"{thisAssembly.GetName().Name}.appsettings.json",
-                optional: false,
+                optional: true,
                 reloadOnChange: true);
 
             value.Configuration = configurationBuilder.Build();

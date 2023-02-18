@@ -1,9 +1,10 @@
-// #define staticLinkAssembly
+#define staticLinkAssembly
 using Blazored.Toast;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using ei8.Cortex.Diary.Application;
+using ei8.Cortex.Diary.Application.Access;
 using ei8.Cortex.Diary.Application.Dependency;
 using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Neurons;
@@ -77,7 +78,7 @@ void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, 
     //       "APP_ICON": ""
     //     },
     //     "applicationUrl": "" - use value from docker-compose.override.yml
-    StaticAddAssembly(partManager, pluginsAssemblies, typeof(ei8.Cortex.Diary.Plugins.Tree.Tree).Assembly);
+    StaticAddAssembly(partManager, pluginsAssemblies, typeof(ei8.Cortex.Diary.Plugins.Inquirer.Inqr).Assembly);
 #else
     // get the full filepath of any dll starting with the rcl_ prefix
     string prefix = string.Empty; 
@@ -212,6 +213,8 @@ builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<INeuronClient, HttpNeuronClient>();
 builder.Services.AddScoped<ITerminalClient, HttpTerminalClient>();
 builder.Services.AddScoped<INotificationClient, HttpNotificationClient>();
+builder.Services.AddScoped<IAccessClient, HttpAccessClient>();
+builder.Services.AddScoped<IAccessApplicationService, AccessApplicationService>();
 builder.Services.AddScoped<INotificationApplicationService, NotificationApplicationService>();
 builder.Services.AddScoped<INeuronQueryService, NeuronQueryService>();
 builder.Services.AddScoped<INeuronApplicationService, NeuronApplicationService>();
@@ -223,8 +226,7 @@ builder.Services.AddScoped<ISubscriptionApplicationService, SubscriptionApplicat
 builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
 builder.Services.AddScoped<ISubscriptionConfigurationClient, HttpSubscriptionConfigurationClient>();
 var vas = new ViewApplicationService(new ViewRepository());
-builder.Services.AddSingleton<IEnumerable<View>>(vas.GetAll().Result);
-
+builder.Services.AddSingleton(vas.GetAll().Result);
 
 builder.Services.AddAuthentication(options =>
 {

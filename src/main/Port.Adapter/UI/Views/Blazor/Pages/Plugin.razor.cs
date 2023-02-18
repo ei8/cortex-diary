@@ -1,5 +1,12 @@
+using Blazored.Toast.Services;
+using ei8.Cortex.Diary.Application.Access;
+using ei8.Cortex.Diary.Application.Identity;
+using ei8.Cortex.Diary.Application.Neurons;
+using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Application.Subscriptions;
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -12,6 +19,33 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
 {
     public partial class Plugin
     {
+        [Inject]
+        public IHttpContextAccessor HttpContextAccessor { get; set; }
+        [Inject]
+        public INeuronQueryService NeuronQueryService { get; set; }
+        [Inject]
+        public INeuronApplicationService NeuronApplicationService { get; set; }
+        [Inject]
+        public ITerminalApplicationService TerminalApplicationService { get; set; }
+        [Inject]
+        public IToastService ToastService { get; set; }
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+        [Inject]
+        public IJSRuntime JsRuntime { get; set; }
+        [Inject]
+        public ISettingsService SettingsService { get; set; }
+        [Inject]
+        public IIdentityService IdentityService { get; set; }
+        [Inject]
+        public ISubscriptionApplicationService SubscriptionApplicationService { get; set; }
+        [Inject]
+        public ISubscriptionQueryService SubscriptionsQueryService { get; set; }
+        [Inject]
+        public IList<Assembly> PluginAssemblies { get; set; }
+        [Inject]
+        public IAccessApplicationService AccessApplicationService { get; set; }
+
         [Parameter]
         public string Name { get; set; }
 
@@ -52,7 +86,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
                         SettingsService = this.SettingsService,
                         IdentityService = this.IdentityService,
                         SubscriptionApplicationService = this.SubscriptionApplicationService,
-                        SubscriptionsQueryService = this.SubscriptionsQueryService
+                        SubscriptionsQueryService = this.SubscriptionsQueryService,
+                        AccessApplicationService = this.AccessApplicationService
                     };
 
                     if (pluginSettingsType != null)
