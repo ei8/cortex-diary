@@ -1,5 +1,6 @@
 ﻿@using Blazorise
 @using Blazorise.Icons.FontAwesome
+@using System.Text.RegularExpressions
 @using ei8.Cortex.Diary.Application.Neurons
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 @using Ljbc1994.Blazor.IntersectionObserver.Components
@@ -10,8 +11,7 @@
         @foreach (var child in Children)
         {
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
-            <IntersectionObserve OnChange="() => this.Scroll(child)">
-            <li @ref="context.Ref.Current" class="p-0 my-1" style="list-style-type: none;">
+            <li class="p-0 my-1" style="list-style-type: none;">
                 <div class="container-fluid m-0" style="@this.GetJustifyStyle(child)">
                     @{var tagUrlType = this.GetUrlType(child.Neuron.Tag);}
                     <div class="row" style=@(tagUrlType == UrlType.GoogleDriveImage ? "max-width: 70%" : string.Empty)>
@@ -92,7 +92,7 @@
                                 </div>
                                 <div onmouseover="hover('g', this.id, true, highlightNode)" onmouseout="hover('g', this.id, false, highlightNode)" class="col-auto p-1" 
                                     id="@child.Neuron.Id" style="@(this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor) + 
-                                    ((int) tagUrlType > (int) UrlType.Unrecognized ? "; max-width: calc(100% - 90px)" : string.Empty));@(child.Seen? "background-color:red;" : "")"
+                                    ((int) tagUrlType > (int) UrlType.Unrecognized ? "; max-width: calc(100% - 90px)" : string.Empty))"
                                         userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
                                     @if (child.Neuron.Validation.RestrictionReasons.Count() > 0)
                                     {
@@ -103,8 +103,9 @@
                                     }
                                     @if (!string.IsNullOrWhiteSpace(child.Neuron.Tag))
                                     {
-                                        @if (tagUrlType == UrlType.GoogleDriveImage)
+                                        @if (child.Seen)
                                         {
+                                            child.Neuron.Tag = ConvertDriveLinkToDirectLink(child.Neuron.Tag);
                                             <img src="@child.Neuron.Tag" style="height: 100%; width: 100%; object-fit: contain" />
                                         }
                                         else if (tagUrlType == UrlType.GoogleDriveVideo)
@@ -170,7 +171,6 @@
                     </div>
                 </div>
             </li>
-            </IntersectionObserve>
         }
     }
 </ul>
@@ -263,6 +263,17 @@
         return this.ShouldRightJustify(child) ?
             "display: flex; justify-content: flex-end;" :
             "";
+    }
+
+    private string ConvertDriveLinkToDirectLink(string link)
+    {
+        Regex pattern = new Regex(@"/d/(.*?)/");
+        var match = pattern.Match(link);
+        if (match.Success)
+        {
+            return "https://drive.google.com/uc?id="+match.Groups[1].Value;
+        }
+        return link;
     }
 
     private UrlType GetUrlType(string url)
