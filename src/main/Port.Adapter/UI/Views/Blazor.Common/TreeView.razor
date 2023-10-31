@@ -1,8 +1,9 @@
 ﻿@using Blazorise
 @using Blazorise.Icons.FontAwesome
+@using System.Text.RegularExpressions
 @using ei8.Cortex.Diary.Application.Neurons
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
-
+@using Ljbc1994.Blazor.IntersectionObserver.Components
 <ul @attributes="SetRootStyle()">
     @if (this.Children != null)
     {
@@ -102,8 +103,9 @@
                                     }
                                     @if (!string.IsNullOrWhiteSpace(child.Neuron.Tag))
                                     {
-                                        @if (tagUrlType == UrlType.GoogleDriveImage)
+                                        @if (child.Seen)
                                         {
+                                            child.Neuron.Tag = ConvertDriveLinkToDirectLink(child.Neuron.Tag);
                                             <img src="@child.Neuron.Tag" style="height: 100%; width: 100%; object-fit: contain" />
                                         }
                                         else if (tagUrlType == UrlType.GoogleDriveVideo)
@@ -263,6 +265,17 @@
             "";
     }
 
+    private string ConvertDriveLinkToDirectLink(string link)
+    {
+        Regex pattern = new Regex(@"/d/(.*?)/");
+        var match = pattern.Match(link);
+        if (match.Success)
+        {
+            return "https://drive.google.com/uc?id="+match.Groups[1].Value;
+        }
+        return link;
+    }
+
     private UrlType GetUrlType(string url)
     {
         UrlType result = UrlType.Invalid;
@@ -333,5 +346,10 @@
             dict.Add("style", "color:red");
         return dict;
 
+    }
+
+    private void Scroll(TreeNeuronViewModel tree)
+    {
+        tree.StartTimer();
     }
 }
