@@ -7,7 +7,7 @@
     <AssemblyName>ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common</AssemblyName>
     <RootNamespace>ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common</RootNamespace>
   </PropertyGroup>
-
+	
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>

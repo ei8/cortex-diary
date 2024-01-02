@@ -5,3 +5,5 @@
 /*.7z
 /src/packages
 **/publish
+**/*.nupkg
+**/lib

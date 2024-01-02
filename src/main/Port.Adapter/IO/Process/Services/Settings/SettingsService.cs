@@ -48,7 +48,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             _settingsServiceImpl = (dependencyService ?? Locator.Current.GetService<IDependencyService>()).Get<ISettingsServiceImplementation>();
         }
 
-        #region Setting Constants
+        #region Constants
 
         private const string IdUseMocks = "use_mocks";
         private const string IdUseFakeLocation = "use_fake_location";
@@ -58,6 +58,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdOidcAuthority = "oidc_authority";
         private const string IdClientId = "client_id";
         private const string IdClientSecret = "client_secret";
+        private const string IdRequestedScopes = "requested_scopes";
         private const string IdDatabasePath = "database_path";
         private const string IdBasePath = "base_path";
         private const string IdPluginsPath = "plugins_path";
@@ -76,6 +77,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string OidcAuthorityDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.OidcAuthority);
         private readonly string ClientIdDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientId);
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
+        private readonly string RequestedScopesDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.RequestedScopes);
         private readonly string DatabasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.DatabasePath);
         private readonly string BasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.BasePath);
         private readonly string PluginsPathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.PluginsPath);
@@ -116,20 +118,26 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         public string OidcAuthority
         {
             get => AppSettings.GetValueOrDefault(IdOidcAuthority, OidcAuthorityDefault);
-            set => AppSettings.AddOrUpdateValue(IdOidcAuthority, value);
         }
 
         public string ClientId
         {
             get => AppSettings.GetValueOrDefault(IdClientId, ClientIdDefault);
-            set => AppSettings.AddOrUpdateValue(IdClientId, value);
         }
 
         public string ClientSecret
         {
             get => AppSettings.GetValueOrDefault(IdClientSecret, ClientSecretDefault);
-            set => AppSettings.AddOrUpdateValue(IdClientSecret, value);
         }
+
+        public IEnumerable<string> RequestedScopes => 
+            AppSettings.GetValueOrDefault(
+                SettingsService.IdRequestedScopes, 
+                this.RequestedScopesDefault
+            ).Split(
+                ',',  
+                StringSplitOptions.RemoveEmptyEntries
+            );
 
         public string DatabasePath
         {

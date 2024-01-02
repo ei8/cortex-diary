@@ -23,6 +23,7 @@
         "OIDC_AUTHORITY": "https://dev.example.com:65102",
         "CLIENT_ID": "d23-sample",
         "CLIENT_SECRET": "",
+        "REQUESTED_SCOPES": "openid,profile,email,avatarapi-sample,offline_access",
         "UPDATE_CHECK_INTERVAL": "1000000",
         "DATABASE_PATH": "C:\\ei8\\avatars\\prod\\sample\\d23.db",
         "BASE_PATH": "",

@@ -50,7 +50,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
                         NavigationManager = this.NavigationManager,
                         JsRuntime = this.JsRuntime,
                         SettingsService = this.SettingsService,
-                        IdentityService = this.IdentityService,
                         SubscriptionApplicationService = this.SubscriptionApplicationService,
                         SubscriptionsQueryService = this.SubscriptionsQueryService
                     };

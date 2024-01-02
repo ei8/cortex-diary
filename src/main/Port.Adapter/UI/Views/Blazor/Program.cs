@@ -5,7 +5,6 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using ei8.Cortex.Diary.Application;
 using ei8.Cortex.Diary.Application.Dependency;
-using ei8.Cortex.Diary.Application.Identity;
 using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Application.Notifications;
 using ei8.Cortex.Diary.Application.Settings;
@@ -27,7 +26,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -38,6 +36,7 @@ using neurUL.Common.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 
@@ -60,9 +59,10 @@ void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, 
 #if (staticLinkAssembly)
     // To debug a plugin:
     // 1. Uncomment #define staticLinkAssembly on line 1 of this file
-    // 2. Add project reference to plugin project
-    // 3. Change startup project to Blazor.csproj
-    // 4. Use values from var1.env (docker-compose) in Blazor\Properties\launchSettings.json
+    // 2. Add plugin project to solution
+    // 3. Add project reference to plugin project to Blazor.csproj
+    // 4. Change startup project to Blazor.csproj
+    // 5. Use values from var1.env (docker-compose) in Blazor\Properties\launchSettings.json
     //     "environmentVariables": {
     //       "ASPNETCORE_ENVIRONMENT": "Development",
     //       "OIDC_AUTHORITY": "",
@@ -208,7 +208,6 @@ builder.Services.AddScoped<IRequestProvider, RequestProvider>(sp =>
     return result;
 });
 
-builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<INeuronClient, HttpNeuronClient>();
 builder.Services.AddScoped<ITerminalClient, HttpTerminalClient>();
 builder.Services.AddScoped<INotificationClient, HttpNotificationClient>();
@@ -239,11 +238,7 @@ builder.Services.AddAuthentication(options =>
     options.ClientId = ss.ClientId;
     options.ClientSecret = ss.ClientSecret;
     options.ResponseType = OpenIdConnectResponseType.Code;
-    options.Scope.Add("openid");
-    options.Scope.Add("profile");
-    options.Scope.Add("email");
-    options.Scope.Add("avatarapi");
-    options.Scope.Add("offline_access");
+    ss.RequestedScopes.ToList().ForEach(scope => options.Scope.Add(scope));
     options.CallbackPath = "/Account/LoginCallback";
     options.SignedOutCallbackPath = "/Account/LogoutCallback";
     options.SaveTokens = true;

@@ -39,6 +39,7 @@ namespace ei8.Cortex.Diary.Application.Settings
         string OidcAuthority { get; }
         string ClientId { get; }
         string ClientSecret { get; }
+        IEnumerable<string> RequestedScopes { get; }
         string DatabasePath { get; set; }
         string BasePath { get; set; }
         string PluginsPath { get; set; }
