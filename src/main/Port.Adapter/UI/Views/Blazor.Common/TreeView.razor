@@ -266,23 +266,23 @@
     private UrlType GetUrlType(string url)
     {
         UrlType result = UrlType.Invalid;
-
-        if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
-        {
-            result = UrlType.Unrecognized;
-
-            if (url.StartsWith("https://drive.google.com/file") && url.EndsWith("/preview"))
-            {
-                result = UrlType.GoogleDriveVideo;
-            }
-            else
-            {
-                using var client = new HttpClient();
-                var response = client.Send(new HttpRequestMessage(HttpMethod.Head, url));
-                if (response.Content.Headers.ContentType.MediaType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
-                    result = UrlType.GoogleDriveImage;
-            }
-        }
+        // TODO: Restore when using postsynaptic "Url"
+        //if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
+        //{
+        //    result = UrlType.Unrecognized;
+        //
+        //    if (url.StartsWith("https://drive.google.com/file") && url.EndsWith("/preview"))
+        //    {
+        //        result = UrlType.GoogleDriveVideo;
+        //    }
+        //    else
+        //    {
+        //        using var client = new HttpClient();
+        //        var response = client.Send(new HttpRequestMessage(HttpMethod.Head, url));
+        //        if (response.Content.Headers.ContentType.MediaType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+        //            result = UrlType.GoogleDriveImage;
+        //    }
+        //}
 
         return result;
     }
