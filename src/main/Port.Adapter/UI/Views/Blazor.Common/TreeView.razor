@@ -155,7 +155,7 @@
                             @if (child.ExpansionState == ExpansionState.Expanded)
                             {
                                 <div class="row">
-                                    <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested"
+                                    <TreeView Children="@child.Children"  ExpandUntillPostsynapticExteralReferencesNeurons="this.ExpandUntillPostsynapticExteralReferencesNeurons" AvatarUrl="@this.AvatarUrl" ExpandUntillPostsynapticExteralReferences="ExpandUntillPostsynapticExteralReferencesNeurons.Any(x=>x.Neuron.Id == child.Neuron.Id && this.ExpandUntillPostsynapticExteralReferences)" @bind-SelectedNeuron="@this.SelectedNeuron"  OnMenuRequested="@this.MenuRequested"
                                                 OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" IsRoot="false" IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" />
                                 </div>
                             }
@@ -188,6 +188,8 @@
 
     [Parameter]
     public EventCallback OnMenuRequested { get; set; }
+    [Parameter]
+    public bool ExpandUntillPostsynapticExteralReferences { get; set; }
 
     [Parameter]
     public EventCallback OnInfoRequested { get; set; }
@@ -229,6 +231,9 @@
     }
 
     [Parameter]
+    public IList<TreeNeuronViewModel> ExpandUntillPostsynapticExteralReferencesNeurons { get; set; } = new List<TreeNeuronViewModel>();
+
+    [Parameter]
     public EventCallback<bool> ControlsEnabledChanged { get; set; }
 
     private bool controlsEnabled;
@@ -244,6 +249,70 @@
                 this.ControlsEnabledChanged.InvokeAsync(this.controlsEnabled);
             }
         }
+    }
+
+    private CancellationTokenSource _expansionCancellationTokenSource;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Only handle cancellation if we previously had an expansion operation
+        if (_expansionCancellationTokenSource != null)
+        {
+            _expansionCancellationTokenSource.Cancel();
+            _expansionCancellationTokenSource.Dispose();
+            _expansionCancellationTokenSource = null;
+        }
+
+        // Only create new cancellation token and start expansion if flag is true
+        if (this.ExpandUntillPostsynapticExteralReferences)
+        {
+            //this.NextExpandUntillPostsynapticExteralReferencesNeurons.Clear();
+            _expansionCancellationTokenSource = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (this.Children.Any(x => x.Neuron.Id == this.SelectedNeuron.Neuron.Id && x.Neuron.Type != Library.Common.RelativeType.Presynaptic && string.IsNullOrEmpty(SelectedNeuron.Neuron.ExternalReferenceUrl)))
+                    {
+                        // Check for cancellation
+                        _expansionCancellationTokenSource?.Token.ThrowIfCancellationRequested();
+
+                        if (SelectedNeuron.Neuron.Type != Library.Common.RelativeType.Presynaptic && string.IsNullOrEmpty(SelectedNeuron.Neuron.ExternalReferenceUrl))
+                        {
+                            await InvokeAsync(() => SelectedNeuron.Toggle());
+                        }
+                    }
+                    else
+                    {
+                        foreach (var child in this.Children)
+                        {
+                            // Check for cancellation
+                            _expansionCancellationTokenSource?.Token.ThrowIfCancellationRequested();
+
+                            if (child.Neuron.Type != Library.Common.RelativeType.Presynaptic && string.IsNullOrEmpty(child.Neuron.ExternalReferenceUrl))
+                            {
+                                await InvokeAsync(() => child.Toggle());
+
+                            }
+                        }
+                        this.ExpandUntillPostsynapticExteralReferencesNeurons = this.ExpandUntillPostsynapticExteralReferencesNeurons.Concat(this.Children).ToList(); //this.expandUntillPostsynapticExteralReferencesNeurons.Concat(child.Children).ToList();
+
+                    }
+                }, _expansionCancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expansion was cancelled, do nothing
+            }
+            catch (Exception e)
+            {
+                // Handle other exceptions if needed
+               
+            }
+        }
+        await base.OnParametersSetAsync();
     }
 
     private bool ShouldRightJustify(TreeNeuronViewModel child)
@@ -333,5 +402,15 @@
             dict.Add("style", "color:red");
         return dict;
 
+    }
+
+    public void Dispose()
+    {
+        if (_expansionCancellationTokenSource != null)
+        {
+            _expansionCancellationTokenSource.Cancel();
+            _expansionCancellationTokenSource.Dispose();
+            _expansionCancellationTokenSource = null;
+        }
     }
 }
