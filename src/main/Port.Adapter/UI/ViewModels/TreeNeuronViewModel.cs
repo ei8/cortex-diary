@@ -1,9 +1,11 @@
 ﻿using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
@@ -18,6 +20,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.avatarUrl = avatarUrl;
             this.neuronQueryService = neuronQueryService;
             this.Children = new List<TreeNeuronViewModel>();
+            this.ExpandPostsynapticsUntilExternalReferencesTimer = new Timer();
         }
 
         public IList<TreeNeuronViewModel> Children { get; set; }
@@ -25,6 +28,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public Neuron Neuron { get; private set; }
 
         public ExpansionState ExpansionState { get; private set; }
+
+        public Timer ExpandPostsynapticsUntilExternalReferencesTimer { get; }
 
         public async Task Toggle()
         {
