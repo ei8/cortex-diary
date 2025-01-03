@@ -4,6 +4,8 @@ using ei8.Cortex.Library.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
+using System;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
@@ -11,6 +13,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
+        private CancellationTokenSource _cancellationTokenSource;
 
         public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
@@ -44,6 +47,39 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 }
                 this.ExpansionState = ExpansionState.Expanded;
             }
+        }
+        public async Task StartExpandPostsynapticsUntilExternalReferences(int expandTimeLimit)
+        {
+            _cancellationTokenSource = new CancellationTokenSource(expandTimeLimit);
+
+            try
+            {
+                await StartExpandPostsynapticsUntilExternalReferences(_cancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Handle the cancellation if needed
+            }
+        }
+
+        private async Task StartExpandPostsynapticsUntilExternalReferences(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (this.Neuron.Type != Library.Common.RelativeType.Presynaptic && string.IsNullOrEmpty(this.Neuron.ExternalReferenceUrl))
+            {
+                await Toggle();
+                foreach (var item in this.Children)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await item.StartExpandPostsynapticsUntilExternalReferences(cancellationToken);
+                }
+            }
+        }
+
+        public void CancelExpansion()
+        {
+            _cancellationTokenSource?.Cancel();
         }
     }
 }
