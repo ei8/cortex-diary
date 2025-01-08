@@ -13,7 +13,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
-        private CancellationTokenSource _cancellationTokenSource;
 
         public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
@@ -51,38 +50,38 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 this.ExpansionState = ExpansionState.Expanded;
             }
         }
-        public async Task StartExpandPostsynapticsUntilExternalReferences(int expandTimeLimit)
-        {
-            _cancellationTokenSource = new CancellationTokenSource(expandTimeLimit);
+        //public async Task StartExpandPostsynapticsUntilExternalReferences(int expandTimeLimit)
+        //{
+        //    _cancellationTokenSource = new CancellationTokenSource(expandTimeLimit);
 
-            try
-            {
-                await StartExpandPostsynapticsUntilExternalReferences(_cancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                // Handle the cancellation if needed
-            }
-        }
+        //    try
+        //    {
+        //        await StartExpandPostsynapticsUntilExternalReferences(_cancellationTokenSource.Token);
+        //    }
+        //    catch (OperationCanceledException)
+        //    {
+        //        // Handle the cancellation if needed
+        //    }
+        //}
 
-        private async Task StartExpandPostsynapticsUntilExternalReferences(CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
+        //private async Task StartExpandPostsynapticsUntilExternalReferences(CancellationToken cancellationToken)
+        //{
+        //    cancellationToken.ThrowIfCancellationRequested();
 
-            if (this.Neuron.Type != Library.Common.RelativeType.Presynaptic && string.IsNullOrEmpty(this.Neuron.ExternalReferenceUrl))
-            {
-                await Toggle();
-                foreach (var item in this.Children)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await item.StartExpandPostsynapticsUntilExternalReferences(cancellationToken);
-                }
-            }
-        }
+        //    if (this.Neuron.Type != Library.Common.RelativeType.Presynaptic && string.IsNullOrEmpty(this.Neuron.ExternalReferenceUrl))
+        //    {
+        //        await Toggle();
+        //        foreach (var item in this.Children)
+        //        {
+        //            cancellationToken.ThrowIfCancellationRequested();
+        //            await item.StartExpandPostsynapticsUntilExternalReferences(cancellationToken);
+        //        }
+        //    }
+        //}
 
-        public void CancelExpansion()
-        {
-            _cancellationTokenSource?.Cancel();
-        }
+        //public void CancelExpansion()
+        //{
+        //    _cancellationTokenSource?.Cancel();
+        //}
     }
 }
