@@ -13,6 +13,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
+        private Timer expandPostsynapticsUntilExternalReferencesTimer { get; }
 
         public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
@@ -20,7 +21,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.avatarUrl = avatarUrl;
             this.neuronQueryService = neuronQueryService;
             this.Children = new List<TreeNeuronViewModel>();
-            this.ExpandPostsynapticsUntilExternalReferencesTimer = new Timer();
+            this.expandPostsynapticsUntilExternalReferencesTimer = new Timer();
         }
 
         public IList<TreeNeuronViewModel> Children { get; set; }
@@ -29,7 +30,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 
         public ExpansionState ExpansionState { get; private set; }
 
-        public Timer ExpandPostsynapticsUntilExternalReferencesTimer { get; }
+        public Timer ExpandPostsynapticsUntilExternalReferencesTimer { get => this.expandPostsynapticsUntilExternalReferencesTimer; }
 
         public async Task Toggle()
         {
@@ -83,5 +84,22 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         //{
         //    _cancellationTokenSource?.Cancel();
         //}
+
+        public void ConfigureExpandTimer(double interval, ElapsedEventHandler handler)
+        {
+            this.expandPostsynapticsUntilExternalReferencesTimer.Interval = interval;
+            this.expandPostsynapticsUntilExternalReferencesTimer.Elapsed -= handler;
+            this.expandPostsynapticsUntilExternalReferencesTimer.Elapsed += handler;
+        }
+
+        public void StartExpandTimer()
+        {
+            this.expandPostsynapticsUntilExternalReferencesTimer.Start();
+        }
+
+        public void StopExpandTimer()
+        {
+            this.expandPostsynapticsUntilExternalReferencesTimer.Stop();
+        }
     }
 }

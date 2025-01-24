@@ -1,4 +1,4 @@
-// #define staticLinkAssembly
+#define staticLinkAssembly
 using Blazored.Toast;
 using Blazorise;
 using Blazorise.Bootstrap;

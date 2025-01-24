@@ -255,7 +255,6 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        // Only create new cancellation token and start expansion if flag is true
         if (
             this.selectedNeuron != null && 
             this.selectedNeuron.ExpandPostsynapticsUntilExternalReferencesTimer.Enabled && 
@@ -265,8 +264,8 @@
             )
         )
         {
-            this.selectedNeuron.ExpandPostsynapticsUntilExternalReferencesTimer.Enabled = false;
-            this.selectedNeuron.ExpandPostsynapticsUntilExternalReferencesTimer.Start();
+            this.selectedNeuron.StopExpandTimer();
+            this.selectedNeuron.StartExpandTimer();
 
             // if children contains selected neuron
             if (
@@ -293,7 +292,6 @@
                         string.IsNullOrEmpty(child.Neuron.ExternalReferenceUrl))
                     {
                         await InvokeAsync(() => child.Toggle());
-
                     }
                 }
             }
