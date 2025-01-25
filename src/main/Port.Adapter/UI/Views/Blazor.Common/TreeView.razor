@@ -257,15 +257,14 @@
     {
         if (
             this.selectedNeuron != null && 
-            this.selectedNeuron.ExpandPostsynapticsUntilExternalReferencesTimer.Enabled && 
+            this.selectedNeuron.IsExpandTimerEnabled() && 
             (
                 this.selectedNeuron.ExpansionState == ExpansionState.Collapsed ||
                 !this.Children.Any(c => c.ExpansionState == ExpansionState.Expanded)
             )
         )
         {
-            this.selectedNeuron.StopExpandTimer();
-            this.selectedNeuron.StartExpandTimer();
+            this.selectedNeuron.RestartExpandTimer();
 
             // if children contains selected neuron
             if (

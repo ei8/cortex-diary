@@ -13,7 +13,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
-        private Timer expandPostsynapticsUntilExternalReferencesTimer { get; }
+        private Timer expandPostsynapticsUntilExternalReferencesTimer;
 
         public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
@@ -29,8 +29,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public Neuron Neuron { get; private set; }
 
         public ExpansionState ExpansionState { get; private set; }
-
-        public Timer ExpandPostsynapticsUntilExternalReferencesTimer { get => this.expandPostsynapticsUntilExternalReferencesTimer; }
 
         public async Task Toggle()
         {
@@ -51,39 +49,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 this.ExpansionState = ExpansionState.Expanded;
             }
         }
-        //public async Task StartExpandPostsynapticsUntilExternalReferences(int expandTimeLimit)
-        //{
-        //    _cancellationTokenSource = new CancellationTokenSource(expandTimeLimit);
-
-        //    try
-        //    {
-        //        await StartExpandPostsynapticsUntilExternalReferences(_cancellationTokenSource.Token);
-        //    }
-        //    catch (OperationCanceledException)
-        //    {
-        //        // Handle the cancellation if needed
-        //    }
-        //}
-
-        //private async Task StartExpandPostsynapticsUntilExternalReferences(CancellationToken cancellationToken)
-        //{
-        //    cancellationToken.ThrowIfCancellationRequested();
-
-        //    if (this.Neuron.Type != Library.Common.RelativeType.Presynaptic && string.IsNullOrEmpty(this.Neuron.ExternalReferenceUrl))
-        //    {
-        //        await Toggle();
-        //        foreach (var item in this.Children)
-        //        {
-        //            cancellationToken.ThrowIfCancellationRequested();
-        //            await item.StartExpandPostsynapticsUntilExternalReferences(cancellationToken);
-        //        }
-        //    }
-        //}
-
-        //public void CancelExpansion()
-        //{
-        //    _cancellationTokenSource?.Cancel();
-        //}
 
         public void ConfigureExpandTimer(double interval, ElapsedEventHandler handler)
         {
@@ -100,6 +65,17 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public void StopExpandTimer()
         {
             this.expandPostsynapticsUntilExternalReferencesTimer.Stop();
+        }
+
+        public void RestartExpandTimer()
+        {
+            this.expandPostsynapticsUntilExternalReferencesTimer.Enabled = false;
+            this.StartExpandTimer();
+        }
+
+        public bool IsExpandTimerEnabled()
+        {
+            return this.expandPostsynapticsUntilExternalReferencesTimer.Enabled;
         }
     }
 }
