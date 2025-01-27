@@ -1,4 +1,4 @@
-﻿@if (this.IsExpandModalVisible)
+﻿@if (this.IsVisible)
 {
     <div class="modal" tabindex="-1" style="display:block" role="dialog">
         <div class="modal-dialog">
@@ -22,14 +22,14 @@
 
 @code {
     [Parameter]
-    public bool IsExpandModalVisible { get; set; }
+    public bool IsVisible { get; set; }
 
     [Parameter]
-    public EventCallback OnCancelExpand { get; set; }
+    public EventCallback OnCancelProcess { get; set; }
 
     private void CancelExpand()
     {
-        this.OnCancelExpand.InvokeAsync();
+        this.OnCancelProcess.InvokeAsync();
     }
 
 }
