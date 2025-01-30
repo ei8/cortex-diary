@@ -7,7 +7,7 @@
     @if (this.Children != null)
     {
         string lastAuthor = string.Empty;
-        @foreach (var child in Children)
+        @foreach (var child in this.Children)
         {
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
             <li class="p-0 my-1" style="list-style-type: none;">
@@ -155,8 +155,15 @@
                             @if (child.ExpansionState == ExpansionState.Expanded)
                             {
                                 <div class="row">
-                                    <TreeView Children="@child.Children" AvatarUrl="@this.AvatarUrl" @bind-SelectedNeuron="@this.SelectedNeuron" OnMenuRequested="@this.MenuRequested"
-                                                OnInfoRequested="@this.InfoRequested" @bind-ControlsEnabled="@this.ControlsEnabled" IsRoot="false" IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" />
+                                    <TreeView Children="@child.Children" 
+                                        AvatarUrl="@this.AvatarUrl"
+                                  @bind-SelectedNeuron="@this.SelectedNeuron" 
+                                        OnMenuRequested="@this.MenuRequested"
+                                        OnInfoRequested="@this.InfoRequested" 
+                                        @bind-ControlsEnabled="@this.ControlsEnabled" 
+                                        IsRoot="false" 
+                                        IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" 
+                                    />
                                 </div>
                             }
                             @if (this.renderDirection == RenderDirectionValue.BottomToTop && this.Children.LastOrDefault() == child)
@@ -244,6 +251,55 @@
                 this.ControlsEnabledChanged.InvokeAsync(this.controlsEnabled);
             }
         }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Only create new cancellation token and start expansion if flag is true
+        if (
+            this.selectedNeuron != null && 
+            this.selectedNeuron.ExpandPostsynapticsUntilExternalReferencesTimer.Enabled && 
+            (
+                this.selectedNeuron.ExpansionState == ExpansionState.Collapsed ||
+                !this.Children.Any(c => c.ExpansionState == ExpansionState.Expanded)
+            )
+        )
+        {
+            this.selectedNeuron.ExpandPostsynapticsUntilExternalReferencesTimer.Enabled = false;
+            this.selectedNeuron.ExpandPostsynapticsUntilExternalReferencesTimer.Start();
+
+            // if children contains selected neuron
+            if (
+                this.Children.Any(
+                    x => x.Neuron.Id == this.SelectedNeuron.Neuron.Id && 
+                    x.Neuron.Type != Library.Common.RelativeType.Presynaptic && 
+                    string.IsNullOrEmpty(SelectedNeuron.Neuron.ExternalReferenceUrl)
+                )
+            )
+            {
+                if (
+                    this.SelectedNeuron.Neuron.Type != Library.Common.RelativeType.Presynaptic &&
+                    string.IsNullOrEmpty(this.SelectedNeuron.Neuron.ExternalReferenceUrl)
+                )
+                {
+                    await InvokeAsync(() => this.SelectedNeuron.Toggle());
+                }
+            }
+            else
+            {
+                foreach (var child in this.Children)
+                {
+                    if (child.Neuron.Type != Library.Common.RelativeType.Presynaptic && 
+                        string.IsNullOrEmpty(child.Neuron.ExternalReferenceUrl))
+                    {
+                        await InvokeAsync(() => child.Toggle());
+
+                    }
+                }
+            }
+        }
+
+        await base.OnParametersSetAsync();
     }
 
     private bool ShouldRightJustify(TreeNeuronViewModel child)
