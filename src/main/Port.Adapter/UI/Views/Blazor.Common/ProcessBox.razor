@@ -1,0 +1,35 @@
+﻿@if (this.IsVisible)
+{
+    <div class="modal" tabindex="-1" style="display:block" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Expand Until External References</h3>
+                    <button type="button" class="close" @onclick="CancelExpand">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Expanding postsynaptic neurons until external references are found...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelExpand">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancelProcess { get; set; }
+
+    private void CancelExpand()
+    {
+        this.OnCancelProcess.InvokeAsync();
+    }
+
+}
