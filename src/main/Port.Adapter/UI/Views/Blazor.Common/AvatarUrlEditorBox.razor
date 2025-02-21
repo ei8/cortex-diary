@@ -16,13 +16,12 @@
                 <div class="modal-body">
                     <div class="form-group row">
                         <label class="control-label col-4">New Parameter</label>
-                        <select class="col-5 ml-auto form-control selectpicker" @bind="@this.newField">
+                        <select class="col-5 form-control selectpicker" @onchange="OnSelectChanged" >
                             @foreach (var item in this.ParametersAttributes)
                             {
                                 <option value="@item">@item</option>
                             }
                         </select>
-                        <button type="button" class="mx-3 btn btn-secondary" @onclick="@(() => { this.FieldsCount.Add(this.newField); })">Add</button>
                     </div>
                     @if (this.neuronQuery.PageSize != null)
                     {
@@ -1034,5 +1033,10 @@
         // End of assign proccess
         this.NewAvatarUrl = url + this.neuronQuery.ToString();
         this.IsVisible = false;
+    }
+
+    private void OnSelectChanged(ChangeEventArgs e)
+    {
+        this.FieldsCount.Add(e.Value.ToString());
     }
 }
