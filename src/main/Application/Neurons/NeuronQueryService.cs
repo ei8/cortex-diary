@@ -67,7 +67,13 @@ namespace ei8.Cortex.Diary.Application.Neurons
 
         public async Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
-            var relatives = await this.neuronQueryClient.GetNeurons(avatarUrl, centralId, neuronQuery, await this.tokenManager.RetrieveAccessTokenAsync(), token);
+            var relatives = await this.neuronQueryClient.GetNeurons(
+                avatarUrl, 
+                centralId, 
+                neuronQuery, 
+                await this.tokenManager.RetrieveAccessTokenAsync(), 
+                token
+            );
 
             var posts = relatives.Items.Where(n => n.Type == RelativeType.Postsynaptic);
             var pres = relatives.Items.Where(n => n.Type == RelativeType.Presynaptic);

@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common</id>
-    <version>0.2.6</version>
+    <version>0.2.7</version>
     <title>ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common</title>
     <authors>Elmer Roderick Niem Bool</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
