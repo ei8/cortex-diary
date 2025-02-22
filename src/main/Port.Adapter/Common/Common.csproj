@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="ei8.Cortex.Diary.Common" Version="0.1.11" />
-    <PackageReference Include="ei8.Cortex.Library.Client" Version="0.3.0" />
-    <PackageReference Include="ei8.Cortex.Library.Common" Version="0.3.0" />
+    <PackageReference Include="ei8.Cortex.Library.Client" Version="0.4.0" />
+    <PackageReference Include="ei8.Cortex.Library.Common" Version="0.3.11" />
     <PackageReference Include="Neurul.Common" Version="0.1.19" />
   </ItemGroup>
 
