@@ -42,6 +42,7 @@
     <ProjectReference Include="..\..\ViewModels\ViewModels.csproj" />
     <ProjectReference Include="..\Blazor.Common\Blazor.Common.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="E:\.net\cdp-tree\src\main\Tree.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="wwwroot\js\JsInterop.js">
