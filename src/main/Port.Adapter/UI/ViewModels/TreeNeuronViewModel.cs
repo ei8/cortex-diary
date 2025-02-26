@@ -39,9 +39,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 var children = new List<TreeNeuronViewModel>();
                 if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
                 {
-                    int queryStart = this.avatarUrl.IndexOf('?');
-                    string queryString = this.avatarUrl.Substring(queryStart);
-                    NeuronQuery.TryParse(queryString, out NeuronQuery query);
+                    
+                    NeuronQuery.TryParse(result.QueryString, out NeuronQuery query);
                     var childrenQuery = new NeuronQuery() {
                         PageSize = Constants.TreeNodeChildrenQueryPageSize,
                         RelativeValues = query.RelativeValues
