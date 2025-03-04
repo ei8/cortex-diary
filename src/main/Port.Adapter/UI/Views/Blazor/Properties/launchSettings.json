@@ -20,19 +20,19 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "OIDC_AUTHORITY": "https://dev.example.com:65102",
+        "OIDC_AUTHORITY": "https://login.neurul.net",
         "CLIENT_ID": "d23-sample",
-        "CLIENT_SECRET": "",
+        "CLIENT_SECRET": "978c1052-1184-48f7-89f4-4fd034847a06",
         "REQUESTED_SCOPES": "openid,profile,email,avatarapi-sample,offline_access",
         "UPDATE_CHECK_INTERVAL": "1000000",
         "DATABASE_PATH": "C:\\ei8\\avatars\\prod\\sample\\d23.db",
         "BASE_PATH": "",
-        "PLUGINS_PATH": "C:\\ei8\\avatars\\prod\\sample\\d23-plugins\\",
+        "PLUGINS_PATH": "C:\\ei8\\avatars\\prod\\sample\\uni8y-plugins\\",
         "VALIDATE_SERVER_CERTIFICATE": "false",
         "APP_TITLE": "",
         "APP_ICON": ""
       },
-      "applicationUrl": "https://192.168.1.8:65103"
+      "applicationUrl": "https://192.168.1.2:65103"
     },
     "Docker": {
       "commandName": "Docker",
