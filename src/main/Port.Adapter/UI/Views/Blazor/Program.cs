@@ -80,7 +80,7 @@ void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, 
     StaticAddAssembly(partManager, pluginsAssemblies, typeof(ei8.Cortex.Diary.Plugins.Tree.Tree).Assembly);
 #else
     // get the full filepath of any dll starting with the rcl_ prefix
-    string prefix = string.Empty;
+    string prefix = string.Empty; 
     string searchPattern = $"{prefix}*.dll";
     string[] libraryPaths = Directory.GetFiles(binFolder, searchPattern, SearchOption.AllDirectories);
 
@@ -95,8 +95,8 @@ void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, 
             var assembly = loadContext.LoadFromAssemblyPath(libraryPath);
 
             AddAssembly(
-                partManager,
-                pluginsAssemblies,
+                partManager, 
+                pluginsAssemblies, 
                 assembly,
                 assembly => libraryPath.EndsWith(".Views.dll") ? new CompiledRazorAssemblyPart(assembly) : new AssemblyPart(assembly),
                 () => !libraryPath.EndsWith(".Views.dll")
@@ -109,12 +109,12 @@ void LoadDynamicLibraries(ApplicationPartManager partManager, string binFolder, 
 static void StaticAddAssembly(ApplicationPartManager partManager, IList<Assembly> pluginsAssemblies, Assembly assembly) =>
     AddAssembly(partManager, pluginsAssemblies, assembly, (a) => new AssemblyPart(a), () => (true));
 
-static void AddAssembly(ApplicationPartManager partManager, IList<Assembly> pluginsAssemblies, Assembly assembly,
+static void AddAssembly(ApplicationPartManager partManager, IList<Assembly> pluginsAssemblies, Assembly assembly, 
     Func<Assembly, ApplicationPart> partCreator,
     Func<bool> addChecker)
 {
     // create an application part for that assembly
-    var applicationPart = partCreator(assembly);
+    var applicationPart = partCreator(assembly); 
 
     // register the application part
     partManager.ApplicationParts.Add(applicationPart);
@@ -170,8 +170,7 @@ builder.Services.AddSingleton<ISettingsService>(ss);
 var pluginsAssemblies = new List<Assembly>();
 builder.Services.AddSingleton<IList<Assembly>>(pluginsAssemblies);
 builder.Services.AddControllersWithViews()
-    .ConfigureApplicationPartManager(partManager =>
-    {
+    .ConfigureApplicationPartManager(partManager => {
         // static RCLs
         ConfigureStaticLibraries(partManager);
         // dynamic RCLs
@@ -265,8 +264,8 @@ app.Use((context, next) =>
     //if (!StringValues.IsNullOrEmpty(prefix))
     //{
     context.Request.PathBase = PathString.FromUriComponent(ss.BasePath ?? string.Empty);// prefix.ToString());
-                                                                                        // TODO: subtract PathBase from Path if needed.
-                                                                                        //}
+                                                                        // TODO: subtract PathBase from Path if needed.
+                                                                        //}
     return next();
 });
 
