@@ -16,13 +16,12 @@
                 <div class="modal-body">
                     <div class="form-group row">
                         <label class="control-label col-4">New Parameter</label>
-                        <select class="col-5 ml-auto form-control selectpicker" @bind="@this.newField">
+                        <select class="col-5 form-control selectpicker" @onchange="OnSelectChanged" >
                             @foreach (var item in this.ParametersAttributes)
                             {
                                 <option value="@item">@item</option>
                             }
                         </select>
-                        <button type="button" class="mx-3 btn btn-secondary" @onclick="@(() => { this.FieldsCount.Add(this.newField); })">Add</button>
                     </div>
                     @if (this.neuronQuery.PageSize != null)
                     {
@@ -798,7 +797,7 @@
                 // TODO: transfer to NeuronQuery
                 this.pageSize = this.neuronQuery.PageSize;
                 this.page = this.neuronQuery.Page;
-                if (this.neuronQuery.Postsynaptic!=null)
+                if (this.neuronQuery.Postsynaptic != null)
                 {
                     this.postsynaptic = this.neuronQuery.Postsynaptic.ToList();
                 }
@@ -863,6 +862,8 @@
                     this.relativeValues = this.neuronQuery.RelativeValues;
                 }
             }
+            else
+                this.neuronQuery = new NeuronQuery();
         }
         if (this.neuronQuery != null)
             this.ParametersAttributes = new List<string>(new string[] { nameof(this.neuronQuery.Page), nameof(this.neuronQuery.PageSize),
@@ -1034,5 +1035,10 @@
         // End of assign proccess
         this.NewAvatarUrl = url + this.neuronQuery.ToString();
         this.IsVisible = false;
+    }
+
+    private void OnSelectChanged(ChangeEventArgs e)
+    {
+        this.FieldsCount.Add(e.Value.ToString());
     }
 }
