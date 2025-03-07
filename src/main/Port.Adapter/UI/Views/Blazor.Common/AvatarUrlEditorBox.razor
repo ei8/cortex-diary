@@ -797,7 +797,7 @@
                 // TODO: transfer to NeuronQuery
                 this.pageSize = this.neuronQuery.PageSize;
                 this.page = this.neuronQuery.Page;
-                if (this.neuronQuery.Postsynaptic!=null)
+                if (this.neuronQuery.Postsynaptic != null)
                 {
                     this.postsynaptic = this.neuronQuery.Postsynaptic.ToList();
                 }
@@ -862,6 +862,8 @@
                     this.relativeValues = this.neuronQuery.RelativeValues;
                 }
             }
+            else
+                this.neuronQuery = new NeuronQuery();
         }
         if (this.neuronQuery != null)
             this.ParametersAttributes = new List<string>(new string[] { nameof(this.neuronQuery.Page), nameof(this.neuronQuery.PageSize),
