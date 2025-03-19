@@ -256,7 +256,7 @@
     protected override async Task OnParametersSetAsync()
     {
         if (
-            this.selectedNeuron != null && 
+            this.selectedNeuron != null && string.IsNullOrEmpty(this.selectedNeuron.Neuron.ExternalReferenceUrl) &&
             this.selectedNeuron.IsExpandTimerEnabled() && 
             (
                 this.selectedNeuron.ExpansionState == ExpansionState.Collapsed ||
