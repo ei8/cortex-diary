@@ -20,7 +20,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "OIDC_AUTHORITY": "https://login.neurul.net",
+        "OIDC_AUTHORITY": "https://dev.example.com:65102",
         "CLIENT_ID": "d23-sample",
         "CLIENT_SECRET": "",
         "REQUESTED_SCOPES": "openid,profile,email,avatarapi-sample,offline_access",
@@ -32,7 +32,7 @@
         "APP_TITLE": "",
         "APP_ICON": ""
       },
-      "applicationUrl": "https://192.168.1.110:65103"
+      "applicationUrl": "https://192.168.1.110:65103/"
     },
     "Docker": {
       "commandName": "Docker",
