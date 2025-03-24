@@ -42,7 +42,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                     
                     NeuronQuery.TryParse(result.QueryString, out NeuronQuery query);
                     var childrenQuery = new NeuronQuery() {
-                      
                         PageSize = Constants.TreeNodeChildrenQueryPageSize,
                         RelativeValues = query != null ? query.RelativeValues : null
                     };
