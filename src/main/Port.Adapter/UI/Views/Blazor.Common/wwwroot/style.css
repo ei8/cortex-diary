@@ -6,7 +6,11 @@
 
 /* blazor.common - treeview */
 .blue {
-    fill: #1E90FF !important;
+    fill: #0781fc !important;
+}
+
+.lightblue {
+    fill: #22b0e9!important;
 }
 
 /* blazor.common */

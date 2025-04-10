@@ -64,6 +64,9 @@ function hover(tagName, tagId, over, highlight) {
                 if (highlight === 'highlightNode') {
                     highlightNode(currElement, over);
                 }
+                else if (highlight === 'highlightChildNode') {
+                    highlightChildNode(currElement, over);
+                }
             } else if (typeof highlight === 'function') {
                 // If it's a function, call it directly
                 highlight(currElement, over);
@@ -79,3 +82,11 @@ function highlightNode(currElement, over) {
     else
         currElement.children[0].classList.remove("blue");
 }
+
+function highlightChildNode(currElement, over) {
+    if (over)
+        currElement.children[0].classList.add("lightblue");
+    else
+        currElement.children[0].classList.remove("lightblue");
+}
+
