@@ -338,7 +338,7 @@
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", child.Neuron.Id, true, "highlightNode");
 
-                    //await OnHover.InvokeAsync(child);
+                    await OnHover.InvokeAsync(child);
                 }
 
                 // Propagate hover to children if expanded
@@ -366,32 +366,35 @@
             }
             else
             {
-                //child = this.Children.FirstOrDefault(x => x.Children.Contains(child));
+                var newChild = this.Children.FirstOrDefault(x => x.Children.Contains(child));
                 if (!Recursive)
                 {
-                    await JSRuntime.InvokeVoidAsync("hover", "g", child.Neuron.Id, true, "highlightNode");
-                    //await OnHover.InvokeAsync(child);
+                    await JSRuntime.InvokeVoidAsync("hover", "g", newChild.Neuron.Id, true, "highlightNode");
+                    await OnHover.InvokeAsync(newChild);
                 }
-                if (child.ExpansionState == ExpansionState.Expanded && child.Children != null && child.Children.Any())
+                else
                 {
-                    foreach (var childNode in child.Children)
+                    if (child.ExpansionState == ExpansionState.Expanded && child.Children != null && child.Children.Any())
                     {
-                        // Highlight each child node 61dbc74f-ba49-4c79-9854-d4fcc3e070ad
-                        if (childNode.Neuron.Id == Id)
-                            continue;
-                        await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
-
-                        // Recursively highlight children of children if they're expanded
-                        if (childNode.ExpansionState == ExpansionState.Expanded && childNode.Children != null && childNode.Children.Any())
+                        foreach (var childNode in child.Children)
                         {
-                            // Find the child TreeView component and call its Hover method
-                            //await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
-                            await Hover(childNode, true,childNode.Neuron.Id);
-                            // foreach (var childNode2 in childNode.Children)
-                            //     await JSRuntime.InvokeVoidAsync("hover", "g", childNode2.Neuron.Id, true, "highlightChildNode");
+                            // Highlight each child node 61dbc74f-ba49-4c79-9854-d4fcc3e070ad
+                            if (childNode.Neuron.Id == Id)
+                                continue;
+                            await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
+
+                            // Recursively highlight children of children if they're expanded
+                            if (childNode.ExpansionState == ExpansionState.Expanded && childNode.Children != null && childNode.Children.Any())
+                            {
+                                // Find the child TreeView component and call its Hover method
+                                //await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
+                                await Hover(childNode, true, childNode.Neuron.Id);
+                                // foreach (var childNode2 in childNode.Children)
+                                //     await JSRuntime.InvokeVoidAsync("hover", "g", childNode2.Neuron.Id, true, "highlightChildNode");
+                            }
                         }
                     }
-                }
+                }            
             }
             return "";
         }
@@ -408,24 +411,24 @@
         {
             if (this.Children.Contains(child))
             {
-                // Remove highlight from current node
+                //Remove highlight from current node
                 if (!Recursive)
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", child.Neuron.Id, false, "highlightNode");
-                    //await OnUnHover.InvokeAsync(child);
+                    await OnUnHover.InvokeAsync(child);
                 }
                 
-                // Propagate unhover to children if expanded
+                //Propagate unhover to children if expanded
                 if(child.ExpansionState == ExpansionState.Expanded && child.Children != null && child.Children.Any())
                 {
                     foreach(var childNode in child.Children)
                     {
-                        // Remove highlight from each child node
+                        //Remove highlight from each child node
                         if (childNode.Neuron.Id == Id)
                             continue;
                         await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, false, "highlightChildNode");
                         
-                        // Recursively remove highlight from children of children if they're expanded
+                        //Recursively remove highlight from children of children if they're expanded
                         if(childNode.ExpansionState == ExpansionState.Expanded && childNode.Children != null && childNode.Children.Any())
                         {
                             await UnHover(childNode, true, childNode.Neuron.Id);
@@ -435,22 +438,23 @@
             }
             else
             {
+                var newChild = this.Children.FirstOrDefault(x => x.Children.Contains(child));
                 if (!Recursive)
                 {
-                    await JSRuntime.InvokeVoidAsync("hover", "g", child.Neuron.Id, false, "highlightNode");
-                    //await OnUnHover.InvokeAsync(child);
+                    await JSRuntime.InvokeVoidAsync("hover", "g", newChild.Neuron.Id, false, "highlightNode");
+                    await OnUnHover.InvokeAsync(newChild);
                 }
                 
                 if (child.ExpansionState == ExpansionState.Expanded && child.Children != null && child.Children.Any())
                 {
                     foreach (var childNode in child.Children)
                     {
-                        // Remove highlight from each child node
+                        //Remove highlight from each child node
                         if (childNode.Neuron.Id == Id)
                             continue;
                         await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, false, "highlightChildNode");
                         
-                        // Recursively remove highlight from children of children if they're expanded
+                        //Recursively remove highlight from children of children if they're expanded
                         if (childNode.ExpansionState == ExpansionState.Expanded && childNode.Children != null && childNode.Children.Any())
                         {
                             await UnHover(childNode, true, childNode.Neuron.Id);
