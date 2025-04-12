@@ -338,7 +338,7 @@
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", child.Neuron.Id, true, "highlightNode");
 
-                    await OnHover.InvokeAsync(child);
+                    //await OnHover.InvokeAsync(child);
                 }
 
                 // Propagate hover to children if expanded
@@ -347,7 +347,7 @@
                     foreach(var childNode in child.Children)
                     {
                         // Highlight each child node
-                        if (childNode.Neuron.Id == Id)
+                        if (childNode.Neuron.Id == Id || childNode.Neuron.Type == Library.Common.RelativeType.Presynaptic)
                             continue;
                         await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
 
@@ -370,7 +370,7 @@
                 if (!Recursive)
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", newChild.Neuron.Id, true, "highlightNode");
-                    await OnHover.InvokeAsync(newChild);
+                    //await OnHover.InvokeAsync(newChild);
                 }
                 else
                 {
@@ -379,7 +379,7 @@
                         foreach (var childNode in child.Children)
                         {
                             // Highlight each child node 61dbc74f-ba49-4c79-9854-d4fcc3e070ad
-                            if (childNode.Neuron.Id == Id)
+                            if (childNode.Neuron.Id == Id || childNode.Neuron.Type == Library.Common.RelativeType.Presynaptic)
                                 continue;
                             await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
 
@@ -415,13 +415,13 @@
                 if (!Recursive)
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", child.Neuron.Id, false, "highlightNode");
-                    await OnUnHover.InvokeAsync(child);
+                    //await OnUnHover.InvokeAsync(child);
                 }
                 
                 //Propagate unhover to children if expanded
                 if(child.ExpansionState == ExpansionState.Expanded && child.Children != null && child.Children.Any())
                 {
-                    foreach(var childNode in child.Children)
+                    foreach(var childNode in child.Children )
                     {
                         //Remove highlight from each child node
                         if (childNode.Neuron.Id == Id)
@@ -442,7 +442,7 @@
                 if (!Recursive)
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", newChild.Neuron.Id, false, "highlightNode");
-                    await OnUnHover.InvokeAsync(newChild);
+                    //await OnUnHover.InvokeAsync(newChild);
                 }
                 
                 if (child.ExpansionState == ExpansionState.Expanded && child.Children != null && child.Children.Any())
