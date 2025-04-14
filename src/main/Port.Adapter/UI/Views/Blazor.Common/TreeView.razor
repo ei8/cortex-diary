@@ -37,10 +37,7 @@
                                     <button class="treeitembutton btn btn-light btn-xs ml-1 mr-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
                                         <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
                                     </button>
-                                    @if (
-                        !string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||
-                        (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl))
-                        )
+                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||(child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl)))
                                     {
                                         <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
                                     }
@@ -90,7 +87,7 @@
                                         }
                                     }
                                 </div>
-                                <div @onmouseover="async () => await Hover(child)" @onmouseout="async () => await UnHover(child)" class="col-auto p-1"
+                                <div @onmouseover="async () => await Hover(child)" @onmouseout="async () => await Unhover(child)" class="col-auto p-1"
                                 id="@child.Neuron.Id" style="@(this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor) + 
                                     ((int) tagUrlType > (int) UrlType.Unrecognized ? "; max-width: calc(100% - 90px)" : string.Empty))"
                                 userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
@@ -138,10 +135,7 @@
                                 </div>
                                 @if (!this.ShouldRightJustifyBasedOnRoot(child))
                                 {
-                                    @if (
-                        !string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||
-                        (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl))
-                        )
+                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||(child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl)))
                                     {
                                         <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
                                     }
@@ -159,7 +153,7 @@
                                     <TreeView Children="@child.Children" 
                                     AvatarUrl="@this.AvatarUrl"
                                     OnHover="@(async (childNode) => await Hover(childNode))"
-                                    OnUnHover="@(async (childNode) => await UnHover(childNode))"
+                                    OnUnhover="@(async (childNode) => await Unhover(childNode))"
                                     @bind-SelectedNeuron="@this.SelectedNeuron" 
                                     OnMenuRequested="@this.MenuRequested"
                                     OnInfoRequested="@this.InfoRequested" 
@@ -209,7 +203,7 @@
     [Parameter]
     public EventCallback<TreeNeuronViewModel> OnHover { get; set; }
     [Parameter]
-    public EventCallback<TreeNeuronViewModel> OnUnHover { get; set; }
+    public EventCallback<TreeNeuronViewModel> OnUnhover { get; set; }
 
     private RenderDirectionValue renderDirection;
     [Parameter]
@@ -337,8 +331,6 @@
                 if (!Recursive)
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", child.Neuron.Id, true, "highlightNode");
-
-                    //await OnHover.InvokeAsync(child);
                 }
 
                 // Propagate hover to children if expanded
@@ -347,7 +339,7 @@
                     foreach(var childNode in child.Children)
                     {
                         // Highlight each child node
-                        if (childNode.Neuron.Id == Id || childNode.Neuron.Type == Library.Common.RelativeType.Presynaptic)
+                        if (HoverCore(childNode,Id))
                             continue;
                         await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
 
@@ -355,10 +347,7 @@
                         if(childNode.ExpansionState == ExpansionState.Expanded && childNode.Children != null && childNode.Children.Any())
                         {
                             // Find the child TreeView component and call its Hover method
-                            //await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
                             await Hover(childNode, true,childNode.Neuron.Id);
-                            // foreach(var childNode2 in childNode.Children)
-                            //     await JSRuntime.InvokeVoidAsync("hover", "g", childNode2.Neuron.Id, true, "highlightChildNode");
                         }
                     }
                 }
@@ -370,7 +359,6 @@
                 if (!Recursive)
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", newChild.Neuron.Id, true, "highlightNode");
-                    //await OnHover.InvokeAsync(newChild);
                 }
                 else
                 {
@@ -379,7 +367,7 @@
                         foreach (var childNode in child.Children)
                         {
                             // Highlight each child node 61dbc74f-ba49-4c79-9854-d4fcc3e070ad
-                            if (childNode.Neuron.Id == Id || childNode.Neuron.Type == Library.Common.RelativeType.Presynaptic)
+                            if (HoverCore(childNode,Id))
                                 continue;
                             await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
 
@@ -387,10 +375,7 @@
                             if (childNode.ExpansionState == ExpansionState.Expanded && childNode.Children != null && childNode.Children.Any())
                             {
                                 // Find the child TreeView component and call its Hover method
-                                //await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, true, "highlightChildNode");
                                 await Hover(childNode, true, childNode.Neuron.Id);
-                                // foreach (var childNode2 in childNode.Children)
-                                //     await JSRuntime.InvokeVoidAsync("hover", "g", childNode2.Neuron.Id, true, "highlightChildNode");
                             }
                         }
                     }
@@ -405,7 +390,7 @@
         }
     }
 
-    private async Task<string> UnHover(TreeNeuronViewModel child, bool Recursive = false, string Id = "")
+    private async Task<string> Unhover(TreeNeuronViewModel child, bool Recursive = false, string Id = "")
     {
         try
         {
@@ -415,10 +400,10 @@
                 if (!Recursive)
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", child.Neuron.Id, false, "highlightNode");
-                    //await OnUnHover.InvokeAsync(child);
+                    //await OnUnhover.InvokeAsync(child);
                 }
-                
-                //Propagate unhover to children if expanded
+
+                //Propagate Unhover to children if expanded
                 if(child.ExpansionState == ExpansionState.Expanded && child.Children != null && child.Children.Any())
                 {
                     foreach(var childNode in child.Children )
@@ -427,11 +412,11 @@
                         if (childNode.Neuron.Id == Id)
                             continue;
                         await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, false, "highlightChildNode");
-                        
+
                         //Recursively remove highlight from children of children if they're expanded
                         if(childNode.ExpansionState == ExpansionState.Expanded && childNode.Children != null && childNode.Children.Any())
                         {
-                            await UnHover(childNode, true, childNode.Neuron.Id);
+                            await Unhover(childNode, true, childNode.Neuron.Id);
                         }
                     }
                 }
@@ -442,9 +427,9 @@
                 if (!Recursive)
                 {
                     await JSRuntime.InvokeVoidAsync("hover", "g", newChild.Neuron.Id, false, "highlightNode");
-                    //await OnUnHover.InvokeAsync(newChild);
+                    //await OnUnhover.InvokeAsync(newChild);
                 }
-                
+
                 if (child.ExpansionState == ExpansionState.Expanded && child.Children != null && child.Children.Any())
                 {
                     foreach (var childNode in child.Children)
@@ -453,11 +438,11 @@
                         if (childNode.Neuron.Id == Id)
                             continue;
                         await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, false, "highlightChildNode");
-                        
+
                         //Recursively remove highlight from children of children if they're expanded
                         if (childNode.ExpansionState == ExpansionState.Expanded && childNode.Children != null && childNode.Children.Any())
                         {
-                            await UnHover(childNode, true, childNode.Neuron.Id);
+                            await Unhover(childNode, true, childNode.Neuron.Id);
                         }
                     }
                 }
@@ -471,6 +456,10 @@
         }
     }
 
+    private bool HoverCore(TreeNeuronViewModel childNode,string Id)
+    {
+        return childNode.Neuron.Id == Id || childNode.Neuron.Type == Library.Common.RelativeType.Presynaptic;
+    }
     private UrlType GetUrlType(string url)
     {
         UrlType result = UrlType.Invalid;
