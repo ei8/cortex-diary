@@ -58,7 +58,19 @@ function hover(tagName, tagId, over, highlight) {
     for (var i = 0; i < element.length; i++) {
         var currElement = element[i];
         if (currElement.id == tagId) {
-            highlight(currElement, over);
+            // Check if highlight is a string (function name) or a function
+            if (typeof highlight === 'string') {
+                // If it's a string, look up the function by name
+                if (highlight === 'highlightNode') {
+                    highlightNode(currElement, over);
+                }
+                else if (highlight === 'highlightChildNode') {
+                    highlightChildNode(currElement, over);
+                }
+            } else if (typeof highlight === 'function') {
+                // If it's a function, call it directly
+                highlight(currElement, over);
+            }
         }
     }
 }
@@ -70,3 +82,11 @@ function highlightNode(currElement, over) {
     else
         currElement.children[0].classList.remove("blue");
 }
+
+function highlightChildNode(currElement, over) {
+    if (over)
+        currElement.children[0].classList.add("lightblue");
+    else
+        currElement.children[0].classList.remove("lightblue");
+}
+
