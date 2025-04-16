@@ -37,7 +37,7 @@
                                     <button class="treeitembutton btn btn-light btn-xs ml-1 mr-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
                                         <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
                                     </button>
-                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||(child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl)))
+                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) || (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl)))
                                     {
                                         <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
                                     }
@@ -88,9 +88,9 @@
                                     }
                                 </div>
                                 <div @onmouseover="async () => await Hover(child)" @onmouseout="async () => await Unhover(child)" class="col-auto p-1"
-                                id="@child.Neuron.Id" style="@(this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor) + 
+                                    id="@child.Neuron.Id" style="@(this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor) + 
                                     ((int) tagUrlType > (int) UrlType.Unrecognized ? "; max-width: calc(100% - 90px)" : string.Empty))"
-                                userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
+                                    userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
                                     @if (child.Neuron.Validation.RestrictionReasons.Count() > 0)
                                     {
                                         <div class="tooltip-wrapper">
@@ -135,7 +135,7 @@
                                 </div>
                                 @if (!this.ShouldRightJustifyBasedOnRoot(child))
                                 {
-                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||(child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl)))
+                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) || (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl)))
                                     {
                                         <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
                                     }
@@ -151,15 +151,15 @@
                             {
                                 <div class="row">
                                     <TreeView Children="@child.Children" 
-                                    AvatarUrl="@this.AvatarUrl"
-                                    OnHover="@(async (childNode) => await Hover(childNode))"
-                                    OnUnhover="@(async (childNode) => await Unhover(childNode))"
-                                    @bind-SelectedNeuron="@this.SelectedNeuron" 
-                                    OnMenuRequested="@this.MenuRequested"
-                                    OnInfoRequested="@this.InfoRequested" 
-                                    @bind-ControlsEnabled="@this.ControlsEnabled" 
-                                    IsRoot="false" 
-                                    IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" 
+                                        AvatarUrl="@this.AvatarUrl"
+                                        OnHover="@(async (childNode) => await Hover(childNode))"
+                                        OnUnhover="@(async (childNode) => await Unhover(childNode))"
+                                        @bind-SelectedNeuron="@this.SelectedNeuron" 
+                                        OnMenuRequested="@this.MenuRequested"
+                                        OnInfoRequested="@this.InfoRequested" 
+                                        @bind-ControlsEnabled="@this.ControlsEnabled" 
+                                        IsRoot="false" 
+                                        IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" 
                                     />
                                 </div>
                             }
