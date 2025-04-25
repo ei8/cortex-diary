@@ -319,31 +319,30 @@
             "";
     }
 
-    private async Task<string> Hover(TreeNeuronViewModel child, bool recursive = false, string id = "")
+    private async Task Hover(TreeNeuronViewModel child, bool recursive = false, string id = "")
     {
         try
         {
-            return await ProcessHoverOrUnhover(child, recursive, id, true);
+            await HoverCore(child, recursive, id, true);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return ex.Message;
+            
         }
     }
 
-    private async Task<string> Unhover(TreeNeuronViewModel child, bool recursive = false, string id = "")
+    private async Task Unhover(TreeNeuronViewModel child, bool recursive = false, string id = "")
     {
         try
         {
-            return await ProcessHoverOrUnhover(child, recursive, id, false);
+            await HoverCore(child, recursive, id, false);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return ex.Message;
         }
     }
 
-    private async Task<string> ProcessHoverOrUnhover(TreeNeuronViewModel child, bool recursive, string id, bool isHover)
+    private async Task HoverCore(TreeNeuronViewModel child, bool recursive, string id, bool isHover)
     {
         if (!this.Children.Contains(child))
         {
@@ -355,8 +354,6 @@
         }
 
         await HandleNodeHighlight(child, recursive, id, isHover);
-
-        return "";
     }
 
     private async Task HandleNodeHighlight(TreeNeuronViewModel node, bool recursive, string id, bool isHover)
@@ -373,7 +370,7 @@
             foreach (var childNode in node.Children)
             {
                 // Skip processing if the child node matches the given ID
-                if (childNode.Neuron.Id == id || HoverCore(childNode, id))
+                if (childNode.Neuron.Id == id || childNode.Neuron.Type == Library.Common.RelativeType.Presynaptic)
                     continue;
 
                 // Highlight or unhighlight the child node
@@ -388,11 +385,6 @@
         }
     }
 
-    private bool HoverCore(TreeNeuronViewModel childNode, string id)
-    {
-        return childNode.Neuron.Id == id || childNode.Neuron.Type == Library.Common.RelativeType.Presynaptic;
-    }
-    
     private UrlType GetUrlType(string url)
     {
         UrlType result = UrlType.Invalid;
