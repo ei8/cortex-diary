@@ -9,6 +9,10 @@
     fill: #1E90FF !important;
 }
 
+.lightblue {
+    fill: #6ed1f2 !important;
+}
+
 /* blazor.common */
 iframe {
     border-style: solid;

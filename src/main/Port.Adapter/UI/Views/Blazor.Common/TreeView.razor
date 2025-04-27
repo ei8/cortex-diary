@@ -1,5 +1,6 @@
 ﻿@using Blazorise
 @using Blazorise.Icons.FontAwesome
+@using Microsoft.JSInterop
 @using ei8.Cortex.Diary.Application.Neurons
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 
@@ -36,10 +37,7 @@
                                     <button class="treeitembutton btn btn-light btn-xs ml-1 mr-1 rounded-circle" disabled="@(!this.ControlsEnabled)" @onclick="() => this.RequestItemInfo(child)">
                                         <Blazorise.Icon Name="FontAwesomeIcons.InfoCircle" />
                                     </button>
-                                    @if (
-                                        !string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||
-                                        (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl))
-                                    )
+                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) || (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl)))
                                     {
                                         <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
                                     }
@@ -89,10 +87,10 @@
                                         }
                                     }
                                 </div>
-                                <div onmouseover="hover('g', this.id, true, highlightNode)" onmouseout="hover('g', this.id, false, highlightNode)" class="col-auto p-1" 
+                                <div @onmouseover="async () => await Hover(child)" @onmouseout="async () => await Unhover(child)" class="col-auto p-1"
                                     id="@child.Neuron.Id" style="@(this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor) + 
                                     ((int) tagUrlType > (int) UrlType.Unrecognized ? "; max-width: calc(100% - 90px)" : string.Empty))"
-                                        userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
+                                    userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
                                     @if (child.Neuron.Validation.RestrictionReasons.Count() > 0)
                                     {
                                         <div class="tooltip-wrapper">
@@ -137,10 +135,7 @@
                                 </div>
                                 @if (!this.ShouldRightJustifyBasedOnRoot(child))
                                 {
-                                    @if (
-                                        !string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) ||
-                                        (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl))
-                                    )
+                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl) || (child.Neuron.Terminal != null && !string.IsNullOrWhiteSpace(child.Neuron.Terminal.ExternalReferenceUrl)))
                                     {
                                         <Blazorise.Icon Name="FontAwesomeIcons.Globe" Class="fa-xs pt-2 px-1" Size="small" />
                                     }
@@ -157,7 +152,9 @@
                                 <div class="row">
                                     <TreeView Children="@child.Children" 
                                         AvatarUrl="@this.AvatarUrl"
-                                  @bind-SelectedNeuron="@this.SelectedNeuron" 
+                                        OnHover="@(async (childNode) => await Hover(childNode))"
+                                        OnUnhover="@(async (childNode) => await Unhover(childNode))"
+                                        @bind-SelectedNeuron="@this.SelectedNeuron" 
                                         OnMenuRequested="@this.MenuRequested"
                                         OnInfoRequested="@this.InfoRequested" 
                                         @bind-ControlsEnabled="@this.ControlsEnabled" 
@@ -181,6 +178,8 @@
 </ul>
 
 @code {
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
     [Parameter]
     public IList<TreeNeuronViewModel> Children { get; set; } = new List<TreeNeuronViewModel>();
 
@@ -201,6 +200,10 @@
 
     [Parameter]
     public EventCallback<RenderDirectionValue> RenderDirectionChanged { get; set; }
+    [Parameter]
+    public EventCallback<TreeNeuronViewModel> OnHover { get; set; }
+    [Parameter]
+    public EventCallback<TreeNeuronViewModel> OnUnhover { get; set; }
 
     private RenderDirectionValue renderDirection;
     [Parameter]
@@ -314,6 +317,59 @@
         return this.ShouldRightJustify(child) ?
             "display: flex; justify-content: flex-end;" :
             "";
+    }
+
+    private async Task Hover(TreeNeuronViewModel child, bool recursive = false, string id = "")
+    {
+        await HoverCore(child, recursive, id, true);
+    }
+
+    private async Task Unhover(TreeNeuronViewModel child, bool recursive = false, string id = "")
+    {
+        await HoverCore(child, recursive, id, false);
+    }
+
+    private async Task HoverCore(TreeNeuronViewModel child, bool recursive, string id, bool isHover)
+    {
+        if (!this.Children.Contains(child))
+        {
+            var newChild = this.Children.FirstOrDefault(x => x.Children.Contains(child));
+            if (newChild != null)
+            {
+                child = newChild;
+            }
+        }
+
+        await HandleNodeHighlight(child, recursive, id, isHover);
+    }
+
+    private async Task HandleNodeHighlight(TreeNeuronViewModel node, bool recursive, string id, bool isHover)
+    {
+        // Highlight or unhighlight the current node
+        if (!recursive)
+        {
+            await JSRuntime.InvokeVoidAsync("hover", "g", node.Neuron.Id, isHover, "highlightNode");
+        }
+
+        // Process children if the node is expanded and has children
+        if (node.ExpansionState == ExpansionState.Expanded && node.Children?.Any() == true)
+        {
+            foreach (var childNode in node.Children)
+            {
+                // Skip processing if the child node matches the given ID
+                if (childNode.Neuron.Id == id || childNode.Neuron.Type == Library.Common.RelativeType.Presynaptic)
+                    continue;
+
+                // Highlight or unhighlight the child node
+                await JSRuntime.InvokeVoidAsync("hover", "g", childNode.Neuron.Id, isHover, "highlightChildNode");
+
+                // Recursively process children of the child node if expanded
+                if (childNode.ExpansionState == ExpansionState.Expanded && childNode.Children?.Any() == true)
+                {
+                    await HandleNodeHighlight(childNode, true, id, isHover);
+                }
+            }
+        }
     }
 
     private UrlType GetUrlType(string url)
