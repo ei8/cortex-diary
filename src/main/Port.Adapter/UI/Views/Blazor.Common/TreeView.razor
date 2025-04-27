@@ -321,25 +321,12 @@
 
     private async Task Hover(TreeNeuronViewModel child, bool recursive = false, string id = "")
     {
-        try
-        {
-            await HoverCore(child, recursive, id, true);
-        }
-        catch (Exception)
-        {
-            
-        }
+        await HoverCore(child, recursive, id, true);
     }
 
     private async Task Unhover(TreeNeuronViewModel child, bool recursive = false, string id = "")
     {
-        try
-        {
-            await HoverCore(child, recursive, id, false);
-        }
-        catch (Exception)
-        {
-        }
+        await HoverCore(child, recursive, id, false);
     }
 
     private async Task HoverCore(TreeNeuronViewModel child, bool recursive, string id, bool isHover)
