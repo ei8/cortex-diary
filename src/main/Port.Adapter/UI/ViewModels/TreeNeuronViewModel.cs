@@ -83,5 +83,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         {
             return this.expandPostsynapticsUntilExternalReferencesTimer.Enabled;
         }
+
+        public bool IsChild(string id)
+        {
+            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Postsynaptic) || x.IsChild(id));
+            return result;
+        }
     }
 }
