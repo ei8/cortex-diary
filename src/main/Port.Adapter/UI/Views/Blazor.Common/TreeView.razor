@@ -290,8 +290,7 @@
             {
                 foreach (var child in this.Children)
                 {
-                    if (this.SelectedNeuron.IsChild(child.Neuron.Id) && 
-                        child.Neuron.Type != Library.Common.RelativeType.Presynaptic && 
+                    if (child.Neuron.Type != Library.Common.RelativeType.Presynaptic && 
                         string.IsNullOrEmpty(child.Neuron.ExternalReferenceUrl))
                     {
                         await InvokeAsync(() => child.Toggle());
