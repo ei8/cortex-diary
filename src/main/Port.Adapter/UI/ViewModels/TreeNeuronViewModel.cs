@@ -14,6 +14,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
         private Timer expandPostsynapticsUntilExternalReferencesTimer;
+        private Timer expandUntilFarthestPresynapticTimer;
 
         public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
@@ -22,6 +23,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.neuronQueryService = neuronQueryService;
             this.Children = new List<TreeNeuronViewModel>();
             this.expandPostsynapticsUntilExternalReferencesTimer = new Timer();
+            this.expandUntilFarthestPresynapticTimer = new Timer();
         }
 
         public IList<TreeNeuronViewModel> Children { get; set; }
@@ -41,7 +43,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 {
                     
                     NeuronQuery.TryParse(result.QueryString, out NeuronQuery query);
-                    var childrenQuery = new NeuronQuery() {
+                    var childrenQuery = new NeuronQuery()
+                    {
                         PageSize = Constants.TreeNodeChildrenQueryPageSize,
                         RelativeValues = query != null ? query.RelativeValues : null
                     };
@@ -90,6 +93,42 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public bool IsExpandTimerEnabled()
         {
             return this.expandPostsynapticsUntilExternalReferencesTimer.Enabled;
+        }
+
+        public void ConfigureExpandUntilFarthestPresynapticTimer(double interval, ElapsedEventHandler handler)
+        {
+            this.expandUntilFarthestPresynapticTimer.Interval = interval;
+            this.expandUntilFarthestPresynapticTimer.Elapsed -= handler;
+            this.expandUntilFarthestPresynapticTimer.Elapsed += handler;
+        }
+
+        public void StartExpandUntilFarthestPresynapticTimer()
+        {
+            this.expandUntilFarthestPresynapticTimer.Start();
+        }
+
+        public void StopExpandUntilFarthestPresynapticTimer()
+        {
+            this.expandUntilFarthestPresynapticTimer.Stop();
+        }
+
+        public void RestartExpandUntilFarthestPresynapticTimer()
+        {
+            this.expandUntilFarthestPresynapticTimer.Enabled = false;
+            this.StartExpandUntilFarthestPresynapticTimer();
+        }
+
+        public bool IsExpandUntilFarthestPresynapticTimerEnabled()
+        {
+            return this.expandUntilFarthestPresynapticTimer.Enabled;
+        }
+
+        public bool IsPresynapticChild(string id)
+        {
+            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Presynaptic) || x.IsPresynapticChild(id));
+            if (result)
+                return result;
+            return result;
         }
     }
 }

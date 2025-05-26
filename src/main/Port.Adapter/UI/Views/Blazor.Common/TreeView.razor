@@ -260,41 +260,75 @@
     {
         if (
             this.selectedNeuron != null && string.IsNullOrEmpty(this.selectedNeuron.Neuron.ExternalReferenceUrl) &&
-            this.selectedNeuron.IsExpandTimerEnabled() && 
             (
                 this.selectedNeuron.ExpansionState == ExpansionState.Collapsed ||
                 !this.Children.Any(c => c.ExpansionState == ExpansionState.Expanded)
             )
         )
         {
-            this.selectedNeuron.RestartExpandTimer();
-
-            // if children contains selected neuron
-            if (
-                this.Children.Any(
-                    x => x.Neuron.Id == this.SelectedNeuron.Neuron.Id && 
-                    x.Neuron.Type != Library.Common.RelativeType.Presynaptic && 
-                    string.IsNullOrEmpty(SelectedNeuron.Neuron.ExternalReferenceUrl)
-                )
-            )
+            if (this.selectedNeuron.IsExpandTimerEnabled())
             {
+                this.selectedNeuron.RestartExpandTimer();
+
+                // if children contains selected neuron
                 if (
-                    this.SelectedNeuron.Neuron.Type != Library.Common.RelativeType.Presynaptic &&
-                    string.IsNullOrEmpty(this.SelectedNeuron.Neuron.ExternalReferenceUrl)
+                    this.Children.Any(
+                        x => x.Neuron.Id == this.SelectedNeuron.Neuron.Id && 
+                        x.Neuron.Type != Library.Common.RelativeType.Presynaptic && 
+                        string.IsNullOrEmpty(SelectedNeuron.Neuron.ExternalReferenceUrl)
+                    )
                 )
                 {
-                    await InvokeAsync(() => this.SelectedNeuron.Toggle());
+                    if (
+                        this.SelectedNeuron.Neuron.Type != Library.Common.RelativeType.Presynaptic &&
+                        string.IsNullOrEmpty(this.SelectedNeuron.Neuron.ExternalReferenceUrl)
+                    )
+                    {
+                        await InvokeAsync(() => this.SelectedNeuron.Toggle());
+                    }
+                }
+                else
+                {
+                    foreach (var child in this.Children)
+                    {
+                        if (this.SelectedNeuron.IsChild(child.Neuron.Id) && 
+                            child.Neuron.Type != Library.Common.RelativeType.Presynaptic && 
+                            string.IsNullOrEmpty(child.Neuron.ExternalReferenceUrl))
+                        {
+                            await InvokeAsync(() => child.Toggle());
+                        }
+                    }
                 }
             }
-            else
+            else if (this.selectedNeuron.IsExpandUntilFarthestPresynapticTimerEnabled())
             {
-                foreach (var child in this.Children)
+                this.selectedNeuron.RestartExpandUntilFarthestPresynapticTimer();
+                if (
+                    this.Children.Any(
+                        x => x.Neuron.Id == this.SelectedNeuron.Neuron.Id && 
+                        x.Neuron.Type != Library.Common.RelativeType.Postsynaptic && 
+                        string.IsNullOrEmpty(SelectedNeuron.Neuron.ExternalReferenceUrl)
+                    )
+                )
                 {
-                    if (this.SelectedNeuron.IsChild(child.Neuron.Id) && 
-                        child.Neuron.Type != Library.Common.RelativeType.Presynaptic && 
-                        string.IsNullOrEmpty(child.Neuron.ExternalReferenceUrl))
+                    if (
+                        this.SelectedNeuron.Neuron.Type != Library.Common.RelativeType.Postsynaptic &&
+                        string.IsNullOrEmpty(this.SelectedNeuron.Neuron.ExternalReferenceUrl)
+                    )
                     {
-                        await InvokeAsync(() => child.Toggle());
+                        await InvokeAsync(() => this.SelectedNeuron.Toggle());
+                    }
+                }
+                else
+                {
+                    foreach (var child in this.Children)
+                    {
+                        if (this.SelectedNeuron.IsPresynapticChild(child.Neuron.Id) && 
+                            child.Neuron.Type != Library.Common.RelativeType.Postsynaptic && 
+                            string.IsNullOrEmpty(child.Neuron.ExternalReferenceUrl))
+                        {
+                            await InvokeAsync(() => child.Toggle());
+                        }
                     }
                 }
             }
