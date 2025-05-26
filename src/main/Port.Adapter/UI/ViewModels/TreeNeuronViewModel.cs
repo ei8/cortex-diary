@@ -41,7 +41,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 var children = new List<TreeNeuronViewModel>();
                 if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
                 {
-                    
+
                     NeuronQuery.TryParse(result.QueryString, out NeuronQuery query);
                     var childrenQuery = new NeuronQuery()
                     {
@@ -57,14 +57,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 }
                 this.ExpansionState = ExpansionState.Expanded;
             }
-        }
-
-        public bool IsChild(string id)
-        {
-            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Postsynaptic) || x.IsChild(id));
-            if(result)
-                return result;
-            return result;
         }
 
         public void ConfigureExpandTimer(double interval, ElapsedEventHandler handler)
@@ -128,6 +120,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Presynaptic) || x.IsPresynapticChild(id));
             if (result)
                 return result;
+        public bool IsChild(string id)
+        {
+            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Postsynaptic) || x.IsChild(id));
             return result;
         }
     }
