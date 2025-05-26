@@ -88,9 +88,9 @@
                                     }
                                 </div>
                                 <div @onmouseover="async () => await Hover(child)" @onmouseout="async () => await Unhover(child)" class="col-auto p-1"
-                                    id="@child.Neuron.Id" style="@(this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor) + 
+                                id="@child.Neuron.Id" style="@(this.GetStyleByCreationAuthor(child.Neuron.Validation.IsCurrentUserCreationAuthor) + 
                                     ((int) tagUrlType > (int) UrlType.Unrecognized ? "; max-width: calc(100% - 90px)" : string.Empty))"
-                                    userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
+                                userCreated="@(child.Neuron.Validation.IsCurrentUserCreationAuthor.ToString().ToLower())">
                                     @if (child.Neuron.Validation.RestrictionReasons.Count() > 0)
                                     {
                                         <div class="tooltip-wrapper">
@@ -130,6 +130,20 @@
                                                 }
                                                 @line.TrimStart()
                                             }
+                                        }
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(child.Neuron.ExternalReferenceUrl))
+                                    {
+                                        @if (!string.IsNullOrWhiteSpace(child.Neuron.Tag))
+                                        {
+                                            <br />
+                                        }
+                                        var mirrorKeys = child.GetMirrorKeys().ToArray();
+                                        @if (mirrorKeys.Any())
+                                        {
+                                            <i>
+                                                @mirrorKeys.First().Item1.TrimStart()
+                                            </i>
                                         }
                                     }
                                 </div>

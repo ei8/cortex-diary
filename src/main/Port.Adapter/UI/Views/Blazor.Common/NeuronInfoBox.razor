@@ -53,7 +53,28 @@
                         </tr>
                         <tr>
                             <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px;">
-                                Ext Ref URL:
+                                Mirror Keys:
+                            </td>
+                            <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px; max-width: 200px; word-break: break-all;">
+                                @if (!string.IsNullOrWhiteSpace(this.selectedNeuron.Neuron.ExternalReferenceUrl))
+                                {
+                                    var mirrorKeys = this.selectedNeuron.GetMirrorKeys().ToArray();
+                                    @foreach (var key in mirrorKeys)
+                                    {
+                                        @if (Array.IndexOf(mirrorKeys, key) > 0)
+                                        {
+                                            <br />
+                                        }
+                                        <span>
+                                            @key.Item1.TrimStart()@(" (")@key.Item2@(")")
+                                        </span>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px;">
+                                Mirror URL:
                             </td>
                             <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px; max-width: 200px; word-break: break-all;">
                                 @this.selectedNeuron.Neuron.ExternalReferenceUrl
@@ -167,7 +188,7 @@
                             </tr>
                             <tr>
                                 <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px;">
-                                    Ext Ref URL:
+                                    Mirror URL:
                                 </td>
                                 <td style="vertical-align: top; padding-left: 5px; padding-bottom: 3px; max-width: 200px; word-break: break-all;">
                                     @this.selectedNeuron.Neuron.Terminal.ExternalReferenceUrl

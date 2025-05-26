@@ -1,4 +1,5 @@
-﻿using ei8.Cortex.Diary.Application.Neurons;
+﻿using ei8.Cortex.Diary.Application.Mirrors;
+using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
 using System;
@@ -13,13 +14,20 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
+        private readonly IEnumerable<MirrorConfigFile> mirrorConfigFiles;
         private Timer expandPostsynapticsUntilExternalReferencesTimer;
 
-        public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
+        public TreeNeuronViewModel(
+            Neuron neuron, 
+            string avatarUrl, 
+            INeuronQueryService neuronQueryService,
+            IEnumerable<MirrorConfigFile> mirrorConfigFiles
+            )
         {
             this.Neuron = neuron;
             this.avatarUrl = avatarUrl;
             this.neuronQueryService = neuronQueryService;
+            this.mirrorConfigFiles = mirrorConfigFiles;
             this.Children = new List<TreeNeuronViewModel>();
             this.expandPostsynapticsUntilExternalReferencesTimer = new Timer();
         }
@@ -48,12 +56,30 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                     (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, childrenQuery))
                         .Items
                         .ToList().ForEach(n =>
-                        children.Add(new TreeNeuronViewModel(new Neuron(n), this.avatarUrl, this.neuronQueryService))
+                        children.Add(new TreeNeuronViewModel(
+                            new Neuron(n), 
+                            this.avatarUrl, 
+                            this.neuronQueryService, 
+                            this.mirrorConfigFiles
+                            ))
                     );
+
                     this.Children = children.ToArray();
                 }
                 this.ExpansionState = ExpansionState.Expanded;
             }
+        }
+
+        public IEnumerable<Tuple<string, string>> GetMirrorKeys()
+        {
+            var result = this.mirrorConfigFiles
+                .Where(mco => mco.Mirrors.Any(m => m.Url == this.Neuron.ExternalReferenceUrl))
+                .Select(mco => Tuple.Create(
+                    mco.Mirrors.Single(mi => mi.Url == this.Neuron.ExternalReferenceUrl).Key, 
+                    mco.Path
+                ));
+
+            return result;
         }
 
         public void ConfigureExpandTimer(double interval, ElapsedEventHandler handler)

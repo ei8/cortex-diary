@@ -24,13 +24,12 @@
 //
 // Modifications copyright(C) 2018 ei8/Elmer Bool
 
+using ei8.Cortex.Diary.Application.Dependency;
+using ei8.Cortex.Diary.Application.Settings;
+using ei8.Cortex.Diary.Port.Adapter.Common;
 using Splat;
 using System;
 using System.Collections.Generic;
-using ei8.Cortex.Diary.Application.Dependency;
-using ei8.Cortex.Diary.Application.Settings;
-using IdentityServer4.Models;
-using ei8.Cortex.Diary.Port.Adapter.Common;
 
 namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
 {
@@ -49,12 +48,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         }
 
         #region Constants
-
-        private const string IdUseMocks = "use_mocks";
-        private const string IdUseFakeLocation = "use_fake_location";
-        private const string IdLatitude = "latitude";
-        private const string IdLongitude = "longitude";
-        private const string IdAllowGpsLocation = "allow_gps_location";
         private const string IdOidcAuthority = "oidc_authority";
         private const string IdClientId = "client_id";
         private const string IdClientSecret = "client_secret";
@@ -62,6 +55,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdDatabasePath = "database_path";
         private const string IdBasePath = "base_path";
         private const string IdPluginsPath = "plugins_path";
+        private const string IdMirrorConfigFiles = "mirror_config_files";
         private const string IdValidateServerCertificate = "validate_server_certificate";
         private const string IdLoginCallback = "login_callback";
         private const string IdLogoutCallback = "logout_callback";
@@ -69,11 +63,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private const string IdAppTitle = "app_title";
         private const string IdAppIcon = "app_icon";
 
-        private readonly bool UseMocksDefault = true;
-        private readonly bool UseFakeLocationDefault = false;
-        private readonly double FakeLatitudeDefault = 47.604610d;
-        private readonly double FakeLongitudeDefault = -122.315752d;
-        private readonly bool AllowGpsLocationDefault = false;
         private readonly string OidcAuthorityDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.OidcAuthority);
         private readonly string ClientIdDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientId);
         private readonly string ClientSecretDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.ClientSecret);
@@ -81,6 +70,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         private readonly string DatabasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.DatabasePath);
         private readonly string BasePathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.BasePath);
         private readonly string PluginsPathDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.PluginsPath);
+        private readonly string MirrorConfigFilesDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.MirrorConfigFiles);
         private readonly string AppTitleDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.AppTitle);
         private readonly string AppIconDefault = Environment.GetEnvironmentVariable(EnvironmentVariableKeys.AppIcon);
         private readonly bool ValidateServerCertificateDefault = 
@@ -157,6 +147,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
             set => AppSettings.AddOrUpdateValue(IdPluginsPath, value);
         }
 
+        public IEnumerable<string> MirrorConfigFiles
+        {
+            get => AppSettings.GetValueOrDefault(IdMirrorConfigFiles, MirrorConfigFilesDefault).Split(',');
+            set => AppSettings.AddOrUpdateValue(IdMirrorConfigFiles, string.Join(',', value));
+        }
+
         public string AppTitle
         {
             get => AppSettings.GetValueOrDefault(IdAppTitle, AppTitleDefault);
@@ -175,38 +171,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
         }
         #endregion
 
-        #region [Unused]
-        public bool UseMocks
-        {
-            get => AppSettings.GetValueOrDefault(IdUseMocks, UseMocksDefault);
-            set => AppSettings.AddOrUpdateValue(IdUseMocks, value);
-        }
-
-        public bool UseFakeLocation
-        {
-            get => AppSettings.GetValueOrDefault(IdUseFakeLocation, UseFakeLocationDefault);
-            set => AppSettings.AddOrUpdateValue(IdUseFakeLocation, value);
-        }
-
-        public string Latitude
-        {
-            get => AppSettings.GetValueOrDefault(IdLatitude, FakeLatitudeDefault.ToString());
-            set => AppSettings.AddOrUpdateValue(IdLatitude, value);
-        }
-
-        public string Longitude
-        {
-            get => AppSettings.GetValueOrDefault(IdLongitude, FakeLongitudeDefault.ToString());
-            set => AppSettings.AddOrUpdateValue(IdLongitude, value);
-        }
-
-        public bool AllowGpsLocation
-        {
-            get => AppSettings.GetValueOrDefault(IdAllowGpsLocation, AllowGpsLocationDefault);
-            set => AppSettings.AddOrUpdateValue(IdAllowGpsLocation, value);
-        }
-        #endregion
-
         private void UpdateAppEndpoint(string appUrl)
         {
             LoginCallback = $"{appUrl}/Account/LoginCallback";
@@ -215,11 +179,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.IO.Process.Services.Settings
 
         public void Clear()
         {
-            this.AppSettings.Remove(IdUseMocks);
-            this.AppSettings.Remove(IdUseFakeLocation);
-            this.AppSettings.Remove(IdLatitude);
-            this.AppSettings.Remove(IdLongitude);
-            this.AppSettings.Remove(IdAllowGpsLocation);
             this.AppSettings.Remove(IdOidcAuthority);
             this.AppSettings.Remove(IdClientId);
             this.AppSettings.Remove(IdClientSecret);

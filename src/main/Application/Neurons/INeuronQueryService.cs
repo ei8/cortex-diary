@@ -29,7 +29,6 @@
  */
 
 using ei8.Cortex.Library.Common;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 

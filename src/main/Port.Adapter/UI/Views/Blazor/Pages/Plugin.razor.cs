@@ -1,11 +1,8 @@
 using ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Common;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
@@ -51,7 +48,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor.Pages
                         JsRuntime = this.JsRuntime,
                         SettingsService = this.SettingsService,
                         SubscriptionApplicationService = this.SubscriptionApplicationService,
-                        SubscriptionsQueryService = this.SubscriptionsQueryService
+                        SubscriptionsQueryService = this.SubscriptionsQueryService,
+                        MirrorQueryService = this.MirrorQueryService
                     };
 
                     if (pluginSettingsType != null)
