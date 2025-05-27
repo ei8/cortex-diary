@@ -59,6 +59,15 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             }
         }
 
+
+        public bool IsChild(string id)
+        {
+            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Postsynaptic) || x.IsChild(id));
+            if (result)
+                return result;
+            return result;
+        }
+
         public void ConfigureExpandTimer(double interval, ElapsedEventHandler handler)
         {
             this.expandPostsynapticsUntilExternalReferencesTimer.Interval = interval;
@@ -118,11 +127,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public bool IsPresynapticChild(string id)
         {
             var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Presynaptic) || x.IsPresynapticChild(id));
-            if (result)
-                return result;
-        public bool IsChild(string id)
-        {
-            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Postsynaptic) || x.IsChild(id));
             return result;
         }
     }
