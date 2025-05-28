@@ -96,9 +96,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             return this.expansionTimer.Enabled;
         }
 
-        public bool IsChild(string id)
+        public bool IsChild(string id,RelativeType type)
         {
-            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Postsynaptic) || x.IsChild(id));
+            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Postsynaptic) || x.IsChild(id,type));
             return result;
         }
 
