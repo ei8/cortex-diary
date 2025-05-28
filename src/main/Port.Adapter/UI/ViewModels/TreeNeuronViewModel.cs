@@ -9,12 +9,19 @@ using System.Timers;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
+    public enum ExpansionType
+    {
+        None,
+        PostsynapticUntilExternalReferences,
+        FarthestPresynaptic
+    }
+
     public class TreeNeuronViewModel
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
-        private Timer expandPostsynapticsUntilExternalReferencesTimer;
-        private Timer expandUntilFarthestPresynapticTimer;
+        private Timer expansionTimer;
+        private ExpansionType currentExpansionType = ExpansionType.None;
 
         public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
         {
@@ -22,8 +29,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.avatarUrl = avatarUrl;
             this.neuronQueryService = neuronQueryService;
             this.Children = new List<TreeNeuronViewModel>();
-            this.expandPostsynapticsUntilExternalReferencesTimer = new Timer();
-            this.expandUntilFarthestPresynapticTimer = new Timer();
+            this.expansionTimer = new Timer();
         }
 
         public IList<TreeNeuronViewModel> Children { get; set; }
@@ -31,6 +37,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public Neuron Neuron { get; private set; }
 
         public ExpansionState ExpansionState { get; private set; }
+
+        public ExpansionType CurrentExpansionType => this.currentExpansionType;
 
         public async Task Toggle()
         {
@@ -41,7 +49,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 var children = new List<TreeNeuronViewModel>();
                 if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
                 {
-
                     NeuronQuery.TryParse(result.QueryString, out NeuronQuery query);
                     var childrenQuery = new NeuronQuery()
                     {
@@ -59,69 +66,40 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             }
         }
 
+        public void ConfigureExpansionTimer(ExpansionType type, double interval, ElapsedEventHandler handler)
+        {
+            this.currentExpansionType = type;
+            this.expansionTimer.Interval = interval;
+            this.expansionTimer.Elapsed -= handler;
+            this.expansionTimer.Elapsed += handler;
+        }
+
+        public void StartExpansionTimer()
+        {
+            this.expansionTimer.Start();
+        }
+
+        public void StopExpansionTimer()
+        {
+            this.expansionTimer.Stop();
+            this.currentExpansionType = ExpansionType.None;
+        }
+
+        public void RestartExpansionTimer()
+        {
+            this.expansionTimer.Enabled = false;
+            this.StartExpansionTimer();
+        }
+
+        public bool IsExpansionTimerEnabled()
+        {
+            return this.expansionTimer.Enabled;
+        }
 
         public bool IsChild(string id)
         {
             var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Postsynaptic) || x.IsChild(id));
-            if (result)
-                return result;
             return result;
-        }
-
-        public void ConfigureExpandTimer(double interval, ElapsedEventHandler handler)
-        {
-            this.expandPostsynapticsUntilExternalReferencesTimer.Interval = interval;
-            this.expandPostsynapticsUntilExternalReferencesTimer.Elapsed -= handler;
-            this.expandPostsynapticsUntilExternalReferencesTimer.Elapsed += handler;
-        }
-
-        public void StartExpandTimer()
-        {
-            this.expandPostsynapticsUntilExternalReferencesTimer.Start();
-        }
-
-        public void StopExpandTimer()
-        {
-            this.expandPostsynapticsUntilExternalReferencesTimer.Stop();
-        }
-
-        public void RestartExpandTimer()
-        {
-            this.expandPostsynapticsUntilExternalReferencesTimer.Enabled = false;
-            this.StartExpandTimer();
-        }
-
-        public bool IsExpandTimerEnabled()
-        {
-            return this.expandPostsynapticsUntilExternalReferencesTimer.Enabled;
-        }
-
-        public void ConfigureExpandUntilFarthestPresynapticTimer(double interval, ElapsedEventHandler handler)
-        {
-            this.expandUntilFarthestPresynapticTimer.Interval = interval;
-            this.expandUntilFarthestPresynapticTimer.Elapsed -= handler;
-            this.expandUntilFarthestPresynapticTimer.Elapsed += handler;
-        }
-
-        public void StartExpandUntilFarthestPresynapticTimer()
-        {
-            this.expandUntilFarthestPresynapticTimer.Start();
-        }
-
-        public void StopExpandUntilFarthestPresynapticTimer()
-        {
-            this.expandUntilFarthestPresynapticTimer.Stop();
-        }
-
-        public void RestartExpandUntilFarthestPresynapticTimer()
-        {
-            this.expandUntilFarthestPresynapticTimer.Enabled = false;
-            this.StartExpandUntilFarthestPresynapticTimer();
-        }
-
-        public bool IsExpandUntilFarthestPresynapticTimerEnabled()
-        {
-            return this.expandUntilFarthestPresynapticTimer.Enabled;
         }
 
         public bool IsPresynapticChild(string id)
