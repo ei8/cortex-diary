@@ -30,12 +30,6 @@ namespace ei8.Cortex.Diary.Application.Settings
 {
     public interface ISettingsService
     {
-        bool UseMocks { get; set; }
-        bool UseFakeLocation { get; set; }
-        string Latitude { get; set; }
-        string Longitude { get; set; }
-        bool AllowGpsLocation { get; set; }
-
         string OidcAuthority { get; }
         string ClientId { get; }
         string ClientSecret { get; }
@@ -43,6 +37,7 @@ namespace ei8.Cortex.Diary.Application.Settings
         string DatabasePath { get; set; }
         string BasePath { get; set; }
         string PluginsPath { get; set; }
+        IEnumerable<string> MirrorConfigFiles { get; set; }
         bool ValidateServerCertificate { get; set; }
         string LoginCallback { get; set; }
         string LogoutCallback { get; set; }

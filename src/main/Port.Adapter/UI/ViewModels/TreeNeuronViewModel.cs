@@ -1,4 +1,5 @@
-﻿using ei8.Cortex.Diary.Application.Neurons;
+﻿using ei8.Cortex.Diary.Application.Mirrors;
+using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Library.Client;
 using ei8.Cortex.Library.Common;
 using System;
@@ -22,12 +23,19 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         private INeuronQueryService neuronQueryService;
         private Timer expansionTimer;
         private ExpansionType currentExpansionType = ExpansionType.None;
+        private readonly IEnumerable<MirrorConfigFile> mirrorConfigFiles;
 
-        public TreeNeuronViewModel(Neuron neuron, string avatarUrl, INeuronQueryService neuronQueryService)
+        public TreeNeuronViewModel(
+            Neuron neuron, 
+            string avatarUrl, 
+            INeuronQueryService neuronQueryService,
+            IEnumerable<MirrorConfigFile> mirrorConfigFiles
+            )
         {
             this.Neuron = neuron;
             this.avatarUrl = avatarUrl;
             this.neuronQueryService = neuronQueryService;
+            this.mirrorConfigFiles = mirrorConfigFiles;
             this.Children = new List<TreeNeuronViewModel>();
             this.expansionTimer = new Timer();
         }
@@ -58,8 +66,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                     (await this.neuronQueryService.GetNeurons(result.AvatarUrl, this.Neuron.Id, childrenQuery))
                         .Items
                         .ToList().ForEach(n =>
-                        children.Add(new TreeNeuronViewModel(new Neuron(n), this.avatarUrl, this.neuronQueryService))
+                        children.Add(new TreeNeuronViewModel(
+                            new Neuron(n), 
+                            this.avatarUrl, 
+                            this.neuronQueryService, 
+                            this.mirrorConfigFiles
+                            ))
                     );
+
                     this.Children = children.ToArray();
                 }
                 this.ExpansionState = ExpansionState.Expanded;
@@ -74,6 +88,18 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.expansionTimer.Elapsed += handler;
         }
 
+        public IEnumerable<Tuple<string, string>> GetMirrorKeys()
+        {
+            var result = this.mirrorConfigFiles
+                .Where(mco => mco.Mirrors.Any(m => m.Url == this.Neuron.ExternalReferenceUrl))
+                .Select(mco => Tuple.Create(
+                    mco.Mirrors.Single(mi => mi.Url == this.Neuron.ExternalReferenceUrl).Key, 
+                    mco.Path
+                ));
+
+            return result;
+        }
+      
         public void StartExpansionTimer()
         {
             this.expansionTimer.Start();
@@ -99,6 +125,12 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public bool IsChild(string id, RelativeType type)
         {
             var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type ==type) || x.IsChild(id, type));
+            return result;
+        }
+
+        public bool IsChild(string id)
+        {
+            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == RelativeType.Postsynaptic) || x.IsChild(id));
             return result;
         }
     }

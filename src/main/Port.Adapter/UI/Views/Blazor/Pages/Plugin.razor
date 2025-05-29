@@ -3,6 +3,7 @@
 @using System.IO
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.AspNetCore.Http
+@using ei8.Cortex.Diary.Application.Mirrors
 @using ei8.Cortex.Diary.Application.Neurons
 @using ei8.Cortex.Diary.Application.Settings
 @using ei8.Cortex.Diary.Application.Subscriptions
@@ -21,6 +22,7 @@
 @inject ISubscriptionApplicationService SubscriptionApplicationService
 @inject ISubscriptionQueryService SubscriptionsQueryService
 @inject IList<Assembly> PluginAssemblies
+@inject IMirrorQueryService MirrorQueryService
 
 @if (this.componentType is not null)
 {

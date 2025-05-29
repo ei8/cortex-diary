@@ -1,10 +1,11 @@
-//#define staticLinkAssembly
+#define staticLinkAssembly
 using Blazored.Toast;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using ei8.Cortex.Diary.Application;
 using ei8.Cortex.Diary.Application.Dependency;
+using ei8.Cortex.Diary.Application.Mirrors;
 using ei8.Cortex.Diary.Application.Neurons;
 using ei8.Cortex.Diary.Application.Notifications;
 using ei8.Cortex.Diary.Application.Settings;
@@ -222,9 +223,10 @@ builder.Services.AddScoped<ISubscriptionClient, HttpSubscriptionClient>();
 builder.Services.AddScoped<ISubscriptionApplicationService, SubscriptionApplicationService>();
 builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
 builder.Services.AddScoped<ISubscriptionConfigurationClient, HttpSubscriptionConfigurationClient>();
+builder.Services.AddScoped<IMirrorQueryService, MirrorQueryService>();
+
 var vas = new ViewApplicationService(new ViewRepository());
 builder.Services.AddSingleton<IEnumerable<View>>(vas.GetAll().Result);
-
 
 builder.Services.AddAuthentication(options =>
 {
