@@ -10,12 +10,20 @@ using System.Timers;
 
 namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 {
+    public enum ExpansionType
+    {
+        None,
+        PostsynapticUntilExternalReferences,
+        FarthestPresynaptic
+    }
+
     public class TreeNeuronViewModel
     {
         private string avatarUrl;
         private INeuronQueryService neuronQueryService;
+        private Timer expansionTimer;
+        private ExpansionType currentExpansionType = ExpansionType.None;
         private readonly IEnumerable<MirrorConfigFile> mirrorConfigFiles;
-        private Timer expandPostsynapticsUntilExternalReferencesTimer;
 
         public TreeNeuronViewModel(
             Neuron neuron, 
@@ -29,7 +37,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.neuronQueryService = neuronQueryService;
             this.mirrorConfigFiles = mirrorConfigFiles;
             this.Children = new List<TreeNeuronViewModel>();
-            this.expandPostsynapticsUntilExternalReferencesTimer = new Timer();
+            this.expansionTimer = new Timer();
         }
 
         public IList<TreeNeuronViewModel> Children { get; set; }
@@ -37,6 +45,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public Neuron Neuron { get; private set; }
 
         public ExpansionState ExpansionState { get; private set; }
+
+        public ExpansionType CurrentExpansionType => this.currentExpansionType;
 
         public async Task Toggle()
         {
@@ -47,9 +57,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                 var children = new List<TreeNeuronViewModel>();
                 if (Library.Client.QueryUrl.TryParse(this.avatarUrl, out QueryUrl result))
                 {
-                    
                     NeuronQuery.TryParse(result.QueryString, out NeuronQuery query);
-                    var childrenQuery = new NeuronQuery() {
+                    var childrenQuery = new NeuronQuery()
+                    {
                         PageSize = Constants.TreeNodeChildrenQueryPageSize,
                         RelativeValues = query != null ? query.RelativeValues : null
                     };
@@ -70,6 +80,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             }
         }
 
+        public void ConfigureExpansionTimer(ExpansionType type, double interval, ElapsedEventHandler handler)
+        {
+            this.currentExpansionType = type;
+            this.expansionTimer.Interval = interval;
+            this.expansionTimer.Elapsed -= handler;
+            this.expansionTimer.Elapsed += handler;
+        }
+
         public IEnumerable<Tuple<string, string>> GetMirrorKeys()
         {
             var result = this.mirrorConfigFiles
@@ -81,33 +99,33 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 
             return result;
         }
-
-        public void ConfigureExpandTimer(double interval, ElapsedEventHandler handler)
+      
+        public void StartExpansionTimer()
         {
-            this.expandPostsynapticsUntilExternalReferencesTimer.Interval = interval;
-            this.expandPostsynapticsUntilExternalReferencesTimer.Elapsed -= handler;
-            this.expandPostsynapticsUntilExternalReferencesTimer.Elapsed += handler;
+            this.expansionTimer.Start();
         }
 
-        public void StartExpandTimer()
+        public void StopExpansionTimer()
         {
-            this.expandPostsynapticsUntilExternalReferencesTimer.Start();
+            this.expansionTimer.Stop();
+            this.currentExpansionType = ExpansionType.None;
         }
 
-        public void StopExpandTimer()
+        public void RestartExpansionTimer()
         {
-            this.expandPostsynapticsUntilExternalReferencesTimer.Stop();
+            this.expansionTimer.Enabled = false;
+            this.StartExpansionTimer();
         }
 
-        public void RestartExpandTimer()
+        public bool IsExpansionTimerEnabled()
         {
-            this.expandPostsynapticsUntilExternalReferencesTimer.Enabled = false;
-            this.StartExpandTimer();
+            return this.expansionTimer.Enabled;
         }
 
-        public bool IsExpandTimerEnabled()
+        public bool IsChild(string id, RelativeType type)
         {
-            return this.expandPostsynapticsUntilExternalReferencesTimer.Enabled;
+            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type ==type) || x.IsChild(id, type));
+            return result;
         }
 
         public bool IsChild(string id)
