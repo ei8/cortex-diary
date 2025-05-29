@@ -292,20 +292,20 @@
     private async Task HandleExpansion(
         Library.Common.RelativeType type, 
         Library.Common.RelativeType childType,
-        Func<ei8.Cortex.Library.Common.Neuron, bool> otherCondition)
+        Func<ei8.Cortex.Library.Common.Neuron, bool> otherCondition = null)
     {
         // if children contains selected neuron
         if (
             this.Children.Any(
                 x => x.Neuron.Id == this.SelectedNeuron.Neuron.Id && 
                 x.Neuron.Type != type && 
-                otherCondition(x.Neuron)
+                (otherCondition == null || otherCondition(x.Neuron))
             )
         )
         {
             if (
                 this.SelectedNeuron.Neuron.Type != type &&
-                otherCondition(this.SelectedNeuron.Neuron)
+                (otherCondition == null || otherCondition(this.SelectedNeuron.Neuron))
             )
             {
                 await InvokeAsync(() => this.SelectedNeuron.Toggle());
@@ -317,7 +317,7 @@
             {
                 if (this.SelectedNeuron.IsChild(child.Neuron.Id, childType) && 
                     child.Neuron.Type != type && 
-                    otherCondition(child.Neuron))
+                    (otherCondition == null || otherCondition(child.Neuron)))
                 {
                     await InvokeAsync(() => child.Toggle());
                 }
