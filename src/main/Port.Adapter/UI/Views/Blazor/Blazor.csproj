@@ -6,7 +6,7 @@
     <DockerfileContext>..\..\..\..\..</DockerfileContext>
     <RootNamespace>ei8.Cortex.Diary.Port.Adapter.UI.Views.Blazor</RootNamespace>
     <DockerComposeProjectPath>..\..\..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
-    <AssemblyName>d23-blazor</AssemblyName>
+    <AssemblyName>un8y-blazor</AssemblyName>
     <UserSecretsId>81989359-6e69-49cb-ba96-7e5a764de278</UserSecretsId>
   </PropertyGroup>
   <PropertyGroup>
@@ -31,7 +31,7 @@
     <PackageReference Include="IdentityServer4" Version="3.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.13" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
   </ItemGroup>

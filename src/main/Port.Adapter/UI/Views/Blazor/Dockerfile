@@ -18,4 +18,4 @@ RUN dotnet publish -c Release -o /app/publish /property:PublishWithAspNetCoreTar
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "d23-blazor.dll"]
+ENTRYPOINT ["dotnet", "un8y-blazor.dll"]

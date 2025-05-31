@@ -1,5 +1,4 @@
-﻿using ei8.Cortex.Coding;
-using ei8.Cortex.Diary.Application.Settings;
+﻿using ei8.Cortex.Diary.Application.Settings;
 using neurUL.Common.Domain.Model;
 using System.Collections.Generic;
 using System.IO;
