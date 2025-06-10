@@ -26,18 +26,17 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         private readonly IEnumerable<MirrorConfigFile> mirrorConfigFiles;
 
         public TreeNeuronViewModel(
-            Neuron neuron, 
-            string avatarUrl, 
+            Neuron neuron,
+            string avatarUrl,
             INeuronQueryService neuronQueryService,
             IEnumerable<MirrorConfigFile> mirrorConfigFiles
-            )
+        )
         {
             this.Neuron = neuron;
             this.avatarUrl = avatarUrl;
             this.neuronQueryService = neuronQueryService;
             this.mirrorConfigFiles = mirrorConfigFiles;
             this.Children = new List<TreeNeuronViewModel>();
-            this.expansionTimer = new Timer();
         }
 
         public IList<TreeNeuronViewModel> Children { get; set; }
@@ -67,11 +66,11 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                         .Items
                         .ToList().ForEach(n =>
                         children.Add(new TreeNeuronViewModel(
-                            new Neuron(n), 
-                            this.avatarUrl, 
-                            this.neuronQueryService, 
+                            new Neuron(n),
+                            this.avatarUrl,
+                            this.neuronQueryService,
                             this.mirrorConfigFiles
-                            ))
+                        ))
                     );
 
                     this.Children = children.ToArray();
@@ -80,8 +79,13 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             }
         }
 
-        public void ConfigureExpansionTimer(ExpansionType type, double interval, ElapsedEventHandler handler)
+        public void ConfigureExpansionTimer(Timer timer, ExpansionType type, double interval, ElapsedEventHandler handler)
         {
+            if (timer == null)
+                throw new ArgumentNullException(nameof(timer));
+            
+            this.expansionTimer = timer;            
+
             this.currentExpansionType = type;
             this.expansionTimer.Interval = interval;
             this.expansionTimer.Elapsed -= handler;
@@ -93,38 +97,50 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             var result = this.mirrorConfigFiles
                 .Where(mco => mco.Mirrors.Any(m => m.Url == this.Neuron.ExternalReferenceUrl))
                 .Select(mco => Tuple.Create(
-                    mco.Mirrors.Single(mi => mi.Url == this.Neuron.ExternalReferenceUrl).Key, 
+                    mco.Mirrors.Single(mi => mi.Url == this.Neuron.ExternalReferenceUrl).Key,
                     mco.Path
                 ));
 
             return result;
         }
-      
+
         public void StartExpansionTimer()
         {
+            if (this.expansionTimer == null)
+                throw new InvalidOperationException("Expansion timer not set. Call SetExpansionTimer first.");
+
             this.expansionTimer.Start();
         }
 
         public void StopExpansionTimer()
         {
+            if (this.expansionTimer == null)
+                throw new InvalidOperationException("Expansion timer not set. Call SetExpansionTimer first.");
+
             this.expansionTimer.Stop();
             this.currentExpansionType = ExpansionType.None;
         }
 
         public void RestartExpansionTimer()
         {
+            if (this.expansionTimer == null)
+                throw new InvalidOperationException("Expansion timer not set. Call SetExpansionTimer first.");
+
             this.expansionTimer.Enabled = false;
             this.StartExpansionTimer();
         }
 
         public bool IsExpansionTimerEnabled()
         {
+            if (this.expansionTimer == null)
+                return false;
+
             return this.expansionTimer.Enabled;
         }
 
         public bool IsChild(string id, RelativeType type)
         {
-            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type ==type) || x.IsChild(id, type));
+            var result = this.Children.Any(x => (x.Neuron.Id == id && x.Neuron.Type == type) || x.IsChild(id, type));
             return result;
         }
 
