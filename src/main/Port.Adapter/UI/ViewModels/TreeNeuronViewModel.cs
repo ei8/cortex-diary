@@ -39,11 +39,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.Children = new List<TreeNeuronViewModel>();
         }
 
-        public void SetExpansionTimer(Timer timer)
-        {
-            this.expansionTimer = timer;
-        }
-
         public IList<TreeNeuronViewModel> Children { get; set; }
 
         public Neuron Neuron { get; private set; }
@@ -84,8 +79,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             }
         }
 
-        public void ConfigureExpansionTimer(ExpansionType type, double interval, ElapsedEventHandler handler)
+        public void ConfigureExpansionTimer(Timer timer, ExpansionType type, double interval, ElapsedEventHandler handler)
         {
+            this.expansionTimer = timer;
             if (this.expansionTimer == null)
                 throw new InvalidOperationException("Expansion timer not set. Call SetExpansionTimer first.");
 
