@@ -90,9 +90,10 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 
         public void ConfigureExpansionTimer(Timer timer, ExpansionType type, double interval, ElapsedEventHandler handler)
         {
-            this.expansionTimer = timer;
-            if (this.expansionTimer == null)
-                throw new InvalidOperationException("Expansion timer not set. Call SetExpansionTimer first.");
+            if (timer == null)
+                throw new ArgumentNullException(nameof(timer));
+            
+            this.expansionTimer = timer;            
 
             this.currentExpansionType = type;
             this.expansionTimer.Interval = interval;
