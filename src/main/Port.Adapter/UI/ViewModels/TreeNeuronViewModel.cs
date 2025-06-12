@@ -92,9 +92,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         {
             if (timer == null)
                 throw new ArgumentNullException(nameof(timer));
-
             this.expansionTimer = timer;
-
             this.currentExpansionType = type;
             this.expansionTimer.Interval = interval;
             this.expansionTimer.Elapsed -= handler;
