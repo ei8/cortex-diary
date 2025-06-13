@@ -273,6 +273,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        if (IsRoot)
+            SetIndex();
         if (
             this.selectedNeuron != null && string.IsNullOrEmpty(this.selectedNeuron.Neuron.ExternalReferenceUrl) &&
             this.selectedNeuron.IsExpansionTimerEnabled() &&
@@ -481,13 +483,24 @@
 
     }
 
+    private void SetIndex()
+    {
+        for (int i = 0; i < this.Children.Count; i++)
+        {
+            if (i % 2 == 0)
+                this.Children[i].Index = 0;
+            else
+                this.Children[i].Index = 1;
+        }
+    }
+
     private string GetBackgroundColorStyle(TreeNeuronViewModel neuron)
     {
         var baseStyle = "list-style-type: none;";
-        var colorStyle = neuron.Color switch
+        var colorStyle = neuron.Index switch
         {
-            ViewModels.Color.White => "background-color: #ffffff;",
-            ViewModels.Color.Blue => "background-color: #f0f8ff;",
+            0 => "background-color: #ffffff;",
+            1 => "background-color: #f0f8ff;",
             _ => string.Empty
         };
         return $"{baseStyle} {colorStyle}";

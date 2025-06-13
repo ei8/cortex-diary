@@ -16,11 +16,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         PostsynapticUntilExternalReferences,
         FarthestPresynaptic
     }
-    public enum Color
-    {
-        White,
-        Blue
-    }
 
     public class TreeNeuronViewModel
     {
@@ -35,7 +30,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             string avatarUrl,
             INeuronQueryService neuronQueryService,
             IEnumerable<MirrorConfigFile> mirrorConfigFiles,
-            Color color = Color.White
+            int index = 0
         )
         {
             this.Neuron = neuron;
@@ -43,7 +38,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.neuronQueryService = neuronQueryService;
             this.mirrorConfigFiles = mirrorConfigFiles;
             this.Children = new List<TreeNeuronViewModel>();
-            this.Color = color;
+            this.Index = index;
         }
 
         public IList<TreeNeuronViewModel> Children { get; set; }
@@ -53,7 +48,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public ExpansionState ExpansionState { get; private set; }
 
         public ExpansionType CurrentExpansionType => this.currentExpansionType;
-        public Color Color;
+        public int Index;
 
         public async Task Toggle()
         {
@@ -78,7 +73,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                             this.avatarUrl,
                             this.neuronQueryService,
                             this.mirrorConfigFiles,
-                            this.Color
+                            this.Index
                         ))
                     );
 
