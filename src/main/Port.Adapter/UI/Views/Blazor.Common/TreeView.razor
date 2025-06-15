@@ -166,15 +166,15 @@
                             {
                                 <div class="row">
                                     <TreeView Children="@child.Children" 
-                                        AvatarUrl="@this.AvatarUrl"
-                                        OnHover="@(async (childNode) => await Hover(childNode))"
-                                        OnUnhover="@(async (childNode) => await Unhover(childNode))"
-                                        @bind-SelectedNeuron="@this.SelectedNeuron" 
-                                        OnMenuRequested="@this.MenuRequested"
-                                        OnInfoRequested="@this.InfoRequested" 
-                                        @bind-ControlsEnabled="@this.ControlsEnabled" 
-                                        IsRoot="false" 
-                                        IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" 
+                                    AvatarUrl="@this.AvatarUrl"
+                                    OnHover="@(async (childNode) => await Hover(childNode))"
+                                    OnUnhover="@(async (childNode) => await Unhover(childNode))"
+                                    @bind-SelectedNeuron="@this.SelectedNeuron" 
+                                    OnMenuRequested="@this.MenuRequested"
+                                    OnInfoRequested="@this.InfoRequested" 
+                                    @bind-ControlsEnabled="@this.ControlsEnabled" 
+                                    IsRoot="false" 
+                                    IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" 
                                     />
                                 </div>
                             }
@@ -273,8 +273,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (IsRoot)
-            SetIndex();
+        if (this.IsRoot)
+            this.UpdateChildrenRootIndex();
         if (
             this.selectedNeuron != null && string.IsNullOrEmpty(this.selectedNeuron.Neuron.ExternalReferenceUrl) &&
             this.selectedNeuron.IsExpansionTimerEnabled() &&
@@ -483,21 +483,18 @@
 
     }
 
-    private void SetIndex()
+    private void UpdateChildrenRootIndex()
     {
         for (int i = 0; i < this.Children.Count; i++)
         {
-            if (i % 2 == 0)
-                this.Children[i].Index = 0;
-            else
-                this.Children[i].Index = 1;
+            this.Children[i].RootIndex = i;
         }
     }
 
     private string GetBackgroundColorStyle(TreeNeuronViewModel neuron)
     {
         var baseStyle = "list-style-type: none;";
-        var colorStyle = neuron.Index switch
+        var colorStyle = (neuron.RootIndex % 2) switch
         {
             0 => "background-color: #ffffff;",
             1 => "background-color: #f0f8ff;",
