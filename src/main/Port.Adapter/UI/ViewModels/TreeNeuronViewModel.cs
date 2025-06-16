@@ -24,7 +24,6 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         private Timer expansionTimer;
         private ExpansionType currentExpansionType = ExpansionType.None;
         private readonly IEnumerable<MirrorConfigFile> mirrorConfigFiles;
-        private int rootIndex;
 
         public TreeNeuronViewModel(
             Neuron neuron,
@@ -39,7 +38,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.neuronQueryService = neuronQueryService;
             this.mirrorConfigFiles = mirrorConfigFiles;
             this.Children = new List<TreeNeuronViewModel>();
-            this.rootIndex = rootIndex;
+            this.RootIndex = rootIndex;
         }
 
         public IList<TreeNeuronViewModel> Children { get; set; }
@@ -48,8 +47,9 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 
         public ExpansionState ExpansionState { get; private set; }
 
+        public int RootIndex { get; set; }
+
         public ExpansionType CurrentExpansionType => this.currentExpansionType;
-        public int RootIndex => this.rootIndex;
 
         public async Task Toggle()
         {
