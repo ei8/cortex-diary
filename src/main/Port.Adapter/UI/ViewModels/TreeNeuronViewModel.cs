@@ -29,7 +29,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             Neuron neuron,
             string avatarUrl,
             INeuronQueryService neuronQueryService,
-            IEnumerable<MirrorConfigFile> mirrorConfigFiles
+            IEnumerable<MirrorConfigFile> mirrorConfigFiles,
+            int rootIndex = 0
         )
         {
             this.Neuron = neuron;
@@ -37,6 +38,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.neuronQueryService = neuronQueryService;
             this.mirrorConfigFiles = mirrorConfigFiles;
             this.Children = new List<TreeNeuronViewModel>();
+            this.RootIndex = rootIndex;
         }
 
         public IList<TreeNeuronViewModel> Children { get; set; }
@@ -44,6 +46,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         public Neuron Neuron { get; private set; }
 
         public ExpansionState ExpansionState { get; private set; }
+
+        public int RootIndex { get; set; }
 
         public ExpansionType CurrentExpansionType => this.currentExpansionType;
 
@@ -69,7 +73,8 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
                             new Neuron(n),
                             this.avatarUrl,
                             this.neuronQueryService,
-                            this.mirrorConfigFiles
+                            this.mirrorConfigFiles,
+                            this.RootIndex
                         ))
                     );
 
@@ -83,9 +88,7 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         {
             if (timer == null)
                 throw new ArgumentNullException(nameof(timer));
-            
-            this.expansionTimer = timer;            
-
+            this.expansionTimer = timer;
             this.currentExpansionType = type;
             this.expansionTimer.Interval = interval;
             this.expansionTimer.Elapsed -= handler;

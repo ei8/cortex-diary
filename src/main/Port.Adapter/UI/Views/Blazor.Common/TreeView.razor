@@ -1,6 +1,7 @@
 ﻿@using Blazorise
 @using Blazorise.Icons.FontAwesome
 @using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Web
 @using ei8.Cortex.Diary.Application.Neurons
 @using ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
 
@@ -11,7 +12,7 @@
         @foreach (var child in this.Children)
         {
             string currentAuthor = (child.Neuron.Creation?.Author?.Tag + ((child.Neuron.Creation?.Author?.Id != child.Neuron.UnifiedLastModification?.Author?.Id) ? ", " + child.Neuron.UnifiedLastModification.Author.Tag : string.Empty));
-            <li class="p-0 my-1" style="list-style-type: none;">
+            <li class="p-0 my-1" style="@GetBackgroundColorStyle(child)">
                 <div class="container-fluid m-0" style="@this.GetJustifyStyle(child)">
                     @{var tagUrlType = this.GetUrlType(child.Neuron.Tag);}
                     <div class="row" style=@(tagUrlType == UrlType.GoogleDriveImage ? "max-width: 70%" : string.Empty)>
@@ -44,13 +45,13 @@
                                 }
                                 @if (@child.ExpansionState == ExpansionState.Collapsed)
                                 {
-                                    <button class="btn btn-light btn-xs rounded-circle" style="height: 25px; background-color: white; border-color: white" @onclick="child.Toggle">
+                                    <button class="btn btn-xs rounded-circle" style="height: 25px;" @onclick="child.Toggle">
                                         <span class="small text-secondary">&#x25B7;</span>
                                     </button>
                                 }
                                 else if (@child.ExpansionState == ExpansionState.Expanded)
                                 {
-                                    <button class="btn btn-light btn-xs rounded-circle" style="height: 25px; background-color: white; border-color: white" @onclick="child.Toggle">
+                                    <button class="btn btn-xs rounded-circle" style="height: 25px;" @onclick="child.Toggle">
                                         <span class="small text-secondary">&#x25E2;</span>
                                     </button>
                                 }
@@ -165,15 +166,15 @@
                             {
                                 <div class="row">
                                     <TreeView Children="@child.Children" 
-                                        AvatarUrl="@this.AvatarUrl"
-                                        OnHover="@(async (childNode) => await Hover(childNode))"
-                                        OnUnhover="@(async (childNode) => await Unhover(childNode))"
-                                        @bind-SelectedNeuron="@this.SelectedNeuron" 
-                                        OnMenuRequested="@this.MenuRequested"
-                                        OnInfoRequested="@this.InfoRequested" 
-                                        @bind-ControlsEnabled="@this.ControlsEnabled" 
-                                        IsRoot="false" 
-                                        IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" 
+                                    AvatarUrl="@this.AvatarUrl"
+                                    OnHover="@(async (childNode) => await Hover(childNode))"
+                                    OnUnhover="@(async (childNode) => await Unhover(childNode))"
+                                    @bind-SelectedNeuron="@this.SelectedNeuron" 
+                                    OnMenuRequested="@this.MenuRequested"
+                                    OnInfoRequested="@this.InfoRequested" 
+                                    @bind-ControlsEnabled="@this.ControlsEnabled" 
+                                    IsRoot="false" 
+                                    IsRootRightJustified="@(this.ShouldRightJustifyBasedOnRoot(child))" 
                                     />
                                 </div>
                             }
@@ -272,6 +273,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        if (this.IsRoot)
+            this.UpdateChildrenRootIndex();
         if (
             this.selectedNeuron != null && string.IsNullOrEmpty(this.selectedNeuron.Neuron.ExternalReferenceUrl) &&
             this.selectedNeuron.IsExpansionTimerEnabled() &&
@@ -478,5 +481,25 @@
             dict.Add("style", "color:red");
         return dict;
 
+    }
+
+    private void UpdateChildrenRootIndex()
+    {
+        for (int i = 0; i < this.Children.Count; i++)
+        {
+            this.Children[i].RootIndex = i;
+        }
+    }
+
+    private string GetBackgroundColorStyle(TreeNeuronViewModel neuron)
+    {
+        var baseStyle = "list-style-type: none;";
+        var colorStyle = (neuron.RootIndex % 2) switch
+        {
+            0 => "background-color: #ffffff;",
+            1 => "background-color: #f0f8ff;",
+            _ => string.Empty
+        };
+        return $"{baseStyle} {colorStyle}";
     }
 }
