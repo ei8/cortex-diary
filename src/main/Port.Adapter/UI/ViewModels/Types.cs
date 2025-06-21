@@ -14,6 +14,5 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
     public class Constants
     {
         public const int TreeNodeChildrenQueryPageSize = 200;
-        public const string Eupm = "eupm";
     }
 }
