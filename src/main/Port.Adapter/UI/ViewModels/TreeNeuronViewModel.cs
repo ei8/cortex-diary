@@ -29,6 +29,22 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             Neuron neuron,
             string avatarUrl,
             INeuronQueryService neuronQueryService,
+            IEnumerable<MirrorConfigFile> mirrorConfigFiles
+        ) : this
+        (
+            neuron,
+            avatarUrl,
+            neuronQueryService,
+            mirrorConfigFiles,
+            0
+        )
+        {
+        }
+
+        public TreeNeuronViewModel(
+            Neuron neuron,
+            string avatarUrl,
+            INeuronQueryService neuronQueryService,
             IEnumerable<MirrorConfigFile> mirrorConfigFiles,
             int rootIndex = 0
         )
