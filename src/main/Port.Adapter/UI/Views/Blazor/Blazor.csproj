@@ -23,7 +23,7 @@
     <PackageReference Include="Blazorise.Bootstrap" Version="1.1.5" />
     <PackageReference Include="Blazorise.Components" Version="1.1.5" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.5" />
-    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.2.7" />
+    <PackageReference Include="ei8.Cortex.Diary.Nucleus.Client" Version="0.2.9" />
     <PackageReference Include="ei8.Cortex.Library.Common" Version="0.3.11" />
     <PackageReference Include="Blazorise.Sidebar" Version="1.1.5" />
     <PackageReference Include="ei8.Cortex.Subscriptions.Common" Version="0.1.6" />

@@ -115,10 +115,14 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
         {
             var result = this.mirrorConfigFiles
                 .Where(mco => mco.Mirrors.Any(m => m.Url == this.Neuron.ExternalReferenceUrl))
-                .Select(mco => Tuple.Create(
-                    mco.Mirrors.Single(mi => mi.Url == this.Neuron.ExternalReferenceUrl).Key,
-                    mco.Path
-                ));
+                .SelectMany(mco => 
+                    mco.Mirrors.Where(mi => mi.Url == this.Neuron.ExternalReferenceUrl).Select(mi2 =>
+                        Tuple.Create(
+                            mi2.Key,
+                            mco.Path
+                        )
+                    )
+                );
 
             return result;
         }
