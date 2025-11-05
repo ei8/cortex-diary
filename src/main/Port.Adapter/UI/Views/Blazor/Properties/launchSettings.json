@@ -20,24 +20,27 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "OIDC_AUTHORITY": "https://login.neurul.net",
-        "CLIENT_ID": "d23-sample",
-        "CLIENT_SECRET": "",
-        "REQUESTED_SCOPES": "openid,profile,email,avatarapi-sample,offline_access",
-        "UPDATE_CHECK_INTERVAL": "1000000",
-        "DATABASE_PATH": "C:\\ei8\\avatars\\prod\\sample\\d23.db",
+        "OIDC_AUTHORITY": "https://___.nip.io:65102",
+        "CLIENT_ID": "un8y-__",
+        "CLIENT_SECRET": "_",
+        "REQUESTED_SCOPES": "openid,profile,email,avatarapi-__,offline_access",
+        "UPDATE_CHECK_INTERVAL": "10000",
+        "DATABASE_PATH": "C:\\Users\\_\\Documents\\ei8\\Avatar\\__\\un8y\\.db",
         "BASE_PATH": "",
-        "PLUGINS_PATH": "C:\\ei8\\avatars\\prod\\sample\\uni8y-plugins\\",
+        "PLUGINS_PATH": "C:\\Users\\_\\Documents\\ei8\\Avatar\\__\\un8y\\plugins\\",
+        "MIRROR_CONFIG_FILES": "C:\\Users\\_\\Documents\\ei8\\Avatar\\__\\m8\\settings.json,C:\\Users\\_\\Documents\\ei8\\Avatar\\__\\av8r\\settings.json",
         "VALIDATE_SERVER_CERTIFICATE": "false",
         "APP_TITLE": "",
-        "APP_ICON": ""
+        "APP_ICON": "",
+        "ASPNETCORE_Kestrel__Certificates__Default__Password": "_",
+        "ASPNETCORE_Kestrel__Certificates__Default__Path": "C:\\Users\\_\\Documents\\ei8\\Avatar\\__\\https\\aspnetapp.pfx"
       },
-      "applicationUrl": "https://192.168.1.110:65103"
+      "applicationUrl": "https://___:65163/"
     },
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://192.168.1.110:{ServicePort}",
+      "launchUrl": "{Scheme}://___:{ServicePort}",
       "environmentVariables": {},
       "httpPort": 64000
     }

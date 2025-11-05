@@ -111,16 +111,13 @@ namespace ei8.Cortex.Diary.Port.Adapter.UI.ViewModels
             this.expansionTimer.Elapsed += handler;
         }
 
-        public IEnumerable<Tuple<string, string>> GetMirrorKeys()
+        public IEnumerable<(IEnumerable<string> Keys, string Path)> GetMirrorKeys()
         {
             var result = this.mirrorConfigFiles
                 .Where(mco => mco.Mirrors.Any(m => m.Url == this.Neuron.ExternalReferenceUrl))
                 .SelectMany(mco => 
                     mco.Mirrors.Where(mi => mi.Url == this.Neuron.ExternalReferenceUrl).Select(mi2 =>
-                        Tuple.Create(
-                            mi2.Key,
-                            mco.Path
-                        )
+                        (mi2.Keys, mco.Path)
                     )
                 );
 

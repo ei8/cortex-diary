@@ -15,8 +15,8 @@
     <PackageReference Include="IdentityModel" Version="5.1.0" />
     <PackageReference Include="IdentityServer4" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="Neurul.Common" Version="0.1.19" />
-    <PackageReference Include="neurUL.Common.Http" Version="0.2.0" />
+    <PackageReference Include="Neurul.Common" Version="0.2.1" />
+    <PackageReference Include="neurUL.Common.Http" Version="0.2.1" />
     <PackageReference Include="Neurul.Cortex.Common" Version="0.1.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog" Version="4.5.0" />

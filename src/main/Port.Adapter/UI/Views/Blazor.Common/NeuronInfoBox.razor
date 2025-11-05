@@ -66,7 +66,7 @@
                                             <br />
                                         }
                                         <span>
-                                            @key.Item1.TrimStart()@(" (")@key.Item2@(")")
+                                            @string.Join(", ", key.Keys.ToArray())@(" (")@key.Path@(")")
                                         </span>
                                     }
                                 }
